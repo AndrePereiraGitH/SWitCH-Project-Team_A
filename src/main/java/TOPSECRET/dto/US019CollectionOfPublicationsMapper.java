@@ -29,6 +29,7 @@ public class US019CollectionOfPublicationsMapper {
         }
 
         return new US019CollectionOfPublicationsDTO(
+                collection.id(),
                 collection.getCollectionName(),
                 collection.getCollectionGenre().getID(),
                 collection.getOwnerId().getUsername()

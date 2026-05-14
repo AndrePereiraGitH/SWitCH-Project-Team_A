@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -70,6 +71,11 @@ public class CollectionOfPublicationsDM {
     @AttributeOverride(name = "isPrivate", column = @Column(name = "is_private"))
     private boolean isPrivate;
 
+    @AttributeOverride(name = "publicUntil", column = @Column(name = "publicUntil"))
+    private LocalDateTime publicUntil;
+
+
+
     /**
      * Creates a new persistence model for a collection of publications.
      *
@@ -85,7 +91,7 @@ public class CollectionOfPublicationsDM {
      */
     public CollectionOfPublicationsDM(CollectionOfPublicationsId collectionOfPub_id,
                                       String collectionName, GenreId genreID,
-                                      UserId userId, boolean isPrivate) {
+                                      UserId userId, boolean isPrivate, LocalDateTime publicUntil) {
 
         this.id = Objects.requireNonNull(collectionOfPub_id,
                 "collectionOfPublicationsId cannot be null");
@@ -100,5 +106,6 @@ public class CollectionOfPublicationsDM {
                 "userId cannot be null");
 
         this.isPrivate = isPrivate;
+        this.publicUntil = publicUntil;
     }
 }

@@ -9,6 +9,8 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,7 +65,7 @@ class CollectionOfPublicationsAssemblerTest {
         when(collectionDouble.getCollectionName()).thenReturn(collectionName);
         when(collectionDouble.getCollectionGenre()).thenReturn(genreIdDouble);
         when(collectionDouble.getOwnerId()).thenReturn(userIdDouble);
-        when(collectionDouble.isPrivate()).thenReturn(isPrivate);
+        when(collectionDouble.getIsPrivate()).thenReturn(isPrivate);
 
         // Act
         CollectionOfPublicationsDM result =
@@ -82,6 +84,7 @@ class CollectionOfPublicationsAssemblerTest {
     @Test
     void toDomainShouldReturnAValidDomainObject() {
         // Arrange
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         String collectionName = "Fantasy Collection";
         boolean isPrivate = false;
 
@@ -91,7 +94,8 @@ class CollectionOfPublicationsAssemblerTest {
                         collectionName,
                         genreIdDouble,
                         userIdDouble,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         CollectionOfPublications collectionDouble =
@@ -102,7 +106,8 @@ class CollectionOfPublicationsAssemblerTest {
                 collectionName,
                 genreIdDouble,
                 userIdDouble,
-                isPrivate
+                isPrivate,
+                publicUntil
         )).thenReturn(collectionDouble);
 
         // Act
@@ -130,6 +135,7 @@ class CollectionOfPublicationsAssemblerTest {
         // Arrange
         String collectionName = "Fantasy Collection";
         boolean isPrivate = false;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         CollectionOfPublicationsDM collectionDM =
                 new CollectionOfPublicationsDM(
@@ -137,7 +143,8 @@ class CollectionOfPublicationsAssemblerTest {
                         collectionName,
                         genreIdDouble,
                         userIdDouble,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         List<CollectionOfPublicationsDM> dmList =
@@ -151,7 +158,8 @@ class CollectionOfPublicationsAssemblerTest {
                 collectionName,
                 genreIdDouble,
                 userIdDouble,
-                isPrivate
+                isPrivate,
+                publicUntil
         )).thenReturn(collectionDouble);
 
         // Act
@@ -166,6 +174,7 @@ class CollectionOfPublicationsAssemblerTest {
     void toDomainListShouldReturnCorrectSize() {
 
         // Arrange
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         String collectionName = "Fantasy Collection";
         boolean isPrivate = false;
 
@@ -175,7 +184,8 @@ class CollectionOfPublicationsAssemblerTest {
                         collectionName,
                         genreIdDouble,
                         userIdDouble,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         List<CollectionOfPublicationsDM> dmList =
@@ -189,7 +199,8 @@ class CollectionOfPublicationsAssemblerTest {
                 collectionName,
                 genreIdDouble,
                 userIdDouble,
-                isPrivate
+                isPrivate,
+                publicUntil
         )).thenReturn(collectionDouble);
 
         // Act

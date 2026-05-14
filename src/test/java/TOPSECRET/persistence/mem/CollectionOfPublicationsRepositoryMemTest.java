@@ -9,9 +9,9 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceNotFoundException;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -54,6 +54,10 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(collection, result);
     }
 
+    // ===================================================
+    // ---------------------  SAVE -----------------------
+    // ===================================================
+
     @Test
     void saveShouldThrowWhenCollectionAlreadyExists() {
 
@@ -73,6 +77,69 @@ class CollectionOfPublicationsRepositoryMemTest {
                 () -> sut.save(collection)
         );
     }
+
+    // ===================================================
+    // -------------------  UPDATE -----------------------
+    // ===================================================
+
+    @Test
+    void update_shouldUpdateAndReturnCollection_whenCollectionExists() throws InstanceNotFoundException {
+        // arrange
+        sut = new CollectionOfPublicationsRepositoryMem();
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        CollectionOfPublications existingCollection = mock(CollectionOfPublications.class);
+
+        CollectionOfPublications updatedCollection = mock(CollectionOfPublications.class);
+
+        when(existingCollection.id()).thenReturn(id);
+        when(updatedCollection.id()).thenReturn(id);
+
+        sut.save(existingCollection);
+
+        // act
+        CollectionOfPublications result = sut.update(updatedCollection);
+
+        // assert
+        assertEquals(updatedCollection, result);
+        assertEquals(updatedCollection, sut.findById(id));
+    }
+
+    @Test
+    void update_shouldThrow_whenCollectionIsNull() {
+        // arrange
+        sut = new CollectionOfPublicationsRepositoryMem();
+
+        // act + assert
+        NullPointerException ex = assertThrows(
+                NullPointerException.class,
+                () -> sut.update(null)
+        );
+
+        assertEquals("collection cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void update_shouldReturnNull_whenCollectionDoesNotExist() {
+        // arrange
+        sut = new CollectionOfPublicationsRepositoryMem();
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        when(collection.id()).thenReturn(id);
+
+        // act
+        CollectionOfPublications result = sut.update(collection);
+
+        // assert
+        assertNull(result);
+    }
+
+    // ===================================================
+    // ------------------  EXISTS BY ID-------------------
+    // ===================================================
 
     @Test
     void existsByIdShouldThrowWhenIdIsNull() {
@@ -122,6 +189,64 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertFalse(result);
     }
 
+    // ===================================================
+    // ----------------  FIND BY ID ----------------------
+    // ===================================================
+
+    @Test
+    void findById_shouldFindCollection_whenExistsById() throws InstanceNotFoundException {
+        // Arrange
+        sut = new CollectionOfPublicationsRepositoryMem();
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        when(collection.id()).thenReturn(id);
+
+        sut.save(collection);
+
+        // Act
+        CollectionOfPublications result = sut.findById(id);
+
+        // Assert
+        assertEquals(result, collection);
+    }
+
+    @Test
+    void findById_shouldThrow_whenCollectionDoesNotExists() {
+        //arrange
+        sut = new CollectionOfPublicationsRepositoryMem();
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        //act + assert
+        InstanceNotFoundException ex = assertThrows(InstanceNotFoundException.class, () -> sut.findById(id));
+        assertEquals("collection not found by Id: " + id, ex.getMessage());
+    }
+
+    @Test
+    void findById_shouldThrow_whenCollectionIdIsNull() {
+        //arrange
+        sut = new CollectionOfPublicationsRepositoryMem();
+
+        //act + assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> sut.findById(null));
+        assertEquals("CollectionId cannot be null", ex.getMessage());
+
+    }
+
+    // ===================================================
+    // -----------  FIND ALL BY USER ID ------------------
+    // ===================================================
+
+    @Test
+    void getUserCollectionsShouldThrowExceptionIfAllByUserIdNull() {
+        //Arrange
+        sut = new CollectionOfPublicationsRepositoryMem();
+
+        //Act + assert
+        assertThrows(IllegalArgumentException.class, () -> sut.findAllByOwnerId(null));
+    }
+
     @Test
     void shouldReturnCollectionsOwnedByUser() throws Exception {
 
@@ -150,12 +275,16 @@ class CollectionOfPublicationsRepositoryMemTest {
 
         // ACT
         List<CollectionOfPublications> result =
-                sut.getUserCollections(user);
+                sut.findAllByOwnerId(user);
 
         // ASSERT
         assertEquals(1, result.size());
         assertEquals(collection1, result.get(0));
     }
+
+    // =================================================================
+    // ---------  findPublicCollectionsByGenreId -----------------------
+    // =================================================================
 
     @Test
     void shouldThrowExceptionWhenGenreIsNull() {
@@ -181,225 +310,6 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(0, result.size());
     }
 
-    @Test
-    void makeCollectionPublicShouldThrowWhenIdIsNull() {
-
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> sut.makeCollectionPublic(null));
-    }
-
-    @Test
-    void makeCollectionPublicShouldAffectQueryResults() {
-
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        GenreId genre = mock(GenreId.class);
-        UserId user = mock(UserId.class);
-
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-
-        when(collection.id()).thenReturn(id);
-        when(collection.getCollectionGenre()).thenReturn(genre);
-
-        // Initially private
-        when(collection.isPrivate()).thenReturn(true);
-
-        sut.save(collection);
-
-        // Act
-        sut.makeCollectionPublic(id);
-
-        // Simulate state change after call
-        when(collection.isPrivate()).thenReturn(false);
-
-        List<CollectionOfPublications> result =
-                sut.findPublicCollectionsByGenreId(genre);
-
-        // Assert
-        assertEquals(1, result.size());
-        assertSame(collection, result.get(0));
-    }
-
-    @Test
-    void makeCollectionPublicShouldDoNothingWhenIdDoesNotExist() {
-
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        GenreId genre = mock(GenreId.class);
-
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        CollectionOfPublicationsId existingId = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublicationsId nonExistingId = mock(CollectionOfPublicationsId.class);
-
-        when(collection.id()).thenReturn(existingId);
-        when(collection.getCollectionGenre()).thenReturn(genre);
-
-        when(collection.isPrivate()).thenReturn(true);
-
-        sut.save(collection);
-
-        // Act
-        sut.makeCollectionPublic(nonExistingId);
-
-        List<CollectionOfPublications> result =
-                sut.findPublicCollectionsByGenreId(genre);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void shouldReturnOnlyPublicCollectionsMatchingGenre() {
-
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        GenreId genre = mock(GenreId.class);
-        GenreId otherGenre = mock(GenreId.class);
-
-        CollectionOfPublications publicCollection = mock(CollectionOfPublications.class);
-        CollectionOfPublications privateCollection = mock(CollectionOfPublications.class);
-        CollectionOfPublications differentGenreCollection = mock(CollectionOfPublications.class);
-
-        CollectionOfPublicationsId id1 = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublicationsId id2 = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublicationsId id3 = mock(CollectionOfPublicationsId.class);
-
-        when(publicCollection.id()).thenReturn(id1);
-        when(privateCollection.id()).thenReturn(id2);
-        when(differentGenreCollection.id()).thenReturn(id3);
-
-        when(publicCollection.getCollectionGenre()).thenReturn(genre);
-        when(privateCollection.getCollectionGenre()).thenReturn(genre);
-        when(differentGenreCollection.getCollectionGenre()).thenReturn(otherGenre);
-
-        // all private initially
-        when(publicCollection.isPrivate()).thenReturn(true);
-        when(privateCollection.isPrivate()).thenReturn(true);
-        when(differentGenreCollection.isPrivate()).thenReturn(true);
-
-        sut.save(publicCollection);
-        sut.save(privateCollection);
-        sut.save(differentGenreCollection);
-
-        // Act
-        sut.makeCollectionPublic(id1);
-
-        // simulating post-condition
-        when(publicCollection.isPrivate()).thenReturn(false);
-
-        List<CollectionOfPublications> result =
-                sut.findPublicCollectionsByGenreId(genre);
-
-        // Assert
-        assertEquals(1, result.size());
-        assertSame(publicCollection, result.get(0));
-    }
-
-    @Test
-    void makeCollectionPublicShouldMakeCollectionPublic() {
-
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(id.getId()).thenReturn(UUID.randomUUID().toString());
-
-        when(collection.id()).thenReturn(id);
-
-        when(collection.isPrivate()).thenReturn(true, false);
-
-        sut.save(collection);
-
-        assertTrue(collection.isPrivate());
-
-        // Act
-        boolean result = sut.makeCollectionPublic(id);
-
-        // Assert
-        assertFalse(result);
-        assertFalse(collection.isPrivate());
-    }
-
-    @Test
-    void makeCollectionPublicShouldOnlyChangeMatchingCollection() {
-
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        CollectionOfPublicationsId targetId = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublicationsId otherId = mock(CollectionOfPublicationsId.class);
-
-        CollectionOfPublications target = mock(CollectionOfPublications.class);
-        CollectionOfPublications other = mock(CollectionOfPublications.class);
-
-        when(target.id()).thenReturn(targetId);
-        when(other.id()).thenReturn(otherId);
-
-        // simulate state transitions
-        when(target.isPrivate()).thenReturn(true, false);
-        when(other.isPrivate()).thenReturn(true);
-
-        sut.save(target);
-        sut.save(other);
-
-        assertTrue(target.isPrivate());
-        assertTrue(other.isPrivate());
-
-        // Act
-        sut.makeCollectionPublic(targetId);
-
-        // Assert
-        assertFalse(target.isPrivate());
-        assertTrue(other.isPrivate());
-    }
-
-    @Test
-    void getUserCollectionsShouldThrowExceptionIfUserIdNull() {
-        //Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () -> sut.getUserCollections(null));
-    }
-
-    @Test
-    void makeCollectionPublicShouldOnlyAffectMatchingCollection() {
-
-        // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
-
-        GenreId genre = mock(GenreId.class);
-        UserId user = mock(UserId.class);
-
-        CollectionOfPublications target =
-                factory.create("A", genre, user);
-
-        CollectionOfPublications other =
-                factory.create("B", genre, user);
-
-        sut.save(target);
-        sut.save(other);
-
-        assertTrue(target.isPrivate());
-        assertTrue(other.isPrivate());
-
-        // Act
-        sut.makeCollectionPublic(target.id());
-
-        // Assert
-        assertFalse(target.isPrivate());
-        assertTrue(other.isPrivate());
-    }
 }
 
 

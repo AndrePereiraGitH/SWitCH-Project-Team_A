@@ -12,8 +12,10 @@ import TOPSECRET.persistence.repositoryjpa.jpa.ICollectionOfPublicationsReposito
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfPublicationsRepository {
@@ -68,6 +70,23 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
      * {@inheritDoc}
      */
     @Override
+    public CollectionOfPublications update(CollectionOfPublications collection) {
+
+        Objects.requireNonNull(collection, "collection cannot be null");
+
+        CollectionOfPublicationsDM collectionDMtOUpdate = collectionOfPublicationsAssembler.toDM(collection);
+
+        CollectionOfPublicationsDM updatedDBCollectionDM = collectionRepositoryJpa.update(collectionDMtOUpdate);
+
+        CollectionOfPublications updatedCollection = collectionOfPublicationsAssembler.toDomain(updatedDBCollectionDM);
+
+        return updatedCollection;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsID) {
 
         Objects.requireNonNull(collectionOfPublicationsID,
@@ -78,6 +97,21 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
         }
 
         return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
+        Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
+
+        Optional<CollectionOfPublicationsDM> collectionDM = collectionRepositoryJpa.findById(collectionId);
+
+        if (collectionDM.isEmpty()) {
+            throw new InstanceNotFoundException("Collection does not exists");
+        }
+        return collectionOfPublicationsAssembler.toDomain(collectionDM.get());
     }
 
     /**
@@ -100,8 +134,15 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
      * {@inheritDoc}
      */
     @Override
-    public boolean makeCollectionPublic(CollectionOfPublicationsId id) {
-        return false;
+    public List<CollectionOfPublications> findAllByOwnerId(UserId ownerId) {
+        Objects.requireNonNull(ownerId, "ownerId cannot be null");
+        List<CollectionOfPublicationsDM> ownerCollections = collectionRepositoryJpa.findAllByOwnerId(ownerId);
+
+        List<CollectionOfPublications> listOfUserCollections = ownerCollections.stream()
+                .map(collectionOfPublicationsAssembler::toDomain)
+                .toList();
+
+        return listOfUserCollections;
     }
 
     /**

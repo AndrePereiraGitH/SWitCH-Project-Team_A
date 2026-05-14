@@ -6,6 +6,7 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,6 +28,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     private GenreId _collectionGenreId;
     private final UserId _ownerId;
     private boolean _isPrivate;
+    private LocalDateTime publicUntil;
 
     /**
      * Creates a new collection of publications — US017.
@@ -58,6 +60,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._collectionGenreId = collectionGenreId;
         this._isPrivate = true;            // US017 rule: always private when created; US019 allows making it public
         this._ownerId = userId;
+        this.publicUntil = null;
     }
 
     /**
@@ -86,7 +89,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      */
     protected CollectionOfPublications(
             CollectionOfPublicationsId collectionOfPublicationsId, String collectionName,
-            GenreId collectionGenreId, UserId userId, boolean isPrivate) {
+            GenreId collectionGenreId, UserId userId, boolean isPrivate, LocalDateTime publicUntil) {
 
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsId cannot be null.");
@@ -107,11 +110,78 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         this._id = collectionOfPublicationsId;
         this._collectionName = collectionName;
         this._collectionGenreId = collectionGenreId;
-        this._isPrivate = true;
+        this._isPrivate = isPrivate;
         this._ownerId = userId;
+        this.publicUntil = publicUntil;
     }
 
-    public boolean isPrivate() {
+    /**
+     * Makes this CollectionOfPublications public until the given date and time.
+     *
+     * <p>If the collection is already public until the same date and time, no change
+     * is made and {@code false} is returned.</p>
+     *
+     * @param publicUntil the date and time until which the collection will remain public;
+     *                    must not be null and must be in the future
+     * @return {@code true} if the collection was changed;
+     *         {@code false} if it was already public until the same date and time
+     * @throws IllegalArgumentException if {@code publicUntil} is null or is not in the future
+     */
+    public boolean makePublicUntil(LocalDateTime publicUntil) {
+
+        if (publicUntil == null) {
+            throw new IllegalArgumentException("Public until date cannot be null.");
+        }
+
+        if (!publicUntil.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Public until date must be in the future.");
+        }
+
+        if (!_isPrivate && publicUntil.equals(this.publicUntil)) {
+            return false;
+        }
+
+        this._isPrivate = false;
+        this.publicUntil = publicUntil;
+
+        return true;
+    }
+
+    /**
+     * Makes this CollectionOfPublications public.
+     *
+     * @return {@code true} if the object was changed from private to public;
+     *         {@code false} if it was already public.
+     */
+    public boolean makePublic() {
+
+        if (!_isPrivate && publicUntil == null) {
+            return false;
+        }
+
+        this._isPrivate = false;
+        this.publicUntil = null;
+        return true;
+    }
+
+    /**
+     * Makes this CollectionOfPublications private.
+     *
+     * @return {@code true} if the object was changed from public to private;
+     *         {@code false} if it was already private.
+     */
+    public boolean makePrivate() {
+
+        if (_isPrivate) {
+            return false;
+        }
+
+        this._isPrivate = true;
+        this.publicUntil = null;
+        return true;
+    }
+
+    public boolean getIsPrivate() {
         return _isPrivate;
     }
 
@@ -131,19 +201,9 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _id;
     }
 
-    // ============================== US019 ==============================
-
-    /**
-     * Changes the privacy state of the collection — US019.
-     *
-     * <p>Pass {@code false} to make the collection public, {@code true} to make it private again.
-     *
-     */
-    public void set_isPrivate() {
-        this._isPrivate = false;
+    public LocalDateTime getPublicUntil() {
+        return publicUntil;
     }
-
-    // ============================== end US019 ==============================
 
     @Override
     public boolean equals(Object obj) {
@@ -170,7 +230,9 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
 
         return this._collectionName.equals(newObj._collectionName) &&
                 this._collectionGenreId.equals(newObj._collectionGenreId) &&
-                this._isPrivate == newObj._isPrivate;
+                this._ownerId.equals(newObj._ownerId) &&
+                this._isPrivate == newObj._isPrivate &&
+                Objects.equals(this.publicUntil, newObj.publicUntil);
     }
 
     @Override

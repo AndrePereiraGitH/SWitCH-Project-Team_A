@@ -1,37 +1,67 @@
 @startuml
-hide circle
+
+left to right direction
+skinparam classAttributeIconSize 10
+hide empty members
+
 title To publicly share a list of mine
 
-class "UI019" as UI019 {
+class "UI" as UI {
 
 }
 
 'Controller
-class "US019ToPubliclyShareCollectionOfPublicationsController" as US019Controller {
+class "ToPubliclyShareCollectionOfPublicationsController" as Controller {
   -collectionRepository: ICollectionOfPublicationsRepository
-  -genreRepository: IGenreRepository
-  -userRepository: IUserRepository
-  +getUserCollections(userId: UserId): List<CollectionOfPublicationsDTO>
-  +makeCollectionPublic(collectionId: CollectionID): boolean
+  -collectionService: CollectionOfPublicationsService
+  +getUserCollections(userId: UserId): List<US019CollectionOfPublicationsDTO>
+  +makeCollectionPublic(US019CollectionOfPublicationsDTO selectedCollectionDTO): boolean
+  +shareCollectionUntil(US019CollectionOfPublicationsDTO selectedCollectionDTO, publicUntil : LocalDateTime): boolean
 }
 
 'Repository Interfaces
 interface "ICollectionOfPublicationRepository" as ICollectionOfPublicationsRepository  {
- + getUserCollections(userId : UserId) : List<CollectionOfPublications>
+ + getByUserId(userId : UserId) : List<CollectionOfPublications>
  + makeCollectionPublic(id : CollectionOfPublicationsID) : boolean
 }
 
+interface "ICollectionOfPublicationsJPA" as ICollectionsJPA {
++findAllByOwnerId(ownerId : UserId) : CollectionOfPublications
+ +update(collection : CollectionOfPublications) : CollectionOfPublications
+}
+
+class "CollectionOfPublicationsJpaImpl" as collectionRepoJpaImpl {
+ -collectionsRepositoryJPA : ICollectionOfPublicationsRepositoryJpa
+ -collectionOfPublicationsAssembler : CollectionOfPublicationsAssembler
+ +findAllByOwnerId(ownerId : UserId) : CollectionOfPublications
+ +update(collection : CollectionOfPublications) : CollectionOfPublications
+}
+
+class "AutomaticGeneratedCollectionOfPublicationsJPAImpl" as jpaAutomatic {
+}
+
+class "CollectionOfPublicationsService" as service {
+-collectionOfPublicationsRepository : ICollectionOfPublicationsRepository
+
++makeCollectionPublic(collectionId : CollectionOfPublicationsId) : boolean
+}
+
+
 'Domain
-class CollectionOfPublications {
+class "CollectionOfPublications" as collection{
   - id : CollectionOfPublicationsID
   - collectionName : String
   - collectionGenreId : GenreID
   - ownerId : UserId
   - isPrivate : boolean
+  - publicUntil : LocalDateTime
+  + id() : CollectionOfPublicationsId
   + getCollectionName() : String
   + getCollectionGenre() : GenreID
   + getOwnerId() : UserId
-  + set_isPrivate(value : boolean) : boolean
+  + makePublic() : boolean
+  + makePrivate() : boolean
+  + makePublicUntil(publicUntil : LocalDateTIme) : boolean
 }
 
 class US019CollectionOfPublicationsMapper {
@@ -40,21 +70,62 @@ class US019CollectionOfPublicationsMapper {
 }
 
 class "US019CollectionOfPublicationsDTO" as DTO{
-        + name : String
-        + genreName : String
-        + ownerName : String
+        - id : CollectionOfPublicationsId
+        - name : String
+        - genreName : String
+        - ownerName : String
+}
+
+class "CollectionOfPublicationsAssembler" as assembler{
+    -factory : CollectionOfPublicationsFActory
+    +toDM(collection : CollectionOfPublications) : CollectionOfPublicationsDM
+    +toDomain(collectionDM : CollectionOfPublicationsDM) : CollectionOfPublications
+}
+
+class "CollectionOfPublicationsFactory" as factory {
+    +create(name : String, genreId : GenreId, ownerId : UserId) : CollectionOfPublications
+    +create(collectionOfPublicationsId : CollectionOfPublicationsId, name : String, genreId : GenreId, ownerId : UserId, publicUntil : LocalDateTime) : CollectionOfPublications
+}
+
+class "CollectionOfPublicationsDM" as collectionDM {
+            - id : CollectionOfPublicationsId
+            - name : String
+            - genreId : GenreId
+            - ownerId : UserId
+            - isPrivate : boolean
+            - publicUntil : LocalDateTime
+}
+
+rectangle DataBase as db{
 }
 
 ' Interactions
-UI019 ..> US019Controller : uses
+UI ..> Controller : uses
 
-US019Controller ..> ICollectionOfPublicationsRepository : uses
-US019Controller ..> US019CollectionOfPublicationsMapper : uses
+Controller --> ICollectionOfPublicationsRepository : uses
+Controller ..> US019CollectionOfPublicationsMapper : uses
 
-ICollectionOfPublicationsRepository "1" --> "*" CollectionOfPublications : manages
+Controller --> service
 
-US019CollectionOfPublicationsMapper ..> CollectionOfPublications : maps from
+
+ICollectionOfPublicationsRepository "1" ..> "*" collection : manages
+
+collectionRepoJpaImpl ..|> ICollectionOfPublicationsRepository : implements
+collectionRepoJpaImpl ..> ICollectionsJPA : uses
+collectionRepoJpaImpl ..> assembler : uses
+
+assembler ..> factory : uses
+
+factory ..> collection : creates
+assembler ..> collectionDM : creates
+jpaAutomatic ..> collectionDM : creates
+
+US019CollectionOfPublicationsMapper ..> collection : maps from
 US019CollectionOfPublicationsMapper ..> DTO : creates
+jpaAutomatic ..|> ICollectionsJPA : implements
+jpaAutomatic ..> db : queries
 
+service ..> collection : changes
+service ..> ICollectionOfPublicationsRepository : uses
 
 @enduml

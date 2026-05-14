@@ -1,0 +1,38 @@
+@startuml
+
+hide footbox
+autonumber
+
+title "Convert CollectionOfPublications to CollectionOfPublicationsDTO"
+
+participant ":Controller" as Controller
+participant ":US019CollectionOfPublications\nMapper" as Mapper
+participant "listCollectionsDTO:\nList<US019CollectionOfPublicationsDTO>" as listCollectionsDTO
+participant "collectionDTO:\nUS019CollectionOfPublicationsDTO" as collectionDTO
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[Main-diagram-To-publicly-share-a-list.puml Return to Main Diagram]]
+end note
+
+Controller -> Mapper : toDTOs(listOfUserCollections)
+activate Mapper
+Mapper  -->> listCollectionsDTO ** : «create»
+
+    loop for each collection in listOfUserCollections
+        Mapper -> collectionDTO ** : toDTO(collection)
+        Mapper -> listCollectionsDTO : add(collectionDTO)
+    end
+    Mapper  -->> Controller : listCollectionsDTO
+deactivate Mapper
+
+deactivate Controller
+
+@enduml

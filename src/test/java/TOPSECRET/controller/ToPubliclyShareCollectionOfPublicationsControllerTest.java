@@ -6,11 +6,18 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
+import TOPSECRET.dto.US019CollectionOfPublicationsDTO;
+import TOPSECRET.services.CollectionOfPublicationsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceNotFoundException;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for the {@link ToPubliclyShareCollectionOfPublicationsController} class.
@@ -29,16 +36,15 @@ import static org.mockito.Mockito.mock;
 class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     private ICollectionOfPublicationsRepository repositoryDouble;
+    private CollectionOfPublicationsService collectionService;
     private ToPubliclyShareCollectionOfPublicationsController controller;
-    private UserId testUserId;
-    private CollectionOfPublicationsId testCollectionId;
+
 
     @BeforeEach
     void setUp() {
         repositoryDouble = mock(ICollectionOfPublicationsRepository.class);
-        controller = new ToPubliclyShareCollectionOfPublicationsController(repositoryDouble);
-        testUserId = mock(UserId.class);
-        testCollectionId = mock(CollectionOfPublicationsId.class);
+        collectionService = mock(CollectionOfPublicationsService.class);
+        controller = new ToPubliclyShareCollectionOfPublicationsController(repositoryDouble, collectionService);
     }
 
     // ============================================================
@@ -54,106 +60,319 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
     @Test
     void ensureThrowsExceptionWhenRepositoryIsNull() {
         // Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                new ToPubliclyShareCollectionOfPublicationsController(null));
+        NullPointerException ex = assertThrows(NullPointerException.class, () ->
+                new ToPubliclyShareCollectionOfPublicationsController(null, collectionService));
+
+        assertEquals("CollectionOfPublicationsRepository cannot be null", ex.getMessage());
     }
 
-    // ============================================================
-    // getUserCollections() Tests
-    // ============================================================
+    @Test
+    void ensureThrowsExceptionWhenServiceIsNull() {
+        // Act & Assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                new ToPubliclyShareCollectionOfPublicationsController(repositoryDouble, null));
+        assertEquals("CollectionOfPublicationService cannot be null", ex.getMessage());
+    }
 
-//    @Test
-//    void ensureGetUserCollectionsThrowsExceptionWhenUserIdIsNull() {
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                controller.getUserCollections(null));
-//    }
-//
-//    @Test
-//    void ensureGetUserCollectionsReturnsEmptyListWhenUserHasNoCollections() {
-//        // Arrange
-//        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(new ArrayList<>());
-//
-//        // Act
-//        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
-//
-//        // Assert
-//        assertNotNull(result);
-//        assertTrue(result.isEmpty());
-//    }
-//
-//    @Test
-//    void ensureGetUserCollectionsReturnsCorrectNumberOfDTOs() {
-//        // Arrange
-//        CollectionOfPublications col1 = mock(CollectionOfPublications.class);
-//        CollectionOfPublications col2 = mock(CollectionOfPublications.class);
-//        GenreID genre1 = mock(GenreID.class);
-//        GenreID genre2 = mock(GenreID.class);
-//
-//        when(col1.getCollectionName()).thenReturn("Sci-Fi");
-//        when(col1.getCollectionGenre()).thenReturn(genre1);
-//        when(col1.getOwnerId()).thenReturn(testUserId);
-//        when(genre1.getID()).thenReturn("sci-fi");
-//        when(testUserId.getUsername()).thenReturn("alice");
-//
-//        when(col2.getCollectionName()).thenReturn("Drama");
-//        when(col2.getCollectionGenre()).thenReturn(genre2);
-//        when(col2.getOwnerId()).thenReturn(testUserId);
-//        when(genre2.getID()).thenReturn("drama");
-//
-//        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(col1, col2));
-//
-//        // Act
-//        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
-//
-//        // Assert
-//        assertEquals(2, result.size());
-//    }
-//
-//    @Test
-//    void ensureGetUserCollectionsReturnsCorrectDTOValues() {
-//        // Arrange
-//        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-//        GenreID genre = mock(GenreID.class);
-//
-//        when(collection.getCollectionName()).thenReturn("My Favorites");
-//        when(collection.getCollectionGenre()).thenReturn(genre);
-//        when(collection.getOwnerId()).thenReturn(testUserId);
-//        when(genre.getID()).thenReturn("fantasy");
-//        when(testUserId.getUsername()).thenReturn("bob");
-//
-//        when(repositoryDouble.getUserCollections(testUserId)).thenReturn(List.of(collection));
-//
-//        // Act
-//        List<US019CollectionOfPublicationsDTO> result = controller.getUserCollections(testUserId);
-//
-//        // Assert
-//        assertEquals(1, result.size());
-//        US019CollectionOfPublicationsDTO dto = result.get(0);
-//        assertEquals("My Favorites", dto.name());
-//        assertEquals("fantasy", dto.genreName());
-//        assertEquals("bob", dto.ownerName());
-//    }
+    // ===========================================================================
+    // ----------------- GET USER COLLECTIONS TESTS ------------------------------
+    // ===========================================================================
 
-    // ============================================================
-    // makeCollectionPublic() Tests
-    // ============================================================
+    @Test
+    void getUserCollections_ShouldThrowException_WhenUserIdIsNull() {
+        // Arrange
+        UserId userId = null;
 
-//    @Test
-//    void ensureMakeCollectionPublicThrowsExceptionWhenCollectionIdIsNull() {
-//        // Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                controller.makeCollectionPublic(null));
-//    }
-//
-//    @Test
-//    void ensureMakeCollectionPublicSetsCollectionToPublic() {
-//        // Arrange
-//        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-//
-//        when(collection.getIsPrivate()).thenReturn(false);
-//
-//        // Act & Assert — observable outcome: if isPrivate = false, collection is now public
-//        assertFalse(controller.makeCollectionPublic(testCollectionId));
-//    }
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.getUserCollections(userId)
+        );
+
+        // Assert
+        assertEquals("UserId cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void getUserCollections_ShouldReturnEmptyList_WhenUserHasNoCollections() {
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        when(repositoryDouble.findAllByOwnerId(userId))
+                .thenReturn(List.of());
+
+        // Act
+        List<US019CollectionOfPublicationsDTO> result =
+                controller.getUserCollections(userId);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+    }
+
+    @Test
+    void getUserCollections_ShouldReturnDTOList_WhenUserHasCollections() {
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
+
+        CollectionOfPublicationsId collectionId1 = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublicationsId collectionId2 = mock(CollectionOfPublicationsId.class);
+
+        GenreId genreId1 = mock(GenreId.class);
+        GenreId genreId2 = mock(GenreId.class);
+
+        when(collection1.id()).thenReturn(collectionId1);
+        when(collection1.getCollectionGenre()).thenReturn(genreId1);
+
+        when(collection2.id()).thenReturn(collectionId2);
+        when(collection2.getCollectionGenre()).thenReturn(genreId2);
+
+        when(collectionId1.getId()).thenReturn("collection-1");
+        when(collectionId2.getId()).thenReturn("collection-2");
+
+        when(genreId1.getID()).thenReturn("genre-1");
+        when(genreId2.getID()).thenReturn("genre-2");
+
+        when(collection1.getOwnerId()).thenReturn(userId);
+        when(collection2.getOwnerId()).thenReturn(userId);
+
+        when(collection1.getCollectionName()).thenReturn("Collection1");
+        when(collection2.getCollectionName()).thenReturn("Collection2");
+
+        when(collection1.getOwnerId().getUsername()).thenReturn("owner name1");
+        when(collection2.getOwnerId().getUsername()).thenReturn("ner name2");
+
+
+        when(repositoryDouble.findAllByOwnerId(userId))
+                .thenReturn(List.of(collection1, collection2));
+
+        // Act
+        List<US019CollectionOfPublicationsDTO> result =
+                controller.getUserCollections(userId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+    }
+
+    // =============================================================================
+    // ---------------------- MAKE COLLECTION PUBLIC -------------------------------
+    // =============================================================================
+
+    @Test
+    void makeCollectionPublic_ShouldThrowException_WhenDTOIsNull() {
+        // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDTO = null;
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> controller.makeCollectionPublic(selectedCollectionDTO)
+        );
+
+        // Assert
+        assertEquals("CollectionId cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void makeCollectionPublic_ShouldReturnTrue_WhenServiceReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        US019CollectionOfPublicationsDTO selectedCollectionDTO =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+        when(selectedCollectionDTO.id()).thenReturn(collectionId);
+        when(collectionService.makeCollectionPublic(collectionId)).thenReturn(true);
+
+        // Act
+        boolean result = controller.makeCollectionPublic(selectedCollectionDTO);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void makeCollectionPublic_ShouldReturnFalse_WhenServiceReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        US019CollectionOfPublicationsDTO selectedCollectionDTO =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+        when(selectedCollectionDTO.id()).thenReturn(collectionId);
+        when(collectionService.makeCollectionPublic(collectionId)).thenReturn(false);
+
+        // Act
+        boolean result = controller.makeCollectionPublic(selectedCollectionDTO);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void makeCollectionPublic_ShouldThrowException_WhenServiceThrowsInstanceNotFoundException()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        US019CollectionOfPublicationsDTO selectedCollectionDTO =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+        when(selectedCollectionDTO.id()).thenReturn(collectionId);
+
+        InstanceNotFoundException expectedException =
+                new InstanceNotFoundException("Collection not found");
+
+        when(collectionService.makeCollectionPublic(collectionId))
+                .thenThrow(expectedException);
+
+        // Act
+        InstanceNotFoundException exception = assertThrows(
+                InstanceNotFoundException.class,
+                () -> controller.makeCollectionPublic(selectedCollectionDTO)
+        );
+
+        // Assert
+        assertEquals("Collection not found", exception.getMessage());
+    }
+
+    // =============================================================================
+// ---------------------- SHARE COLLECTION UNTIL -------------------------------
+// =============================================================================
+
+    @Test
+    void shareCollectionUntil_ShouldReturnTrue_WhenServiceReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+        CollectionOfPublicationsId selectedCollectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
+
+        when(collectionService.makeCollectionPublicUntil(
+                selectedCollectionId,
+                publicUntil
+        )).thenReturn(true);
+
+        // Act
+        boolean result = controller.shareCollectionUntil(
+                selectedCollectionDto,
+                publicUntil
+        );
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shareCollectionUntil_ShouldReturnFalse_WhenServiceReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+        CollectionOfPublicationsId selectedCollectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
+
+        when(collectionService.makeCollectionPublicUntil(
+                selectedCollectionId,
+                publicUntil
+        )).thenReturn(false);
+
+        // Act
+        boolean result = controller.shareCollectionUntil(
+                selectedCollectionDto,
+                publicUntil
+        );
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shareCollectionUntil_ShouldThrowException_WhenSelectedCollectionDtoIsNull() {
+
+        // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto = null;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        // Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
+        );
+
+        // Assert
+        assertEquals("selected collection Id cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void shareCollectionUntil_ShouldThrowException_WhenPublicUntilIsNull() {
+
+        // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+
+        // Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> controller.shareCollectionUntil(selectedCollectionDto, null)
+        );
+
+        // Assert
+        assertEquals("public until date time cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void shareCollectionUntil_ShouldThrowInstanceNotFoundException_WhenServiceThrows()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        US019CollectionOfPublicationsDTO selectedCollectionDto =
+                mock(US019CollectionOfPublicationsDTO.class);
+
+        CollectionOfPublicationsId selectedCollectionId =
+                mock(CollectionOfPublicationsId.class);
+
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
+
+        when(collectionService.makeCollectionPublicUntil(
+                selectedCollectionId,
+                publicUntil
+        )).thenThrow(new InstanceNotFoundException("Collection not found"));
+
+        // Act
+        InstanceNotFoundException exception = assertThrows(
+                InstanceNotFoundException.class,
+                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
+        );
+
+        // Assert
+        assertEquals("Collection not found", exception.getMessage());
+    }
+
+
+
 }

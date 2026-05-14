@@ -7,6 +7,8 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
@@ -33,9 +35,9 @@ import static org.mockito.Mockito.mock;
  */
 class CollectionOfPublicationsTest {
 
-
-    // ============================== US017 ==============================
-
+    // ====================================================
+    // ------------- Constructor Tests --------------------
+    // ====================================================
     @Test
     void shouldThrowExceptionWhenCollectionNameIsNull() {
         // Arrange
@@ -93,11 +95,8 @@ class CollectionOfPublicationsTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreDouble, result.getCollectionGenre());
         assertEquals(userDouble, result.getOwnerId());
-        assertTrue(result.isPrivate());
+        assertTrue(result.getIsPrivate());
     }
-
-    // ============================== end US017 ==============================
-
 
     @Test
     void shouldInitializeValidInstanceWithId() {
@@ -107,10 +106,11 @@ class CollectionOfPublicationsTest {
         GenreId genreDouble = mock(GenreId.class);
         UserId userDouble = mock(UserId.class);
         boolean isPrivate = true;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         // Act
         CollectionOfPublications result =
-                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble, isPrivate);
+                new CollectionOfPublications(collectionIdDouble, name, genreDouble, userDouble, isPrivate, publicUntil);
 
         // Assert
         assertNotNull(result);
@@ -130,6 +130,237 @@ class CollectionOfPublicationsTest {
         assertNotNull(result.id());
     }
 
+    // ========================================================
+    // ------------- MakePublicUntil Tests --------------------
+    // ========================================================
+    @Test
+    void makePublicUntil_ShouldThrowException_WhenPublicUntilIsNull() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> collection.makePublicUntil(null)
+        );
+
+        // Assert
+        assertEquals("Public until date cannot be null.", exception.getMessage());
+    }
+
+    @Test
+    void makePublicUntil_ShouldThrowException_WhenPublicUntilIsInThePast() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now().minusDays(1);
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> collection.makePublicUntil(publicUntil)
+        );
+
+        // Assert
+        assertEquals("Public until date must be in the future.", exception.getMessage());
+    }
+
+    @Test
+    void makePublicUntil_ShouldThrowException_WhenPublicUntilIsNow() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now();
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> collection.makePublicUntil(publicUntil)
+        );
+
+        // Assert
+        assertEquals("Public until date must be in the future.", exception.getMessage());
+    }
+
+    @Test
+    void makePublicUntil_ShouldMakeCollectionPublicAndReturnTrue_WhenDateIsValid() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(7);
+
+        // Act
+        boolean result = collection.makePublicUntil(publicUntil);
+
+        // Assert
+        assertTrue(result);
+        assertFalse(collection.getIsPrivate());
+        assertEquals(publicUntil, collection.getPublicUntil());
+    }
+
+    @Test
+    void makePublicUntil_ShouldReturnFalse_WhenCollectionIsAlreadyPublicUntilSameDate() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(7);
+
+        collection.makePublicUntil(publicUntil);
+
+        // Act
+        boolean result = collection.makePublicUntil(publicUntil);
+
+        // Assert
+        assertFalse(result);
+        assertFalse(collection.getIsPrivate());
+        assertEquals(publicUntil, collection.getPublicUntil());
+    }
+
+    @Test
+    void makePublicUntil_ShouldReturnTrue_WhenCollectionIsAlreadyPublicButUntilDifferentDate() {
+        // Arrange
+        CollectionOfPublications collection = createValidCollection();
+
+        LocalDateTime firstPublicUntil = LocalDateTime.now().plusDays(7);
+        LocalDateTime secondPublicUntil = LocalDateTime.now().plusDays(14);
+
+        collection.makePublicUntil(firstPublicUntil);
+
+        // Act
+        boolean result = collection.makePublicUntil(secondPublicUntil);
+
+        // Assert
+        assertTrue(result);
+        assertFalse(collection.getIsPrivate());
+        assertEquals(secondPublicUntil, collection.getPublicUntil());
+    }
+
+
+
+
+
+
+    // ====================================================
+    // ------------- MakePublic Tests --------------------
+    // ====================================================
+
+    @Test
+    void makePublic_ShouldReturnTrue_AfterMakingCollectionPublic() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreId genreId = mock(GenreId.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(name, genreId, userId);
+
+        // Act
+        boolean result = collection.makePublic();
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void makePublicShouldReturnFalse_ifCollectionIsAlreadyPublic() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreId genreId = mock(GenreId.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(name, genreId, userId);
+        collection.makePublic();
+
+        // Act
+        boolean result = collection.makePublic();
+
+        // Assert
+        assertFalse(result);
+    }
+
+    // ====================================================
+    // ------------- MakePrivate Tests --------------------
+    // ====================================================
+
+    @Test
+    void makePrivate_ShouldReturnFalse_ifCollectionIsAlreadyPrivate() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreId genreId = mock(GenreId.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(name, genreId, userId);
+
+        // Act
+        boolean result = collection.makePrivate();
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void makePrivateShouldReturnTrue_afterMakeCollectionPrivate() {
+
+        // Arrange
+        String name = "Works by Arthur C. Clarke";
+        GenreId genreId = mock(GenreId.class);
+        UserId userId = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications(name, genreId, userId);
+        collection.makePublic();
+
+        // Act
+        boolean result = collection.makePrivate();
+
+        // Assert
+        assertTrue(result);
+    }
+
+    // ====================================================
+    // ------------- MakePublic Tests --------------------
+    // ====================================================
+
+    @Test
+    void isPrivate_shouldReturnTrue_whenCollectionIsPrivate() {
+        // arrange
+        GenreId genre = mock(GenreId.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collection
+                = new CollectionOfPublications("Cool books", genre, user);
+
+        collection.makePrivate();
+
+        // act
+        boolean result = collection.getIsPrivate();
+
+        // assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isPrivate_shouldReturnFalse_whenCollectionIsPublic() {
+        // arrange
+        GenreId genre = mock(GenreId.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collection
+                = new CollectionOfPublications("Cool books", genre, user);
+
+        collection.makePublic();
+
+        // act
+        boolean result = collection.getIsPrivate();
+
+        // assert
+        assertFalse(result);
+    }
+
+    // ====================================================
+    // ------------- Equals Tests --------------------
+    // ====================================================
     @Test
     void equals_shouldReturnTrueWhenSameInstance() {
 
@@ -209,6 +440,27 @@ class CollectionOfPublicationsTest {
     }
 
     @Test
+    void equalsShouldReturnFalseWhenIdsDiffer() {
+
+        //Assert
+        GenreId genre = mock(GenreId.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collectionLegolas =
+                new CollectionOfPublications("A", genre, user);
+
+        CollectionOfPublications collectionGimli =
+                new CollectionOfPublications("A", genre, user);
+
+        //Act + assert
+        assertFalse(collectionLegolas.equals(collectionGimli));
+    }
+
+    // ====================================================
+    // ---------------- HashCode Tests --------------------
+    // ====================================================
+
+    @Test
     void hashCodeShouldMatchWhenIdsAreEqual() throws Exception {
 
         //Arrange
@@ -227,75 +479,6 @@ class CollectionOfPublicationsTest {
 
         //Assert
         assertEquals(collectionMerry.hashCode(), collectionPippin.hashCode());
-    }
-
-    @Test
-    void sameAsShouldReturnTrueWhenAllAttributesAreEqual() {
-
-        //Arrange
-        GenreId genre1 = mock(GenreId.class);
-        UserId user1 = mock(UserId.class);
-
-        CollectionOfPublications collectionGrace =
-                new CollectionOfPublications("Collection, I am", genre1, user1);
-
-        CollectionOfPublications collectionRocky =
-                new CollectionOfPublications("Collection, I am", genre1, user1);
-
-        //Act + assert
-        assertTrue(collectionGrace.sameAs(collectionRocky));
-    }
-
-    @Test
-    void equalsShouldReturnFalseWhenIdsDiffer() {
-
-        //Assert
-        GenreId genre = mock(GenreId.class);
-        UserId user = mock(UserId.class);
-
-        CollectionOfPublications collectionLegolas =
-                new CollectionOfPublications("A", genre, user);
-
-        CollectionOfPublications collectionGimli =
-                new CollectionOfPublications("A", genre, user);
-
-        //Act + assert
-        assertFalse(collectionLegolas.equals(collectionGimli));
-    }
-
-    @Test
-    void sameAsShouldReturnFalseWhenDifferentName() {
-
-        //Arrange
-        GenreId genre1 = mock(GenreId.class);
-        UserId user1 = mock(UserId.class);
-
-        CollectionOfPublications collectionDante =
-                new CollectionOfPublications("I am here", genre1, user1);
-
-        CollectionOfPublications collectionVergil =
-                new CollectionOfPublications("I am there", genre1, user1);
-
-        //Act + assert
-        assertFalse(collectionDante.sameAs(collectionVergil));
-    }
-
-    @Test
-    void sameAsShouldReturnFalseWhenDifferentGenre() {
-
-        //Arrange
-        GenreId genre1 = mock(GenreId.class);
-        GenreId genre2 = mock(GenreId.class);
-        UserId user1 = mock(UserId.class);
-
-        CollectionOfPublications collectionFrodo =
-                new CollectionOfPublications("Really Cool Books", genre1, user1);
-
-        CollectionOfPublications collectionAragorn =
-                new CollectionOfPublications("Really Cool Books", genre2, user1);
-
-        //Act + assert
-        assertFalse(collectionFrodo.sameAs(collectionAragorn));
     }
 
     @Test
@@ -344,22 +527,62 @@ class CollectionOfPublicationsTest {
         assertNotEquals(collectionRohan.hashCode(), collectionShire.hashCode());
     }
 
+
+    // ====================================================
+    // ----------------- SameAs Tests --------------------
+    // ====================================================
     @Test
-    void isPrivateShouldReturnFalseAfterMakingCollectionPublic() {
+    void sameAsShouldReturnTrueWhenAllAttributesAreEqual() {
 
-        // Arrange
-        String name = "Works by Arthur C. Clarke";
-        GenreId genreId = mock(GenreId.class);
-        UserId userId = mock(UserId.class);
+        //Arrange
+        GenreId genre1 = mock(GenreId.class);
+        UserId user1 = mock(UserId.class);
 
-        CollectionOfPublications result =
-                new CollectionOfPublications(name, genreId, userId);
+        CollectionOfPublications collectionGrace =
+                new CollectionOfPublications("Collection, I am", genre1, user1);
 
-        // Act
-        result.set_isPrivate();
+        CollectionOfPublications collectionRocky =
+                new CollectionOfPublications("Collection, I am", genre1, user1);
 
-        // Assert
-        assertFalse(result.isPrivate());
+        //Act + assert
+        assertTrue(collectionGrace.sameAs(collectionRocky));
+    }
+
+
+
+    @Test
+    void sameAsShouldReturnFalseWhenDifferentName() {
+
+        //Arrange
+        GenreId genre1 = mock(GenreId.class);
+        UserId user1 = mock(UserId.class);
+
+        CollectionOfPublications collectionDante =
+                new CollectionOfPublications("I am here", genre1, user1);
+
+        CollectionOfPublications collectionVergil =
+                new CollectionOfPublications("I am there", genre1, user1);
+
+        //Act + assert
+        assertFalse(collectionDante.sameAs(collectionVergil));
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenDifferentGenre() {
+
+        //Arrange
+        GenreId genre1 = mock(GenreId.class);
+        GenreId genre2 = mock(GenreId.class);
+        UserId user1 = mock(UserId.class);
+
+        CollectionOfPublications collectionFrodo =
+                new CollectionOfPublications("Really Cool Books", genre1, user1);
+
+        CollectionOfPublications collectionAragorn =
+                new CollectionOfPublications("Really Cool Books", genre2, user1);
+
+        //Act + assert
+        assertFalse(collectionFrodo.sameAs(collectionAragorn));
     }
 
     @Test
@@ -382,4 +605,14 @@ class CollectionOfPublicationsTest {
         // Assert
         assertFalse(result);
     }
+
+    private CollectionOfPublications createValidCollection() {
+        return new CollectionOfPublications(
+                "Collection name",
+                mock(GenreId.class),
+                mock(UserId.class)
+        );
+    }
+
+
 }

@@ -1,0 +1,178 @@
+@startuml
+
+hide footbox
+autonumber
+
+title "Make Collection Public"
+
+participant ":Controller" as Controller
+
+participant ":CollectionOfPublications\nService" as service
+participant ":ICollectionOfPublication\nRepository" as CollectionRepository
+participant ":ICollectionOfPublication\nJPARepository" as collectionRepositoryJPA
+
+participant ":CollectionOfPublications\nAssembler" as collectionAssembler
+
+participant "updatedDBCollectionDM\n:CollectionOfPublicationsDM" as updatedDBCollectionDM
+
+participant "selectedCollectionDomain\n:CollectionOfPublications" as selectedCollectionDomain
+
+participant "collectionDMtoUpdate\n:CollectionOfPublicationsDM" as collectionDMtoUpdate
+
+participant ":CollectionOfPublications\nFactory" as collectionsFactory
+
+database DataBase as db
+
+participant "updatedCollection\n:CollectionOfPublications" as updatedCollection
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[Main-diagram-To-publicly-share-a-list.puml Return to Main Diagram]]
+end note
+
+Controller -> service : makeCollectionPublicUntil(collectionId, publicUntil)
+activate service
+
+' ------------------------------------------------------------
+' -----------  FIND COLLECTION BY ID -------------------------
+' ------------------------------------------------------------
+
+service -> CollectionRepository : findById(collectionId)
+activate CollectionRepository
+
+ref over service, CollectionRepository
+[[4.Find-collection-by-id.puml Find collection by id]]
+end ref
+
+CollectionRepository --> service : selectedCollectionDomain
+deactivate CollectionRepository
+
+' ------------------------------------------------------------
+' -----------  MAKE COLLECTION PUBLIC ------------------------
+' ------------------------------------------------------------
+
+service -> selectedCollectionDomain : makePublicUntil(publicUntil)
+activate selectedCollectionDomain
+selectedCollectionDomain -> selectedCollectionDomain : isPrivate = false
+selectedCollectionDomain -> selectedCollectionDomain : publicUntil = publicUntil
+selectedCollectionDomain --> service : true
+deactivate selectedCollectionDomain
+
+' ------------------------------------------------------------
+' -----------  UPDATE PUBLIC COLLECTION ----------------------
+' ------------------------------------------------------------
+
+
+'--------------- CONVERT TO DM ------------------------------
+service -> CollectionRepository : update (selectedCollectionDomain)
+activate CollectionRepository
+
+CollectionRepository -> collectionAssembler : toDM (selectedCollectionDomain)
+activate collectionAssembler
+
+collectionAssembler -> selectedCollectionDomain : getId()
+activate selectedCollectionDomain
+selectedCollectionDomain --> collectionAssembler : id
+deactivate selectedCollectionDomain
+
+collectionAssembler -> selectedCollectionDomain : getCollectionName()
+activate selectedCollectionDomain
+selectedCollectionDomain --> collectionAssembler : collectionName
+deactivate selectedCollectionDomain
+
+collectionAssembler -> selectedCollectionDomain : getGenreId()
+activate selectedCollectionDomain
+selectedCollectionDomain --> collectionAssembler : genreId
+deactivate selectedCollectionDomain
+
+collectionAssembler -> selectedCollectionDomain : getUserId()
+activate selectedCollectionDomain
+selectedCollectionDomain --> collectionAssembler : userId
+deactivate selectedCollectionDomain
+
+collectionAssembler -> selectedCollectionDomain : get_isPrivate()
+activate selectedCollectionDomain
+selectedCollectionDomain --> collectionAssembler : isPrivate
+deactivate selectedCollectionDomain
+
+collectionAssembler -> selectedCollectionDomain : getPublicUntil()
+activate selectedCollectionDomain
+selectedCollectionDomain --> collectionAssembler : publicUntil
+deactivate selectedCollectionDomain
+
+collectionAssembler --> collectionDMtoUpdate** : <<create>>
+
+collectionAssembler --> CollectionRepository : collectionDMtoUpdate
+deactivate collectionAssembler
+
+' ---------------------- UPDATE -------------------------------
+
+CollectionRepository -> collectionRepositoryJPA : update(collectionDMtoUpdate)
+activate collectionRepositoryJPA
+collectionRepositoryJPA -> db : query update collection
+activate db
+db --> collectionRepositoryJPA : data updated collection
+deactivate db
+
+collectionRepositoryJPA --> updatedDBCollectionDM ** : <<create>>
+
+collectionRepositoryJPA --> CollectionRepository : updatedDBCollectionDM
+deactivate collectionRepositoryJPA
+
+
+CollectionRepository -> collectionAssembler : toDomain(updatedCollectionDM)
+activate collectionAssembler
+
+collectionAssembler -> updatedDBCollectionDM : getId()
+activate updatedDBCollectionDM
+updatedDBCollectionDM --> collectionAssembler : id
+deactivate updatedDBCollectionDM
+
+collectionAssembler -> updatedDBCollectionDM : getCollectionName()
+activate updatedDBCollectionDM
+updatedDBCollectionDM --> collectionAssembler : collectionName
+deactivate updatedDBCollectionDM
+
+collectionAssembler -> updatedDBCollectionDM : getGenreId()
+activate updatedDBCollectionDM
+updatedDBCollectionDM --> collectionAssembler : genreId
+deactivate updatedDBCollectionDM
+
+collectionAssembler -> updatedDBCollectionDM : getUserId()
+activate updatedDBCollectionDM
+updatedDBCollectionDM --> collectionAssembler : userId
+deactivate updatedDBCollectionDM
+
+collectionAssembler -> updatedDBCollectionDM : get_isPrivate()
+activate updatedDBCollectionDM
+updatedDBCollectionDM --> collectionAssembler : isPrivate
+deactivate updatedDBCollectionDM
+
+collectionAssembler -> updatedDBCollectionDM : getPublicUntil()
+activate updatedDBCollectionDM
+updatedDBCollectionDM --> collectionAssembler : publicUntil
+deactivate updatedDBCollectionDM
+
+collectionAssembler -> collectionsFactory : create(id, collectionName, genreId, userId, isPrivate, publicUntil)
+activate collectionsFactory
+collectionsFactory -->> updatedCollection** : <<create>>
+collectionsFactory --> collectionAssembler : updatedCollection
+deactivate collectionsFactory
+
+collectionAssembler --> CollectionRepository : updatedCollection
+deactivate collectionAssembler
+
+CollectionRepository --> service : updatedCollection
+deactivate CollectionRepository
+
+service --> Controller : true
+deactivate service
+
+@enduml
