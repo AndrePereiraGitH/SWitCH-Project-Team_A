@@ -89,10 +89,11 @@ rectangle Database {
 GenreRepositoryJpaImpl ..|> IGenreRepository : <<implements>>
 GenreRepositoryJpaImpl "1" ..> "1" IGenreRepositoryJpa : uses
 GenreRepositoryJpaImpl "1" ..> "1" GenreAssembler : uses
-IGenreRepositoryJpa --|> JpaRepository : extends
-GenreAssembler "1" ..> "1" GenreFactory : uses
 IGenreRepositoryJpa "1" ..> "0..*" GenreDM : returns
 IGenreRepositoryJpa "1" ..> "1" Database : queries
+GenreAssembler "1" ..> "1" GenreFactory : uses
+GenreAssembler "1" ..> "1" GenreDM : reads
+GenreAssembler "1" ..> "1" Genre : creates
 
 ' _____________________
 ' DEPENDENCIES

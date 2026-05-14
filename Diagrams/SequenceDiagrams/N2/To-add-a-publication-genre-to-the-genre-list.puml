@@ -70,8 +70,10 @@ else [genre does NOT exist - Optional.empty()]
     activate JpaRepo
     JpaRepo -> DB : INSERT INTO genres ...
     activate DB
-    DB --> JpaRepo : savedDM
+    DB --> JpaRepo : data
     deactivate DB
+    create "savedDM:GenreDM" as SavedDM
+    JpaRepo -->> SavedDM : <<create>>
     JpaRepo --> Repo : savedDM
     deactivate JpaRepo
 
