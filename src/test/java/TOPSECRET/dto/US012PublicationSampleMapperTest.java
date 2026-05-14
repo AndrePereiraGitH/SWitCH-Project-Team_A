@@ -105,7 +105,7 @@ class US012PublicationSampleMapperTest {
     @Test
     void toDTO_shouldThrowException_whenBibliographicalDataNotFound() {
         // Arrange
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(bdRepo.findById(bdId)).thenReturn(Optional.empty());
@@ -120,10 +120,10 @@ class US012PublicationSampleMapperTest {
         String expectedTitle = "Title1";
         List<String> expectedAuthors = List.of("Author1");
 
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         BibliographicalData bd = createMockBibliographicalData(expectedTitle, expectedAuthors);
 
-        EditionID editionId = mock(EditionID.class);
+        EditionId editionId = mock(EditionId.class);
         PublicationSample publication = mock(PublicationSample.class);
 
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
@@ -138,14 +138,14 @@ class US012PublicationSampleMapperTest {
     @Test
     void toDTO_shouldThrowException_whenAuthorNotFound() {
         // Arrange
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         AuthorId authorId = mock(AuthorId.class);
 
         BibliographicalData bd = mock(BibliographicalData.class);
         when(bd.getTitle()).thenReturn("Title1");
         when(bd.getAuthors()).thenReturn(List.of(authorId));
 
-        EditionID editionId = mock(EditionID.class);
+        EditionId editionId = mock(EditionId.class);
         Edition edition = createMockEdition("12345678910", "Book");
 
         PublicationSample publication = mock(PublicationSample.class);
@@ -205,8 +205,8 @@ class US012PublicationSampleMapperTest {
     // -------------------------------------------------------------------------
 
     private PublicationSample createMockPublicationSample(String title, List<String> authorNames, String code, String pubType) {
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
-        EditionID editionId = mock(EditionID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        EditionId editionId = mock(EditionId.class);
 
         BibliographicalData bd = createMockBibliographicalData(title, authorNames);
         Edition edition = createMockEdition(code, pubType);

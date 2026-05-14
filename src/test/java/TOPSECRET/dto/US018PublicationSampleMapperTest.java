@@ -3,7 +3,7 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class US018PublicationSampleMapperTest {
 
         PublicationSample publication = mock(PublicationSample.class);
         PublicationSampleId id = mock(PublicationSampleId.class);
-        BibliographicalDataID bId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bId = mock(BibliographicalDataId.class);
         BibliographicalData data = mock(BibliographicalData.class);
 
         when(publication.id()).thenReturn(id);
@@ -51,7 +51,7 @@ class US018PublicationSampleMapperTest {
 
         PublicationSample publication = mock(PublicationSample.class);
         PublicationSampleId id = mock(PublicationSampleId.class);
-        BibliographicalDataID bId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bId = mock(BibliographicalDataId.class);
         BibliographicalData data = mock(BibliographicalData.class);
 
         when(publication.id()).thenReturn(id);
@@ -127,8 +127,8 @@ class US018PublicationSampleMapperTest {
         PublicationSample p1 = mock(PublicationSample.class);
         PublicationSample p2 = mock(PublicationSample.class);
 
-        BibliographicalDataID b1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID b2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId b1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId b2 = mock(BibliographicalDataId.class);
 
         BibliographicalData d1 = mock(BibliographicalData.class);
         BibliographicalData d2 = mock(BibliographicalData.class);
@@ -163,7 +163,7 @@ class US018PublicationSampleMapperTest {
         US018PublicationSampleMapper mapper = new US018PublicationSampleMapper(repo);
 
         PublicationSample publication = mock(PublicationSample.class);
-        BibliographicalDataID bId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bId = mock(BibliographicalDataId.class);
 
         when(publication.getBibliographicalDataID()).thenReturn(bId);
         when(repo.findById(bId)).thenReturn(Optional.empty());

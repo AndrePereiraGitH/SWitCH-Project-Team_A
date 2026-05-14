@@ -1,6 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.persistence.repositoryjpa.datamodel.EditionDM;
@@ -28,7 +28,7 @@ import java.util.List;
  * domain objects is handled by the assembler.
  * </p>
  */
-public interface IEditionRepositoryJpa extends JpaRepository<EditionDM, EditionID> {
+public interface IEditionRepositoryJpa extends JpaRepository<EditionDM, EditionId> {
 
     /**
      * Finds all editions with the given publication type.

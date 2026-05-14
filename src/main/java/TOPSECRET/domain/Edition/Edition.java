@@ -20,7 +20,7 @@ import java.util.UUID;
  * This entity references other aggregates only by their identifiers,
  * following Domain-Driven Design principles.
  */
-public class Edition implements AggregateRoot<EditionID> {
+public class Edition implements AggregateRoot<EditionId> {
 
     /** Constant representing a book media format. */
     public static final String BOOK = "Book";
@@ -29,7 +29,7 @@ public class Edition implements AggregateRoot<EditionID> {
     public static final String MAGAZINE = "Magazine";
 
     /** Unique identifier of the edition. */
-    private final EditionID _editionID;
+    private final EditionId _editionId;
 
     /** Edition number (e.g., "1st Edition"). */
     private final String _editionNumber;
@@ -117,7 +117,7 @@ public class Edition implements AggregateRoot<EditionID> {
 
         validateEditionCode(code, mediaFormat, editionDate);
 
-        this._editionID = new EditionID(UUID.randomUUID().toString());
+        this._editionId = new EditionId(UUID.randomUUID().toString());
         this._editionNumber = editionNumber;
         this._code = code;
         this._physicalAttributes = physicalAttributes;
@@ -152,7 +152,7 @@ public class Edition implements AggregateRoot<EditionID> {
      * @throws IllegalArgumentException if any argument is invalid
      */
     protected Edition(
-            EditionID editionID,
+            EditionId editionID,
             String editionNumber,
             Code code,
             PhysicalAttributes physicalAttributes,
@@ -190,7 +190,7 @@ public class Edition implements AggregateRoot<EditionID> {
 
         validateEditionCode(code, mediaFormat, editionDate);
 
-        this._editionID = editionID;
+        this._editionId = editionID;
         this._editionNumber = editionNumber;
         this._code = code;
         this._physicalAttributes = physicalAttributes;
@@ -266,8 +266,8 @@ public class Edition implements AggregateRoot<EditionID> {
      * @return the edition ID
      */
     @Override
-    public EditionID id(){
-        return _editionID;
+    public EditionId id(){
+        return _editionId;
     }
 
 
@@ -281,7 +281,7 @@ public class Edition implements AggregateRoot<EditionID> {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         Edition that = (Edition) o;
-        return Objects.equals(_editionID, that._editionID);
+        return Objects.equals(_editionId, that._editionId);
     }
 
     /**

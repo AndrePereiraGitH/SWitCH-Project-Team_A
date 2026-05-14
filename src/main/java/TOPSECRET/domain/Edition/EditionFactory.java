@@ -78,7 +78,7 @@ public class EditionFactory {
      *
      * @return a reconstructed Edition instance
      */
-    public Edition create(EditionID editionID,
+    public Edition create(EditionId editionID,
                           String editionNumber,
                           Code code,
                           PhysicalAttributes physicalAttributes,

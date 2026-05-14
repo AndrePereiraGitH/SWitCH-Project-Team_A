@@ -1,12 +1,11 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -25,7 +24,7 @@ class US023BibliographicalDataDTOTest {
     @Test
     void constructor_shouldSetAllFields() {
         // Arrange
-        String expectedBDId = mock(BibliographicalDataID.class).toString();
+        String expectedBDId = mock(BibliographicalDataId.class).toString();
         String expectedTitle = "Os Maias";
         List<String> expectedAuthors = List.of("Eça de Queirós");
 
@@ -49,14 +48,14 @@ class US023BibliographicalDataDTOTest {
     void constructor_shouldThrowExceptionWhenTitleIsNull() {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new US023BibliographicalDataDTO(mock(BibliographicalDataID.class).toString(), null, List.of("Author1")));
+                new US023BibliographicalDataDTO(mock(BibliographicalDataId.class).toString(), null, List.of("Author1")));
     }
 
     @Test
     void constructor_shouldThrowExceptionWhenAuthorNameIsNull() {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new US023BibliographicalDataDTO(mock(BibliographicalDataID.class).toString(), "Title", null));
+                new US023BibliographicalDataDTO(mock(BibliographicalDataId.class).toString(), "Title", null));
     }
 
 
@@ -67,7 +66,7 @@ class US023BibliographicalDataDTOTest {
     @Test
     void equals_shouldReturnTrueWhenTwoDTOsHaveSameValues() {
         // Arrange
-        String bdIdDouble = mock(BibliographicalDataID.class).toString();
+        String bdIdDouble = mock(BibliographicalDataId.class).toString();
 
         // Act
         US023BibliographicalDataDTO dto1 =
@@ -83,9 +82,9 @@ class US023BibliographicalDataDTOTest {
     void equals_shouldReturnFalseWhenTwoDTOsHaveDifferentValues() {
         // Act
         US023BibliographicalDataDTO dto1 =
-                new US023BibliographicalDataDTO(mock(BibliographicalDataID.class).toString(), "Title1", List.of("Author1"));
+                new US023BibliographicalDataDTO(mock(BibliographicalDataId.class).toString(), "Title1", List.of("Author1"));
         US023BibliographicalDataDTO dto2 =
-                new US023BibliographicalDataDTO(mock(BibliographicalDataID.class).toString(), "Title2", List.of("Author1"));
+                new US023BibliographicalDataDTO(mock(BibliographicalDataId.class).toString(), "Title2", List.of("Author1"));
 
         // Assert
         assertNotEquals(dto1, dto2);
@@ -94,7 +93,7 @@ class US023BibliographicalDataDTOTest {
     @Test
     void hashCode_shouldBeEqualWhenTwoDTOsHaveSameValues() {
         // Arrange
-        String bdIdDouble = mock(BibliographicalDataID.class).toString();
+        String bdIdDouble = mock(BibliographicalDataId.class).toString();
 
         // Act
         US023BibliographicalDataDTO dto1 =
@@ -109,7 +108,7 @@ class US023BibliographicalDataDTOTest {
     @Test
     void toString_shouldContainAllFields() {
         // Arrange
-        String expectedBDId = mock(BibliographicalDataID.class).toString();
+        String expectedBDId = mock(BibliographicalDataId.class).toString();
         String expectedTitle = "Os Maias";
         List<String> expectedAuthors = List.of("Eça de Queirós");
 

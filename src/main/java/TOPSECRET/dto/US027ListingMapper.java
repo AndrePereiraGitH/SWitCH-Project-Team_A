@@ -8,7 +8,7 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 
 import javax.management.InstanceNotFoundException;
@@ -158,7 +158,7 @@ public class US027ListingMapper {
      */
     private BibliographicalData getBibliographicalData(PublicationSample pubSample) throws InstanceNotFoundException {
 
-        BibliographicalDataID bibDataId = pubSample.getBibliographicalDataID();
+        BibliographicalDataId bibDataId = pubSample.getBibliographicalDataID();
 
         BibliographicalData bibData = bibDataRepo.findById(bibDataId)
                 .orElseThrow(() ->

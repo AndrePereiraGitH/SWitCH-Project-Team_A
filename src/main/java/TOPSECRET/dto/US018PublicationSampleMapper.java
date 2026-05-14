@@ -3,11 +3,10 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Mapper responsible for converting {@link PublicationSample}
@@ -92,7 +91,7 @@ public class US018PublicationSampleMapper {
             throw new IllegalArgumentException("Publication cannot be null");
         }
 
-        BibliographicalDataID bibliographicalDataId =
+        BibliographicalDataId bibliographicalDataId =
                 publication.getBibliographicalDataID();
 
         BibliographicalData bibliographicalData = _bibliographicalRepo

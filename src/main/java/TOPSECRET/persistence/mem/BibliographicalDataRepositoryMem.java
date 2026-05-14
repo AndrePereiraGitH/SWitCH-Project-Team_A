@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -56,7 +56,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
      * {@inheritDoc}
      */
     @Override
-    public Optional<BibliographicalData> findById(BibliographicalDataID bibliographicalDataId){
+    public Optional<BibliographicalData> findById(BibliographicalDataId bibliographicalDataId){
 
         if(bibliographicalDataId == null){
             throw new NullPointerException("BibliographicalDataId must not be null");
@@ -76,7 +76,7 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
      * {@inheritDoc}
      */
     @Override
-    public Optional<BibliographicalDataID> findIdByTitle(String bdTitle){
+    public Optional<BibliographicalDataId> findIdByTitle(String bdTitle){
 
         if(bdTitle == null){
             throw new NullPointerException("Title must not be null");
@@ -98,13 +98,13 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
     }
 
     @Override
-    public List<BibliographicalDataID> findAllByGenreId(GenreId genreId){
+    public List<BibliographicalDataId> findAllByGenreId(GenreId genreId){
 
         if (genreId == null) {
             throw new IllegalArgumentException("genreId cannot be null");
         }
 
-        List<BibliographicalDataID> result = new ArrayList<>();
+        List<BibliographicalDataId> result = new ArrayList<>();
 
         for (BibliographicalData bd : _bdList) {
             if (bd.getGenres().contains(genreId)) {
@@ -120,13 +120,13 @@ public class BibliographicalDataRepositoryMem implements IBibliographicalDataRep
      * {@inheritDoc}
      */
     @Override
-    public List<BibliographicalDataID> findIdByAuthorId(AuthorId authorId) {
+    public List<BibliographicalDataId> findIdByAuthorId(AuthorId authorId) {
 
         if (authorId == null) {
             throw new IllegalArgumentException("authorId cannot be null.");
         }
 
-        List<BibliographicalDataID> bdsOfAuthor = _bdList.stream()
+        List<BibliographicalDataId> bdsOfAuthor = _bdList.stream()
                 .filter(bd -> bd.getAuthors().contains(authorId))
                 .map(BibliographicalData::id)
                 .toList();

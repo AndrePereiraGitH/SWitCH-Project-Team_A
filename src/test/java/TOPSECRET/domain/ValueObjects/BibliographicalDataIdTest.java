@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
- * Unit tests for the {@link BibliographicalDataID} value object.
+ * Unit tests for the {@link BibliographicalDataId} value object.
  *
  * <p>This test class verifies the correct behavior of the BibliographicalDataID,
  * including object creation, validation rules, equality logic, hash code consistency,
@@ -15,13 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>The tests ensure that the value object follows the rules of a DDD Value Object:
  * immutability, equality based on value, and validation of construction parameters.</p>
  */
-class BibliographicalDataIDTest {
+class BibliographicalDataIdTest {
 
 
     @Test
     void shouldCreateValidID() {
         //Arrange
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        BibliographicalDataId id = new BibliographicalDataId("1234");
 
         //Assert
         assertEquals("1234", id.getID());
@@ -31,7 +31,7 @@ class BibliographicalDataIDTest {
     void shouldThrowExceptionWhenIDIsNull() {
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new BibliographicalDataID(null);
+            new BibliographicalDataId(null);
         });
     }
 
@@ -39,21 +39,21 @@ class BibliographicalDataIDTest {
     void shouldThrowExceptionWhenIDIsBlank() {
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () -> {
-            new BibliographicalDataID("   ");
+            new BibliographicalDataId("   ");
         });
     }
 
     @Test
     void shouldNotBeEqualWhenObjectIsNull() {
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        BibliographicalDataId id = new BibliographicalDataId("1234");
         assertNotEquals(null, id);
     }
 
     @Test
     void shouldBeEqualWhenIDsAreSame() {
         //Arrange
-        BibliographicalDataID id1 = new BibliographicalDataID("1234");
-        BibliographicalDataID id2 = new BibliographicalDataID("1234");
+        BibliographicalDataId id1 = new BibliographicalDataId("1234");
+        BibliographicalDataId id2 = new BibliographicalDataId("1234");
 
         //Assert
         assertEquals(id1, id2);
@@ -62,8 +62,8 @@ class BibliographicalDataIDTest {
     @Test
     void shouldNotBeEqualWhenIDsAreDifferent() {
         //Arrange
-        BibliographicalDataID id1 = new BibliographicalDataID("1234");
-        BibliographicalDataID id2 = new BibliographicalDataID("5678");
+        BibliographicalDataId id1 = new BibliographicalDataId("1234");
+        BibliographicalDataId id2 = new BibliographicalDataId("5678");
 
         //Assert
         assertNotEquals(id1, id2);
@@ -72,7 +72,7 @@ class BibliographicalDataIDTest {
     @Test
     void shouldNotBeEqualToNull() {
         //Arrange
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        BibliographicalDataId id = new BibliographicalDataId("1234");
 
         //Assert
         assertNotEquals(null, id);
@@ -81,7 +81,7 @@ class BibliographicalDataIDTest {
     @Test
     void shouldNotBeEqualToDifferentClass() {
         //Arrange
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        BibliographicalDataId id = new BibliographicalDataId("1234");
         String other = "1234";
 
         //Assert
@@ -91,7 +91,7 @@ class BibliographicalDataIDTest {
     @Test
     void getterShouldReturnCorrectID() {
         //Arrange
-        BibliographicalDataID id = new BibliographicalDataID("1234");
+        BibliographicalDataId id = new BibliographicalDataId("1234");
 
         //Assert
         assertEquals("1234", id.getID());
@@ -100,8 +100,8 @@ class BibliographicalDataIDTest {
     @Test
     void hashCodeShouldBeEqualForSameID() {
         //Arrange
-        BibliographicalDataID id1 = new BibliographicalDataID("1234");
-        BibliographicalDataID id2 = new BibliographicalDataID("1234");
+        BibliographicalDataId id1 = new BibliographicalDataId("1234");
+        BibliographicalDataId id2 = new BibliographicalDataId("1234");
 
         //Assert
         assertEquals(id1.hashCode(), id2.hashCode());
@@ -110,8 +110,8 @@ class BibliographicalDataIDTest {
     @Test
     void hashCodeShouldNotBeEqualForDifferentID() {
         //Arrange
-        BibliographicalDataID id1 = new BibliographicalDataID("1234");
-        BibliographicalDataID id2 = new BibliographicalDataID("5678");
+        BibliographicalDataId id1 = new BibliographicalDataId("1234");
+        BibliographicalDataId id2 = new BibliographicalDataId("5678");
 
         //Assert
         assertNotEquals(id1.hashCode(), id2.hashCode());

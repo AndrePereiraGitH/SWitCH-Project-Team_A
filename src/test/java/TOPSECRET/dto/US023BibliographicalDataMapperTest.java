@@ -4,7 +4,7 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
@@ -56,7 +56,7 @@ class US023BibliographicalDataMapperTest {
     @Test
     void toDTO_ShouldConvertBibliographicalDataCorrectly() throws Exception {
         // Arrange
-        BibliographicalDataID expectedBDId = mock(BibliographicalDataID.class);
+        BibliographicalDataId expectedBDId = mock(BibliographicalDataId.class);
         String expectedTitle = "Title1";
         String expectedAuthor1 = "Author1";
         String expectedAuthor2 = "Author2";
@@ -109,7 +109,7 @@ class US023BibliographicalDataMapperTest {
         AuthorId missingId = mock(AuthorId.class);
 
         BibliographicalData bd = mock(BibliographicalData.class);
-        when(bd.id()).thenReturn(mock(BibliographicalDataID.class));
+        when(bd.id()).thenReturn(mock(BibliographicalDataId.class));
         when(bd.getTitle()).thenReturn("Some Book");
         when(bd.getAuthors()).thenReturn(List.of(missingId));
 
@@ -136,12 +136,12 @@ class US023BibliographicalDataMapperTest {
         when(authorRepo.findById(authorId)).thenReturn(Optional.of(author));
 
         BibliographicalData bd1 = mock(BibliographicalData.class);
-        when(bd1.id()).thenReturn(mock(BibliographicalDataID.class));
+        when(bd1.id()).thenReturn(mock(BibliographicalDataId.class));
         when(bd1.getTitle()).thenReturn("Book 1");
         when(bd1.getAuthors()).thenReturn(List.of(authorId));
 
         BibliographicalData bd2 = mock(BibliographicalData.class);
-        when(bd2.id()).thenReturn(mock(BibliographicalDataID.class));
+        when(bd2.id()).thenReturn(mock(BibliographicalDataId.class));
         when(bd2.getTitle()).thenReturn("Book 2");
         when(bd2.getAuthors()).thenReturn(List.of(authorId));
 

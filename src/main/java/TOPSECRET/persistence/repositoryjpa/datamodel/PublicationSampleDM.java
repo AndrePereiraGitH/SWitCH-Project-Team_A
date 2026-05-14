@@ -35,7 +35,7 @@ public class PublicationSampleDM {
 
     @Embedded
     @AttributeOverride(name = "bibliographicalDataID", column = @Column(name = "bibliographical_data_id"))
-    private BibliographicalDataID bdId;
+    private BibliographicalDataId bdId;
 
     @Embedded
     @AttributeOverride(name = "userId", column = @Column(name = "owner_id"))
@@ -43,7 +43,7 @@ public class PublicationSampleDM {
 
     @Embedded
     @AttributeOverride(name = "editionID", column = @Column(name = "edition_id"))
-    private EditionID editionId;
+    private EditionId editionId;
 
     @Embedded
     @AttributeOverride(name = "_id", column = @Column(name = "library_id"))
@@ -80,8 +80,8 @@ public class PublicationSampleDM {
      * @param condition                  the physical condition of the sample; must not be {@code null}
      * @throws NullPointerException if any mandatory parameter is {@code null}
      */
-    public PublicationSampleDM(PublicationSampleId pubSampleId, BibliographicalDataID bdId,
-                               UserId ownerId, EditionID editionId, LibraryId libraryId,
+    public PublicationSampleDM(PublicationSampleId pubSampleId, BibliographicalDataId bdId,
+                               UserId ownerId, EditionId editionId, LibraryId libraryId,
                                CollectionOfPublicationsId collectionOfPublicationsId,
                                PublicationStatus publicationStatus, Condition condition) {
 
