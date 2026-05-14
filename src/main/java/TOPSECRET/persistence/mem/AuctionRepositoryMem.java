@@ -8,6 +8,7 @@ import TOPSECRET.domain.ValueObjects.ListingId;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,30 +79,6 @@ public class AuctionRepositoryMem implements IAuctionRepository {
                 .findFirst();
     }
 
-    // This method seems similar to the following one, and the name isn't descriptive.
-    /**
-     * {@inheritDoc}
-     */
-//    @Override
-//    public List<Auction> getListOfItemsOnAuctionGivenGenre(List<ListingId> listingId) {
-//
-//        if (listingId == null) {
-//            throw new IllegalArgumentException("ListingId cannot be null");
-//        }
-//
-//        List<Auction> result = new ArrayList<>();
-//
-//        for(Auction auction : _auctionsList){
-//            if(listingId.contains(auction.getListingId())){
-//                result.add(auction);
-//            }
-//        }
-//
-//        return result;
-//    }
-
-
-
     /**
      * {@inheritDoc}
      */
@@ -115,5 +92,21 @@ public class AuctionRepositoryMem implements IAuctionRepository {
         return _auctionsList.stream()
                 .filter(auction -> listingIds.contains(auction.getListingId()))
                 .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Auction> findByListingIdInOrderByAuctionDeadlineAsc(List<ListingId> listingIds) {
+        if (listingIds == null) {
+            throw new IllegalArgumentException("List of listingIds cannot be null.");
+        }
+
+        return _auctionsList.stream()
+                .filter(auction -> listingIds.contains(auction.getListingId()))
+                .sorted(Comparator.comparing(Auction::getAuctionEndDateTime))
+                .toList();
+
     }
 }

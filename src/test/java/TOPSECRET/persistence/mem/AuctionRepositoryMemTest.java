@@ -277,62 +277,95 @@ class AuctionRepositoryMemTest {
         assertTrue(result.isEmpty());
     }
 
-//    @Test
-//    void getListOfItemsOnAuctionGivenGenre_shouldThrowException_whenListIsNull() {
-//        // Arrange
-//
-//        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
-//
-//        //Act & Assert
-//        assertThrows(IllegalArgumentException.class, () ->
-//                repo.getListOfItemsOnAuctionGivenGenre(null));
-//    }
-//
-//    @Test
-//    void getListOfItemsOnAuctionGivenGenre_shouldReturnEmptyList() {
-//        // Arrange
-//        IAuctionRepository repo = new AuctionRepositoryMem(auctionFactory);
-//        List<ListingId> listingIds = List.of(mock(ListingId.class));
-//
-//
-//        // Act
-//        List<Auction> result = repo.getListOfItemsOnAuctionGivenGenre(listingIds);
-//
-//        // Assert
-//        assertTrue(result.isEmpty());
-//    }
-//
-//    @Test
-//    void getListOfItemsOnAuctionGivenGenre_shouldReturnMatchingAuctions() throws Exception {
-//
-//        // Arrange
-//        AuctionFactory factory = mock(AuctionFactory.class);
-//        IAuctionRepository repo = new AuctionRepositoryMem(factory);
-//
-//        ListingId listingId = mock(ListingId.class);
-//
-//        Auction auction = mock(Auction.class);
-//        when(auction.getListingId()).thenReturn(listingId);
-//
-//        when(factory.create(any(), any(), any(), any(), any()))
-//                .thenReturn(auction);
-//
-//        repo.createAndAdd(
-//                listingId,
-//                LocalDateTime.now(),
-//                LocalDateTime.now().plusDays(1),
-//                mock(Price.class),
-//                mock(Price.class)
-//        );
-//
-//        // Act
-//        List<Auction> result =
-//                repo.getListOfItemsOnAuctionGivenGenre(List.of(listingId));
-//
-//        // Assert
-//        assertEquals(1, result.size());
-//        assertTrue(result.contains(auction));
-//    }
+    @Test
+    void shouldReturnAuctionsSortedAscendingByDeadline() throws InstanceAlreadyExistsException {
+
+        // Arrange
+        IAuctionRepository repo = new AuctionRepositoryMem();
+
+        ListingId listingId1Double = mock(ListingId.class);
+        ListingId listingId2Double = mock(ListingId.class);
+
+        List<ListingId> listingIds = List.of(listingId1Double, listingId2Double);
+
+        Auction auction1Double = mock(Auction.class);
+        Auction auction2Double = mock(Auction.class);
+
+        AuctionId auctionId1Double = mock(AuctionId.class);
+        AuctionId auctionId2Double = mock(AuctionId.class);
+        when(auction1Double.id()).thenReturn(auctionId1Double);
+        when(auction2Double.id()).thenReturn(auctionId2Double);
+
+        LocalDateTime earlierDate =
+                LocalDateTime.of(2025, 1, 1, 10, 0);
+
+        LocalDateTime laterDate =
+                LocalDateTime.of(2025, 2, 1, 10, 0);
+
+        when(auction1Double.getListingId()).thenReturn(listingId1Double);
+        when(auction2Double.getListingId()).thenReturn(listingId2Double);
+
+        when(auction1Double.getAuctionEndDateTime()).thenReturn(laterDate);
+        when(auction2Double.getAuctionEndDateTime()).thenReturn(earlierDate);
+
+        repo.save(auction1Double);
+        repo.save(auction2Double);
+
+        // Act
+        List<Auction> result =
+                repo.findByListingIdInOrderByAuctionDeadlineAsc(listingIds);
+
+        // Assert
+        assertEquals(2, result.size());
+
+        assertEquals(auction2Double, result.get(0));
+        assertEquals(auction1Double, result.get(1));
+
+        assertEquals(earlierDate, result.get(0).getAuctionEndDateTime());
+        assertEquals(laterDate, result.get(1).getAuctionEndDateTime());
+    }
+
+    @Test
+    void shouldReturnOnlyAuctionsMatchingListingIdsSortedByDeadline()
+            throws InstanceAlreadyExistsException {
+
+        // Arrange
+        IAuctionRepository repo = new AuctionRepositoryMem();
+
+        ListingId validListingIdDouble = mock(ListingId.class);
+        ListingId invalidListingIdDouble = mock(ListingId.class);
+
+        List<ListingId> listingIds = List.of(validListingIdDouble);
+
+        Auction validAuctionDouble = mock(Auction.class);
+        Auction invalidAuctionDouble = mock(Auction.class);
+
+        AuctionId validAuctionIdDouble = mock(AuctionId.class);
+        AuctionId invalidAuctionIdDouble = mock(AuctionId.class);
+
+        when(validAuctionDouble.id()).thenReturn(validAuctionIdDouble);
+        when(invalidAuctionDouble.id()).thenReturn(invalidAuctionIdDouble);
+
+        when(validAuctionDouble.getListingId()).thenReturn(validListingIdDouble);
+        when(invalidAuctionDouble.getListingId()).thenReturn(invalidListingIdDouble);
+
+        when(validAuctionDouble.getAuctionEndDateTime()).thenReturn(LocalDateTime.of(2025,1,1,10,0));
+        when(invalidAuctionDouble.getAuctionEndDateTime()).thenReturn(LocalDateTime.of(2024,1,1,10,0));
+
+        repo.save(validAuctionDouble);
+        repo.save(invalidAuctionDouble);
+
+        // Act
+        List<Auction> result = repo.findByListingIdInOrderByAuctionDeadlineAsc(listingIds);
+
+        // Assert
+        assertEquals(1, result.size());
+
+        assertTrue(result.contains(validAuctionDouble));
+        assertFalse(result.contains(invalidAuctionDouble));
+    }
+
+
 
 
     // -------------------------------------------------------------------------

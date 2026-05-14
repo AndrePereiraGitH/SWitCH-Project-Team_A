@@ -25,6 +25,9 @@ interface IUserRepositoryJPA {
     + findByUserName(username: String): Optional<UserDM>
 }
 
+class UserRepositoryJpaImpl {
+}
+
 class UserDM {
     + getId(): UserId
 }
@@ -41,6 +44,9 @@ interface IPublicationSampleRepository {
 
 interface IPublicationSampleRepositoryJpa {
     + findAllByOwnerId(userId: UserId): List<PublicationSampleDM>
+}
+
+class PublicationSampleRepositoryJpaImpl {
 }
 
 class PublicationSampleAssembler {
@@ -93,15 +99,17 @@ ToGetListOfPublicationsInLibraryController "1" ..> "1" IUserRepository : uses
 ToGetListOfPublicationsInLibraryController "1" ..> "1" IPublicationSampleRepository : uses
 ToGetListOfPublicationsInLibraryController "1" ..> "1" US012PublicationSampleMapper : uses
 
-IUserRepositoryJPA ..|> IUserRepository : implements
+UserRepositoryJpaImpl ..|> IUserRepository : implements
+UserRepositoryJpaImpl ..> IUserRepositoryJPA : uses
 IUserRepositoryJPA "1" ..> "0..1" UserDM : returns
 IUserRepositoryJPA "1" ..> "1" Database : queries
 
 IUserRepository "1" ..> "0..1" UserDM : reads
 IUserRepository "1" ..> "0..1" UserId : returns
 
-IPublicationSampleRepositoryJpa ..|> IPublicationSampleRepository : implements
-IPublicationSampleRepository "1" ..> "1" PublicationSampleAssembler : uses
+PublicationSampleRepositoryJpaImpl ..|> IPublicationSampleRepository : implements
+PublicationSampleRepositoryJpaImpl ...> IPublicationSampleRepositoryJpa : uses
+PublicationSampleRepositoryJpaImpl "1" ..> "1" PublicationSampleAssembler : uses
 IPublicationSampleRepository "1" ..> "0..*" PublicationSample : filters
 
 IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns
