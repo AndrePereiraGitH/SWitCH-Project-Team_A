@@ -73,21 +73,21 @@ class UserId <<ValueObject>> {
 }
 
 ' Controller
-ToRegisterUserController "1" ..> "1" UserService : uses
+ToRegisterUserController "1" --> "1" UserService : uses
 
 ' Service
-UserService "1" ..> "1" IUserRepository : uses
-UserService "1" ..> "1" UserFactory : uses
+UserService "1" --> "1" IUserRepository : uses
+UserService "1" --> "1" UserFactory : uses
 
 ' Repository implementations
 UserRepositoryMem "1" ..|> "1" IUserRepository : implements
 UserRepositoryJPAImpl "1" ..|> "1" IUserRepository : implements
 UserRepositoryJPAImpl "1" ..> "1" IUserRepositoryJPA : delegates
-UserRepositoryJPAImpl "1" ..> "1" UserAssembler : uses
+UserRepositoryJPAImpl "1" --> "1" UserAssembler : uses
 IUserRepositoryJPA "1" --|> "1" JpaRepository : extends
 
 ' Assembler
-UserAssembler "1" ..> "1" UserFactory : uses
+UserAssembler "1" --> "1" UserFactory : uses
 UserAssembler "1" ..> "*" UserDM : creates
 UserAssembler "1" ..> "*" User : creates
 
