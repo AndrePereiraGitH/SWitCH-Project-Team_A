@@ -4,6 +4,7 @@ import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,7 @@ public class Listing implements AggregateRoot<ListingId> {
     private final String _shortDescription;
     private final UserId _sellerId;
     private final List<Picture> _pictures;
+    private final LocalDate _publicationDate;
 
     // ============================================================
     // ============== CONSTRUCTOR =================================
@@ -45,15 +47,12 @@ public class Listing implements AggregateRoot<ListingId> {
      *
      * <p>This constructor is protected and intended for use by
      * {@link ListingFactory#create(String, List, SaleType, Price, String, UserId, List)} only.
-     * A new {@link ListingId} is generated automatically via {@link UUID#randomUUID()}.
-     *
-     * <p>Delegates field assignment to
-     * {@link #Listing(ListingId, String, List, SaleType, Price, String, UserId, List)}
-     * after validating all parameters.
+     * A new {@link ListingId} is generated automatically via {@link UUID#randomUUID()}, and the
+     * publication date is automatically set to the current date.
      *
      * @param listingTitle     the title of the listing; must be between 5 and 100 characters
      * @param itemsId          the list of publication sample IDs; must not be {@code null} or empty
-     * @param saleType         the type of sale (e.g. direct sale, auction)
+     * @param saleType         the type of sale (e.g. direct sale, auction); must not be {@code null}
      * @param price            the price of the listing; must not be {@code null}
      * @param shortDescription a brief description of the listing; must be between 10 and 100 characters
      * @param sellerId         the ID of the seller; must not be {@code null}
@@ -64,9 +63,15 @@ public class Listing implements AggregateRoot<ListingId> {
      * @throws IllegalArgumentException if {@code price} is {@code null}
      * @throws IllegalArgumentException if {@code sellerId} is {@code null}
      * @throws IllegalArgumentException if {@code pictures} is {@code null}
+     * @throws NullPointerException     if {@code saleType} is {@code null}
      */
-    protected Listing(String listingTitle, List<PublicationSampleId> itemsId, SaleType saleType,
-                      Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
+    protected Listing(String listingTitle,
+                      List<PublicationSampleId> itemsId,
+                      SaleType saleType,
+                      Price price,
+                      String shortDescription,
+                      UserId sellerId,
+                      List<Picture> pictures) {
 
         _listingId = new ListingId(UUID.randomUUID().toString());
         _listingTitle = validateTitle(listingTitle);
@@ -76,6 +81,8 @@ public class Listing implements AggregateRoot<ListingId> {
         _shortDescription = validateDescription(shortDescription);
         _sellerId = validateSellerId(sellerId);
         _pictures = List.copyOf(validatePictures(pictures));
+        _publicationDate = LocalDate.now();
+
     }
 
     /**
@@ -83,7 +90,7 @@ public class Listing implements AggregateRoot<ListingId> {
      * from persistence.
      *
      * <p>This constructor is protected and intended for use by the domain factory only,
-     * via {@link ListingFactory#create(ListingId, String, List, SaleType, Price, String, UserId, List)}.
+     * via {@link ListingFactory#create(ListingId, String, List, SaleType, Price, String, UserId, List, LocalDate)}.
      * Unlike the creation constructor, this does not generate a new identifier —
      * it uses the {@link ListingId} provided.
      *
@@ -98,10 +105,18 @@ public class Listing implements AggregateRoot<ListingId> {
      * @param shortDescription a brief description of the listing; must not be {@code null}
      * @param sellerId         the ID of the seller; must not be {@code null}
      * @param pictures         the list of pictures associated with the listing; must not be {@code null}
-     * @throws NullPointerException if any parameter is {@code null}
+     * @param publicationDate  the original publication date of the listing; must not be {@code null}
+     * @throws NullPointerException if {@code listingId}, {@code saleType}, or {@code publicationDate} are {@code null}
      */
-    protected Listing(ListingId listingId, String listingTitle, List<PublicationSampleId> itemsId, SaleType saleType,
-                      Price price, String shortDescription, UserId sellerId, List<Picture> pictures) {
+    protected Listing(ListingId listingId,
+                      String listingTitle,
+                      List<PublicationSampleId> itemsId,
+                      SaleType saleType,
+                      Price price,
+                      String shortDescription,
+                      UserId sellerId,
+                      List<Picture> pictures,
+                      LocalDate publicationDate) {
 
         _listingId = Objects.requireNonNull(listingId, "Listing ID cannot be null.");
         _listingTitle = validateTitle(listingTitle);
@@ -111,6 +126,7 @@ public class Listing implements AggregateRoot<ListingId> {
         _shortDescription = validateDescription(shortDescription);
         _sellerId = validateSellerId(sellerId);
         _pictures = List.copyOf(validatePictures(pictures));
+        _publicationDate = Objects.requireNonNull(publicationDate, "Publication date cannot be null.");
     }
 
     // ============================================================
@@ -192,6 +208,10 @@ public class Listing implements AggregateRoot<ListingId> {
 
     public List<Picture> getPictures() {
         return _pictures;
+    }
+
+    public LocalDate getPublicationDate() {
+        return _publicationDate;
     }
 
     @Override
