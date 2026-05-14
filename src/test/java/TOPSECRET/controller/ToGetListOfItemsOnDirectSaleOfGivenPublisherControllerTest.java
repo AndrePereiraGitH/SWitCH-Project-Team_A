@@ -6,7 +6,7 @@ import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
@@ -44,8 +44,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
     Edition editionDouble1;
     Edition editionDouble2;
-    EditionID editionId1Double;
-    EditionID editionId2Double;
+    EditionId editionId1Double;
+    EditionId editionId2Double;
 
     PublicationSample pubSampleDouble1;
     PublicationSample pubSampleDouble2;
@@ -73,8 +73,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         editionDouble1 = mock(Edition.class);
         editionDouble2 = mock(Edition.class);
-        editionId1Double = mock(EditionID.class);
-        editionId2Double = mock(EditionID.class);
+        editionId1Double = mock(EditionId.class);
+        editionId2Double = mock(EditionId.class);
 
         pubSampleDouble1 = mock(PublicationSample.class);
         pubSampleDouble2 = mock(PublicationSample.class);
@@ -177,7 +177,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     void findListOfItemsOnDirectSaleByPublisherId_ShouldReturnEmptyListWhenNoPublicationSampleIdsAreFound() throws InstanceNotFoundException {
         // Arrange
         PublisherID pubId1 = new PublisherID("publisherId1Double");
-        EditionID editionId1 = new EditionID("editionId1");
+        EditionId editionId1 = new EditionId("editionId1");
 
         when(editionRepoDouble.findIdsByPublisherId(pubId1)).thenReturn(List.of(editionId1));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1))).thenReturn(List.of());

@@ -4,7 +4,7 @@ import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.US027ListingDTO;
@@ -90,7 +90,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      * <p>
      * The retrieval process follows these steps:
      * <ol>
-     *     <li>Find all {@link EditionID} values belonging to the given publisher</li>
+     *     <li>Find all {@link EditionId} values belonging to the given publisher</li>
      *     <li>Find all {@link PublicationSampleId} values associated with those editions</li>
      *     <li>Retrieve all direct-sale {@link Listing} objects that reference those publication samples</li>
      *     <li>Convert the resulting listings into DTOs</li>
@@ -105,7 +105,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
         if (publisherId == null) throw new IllegalArgumentException("publisherId cannot be null");
 
-        List<EditionID> listOfEditionIds = _editionRepo.findIdsByPublisherId(publisherId);
+        List<EditionId> listOfEditionIds = _editionRepo.findIdsByPublisherId(publisherId);
 
         List<PublicationSampleId> listOfPubSampleIds = _pubSampleRepo.findIdsByEditionIdIn(listOfEditionIds);
 
