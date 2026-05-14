@@ -14,7 +14,7 @@ import java.util.Objects;
  * <p>Instances of this class are immutable. Once created, the ID value cannot be changed.</p>
  */
 
-public class BibliographicalDataID implements DomainID {
+public class BibliographicalDataId implements DomainID {
 
     private final String bibliographicalDataID;
 
@@ -24,7 +24,7 @@ public class BibliographicalDataID implements DomainID {
      * @param bibliographicalDataID the string value for this ID; must not be {@code null} or blank
      * @throws IllegalArgumentException if {@code pubSampleID} is {@code null} or blank
      */
-    public BibliographicalDataID(String bibliographicalDataID) {
+    public BibliographicalDataId(String bibliographicalDataID) {
         if (bibliographicalDataID == null || bibliographicalDataID.isBlank()) {
             throw new IllegalArgumentException("ID value should not be null or blank");
         }
@@ -44,7 +44,7 @@ public class BibliographicalDataID implements DomainID {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        BibliographicalDataID that = (BibliographicalDataID) o;
+        BibliographicalDataId that = (BibliographicalDataId) o;
         return Objects.equals(bibliographicalDataID, that.bibliographicalDataID);
     }
 

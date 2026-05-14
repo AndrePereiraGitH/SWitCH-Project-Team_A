@@ -188,7 +188,7 @@ BibliographicalDataRepositoryJPAImpl "1" ..> "1" IBibliographicalDataRepositoryJ
 'AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepositoryJPA: implements
 'AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ..> "1" database: queries
 
-IBibliographicalDataRepository "1" --> "1" BibliographicalDataAssembler: converts DM to Domain
+BibliographicalDataRepositoryJPAImpl "1" ..> "1" BibliographicalDataAssembler: converts DM to Domain
 
 BibliographicalDataAssembler "1" --> "1" BibliographicalDataFactory: uses
 BibliographicalDataAssembler "1" ..> "1" BibliographicalDataDM: uses
@@ -212,7 +212,7 @@ ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
 'AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
 'AutomaticGeneratedListingRepositoryJPAImpl "1" ..> "1" database: queries
 
-IListingRepository "1" --> "1" ListingAssembler: converts DM to Domain
+ListingRepositoryJPAImpl "1" ..> "1" ListingAssembler: converts DM to Domain
 
 ListingAssembler "1" --> "1" ListingFactory: uses
 ListingAssembler "1" ..> "1" ListingDM: uses

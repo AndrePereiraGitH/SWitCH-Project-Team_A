@@ -1,8 +1,12 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.domain.ValueObjects.LibraryId;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -22,7 +26,7 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      * @param bdId the bibliographical data ID to filter by; must not be {@code null}
      * @return a list of matching data models; never {@code null}, may be empty
      */
-    List<PublicationSampleDM> findAllByBdId(BibliographicalDataID bdId);
+    List<PublicationSampleDM> findAllByBdId(BibliographicalDataId bdId);
 
     /**
      * Retrieves all publication samples owned by the given user.
@@ -35,7 +39,7 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
 
     /**
      * Retrieves all {@link PublicationSampleDM} entities whose edition identifier
-     * is contained in the given list of {@link EditionID}s.
+     * is contained in the given list of {@link EditionId}s.
      *
      * <p>This method leverages Spring Data JPA query derivation to generate
      * a query equivalent to:
@@ -48,7 +52,7 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
      * @return a list of {@link PublicationSampleDM} associated with the given edition IDs;
      *         never {@code null}, but may be empty if no matches are found
      */
-    List<PublicationSampleDM> findAllByEditionIdIn(List<EditionID> editionIds);
+    List<PublicationSampleDM> findAllByEditionIdIn(List<EditionId> editionIds);
 
     /**
      * Finds all publication samples associated with the given library identifier.

@@ -5,7 +5,7 @@ import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.Profile;
 import org.junit.jupiter.api.BeforeEach;
@@ -172,7 +172,7 @@ class BibliographicalDataTest {
     @Test
     void constructor_ShouldReconstructObjectWithProvidedID(){
         // Arrange
-        BibliographicalDataID bdID = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdID = mock(BibliographicalDataId.class);
 
         // Act
         BibliographicalData bd = bdFactory.create(bdID, title, authors, language, pubDate, genres, chunksOfText);
@@ -460,7 +460,7 @@ class BibliographicalDataTest {
     void id_shouldReturnBibliographicalDataID() {
         BibliographicalData bd = bdFactory.create(title, authors, language, pubDate, genres, chunksOfText);
 
-        BibliographicalDataID id = bd.id();
+        BibliographicalDataId id = bd.id();
 
         assertNotNull(id);
     }

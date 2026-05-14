@@ -3,7 +3,7 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,9 +24,9 @@ class BibliographicalDataRepositoryMemTest {
     private BibliographicalData bd1Double;
     private BibliographicalData bd2Double;
     private BibliographicalData bd3Double;
-    private BibliographicalDataID bd1ID;
-    private BibliographicalDataID bd2ID;
-    private BibliographicalDataID bd3ID;
+    private BibliographicalDataId bd1ID;
+    private BibliographicalDataId bd2ID;
+    private BibliographicalDataId bd3ID;
 
     @BeforeEach
     void setup() {
@@ -35,9 +35,9 @@ class BibliographicalDataRepositoryMemTest {
         bd2Double = mock(BibliographicalData.class);
         bd3Double = mock(BibliographicalData.class);
 
-        bd1ID = mock(BibliographicalDataID.class);
-        bd2ID = mock(BibliographicalDataID.class);
-        bd3ID = mock(BibliographicalDataID.class);
+        bd1ID = mock(BibliographicalDataId.class);
+        bd2ID = mock(BibliographicalDataId.class);
+        bd3ID = mock(BibliographicalDataId.class);
 
         when(bd1Double.id()).thenReturn(bd1ID);
         when(bd2Double.id()).thenReturn(bd2ID);
@@ -163,7 +163,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findIdByTitle("double2");
+        Optional<BibliographicalDataId> result = repo.findIdByTitle("double2");
 
         //Assert
         assertTrue(result.isPresent());
@@ -181,7 +181,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findIdByTitle("Title3");
+        Optional<BibliographicalDataId> result = repo.findIdByTitle("Title3");
 
         //Assert
         assertEquals(Optional.empty(), result);
@@ -198,7 +198,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findIdByTitle("DOUBLE1");
+        Optional<BibliographicalDataId> result = repo.findIdByTitle("DOUBLE1");
 
         //Assert
         assertTrue(result.isPresent());
@@ -216,7 +216,7 @@ class BibliographicalDataRepositoryMemTest {
         //Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        Optional<BibliographicalDataID> result = repo.findIdByTitle("     DOUBLE2    ");
+        Optional<BibliographicalDataId> result = repo.findIdByTitle("     DOUBLE2    ");
 
         //Assert
         assertTrue(result.isPresent());
@@ -324,7 +324,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
+        List<BibliographicalDataId> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertEquals(2, result.size());
@@ -345,7 +345,7 @@ class BibliographicalDataRepositoryMemTest {
         IBibliographicalDataRepository repo = new BibliographicalDataRepositoryMem();
 
         // Act
-        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
+        List<BibliographicalDataId> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -357,7 +357,7 @@ class BibliographicalDataRepositoryMemTest {
         AuthorId authorId = mock(AuthorId.class);
         AuthorId otherAuthorId = mock(AuthorId.class);
 
-        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
 
         when(bd1Double.getAuthors()).thenReturn(List.of(otherAuthorId));
         when(bd2Double.getAuthors()).thenReturn(List.of(authorId));
@@ -371,7 +371,7 @@ class BibliographicalDataRepositoryMemTest {
         repo.save(bd1Double);
         repo.save(bd2Double);
         repo.save(bd3Double);
-        List<BibliographicalDataID> result = repo.findIdByAuthorId(authorId);
+        List<BibliographicalDataId> result = repo.findIdByAuthorId(authorId);
 
         // Assert
         assertEquals(1, result.size());
@@ -411,7 +411,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act
         repo.save(bd1Double);
-        List<BibliographicalDataID> result =
+        List<BibliographicalDataId> result =
                 repo.findAllByGenreId(genreIdDouble);
 
         // Assert
@@ -431,7 +431,7 @@ class BibliographicalDataRepositoryMemTest {
 
         // Act
         repo.save(bd1Double);
-        List<BibliographicalDataID> result =
+        List<BibliographicalDataId> result =
                 repo.findAllByGenreId(genreDouble2);
 
         // Assert
@@ -454,7 +454,7 @@ class BibliographicalDataRepositoryMemTest {
         // Act
         repo.save(bd1Double);
         repo.save(bd2Double);
-        List<BibliographicalDataID> result =
+        List<BibliographicalDataId> result =
                 repo.findAllByGenreId(genreIdDouble);
 
         // Assert

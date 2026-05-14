@@ -62,7 +62,7 @@ public class UserService {
      * @throws IllegalArgumentException if any invalid argument is rejected by the domain factory or repository
      */
     @Transactional
-    public User createAndSave(String username,  Profile profile, Set<UserRole> userRoles)
+    public User createAndSave(String username, Profile profile, Set<UserRole> userRoles)
             throws InstanceAlreadyExistsException {
 
         User user = userFactory.create(username, profile, userRoles);

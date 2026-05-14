@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EditionID implements DomainID {
+public class EditionId implements DomainID {
 
     private String editionID;
 
@@ -31,7 +31,7 @@ public class EditionID implements DomainID {
      * @param editionID the identifier value
      * @throws IllegalArgumentException if the id is null or blank
      */
-    public EditionID(String editionID){
+    public EditionId(String editionID){
         if(editionID == null || editionID.isBlank()){
             throw new IllegalArgumentException("ID cannot be null or blank");
         }
@@ -43,7 +43,7 @@ public class EditionID implements DomainID {
     public boolean equals(Object o){
         if(this == o) return true;
         if(o == null || getClass() != o.getClass()) return false;
-        EditionID that = (EditionID) o;
+        EditionId that = (EditionId) o;
         return Objects.equals(editionID, that.editionID);
     }
 

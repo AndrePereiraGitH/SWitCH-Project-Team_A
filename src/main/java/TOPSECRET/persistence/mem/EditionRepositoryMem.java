@@ -41,7 +41,7 @@ public class EditionRepositoryMem implements IEditionRepository {
      * {@inheritDoc}
      */
     @Override
-    public boolean existsById(EditionID id) {
+    public boolean existsById(EditionId id) {
         for (Edition edition : _allEditionsInSystem) {
             if (edition.id().equals(id)) {
                 return true;
@@ -53,7 +53,7 @@ public class EditionRepositoryMem implements IEditionRepository {
     /**
      * {@inheritDoc}
      */
-    public Optional<Edition> findById(EditionID editionID){
+    public Optional<Edition> findById(EditionId editionID){
 
         if(editionID == null){
             throw new NullPointerException("EditionId must not be null");
@@ -78,21 +78,21 @@ public class EditionRepositoryMem implements IEditionRepository {
     /**
      * {@inheritDoc}
      */
-    public List<EditionID> findIdsByPublisherId(PublisherID publisherId) {
+    public List<EditionId> findIdsByPublisherId(PublisherID publisherId) {
 
         if (publisherId == null) {
             throw new IllegalArgumentException("publisherId must not be null");
         }
 
-        List<EditionID> editionIDs = new ArrayList<>();
+        List<EditionId> editionIds = new ArrayList<>();
 
         for (Edition edition : _allEditionsInSystem) {
             if (publisherId.equals(edition.getPublisherID())) {
-                editionIDs.add(edition.id());
+                editionIds.add(edition.id());
             }
         }
 
-        return editionIDs;
+        return editionIds;
     }
 
     /**

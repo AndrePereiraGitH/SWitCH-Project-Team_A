@@ -4,12 +4,10 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublicationSampleService;
-
-import javax.management.InstanceAlreadyExistsException;
 
 
 /**
@@ -18,14 +16,13 @@ import javax.management.InstanceAlreadyExistsException;
  *
  * <p>This controller follows an orchestration approach, delegating
  * the creation and persistence of publication samples to the
- * {@link IPublicationSampleRepository}.</p>
+ * {@link PublicationSampleService}.</p>
  *
  * <p>It does not contain domain logic or invariant enforcement beyond basic
  * dependency validation.</p>
  *
- * <p><b>Note:</b> This implementation assumes that all required identifiers
- * (e.g., {@link UserId}, {@link BibliographicalDataID}, {@link EditionID})
- * are already validated and provided by the caller.</p>
+ * <p><b>Note:</b> Validation, creation, and persistence responsibilities are
+ * delegated to the service layer.</p>
  */
 
 public class ToRegisterNewPublicationCtrl {
@@ -35,54 +32,48 @@ public class ToRegisterNewPublicationCtrl {
     public ToRegisterNewPublicationCtrl(PublicationSampleService publicationSampleService) {
 
         if (publicationSampleService == null) {
-            throw new IllegalArgumentException("PublicationRepository cannot be left blank");
+            throw new IllegalArgumentException("PublicationSampleService cannot be left null");
 
         }
 
         _publicationSampleService = publicationSampleService;
     }
 
-    /**
-     * Registers a new {@link PublicationSample} in the system.
-     *
-     * <p>This method delegates the creation and persistence process to the
-     * {@link PublicationSampleService#createAndSave} method.</p>
-     *
-     * @param bibliographicalData1 the identifier of the bibliographical data
-     * @param user1                the identifier of the user registering the publication
-     * @param publicationStatus1   the status of the publication
-     * @param _edition             the identifier of the edition
-     * @param condition            the condition of the publication
-     * @return {@code true} if the publication was successfully created
-     * @throws InstanceAlreadyExistsException if a publication with the same identity already exists
-     * @throws IllegalArgumentException       if any argument is invalid (propagated from repository)
-     */
 
-    public boolean registerNewPublication(
-            BibliographicalDataID bibliographicalData1,
-            UserId user1, PublicationStatus publicationStatus1, EditionID _edition, Condition condition
+    /**
+     * Creates and persists a new {@link PublicationSample}.
+     *
+     * @param bibliographicalData the bibliographical data identifier; must not be {@code null}
+     * @param user                the user identifier; must not be {@code null}
+     * @param publicationStatus   the publication status; must not be {@code null}
+     * @param edition             the edition identifier; must not be {@code null}
+     * @param condition           the physical condition of the publication; must not be {@code null}
+     * @return the newly created and persisted {@link PublicationSample}
+     * @throws IllegalArgumentException if any argument is {@code null} or invalid
+     */
+    public PublicationSample register(
+            BibliographicalDataId bibliographicalData,
+            UserId user, PublicationStatus publicationStatus, EditionId edition, Condition condition
 
     ) {
 
-        if (bibliographicalData1 == null) {
+        if (bibliographicalData == null) {
             throw new IllegalArgumentException("BibliographicalData cannot be left null");
         }
-        if (publicationStatus1 == null) {
+        if (publicationStatus == null) {
             throw new IllegalArgumentException("PublicationStatus cannot be left null");
         }
-        if (user1 == null) {
+        if (user == null) {
             throw new IllegalArgumentException("User Id cannot be left blank");
         }
-        if (_edition == null) {
+        if (edition == null) {
             throw new IllegalArgumentException("Edition Id cannot be left null");
         }
         if (condition == null) {
             throw new IllegalArgumentException("Condition cannot be left null");
         }
 
-        PublicationSample newPublication = _publicationSampleService.createAndSave(bibliographicalData1, user1,
-                publicationStatus1, _edition, condition);
-
-        return true;
+        return _publicationSampleService.createAndSave(bibliographicalData, user,
+                publicationStatus, edition, condition);
     }
 }
