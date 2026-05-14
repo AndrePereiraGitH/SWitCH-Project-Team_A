@@ -332,12 +332,11 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
         US019CollectionOfPublicationsDTO selectedCollectionDto =
                 mock(US019CollectionOfPublicationsDTO.class);
 
-        LocalDateTime publicUntil = null;
 
         // Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
-                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
+                () -> controller.shareCollectionUntil(selectedCollectionDto, null)
         );
 
         // Assert

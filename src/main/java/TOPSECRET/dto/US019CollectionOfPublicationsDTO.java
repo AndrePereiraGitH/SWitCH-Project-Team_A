@@ -2,6 +2,8 @@ package TOPSECRET.dto;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 
+import java.time.LocalDateTime;
+
 /**
  * Data Transfer Object for US019 - Publicly Share a Collection of Publications.
  *

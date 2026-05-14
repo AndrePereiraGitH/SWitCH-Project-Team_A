@@ -40,7 +40,7 @@ end note
 Controller -> CollectionRepository: findAllByUserId(userId)
 activate Controller
 activate CollectionRepository
-CollectionRepository -> collectionRepositoryJPA : findAllByUserId(userId)
+CollectionRepository -> collectionRepositoryJPA : findAllByOwnerId(userId)
 
 activate collectionRepositoryJPA
 collectionRepositoryJPA -> db : query select by userId
@@ -64,7 +64,7 @@ activate collectionAssembler
 
 collectionAssembler -> collectionsDM : getId()
 activate collectionsDM
-collectionsDM --> collectionAssembler
+collectionsDM --> collectionAssembler : id
 deactivate collectionsDM
 
 collectionAssembler -> collectionsDM : getCollectionName()

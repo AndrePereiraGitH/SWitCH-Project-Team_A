@@ -73,6 +73,12 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
 
         Objects.requireNonNull(collection, "collection cannot be null");
 
+//        for (CollectionOfPublications collectionOfPublications : _collectionOfPublicationsList) {
+//            if (collectionOfPublications.id().equals(collection.id())) {
+//
+//            }
+//        }
+
         for (int i = 0; i < _collectionOfPublicationsList.size(); i++) {
 
             CollectionOfPublications existingCollection =
