@@ -1,6 +1,10 @@
 @startuml
 title To get the list of items on direct sale of a given publication
 
+
+class UI {
+}
+
 ' -------------------------
 ' Controller
 ' -------------------------
@@ -21,6 +25,12 @@ interface IBibliographicalDataRepository {
 interface IBibliographicalDataRepositoryJPA {
   + findAll() : List<BibliographicalDataDM>
 }
+
+class BibliographicalDataRepositoryJPAImpl {
+  + findAll() : List<BibliographicalDataDM>
+}
+
+'class AutomaticGeneratedBibliographicalDataRepositoryJPAImpl {}
 
 class BibliographicalDataAssembler {
     + toDomain(BibliographicalDataDM bdDM): BibliographicalData
@@ -69,6 +79,12 @@ interface IPublicationSampleRepositoryJPA {
   + findIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
 }
 
+class PublicationSampleRepositoryJPAImpl {
+  + findIdsByBibliographicalDataId(BibliographicalDataId bdId):\nList<PublicationSampleId>
+}
+
+'class AutomaticGeneratedPublicationSampleRepositoryJPAImpl {}
+
 class PublicationSampleId {
 }
 
@@ -96,6 +112,12 @@ interface IListingRepository {
 interface IListingRepositoryJPA {
    + findAllByItemsId(List<PublicationSampleId> itemsId): List<ListingDM>
 }
+
+class ListingRepositoryJPAImpl {
+   + findAllByItemsId(List<PublicationSampleId> itemsId): List<ListingDM>
+}
+
+'class AutomaticGeneratedListingRepositoryJPAImpl {}
 
 class ListingAssembler {
     + toDomain(ListingDM listingDM): Listing
@@ -151,6 +173,8 @@ enum SaleType {
 ' RELATIONSHIPS
 ' -------------------------
 
+UI "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController: uses
+
 ' --- Controller ---
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IBibliographicalDataRepository : retrieves data
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" US023BibliographicalDataMapper : maps to DTO
@@ -159,8 +183,12 @@ ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" IListin
 ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController "1" --> "1" US023ListingMapper : maps to DTO
 
 ' --- Bibliographical Data ---
-IBibliographicalDataRepositoryJPA "1" --|> "1" IBibliographicalDataRepository: implements
-IBibliographicalDataRepository "1" --> "1" BibliographicalDataAssembler: converts DM to Domain
+BibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepository: implements
+BibliographicalDataRepositoryJPAImpl "1" ..> "1" IBibliographicalDataRepositoryJPA: uses
+'AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepositoryJPA: implements
+'AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ..> "1" database: queries
+
+BibliographicalDataRepositoryJPAImpl "1" ..> "1" BibliographicalDataAssembler: converts DM to Domain
 
 BibliographicalDataAssembler "1" --> "1" BibliographicalDataFactory: uses
 BibliographicalDataAssembler "1" ..> "1" BibliographicalDataDM: uses
@@ -170,13 +198,21 @@ BibliographicalDataFactory "1" --> "1" BibliographicalData : creates
 US023BibliographicalDataMapper "1" ..> "1" US023BibliographicalDataDTO : maps to
 
 ' --- Publication Sample ---
-IPublicationSampleRepositoryJPA "1" --|> "1" IPublicationSampleRepository: implements
+PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository: implements
+PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: uses
+'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
+'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..> "1" database: queries
+
 IPublicationSampleRepository "1" --> "1" PublicationSampleId: uses
 'IPublicationSampleRepository "1" --> "*" PublicationSample: persists
 
 ' --- Listing ---
-IListingRepositoryJPA "1" --|> "1" IListingRepository: implements
-IListingRepository "1" --> "1" ListingAssembler: converts DM to Domain
+ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
+ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
+'AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
+'AutomaticGeneratedListingRepositoryJPAImpl "1" ..> "1" database: queries
+
+ListingRepositoryJPAImpl "1" ..> "1" ListingAssembler: converts DM to Domain
 
 ListingAssembler "1" --> "1" ListingFactory: uses
 ListingAssembler "1" ..> "1" ListingDM: uses

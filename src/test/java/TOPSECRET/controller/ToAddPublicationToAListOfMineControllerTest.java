@@ -1,11 +1,13 @@
 package TOPSECRET.controller;
 
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.US018CollectionOfPublicationsDTO;
 import TOPSECRET.dto.US018PublicationSampleDTO;
 import TOPSECRET.dto.US018PublicationSampleMapper;
 
@@ -17,32 +19,61 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link ToAddPublicationToAListOfMineController}.
+ *
+ * <p>
+ * These tests validate the behavior of the controller responsible for
+ * the use case <b>US018 - Add Publication to Collection</b>.
+ * </p>
+ *
+ * <p>
+ * The test suite focuses on:
+ * <ul>
+ *     <li>Retrieving user collections</li>
+ *     <li>Retrieving publications available for a collection</li>
+ *     <li>Delegating publication assignment operations</li>
+ *     <li>Validation of invalid input arguments</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * Dependencies are isolated using Mockito mocks in order to verify only
+ * the controller orchestration responsibilities.
+ * </p>
+ *
+ * <p>
+ * The controller itself contains no business logic and is expected only
+ * to coordinate repository access, mapper transformations, and delegation
+ * of domain operations.
+ * </p>
+ */
 class ToAddPublicationToAListOfMineControllerTest {
 
-//    @Test
-//    void shouldReturnUserCollections() {
-//
-//        // ARRANGE
-//        ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-//        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
-//        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
-//        UserId userId = mock(UserId.class);
-//
-//        ToAddPublicationToAListOfMineController controller =
-//                new ToAddPublicationToAListOfMineController(
-//                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
-//
-//        List<CollectionOfPublications> collections = new ArrayList<>();
-//
-//        when(collectionRepo.getUserCollections(userId)).thenReturn(collections);
-//
-//        // ACT
-//        List<US018CollectionOfPublicationsDTO> result =
-//                controller.getUserCollections();
-//
-//        // ASSERT
-//        assertEquals(0, result.size());
-//    }
+    @Test
+    void shouldReturnUserCollections() {
+
+        // ARRANGE
+        ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
+        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
+        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
+        UserId userId = mock(UserId.class);
+
+        ToAddPublicationToAListOfMineController controller =
+                new ToAddPublicationToAListOfMineController(
+                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
+
+        List<CollectionOfPublications> collections = new ArrayList<>();
+
+        when(collectionRepo.getUserCollections(userId)).thenReturn(collections);
+
+        // ACT
+        List<US018CollectionOfPublicationsDTO> result =
+                controller.getUserCollections();
+
+        // ASSERT
+        assertEquals(0, result.size());
+    }
 
     @Test
     void shouldReturnAvailablePublicationsUsingRepositoryMethod() {
@@ -179,35 +210,35 @@ class ToAddPublicationToAListOfMineControllerTest {
                 () -> controller.addPublicationToCollection(collectionId, new ArrayList<>()));
     }
 
-//    @Test
-//    void shouldReturnMappedCollectionsWithContent() {
-//
-//        // ARRANGE
-//        ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-//        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
-//        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
-//        UserId userId = mock(UserId.class);
-//
-//        ToAddPublicationToAListOfMineController controller =
-//                new ToAddPublicationToAListOfMineController(
-//                        userId, collectionRepo, publicationRepo, publicationSampleMapper
-//                );
-//
-//        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-//        when(collection.id()).thenReturn(mock(CollectionOfPublicationsID.class));
-//        when(collection.getCollectionName()).thenReturn("C1");
-//
-//        when(collectionRepo.getUserCollections(userId))
-//                .thenReturn(List.of(collection));
-//
-//        // ACT
-//        List<US018CollectionOfPublicationsDTO> result =
-//                controller.getUserCollections();
-//
-//        // ASSERT
-//        assertFalse(result.isEmpty());
-//        assertEquals(1, result.size());
-//    }
+    @Test
+    void shouldReturnMappedCollectionsWithContent() {
+
+        // ARRANGE
+        ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
+        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
+        US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
+        UserId userId = mock(UserId.class);
+
+        ToAddPublicationToAListOfMineController controller =
+                new ToAddPublicationToAListOfMineController(
+                        userId, collectionRepo, publicationRepo, publicationSampleMapper
+                );
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(collection.id()).thenReturn(mock(CollectionOfPublicationsId.class));
+        when(collection.getCollectionName()).thenReturn("C1");
+
+        when(collectionRepo.getUserCollections(userId))
+                .thenReturn(List.of(collection));
+
+        // ACT
+        List<US018CollectionOfPublicationsDTO> result =
+                controller.getUserCollections();
+
+        // ASSERT
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+    }
 
     @Test
     void shouldReturnFalseWhenRepositoryFails() {
