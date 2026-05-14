@@ -18,6 +18,14 @@ class ILibraryRepository{
 }
 
 class PublicationSample{
+-_pubSampleID : PublicationSampleId
+-_bdID : BibliographicalDataId
+-_ownerID : UserId
+-_publicationStatus : PublicationStatus
+-_editionId : EditionId
+-_condition : Condition
+-_libraryId : LibraryId
+-_collecOfPubID : CollectionOfPublicationsId
 +addPublicationToLibrary(LibraryId libraryId) : LibraryId
 }
 
@@ -62,6 +70,12 @@ class LibraryFactory{
 +create(LibraryId libraryId, String libraryName, UserId userId)
 }
 
+class Library{
+-_libraryName : String
+-_userId : UserId
+-_id : LibraryId
+}
+
 
 Rectangle Database{
 }
@@ -70,13 +84,14 @@ Rectangle Database{
 AddPublicationToLibraryController "1" ..> "1" IPublicationSampleRepository : uses
 PublicationSampleRepositoryJPAImpl "1" ..> "1" PublicationSampleAssembler : uses
 PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
-AddPublicationToLibraryController "1" ..> "1" ILibraryRepository : asks
+AddPublicationToLibraryController "1" ..> "1" ILibraryRepository : accesses
 AddPublicationToLibraryController "1" ..> "1" PublicationSample : asks to assign library
 PublicationSampleAssembler ..> PublicationSampleDM : crafts
 LibraryAssembler ..> LibraryDM : converts data into
 LibraryRepositoryJPAImpl ..> LibraryAssembler : uses
 LibraryAssembler ..> LibraryFactory : uses
 PublicationSampleFactory ..> PublicationSample : (re)create
+LibraryFactory ..> Library : (re)creates
 
 ' ===== PublicationSample Layer Communication =====
 IPublicationSampleRepository <|.. PublicationSampleRepositoryJPAImpl : implements

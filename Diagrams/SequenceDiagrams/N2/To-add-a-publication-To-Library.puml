@@ -106,7 +106,7 @@ IJPA --> PubRepo: PublicationSample
 deactivate IJPA
 PubRepo --> Ctrl: PublicationSample
 deactivate PubRepo
-Ctrl --> UI: success
+Ctrl --> UI: true
 deactivate Ctrl
 UI --> User: "<publicationSample>\n successfully added to your Library!"
 deactivate UI
