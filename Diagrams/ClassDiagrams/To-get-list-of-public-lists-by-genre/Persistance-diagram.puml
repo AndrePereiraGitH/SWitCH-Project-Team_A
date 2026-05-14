@@ -3,6 +3,14 @@ skinparam classAttributeIconSize 0
 
 title Find Public Lists By Genre - Persistance Diagram
 
+class PublicListByGenreController {
+  -_genreRepository : IGenreRepository
+  -_collectionRepo : ICollectionOfPublicationsRepository
+  -_mapper : US020CollectionOfPublicationsDTOMapper
+  +getGenres() : List<US013GenreDTO>
+  +getPublicListsByGenre(genreId : GenreId) : List<US020CollectionOfPublicationsDTO>
+}
+
 interface IGenreRepository {
   +findAll() : List<Genre>
 }
@@ -124,6 +132,9 @@ class UserFactory {
 
 rectangle Database{
 }
+
+PublicListByGenreController --> IGenreRepository : gets genres
+PublicListByGenreController --> ICollectionOfPublicationsRepository : gets public collections by genre
 
 GenreRepositoryJpaImpl ..|> IGenreRepository
 CollectionOfPublicationsRepositoryJpaImpl ..|> ICollectionOfPublicationsRepository

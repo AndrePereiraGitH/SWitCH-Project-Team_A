@@ -74,7 +74,7 @@ UI "1" ..> "1" ToRegisterPubTypeController : uses
 
 ToRegisterPubTypeController --> PublicationTypeService : calls
 PublicationTypeService --> IPublicationTypeRepository : checks duplicate / saves
-PublicationTypeService --> PublicationTypeFactory : creates
+PublicationTypeService --> PublicationTypeFactory : calls
 
 PublicationTypeRepositoryJPAImpl ..|> IPublicationTypeRepository
 PublicationTypeRepositoryJPAImpl ..> IPublicationTypeRepositoryJPA : delegates persistence
