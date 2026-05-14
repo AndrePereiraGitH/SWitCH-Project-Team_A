@@ -11,9 +11,9 @@ participant ":ToRegisterUserController" as Controller
 participant ":UserService" as Service
 participant ":IUserRepository" as Repository
 participant ":IUserRepositoryJPA" as RepositoryJPAInterface
+participant ":UserAssembler" as Assembler
 participant ":UserFactory" as Factory
 participant "user:User" as user
-participant ":UserAssembler" as Assembler
 database "Database" as DB
 participant "savedUserDM:UserDM" as savedUserDM
 
@@ -55,6 +55,9 @@ Repository -> RepositoryJPAInterface : save(userDM)
 activate RepositoryJPAInterface
 
 RepositoryJPAInterface -> DB : INSERT
+activate DB
+DB --> RepositoryJPAInterface : inserted
+deactivate DB
 RepositoryJPAInterface -->> savedUserDM ** : <<create>>
 
 RepositoryJPAInterface --> Repository : savedUserDM
