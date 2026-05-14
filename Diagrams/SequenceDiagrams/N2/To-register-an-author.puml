@@ -1,0 +1,91 @@
+@startuml
+hide footbox
+autonumber
+title To Register Author
+
+box #WhiteSmoke
+actor Administrator
+participant ":UI" as UI
+end box
+participant ":ToRegisterAuthorController" as Controller
+participant ":AuthorService" as Service
+participant ":AuthorFactory" as Factory
+participant "author:Author" as Author
+participant ":IAuthorRepository" as Repository
+participant ":IAuthorRepositoryJPA" as RepositoryJPA
+participant ":AuthorAssembler" as Assembler
+participant "authorDM:AuthorDM" as AuthorDM
+database "Database" as DB
+
+Administrator -> UI : I want to register an author in MiteLovers
+activate UI
+UI -->> Administrator : Please provide author information
+deactivate UI
+
+Administrator -> UI : name, countryId, dateOfBirth, biography
+activate UI
+UI -> Controller : register(name, countryId, dateOfBirth, biography)
+activate Controller
+
+Controller -> Service : createAndSave(name, countryId, dateOfBirth, biography)
+activate Service
+
+Service -> Factory : create(name, countryId, dateOfBirth, biography)
+activate Factory
+Factory -->> Author ** : <<create>>\nAuthor(name, countryId, dateOfBirth, biography)
+Factory --> Service : author
+deactivate Factory
+
+Service -> Repository : save(author)
+activate Repository
+
+alt author already exists
+    Repository -> RepositoryJPA : existsById(author.id())
+    activate RepositoryJPA
+    RepositoryJPA -> DB : SELECT
+    DB --> RepositoryJPA : found
+    RepositoryJPA --> Repository : true
+    deactivate RepositoryJPA
+    Repository -->> Service : throws InstanceAlreadyExistsException
+    deactivate Repository
+    Service -->> Controller : throws InstanceAlreadyExistsException
+    deactivate Service
+    Controller -->> UI : throws InstanceAlreadyExistsException
+    deactivate Controller
+    UI -->> Administrator : Author already exists
+    deactivate UI
+
+else author does NOT exist
+    Repository -> Assembler : toDM(author)
+    activate Assembler
+    Assembler -->> AuthorDM ** : <<create>>\nAuthorDM(id, name, countryId, dateOfBirth, biography)
+    Assembler --> Repository : authorDM
+    deactivate Assembler
+
+    Repository -> RepositoryJPA : save(authorDM)
+    activate RepositoryJPA
+    RepositoryJPA -> DB : INSERT
+    DB --> RepositoryJPA : authorDM
+    RepositoryJPA --> Repository : authorDM
+    deactivate RepositoryJPA
+
+    Repository -> Assembler : toDomain(authorDM)
+    activate Assembler
+    Assembler -> Factory : create(id, name, countryId, dateOfBirth, biography)
+    activate Factory
+    Factory --> Assembler : author
+    deactivate Factory
+    Assembler --> Repository : author
+    deactivate Assembler
+
+    Repository --> Service : author
+    deactivate Repository
+    Service --> Controller : author
+    deactivate Service
+    Controller --> UI : author
+    deactivate Controller
+    UI --> Administrator : success
+    deactivate UI
+end
+
+@enduml
