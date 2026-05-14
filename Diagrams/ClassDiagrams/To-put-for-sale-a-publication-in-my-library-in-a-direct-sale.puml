@@ -156,7 +156,7 @@ LibraryRepositoryJPAImpl "1" ..> "1" ILibraryRepositoryJPA: uses
 'AutomaticGeneratedLibraryRepositoryJPAImpl "1" ..|> "1" ILibraryRepositoryJPA: implements
 'AutomaticGeneratedLibraryRepositoryJPAImpl "1" ..> "1" database: queries
 
-ILibraryRepository "1" ..> "1" LibraryAssembler: "uses"
+LibraryRepositoryJPAImpl "1" ..> "1" LibraryAssembler: "uses"
 
 LibraryAssembler "1" --> "1" LibraryFactory: "uses"
 LibraryAssembler "1" ..> "1" LibraryDM: "receives"
@@ -169,7 +169,7 @@ PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: 
 'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
 'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..> "1" database: queries
 
-IPublicationSampleRepository "1" ..> "1" PublicationSampleAssembler: "uses"
+PublicationSampleRepositoryJPAImpl "1" ..> "1" PublicationSampleAssembler: "uses"
 
 PublicationSampleAssembler "1" --> "1" PublicationSampleFactory: "uses"
 PublicationSampleAssembler "1" ..> "1" PublicationSampleDM: "receives"
@@ -184,7 +184,7 @@ ListingService "1" --> "1" IListingRepository: "uses"
 
 ListingFactory "1" --> "1" Listing: "creates"
 
-IListingRepository "1" ..> "1" ListingAssembler: "uses"
+ListingRepositoryJPAImpl "1" ..> "1" ListingAssembler: "uses"
 
 ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
 ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
