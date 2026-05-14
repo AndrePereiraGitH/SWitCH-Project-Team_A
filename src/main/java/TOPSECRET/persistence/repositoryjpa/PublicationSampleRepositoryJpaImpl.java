@@ -98,6 +98,27 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return pbSample;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public PublicationSample update(PublicationSample publicationSample) {
+
+        Objects.requireNonNull(publicationSample,
+                "PublicationSample must not be null");
+
+        if (!publicationSampleRepositoryJpa.existsById(publicationSample.id())) {
+            throw new IllegalArgumentException("PublicationSample does not exist in repository");
+        }
+
+        PublicationSampleDM dm = publicationSampleAssembler.toDM(publicationSample);
+
+        PublicationSampleDM updated = publicationSampleRepositoryJpa.save(dm);
+
+        return publicationSampleAssembler.toDomain(updated);
+    }
+
     // =========================================================================
     // Lookup — by associated identifiers
     // =========================================================================
@@ -168,7 +189,14 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
     @Override
     public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionID) {
 
-        return List.of();
+        Objects.requireNonNull(collectionID, "Collection ID cannot be null");
+
+        return publicationSampleRepositoryJpa
+                .findAllByCollectionOfPublicationsId(collectionID)
+                .stream()
+                .map(publicationSampleAssembler::toDomain)
+                .toList();
+
     }
 
     /**
@@ -228,15 +256,54 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      * {@inheritDoc}
      */
     @Override
-    public boolean assignPublicationsToCollection(CollectionOfPublicationsId collectionId, List<PublicationSampleId> publicationSampleIds) {
-        return false;
+    @Transactional
+    public boolean assignPublicationsToCollection(
+            CollectionOfPublicationsId collectionId,
+            List<PublicationSampleId> publicationSampleIds) {
+
+        Objects.requireNonNull(collectionId, "Collection ID cannot be null.");
+
+        Objects.requireNonNull(publicationSampleIds, "Publication IDs cannot be null or empty.");
+
+        for (PublicationSampleId publicationSampleId : publicationSampleIds) {
+
+            Optional<PublicationSample> publicationOptional =
+                    findById(publicationSampleId);
+
+            if (publicationOptional.isEmpty()) {
+                throw new IllegalArgumentException("Publication not found.");
+            }
+
+            PublicationSample publication =
+                    publicationOptional.get();
+
+            publication.addPublicationToCollection(collectionId);
+
+            update(publication);
+        }
+
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<PublicationSample> findAvailableForCollection(UserId userId, CollectionOfPublicationsId collectionId) {
-        return List.of();
+    public List<PublicationSample> findAvailableForCollection(
+            UserId userId,
+            CollectionOfPublicationsId collectionId) {
+
+        Objects.requireNonNull(userId ,"Arguments cannot be null");
+
+        List<PublicationSample> allUserPublications =
+                findByUserIdAndLibraryIdIsNotNull(userId);
+
+        List<PublicationSample> publicationsInCollection =
+                findByCollectionOfPublicationsId(collectionId);
+
+        return allUserPublications.stream()
+                .filter(publication ->
+                        !publicationsInCollection.contains(publication))
+                .toList();
     }
 }

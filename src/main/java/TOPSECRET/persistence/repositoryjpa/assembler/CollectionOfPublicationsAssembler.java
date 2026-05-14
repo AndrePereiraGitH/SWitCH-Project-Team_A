@@ -5,6 +5,10 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 
 /**
  * Assembler responsible for converting {@link CollectionOfPublications}
@@ -80,5 +84,35 @@ public class CollectionOfPublicationsAssembler {
                 collectionDM.isPrivate());
 
         return collection;
+    }
+
+    /**
+     * Converts a list of {@link CollectionOfPublicationsDM} objects
+     * into a list of {@link CollectionOfPublications} domain entities.
+     *
+     * <p>
+     * Each data model instance is individually converted through
+     * {@link #toDomain(CollectionOfPublicationsDM)} in order to ensure
+     * consistency between persistence and domain layers.
+     * </p>
+     *
+     * @param dmList list of collection data models to convert
+     * @return list of corresponding domain entities
+     *
+     * @throws NullPointerException if dmList is null
+     */
+    public List<CollectionOfPublications> toDomainList(
+            List<CollectionOfPublicationsDM> dmList) {
+
+        Objects.requireNonNull(dmList,
+                "CollectionOfPublicationsDM list must not be null");
+
+        List<CollectionOfPublications> collections = new ArrayList<>();
+
+        for (CollectionOfPublicationsDM dm : dmList) {
+            collections.add(toDomain(dm));
+        }
+
+        return collections;
     }
 }

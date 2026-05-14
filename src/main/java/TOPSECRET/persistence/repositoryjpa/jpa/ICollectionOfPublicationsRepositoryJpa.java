@@ -1,8 +1,11 @@
 package TOPSECRET.persistence.repositoryjpa.jpa;
 
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 /**
  * Spring Data JPA repository for {@link CollectionOfPublicationsDM}.
@@ -22,4 +25,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface ICollectionOfPublicationsRepositoryJpa
         extends JpaRepository<CollectionOfPublicationsDM, CollectionOfPublicationsId> {
+
+
+    /**
+     * Retrieves all collections owned by a specific user.
+     *
+     * <p>
+     * This query operation searches the persistence layer for every
+     * {@link CollectionOfPublicationsDM} associated with the given owner.
+     * </p>
+     *
+     * @param ownerId identifier of the collection owner
+     * @return list of collections belonging to the specified user;
+     * returns an empty list if none are found
+     */
+    List<CollectionOfPublicationsDM> findByOwnerId(UserId ownerId);
 }
