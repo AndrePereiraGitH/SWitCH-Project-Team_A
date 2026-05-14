@@ -124,6 +124,26 @@ class CollectionOfPublicationsAssembler {
   + toDomain(dm : CollectionOfPublicationsDM) : CollectionOfPublications
 }
 
+class CollectionOfPublicationsDM {
+  - id : CollectionOfPublicationsId
+  - collectionName : String
+  - genreId : GenreId
+  - userId : UserId
+  - isPrivate : boolean
+  + getId() : CollectionOfPublicationsId
+  + getCollectionName() : String
+  + getGenreId() : GenreId
+  + getUserId() : UserId
+  + getIsPrivate() : boolean
+}
+
+class GenreDM {
+  - id : GenreId
+  - genreType : String
+  + getId() : GenreId
+  + getGenreType() : String
+}
+
 rectangle Database {
 }
 
@@ -138,7 +158,14 @@ CollectionOfPublicationsRepositoryJpaImpl "1" ..> "1" CollectionOfPublicationsAs
 ICollectionOfPublicationsRepositoryJpa "1" ..> "1" Database : queries
 
 GenreAssembler "1" ..> "1" GenreFactory : uses
+GenreAssembler "1" ..> "1" GenreDM : reads
+GenreAssembler "1" ..> "1" Genre : creates
+IGenreRepositoryJpa "1" ..> "0..*" GenreDM : returns
+
 CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublicationsFactory : uses
+CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublicationsDM : reads
+CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublications : creates
+ICollectionOfPublicationsRepositoryJpa "1" ..> "0..*" CollectionOfPublicationsDM : returns
 
 ' _____________________
 ' DEPENDENCIES
