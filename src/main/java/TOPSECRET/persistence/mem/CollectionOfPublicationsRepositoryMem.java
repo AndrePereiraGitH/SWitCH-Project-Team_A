@@ -124,6 +124,11 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         throw new InstanceNotFoundException("collection not found by Id: " + collectionId);
     }
 
+    @Override
+    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
+        return List.of();
+    }
+
     /**
      * {@inheritDoc}
      */

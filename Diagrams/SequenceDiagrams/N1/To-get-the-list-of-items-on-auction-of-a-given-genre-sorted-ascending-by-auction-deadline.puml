@@ -1,0 +1,19 @@
+@startuml
+
+hide footbox
+autonumber
+title To get the list of items on auction \nof a given genre sorted ascending by auction deadline
+
+actor Buyer
+participant ":System" as System
+
+Buyer -> System : I want to get the list of items on auction \nof a given genre sorted ascending \nby auction deadline
+activate System
+Buyer <-- System : Which genre? Choose!
+deactivate System
+Buyer -> System : genre
+activate System
+System --> Buyer : Shows the list of items \nsorted by Auction End Date
+deactivate System
+
+@enduml

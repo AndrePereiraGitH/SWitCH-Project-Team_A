@@ -20,6 +20,7 @@ participant ":ToCreateCollectionOfPublicationsController" as Controller
 participant ":IGenreRepository" as Repo
 participant ":IGenreRepositoryJpa" as JpaRepo
 participant "DataBase" as DB
+participant "genreDMList: List<GenreDM>" as GenreDMList
 participant ":GenreAssembler" as Assembler
 participant ":GenreFactory" as Factory
 participant "allGenreList: List<Genre>" as allGenreList
@@ -42,7 +43,8 @@ activate DB
 DB --> JpaRepo : data
 deactivate DB
 
-JpaRepo --> Repo : List<GenreDM>
+JpaRepo -->> GenreDMList ** : <<create>>
+JpaRepo --> Repo : genreDMList
 deactivate JpaRepo
 
 Repo -->> allGenreList ** : <<create>>

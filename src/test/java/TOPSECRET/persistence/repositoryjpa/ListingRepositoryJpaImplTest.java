@@ -410,4 +410,55 @@ class ListingRepositoryJpaImplTest {
         // Assert
         assertEquals(2, result.size());
     }
+
+    @Test
+    void shouldReturnListingIdsByPublicationSampleIds() {
+
+        // Arrange
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        ListingId listingId = mock(ListingId.class);
+        ListingDM dm = mock(ListingDM.class);
+
+        when(dm.getListingId()).thenReturn(listingId);
+        when(jpa.findAllByItemsId(List.of(sampleId))).thenReturn(List.of(dm));
+
+        // Act
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(sampleId));
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(listingId, result.get(0));
+
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoListingsExist() {
+
+        // Arrange
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+
+        when(jpa.findAllByItemsId(List.of(sampleId))).thenReturn(List.of());
+
+        // Act
+        List<ListingId> result = repo.findIdsByPublicationSampleIdIn(List.of(sampleId));
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPublicationSampleIdsIsNull() {
+
+        // Act & Assert
+        Exception ex = assertThrows(
+                NullPointerException.class,
+                () -> repo.findIdsByPublicationSampleIdIn(null));
+
+        assertEquals(
+                "List of PublicationSampleIds cannot be null",
+                ex.getMessage());
+    }
 }

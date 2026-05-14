@@ -1,0 +1,75 @@
+@startuml
+
+title Class Diagram - Register a new country in the System
+hide circle
+
+
+class ICountryRepository {
+    +save (Country country): Country
+    }
+
+class CountryFactory {
+    +create(countryName): Country
+}
+
+class ToRegisterNewCountryController{
+  + register(String countryName): String
+}
+
+class CountryService {
++createAndSave(String countryName): Country
+}
+
+class CountryAssembler{
++toDM(Country country): CountryDM
++toDomain(CountryDM countryDM): Country
+}
+
+class ICountryRepositoryJPA{
++save(CountryDM): String
+}
+
+class CountryDM{
+-countryName: String
+-_countryID : CountryID
+}
+
+
+class Country {
+-countryName: String
+-_countryID : CountryID
+}
+
+class CountryRepositoryJPAImpl {
++save(Country country): Country
+}
+
+rectangle Database{
+}
+
+class AutomatedGeneratedCountryJPAImpl{
+}
+
+class UI{
+}
+
+CountryService ..> CountryFactory : asks for creation
+CountryFactory ..> Country : creates
+CountryAssembler ..> CountryDM : crafts
+CountryAssembler ..> CountryFactory : makes use to recreate
+
+
+ToRegisterNewCountryController ..> CountryService : asks for service
+CountryService ..> ICountryRepository : asks to save
+CountryRepositoryJPAImpl .--|> ICountryRepository : implements
+CountryRepositoryJPAImpl ..> CountryDM : receives
+CountryRepositoryJPAImpl ..> ICountryRepositoryJPA : uses
+AutomatedGeneratedCountryJPAImpl .--|> ICountryRepositoryJPA : implements
+AutomatedGeneratedCountryJPAImpl ..> Database : queries
+
+CountryRepositoryJPAImpl ..> CountryAssembler : uses
+
+UI ..> ToRegisterNewCountryController : requests functionality
+
+
+@enduml

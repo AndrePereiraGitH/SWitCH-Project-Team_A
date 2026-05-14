@@ -61,6 +61,8 @@ public interface ICollectionOfPublicationsRepository {
      */
     CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException;
 
+    List<CollectionOfPublications> getUserCollections(UserId ownerId);
+
     /**
      * Returns all collections owned by a given user.
      *

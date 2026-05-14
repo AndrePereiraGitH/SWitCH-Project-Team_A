@@ -9,6 +9,7 @@ participant ":US020CollectionOfPublicationsDTOMapper" as mapper
 participant ":IUserRepository" as userRepo
 participant ":IUserRepositoryJPA" as userRepoJpa
 database ":Database" as DB
+participant "userDM\n:Optional<UserDM>" as userDM
 participant ":UserAssembler" as userAssembler
 participant ":UserFactory" as userFactory
 participant "user:\nUser" as user
@@ -48,8 +49,9 @@ loop for each collection in publicCollectionsList
     activate DB
     DB --> userRepoJpa : data
     deactivate DB
+    userRepoJpa --> userDM ** : <<create>>
 
-    userRepoJpa --> userRepo : Optional<UserDM>
+    userRepoJpa --> userRepo : userDM
     deactivate userRepoJpa
 
     alt user found
@@ -72,7 +74,7 @@ loop for each collection in publicCollectionsList
 
     alt user found
         mapper -> mapper : user.getUserName()
-        mapper -> collectionDTO ** : <<create>>
+        mapper -->> collectionDTO ** : <<create>>
         mapper -> mapper : publicCollectionsDTO.add(collectionDTO)
     else user not found
         mapper --> mapper : throws IllegalStateException

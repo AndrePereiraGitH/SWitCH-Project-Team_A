@@ -106,12 +106,28 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
     public CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
 
-          Optional<CollectionOfPublicationsDM> collectionDM = collectionRepositoryJpa.findById(collectionId);
+        Optional<CollectionOfPublicationsDM> collectionDM = collectionRepositoryJpa.findById(collectionId);
 
-          if (collectionDM.isEmpty()) {
-              throw new InstanceNotFoundException("Collection does not exists");
-          }
+        if (collectionDM.isEmpty()) {
+            throw new InstanceNotFoundException("Collection does not exists");
+        }
         return collectionOfPublicationsAssembler.toDomain(collectionDM.get());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
+
+        if (ownerId == null) {
+            throw new IllegalArgumentException("OwnerId cannot be null");
+        }
+
+        List<CollectionOfPublicationsDM> collectionDMList =
+                collectionRepositoryJpa.findByOwnerId(ownerId);
+
+        return collectionOfPublicationsAssembler.toDomainList(collectionDMList);
     }
 
     /**

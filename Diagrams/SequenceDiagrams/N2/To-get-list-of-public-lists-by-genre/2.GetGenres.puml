@@ -8,6 +8,7 @@ participant ":PublicListByGenreController" as Ctrl
 participant ":IGenreRepository" as genreRepo
 participant ":IGenreRepositoryJpa" as genreRepoJpa
 database ":Database" as DB
+participant ":genreDMList\nList<GenreDM>" as genreDMList
 participant "genreList:\nList<Genre>" as genreList
 participant ":GenreAssembler" as genreAssembler
 participant ":GenreFactory" as genreFactory
@@ -37,6 +38,8 @@ genreRepoJpa -> DB : select all genres
 activate DB
 DB --> genreRepoJpa : data
 deactivate DB
+genreRepoJpa --> genreDMList ** : <<create>>
+
 
 genreRepoJpa --> genreRepo : genreDMList
 deactivate genreRepoJpa
@@ -65,7 +68,7 @@ activate genreMapper
 genreMapper -->> genresDTOList ** : <<create>>
 
 loop for each genre in genreList
-    genreMapper -> genreDTO ** : <<create>>
+    genreMapper -->> genreDTO ** : <<create>>
     genreMapper -> genreMapper : genresDTOList.add(genreDTO)
 end
 

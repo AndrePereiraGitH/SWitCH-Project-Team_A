@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -122,4 +124,114 @@ class CollectionOfPublicationsAssemblerTest {
         assertThrows(NullPointerException.class,
                 () -> assembler.toDomain(null));
     }
+
+    // =========================================================================
+    // toDomainList()
+    // =========================================================================
+
+    @Test
+    void toDomainListShouldReturnAValidList() {
+
+        // Arrange
+        String collectionName = "Fantasy Collection";
+        boolean isPrivate = false;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        CollectionOfPublicationsDM collectionDM =
+                new CollectionOfPublicationsDM(
+                        collectionIdDouble,
+                        collectionName,
+                        genreIdDouble,
+                        userIdDouble,
+                        isPrivate,
+                        publicUntil
+                );
+
+        List<CollectionOfPublicationsDM> dmList =
+                List.of(collectionDM);
+
+        CollectionOfPublications collectionDouble =
+                mock(CollectionOfPublications.class);
+
+        when(factoryDouble.create(
+                collectionIdDouble,
+                collectionName,
+                genreIdDouble,
+                userIdDouble,
+                isPrivate,
+                publicUntil
+        )).thenReturn(collectionDouble);
+
+        // Act
+        List<CollectionOfPublications> result =
+                assembler.toDomainList(dmList);
+
+        // Assert
+        assertNotNull(result);
+    }
+
+    @Test
+    void toDomainListShouldReturnCorrectSize() {
+
+        // Arrange
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        String collectionName = "Fantasy Collection";
+        boolean isPrivate = false;
+
+        CollectionOfPublicationsDM collectionDM =
+                new CollectionOfPublicationsDM(
+                        collectionIdDouble,
+                        collectionName,
+                        genreIdDouble,
+                        userIdDouble,
+                        isPrivate,
+                        publicUntil
+                );
+
+        List<CollectionOfPublicationsDM> dmList =
+                List.of(collectionDM);
+
+        CollectionOfPublications collectionDouble =
+                mock(CollectionOfPublications.class);
+
+        when(factoryDouble.create(
+                collectionIdDouble,
+                collectionName,
+                genreIdDouble,
+                userIdDouble,
+                isPrivate,
+                publicUntil
+        )).thenReturn(collectionDouble);
+
+        // Act
+        List<CollectionOfPublications> result =
+                assembler.toDomainList(dmList);
+
+        // Assert
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void toDomainListShouldReturnEmptyListWhenInputIsEmpty() {
+
+        // Arrange
+        List<CollectionOfPublicationsDM> dmList =
+                List.of();
+
+        // Act
+        List<CollectionOfPublications> result =
+                assembler.toDomainList(dmList);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void toDomainListShouldThrowIfDMListIsNull() {
+
+        // Act & Assert
+        assertThrows(NullPointerException.class,
+                () -> assembler.toDomainList(null));
+    }
+
 }

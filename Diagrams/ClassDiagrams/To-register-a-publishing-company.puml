@@ -1,33 +1,84 @@
 @startuml
-title To register a publishing company in the system
+title Register a Publishing Company
 
-class US006ToRegisterNewPublisherController {
-  -publisherRepository: PublisherRepository
-  +registerPublisher(name: String, vatNumber: String, contact: Contact): boolean
+' ── UI Layer ───────────────────────────────────────────────
+class UI {
 }
 
-class PublisherRepository {
-  -publishers: List<Publisher>
-  +create(name: String, vatNumber: String, contact: Contact)
-  -isExistent()
-  -publishers.add(publisher:Publisher)
+' ── Controller Layer ───────────────────────────────────────
+class ToRegisterNewPublisherController {
+  + registerPublisher(name: String, vatNumber: String, contact: Contact): boolean
+}
+
+' ── Application Layer ──────────────────────────────────────
+class PublisherService {
+  + createAndSave(name: String, vatNumber: String, contact: Contact): Publisher
+}
+
+' ── Domain Layer ───────────────────────────────────────────
+interface IPublisherRepository {
+  + save(publisher: Publisher): Publisher
+  + existsById(id: PublisherID): boolean
 }
 
 class PublisherFactory {
-  +create(name: String, vatNumber: String, contact: Contact)
+  + create(name: String, vatNumber: String, contact: Contact): Publisher
+  + create(id: PublisherID, name: String, vatNumber: String, contact: Contact): Publisher
 }
-
 
 class Publisher {
-  -name: String
-  -vatNumber: String
-  -contact: Contact
+  - id: PublisherID
+  - name: String
+  - vatNumber: String
+  - contact: Contact
 }
 
-US006ToRegisterNewPublisherController "1" ..> "1" PublisherRepository : requests registration to >
-PublisherRepository "1" --> "1" PublisherFactory : uses >
-PublisherFactory "1" ..> "*" Publisher : creates >
-PublisherRepository "1" --> "*" Publisher : stores >
+' ── Infrastructure Layer ───────────────────────────────────
+class PublisherRepositoryJpaImpl {
+  + save(publisher: Publisher): Publisher
+  + existsById(id: PublisherID): boolean
+}
 
+class AutomaticGeneratedPublisherJPAImpl {
+}
+
+interface IPublisherRepositoryJpa {
+  + existsById(id: PublisherID): boolean
+  + save(dm: PublisherDM): PublisherDM
+}
+
+class PublisherAssembler {
+  + toDM(publisher: Publisher): PublisherDM
+  + toDomain(dm: PublisherDM): Publisher
+}
+
+class PublisherDM {
+  - id: PublisherID
+  - name: String
+  - vatNumber: String
+  - contact: Contact
+}
+
+Rectangle Database {
+}
+
+' ── Relationships ──────────────────────────────────────────
+UI "1" ..> "1" ToRegisterNewPublisherController : uses
+ToRegisterNewPublisherController "1" ..> "1" PublisherService : uses
+
+PublisherService "1" ..> "1" PublisherFactory : uses
+PublisherService "1" ..> "1" IPublisherRepository : uses
+
+IPublisherRepository <|.. PublisherRepositoryJpaImpl : implements
+PublisherRepositoryJpaImpl "1" ..> "1" IPublisherRepositoryJpa : delegates to
+PublisherRepositoryJpaImpl "1" ..> "1" PublisherAssembler : converts with
+
+IPublisherRepositoryJpa <|.. AutomaticGeneratedPublisherJPAImpl : implements
+AutomaticGeneratedPublisherJPAImpl "1" ..> "1" Database : queries
+
+PublisherAssembler "1" ..> "1" PublisherDM : creates
+PublisherAssembler "1" ..> "1" PublisherFactory : uses
+
+PublisherFactory "1" ..> "*" Publisher : creates
 
 @enduml

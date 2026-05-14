@@ -81,6 +81,10 @@ class ToCreateCollectionOfPublicationsController {
   + createCollection(name : String, genreId : GenreId, userId : UserId) : CollectionOfPublications
 }
 
+class CollectionOfPublicationsService {
+  + createAndSave(name : String, genreId : GenreId, userId : UserId) : CollectionOfPublications
+}
+
 class US017GenreMapper {
   + {static} toDTOList(genres : List<Genre>) : List<US017GenreDTO>
   + {static} toDTO(genre : Genre) : US017GenreDTO
@@ -120,23 +124,48 @@ class CollectionOfPublicationsAssembler {
   + toDomain(dm : CollectionOfPublicationsDM) : CollectionOfPublications
 }
 
+class CollectionOfPublicationsDM {
+  - id : CollectionOfPublicationsId
+  - collectionName : String
+  - genreId : GenreId
+  - userId : UserId
+  - isPrivate : boolean
+  + getId() : CollectionOfPublicationsId
+  + getCollectionName() : String
+  + getGenreId() : GenreId
+  + getUserId() : UserId
+  + getIsPrivate() : boolean
+}
+
+class GenreDM {
+  - id : GenreId
+  - genreType : String
+  + getId() : GenreId
+  + getGenreType() : String
+}
+
 rectangle Database {
 }
 
 GenreRepositoryJpaImpl ..|> IGenreRepository : <<implements>>
 GenreRepositoryJpaImpl "1" ..> "1" IGenreRepositoryJpa : uses
 GenreRepositoryJpaImpl "1" ..> "1" GenreAssembler : uses
-IGenreRepositoryJpa --|> JpaRepository : extends
 IGenreRepositoryJpa "1" ..> "1" Database : queries
 
 CollectionOfPublicationsRepositoryJpaImpl ..|> ICollectionOfPublicationsRepository : <<implements>>
 CollectionOfPublicationsRepositoryJpaImpl "1" ..> "1" ICollectionOfPublicationsRepositoryJpa : uses
 CollectionOfPublicationsRepositoryJpaImpl "1" ..> "1" CollectionOfPublicationsAssembler : uses
-ICollectionOfPublicationsRepositoryJpa --|> JpaRepository : extends
 ICollectionOfPublicationsRepositoryJpa "1" ..> "1" Database : queries
 
 GenreAssembler "1" ..> "1" GenreFactory : uses
+GenreAssembler "1" ..> "1" GenreDM : reads
+GenreAssembler "1" ..> "1" Genre : creates
+IGenreRepositoryJpa "1" ..> "0..*" GenreDM : returns
+
 CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublicationsFactory : uses
+CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublicationsDM : reads
+CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublications : creates
+ICollectionOfPublicationsRepositoryJpa "1" ..> "0..*" CollectionOfPublicationsDM : returns
 
 ' _____________________
 ' DEPENDENCIES
@@ -144,9 +173,10 @@ CollectionOfPublicationsAssembler "1" ..> "1" CollectionOfPublicationsFactory : 
 
 UI "1" ..> "1" ToCreateCollectionOfPublicationsController : uses
 ToCreateCollectionOfPublicationsController "1" ..> "1" IGenreRepository : uses
-ToCreateCollectionOfPublicationsController "1" ..> "1" ICollectionOfPublicationsRepository : uses
-ToCreateCollectionOfPublicationsController "1" ..> "1" CollectionOfPublicationsFactory : uses
+ToCreateCollectionOfPublicationsController "1" ..> "1" CollectionOfPublicationsService : uses
 ToCreateCollectionOfPublicationsController "1" ..> "1" US017GenreMapper : uses
+CollectionOfPublicationsService "1" ..> "1" ICollectionOfPublicationsRepository : uses
+CollectionOfPublicationsService "1" ..> "1" CollectionOfPublicationsFactory : uses
 US017GenreMapper "1" ..> "0..*" US017GenreDTO : <<creates>>
 US017GenreMapper "1" ..> "0..*" Genre : reads
 

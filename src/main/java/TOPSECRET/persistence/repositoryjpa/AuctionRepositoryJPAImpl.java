@@ -118,4 +118,18 @@ public class AuctionRepositoryJPAImpl implements IAuctionRepository {
                 .map(auctionAssembler::toDomain)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+     public List<Auction> findByListingIdInOrderByAuctionDeadlineAsc(List<ListingId> listingIds) {
+
+         Objects.requireNonNull(listingIds, "listingIds cannot be null");
+
+         List<AuctionDM> auctionsDM = auctionRepoJPA.findByListingIdInOrderByAuctionEndDateTimeAsc(listingIds);
+
+         return auctionsDM.stream()
+                .map(auctionAssembler::toDomain)
+                .toList();
+     }
 }

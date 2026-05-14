@@ -27,4 +27,19 @@ public interface ICollectionOfPublicationsRepositoryJpa
         extends JpaRepository<CollectionOfPublicationsDM, CollectionOfPublicationsId> {
     CollectionOfPublicationsDM update(CollectionOfPublicationsDM collectionDMtOUpdate);
     List<CollectionOfPublicationsDM> findAllByOwnerId(UserId ownerId);
+
+
+    /**
+     * Retrieves all collections owned by a specific user.
+     *
+     * <p>
+     * This query operation searches the persistence layer for every
+     * {@link CollectionOfPublicationsDM} associated with the given owner.
+     * </p>
+     *
+     * @param ownerId identifier of the collection owner
+     * @return list of collections belonging to the specified user;
+     * returns an empty list if none are found
+     */
+    List<CollectionOfPublicationsDM> findByOwnerId(UserId ownerId);
 }

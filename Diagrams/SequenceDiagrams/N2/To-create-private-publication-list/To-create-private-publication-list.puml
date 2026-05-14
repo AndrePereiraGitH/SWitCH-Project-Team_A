@@ -8,6 +8,7 @@ participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
 participant ":IGenreRepository" as GenreRepo
 participant ":IGenreRepositoryJpa" as GenreJpaRepo
+participant "genreDMList: List<GenreDM>" as GenreDMList
 participant ":GenreAssembler" as GenreAssembler
 participant ":GenreFactory" as GenreFactory
 participant "allGenreList: List<Genre>" as allGenreList
@@ -15,11 +16,12 @@ participant ":US017GenreMapper" as GenreMapper
 participant "listOfGenreDTO: List<US017GenreDTO>" as listOfGenreDTO
 participant ":Genre" as Genre
 participant "genreDTO: US017GenreDTO" as GDTO
+participant ":CollectionOfPublicationsService" as Service
 participant ":ICollectionOfPublicationsRepository" as CollectionRepo
-participant ":CollectionOfPublicationsFactory" as Factory
 participant ":ICollectionOfPublicationsRepositoryJpa" as CollectionJpaRepo
-participant ":CollectionOfPublicationsAssembler" as CollectionAssembler
 participant "DataBase" as DB
+participant ":CollectionOfPublicationsAssembler" as CollectionAssembler
+participant ":CollectionOfPublicationsFactory" as Factory
 
 ' --- Start ---
 User -> UI : I want to create a new private collection of publications
@@ -45,7 +47,8 @@ GenreJpaRepo -> DB : SELECT * FROM genres
 activate DB
 DB --> GenreJpaRepo : data
 deactivate DB
-GenreJpaRepo --> GenreRepo : List<GenreDM>
+GenreJpaRepo -->> GenreDMList ** : <<create>>
+GenreJpaRepo --> GenreRepo : genreDMList
 deactivate GenreJpaRepo
 
 GenreRepo -->> allGenreList ** : <<create>>
@@ -102,15 +105,18 @@ activate UI
 UI -> Controller : createCollection(name, genreId, userId)
 activate Controller
 
-Controller -> Factory : create(name, genreId, userId)
+Controller -> Service : createAndSave(name, genreId, userId)
+activate Service
+
+Service -> Factory : create(name, genreId, userId)
 activate Factory
 create "cp:CollectionOfPublications" as CP
 Factory -->> CP : <<create>>
 note right : _isPrivate = true\n(enforced by constructor)
-Factory --> Controller : cp
+Factory --> Service : cp
 deactivate Factory
 
-Controller -> CollectionRepo : save(cp)
+Service -> CollectionRepo : save(cp)
 activate CollectionRepo
 
 CollectionRepo -> CollectionJpaRepo : existsById(cp.id())
@@ -123,7 +129,8 @@ CollectionJpaRepo --> CollectionRepo : false
 deactivate CollectionJpaRepo
 
 alt [collection already exists]
-    CollectionRepo --> Controller : error: "Collection already exists"
+    CollectionRepo --> Service : error: "Collection already exists"
+    Service --> Controller : error: "Collection already exists"
     Controller --> UI : error: "Collection already exists"
 
 else [collection does NOT exist]
@@ -139,8 +146,10 @@ else [collection does NOT exist]
     activate CollectionJpaRepo
     CollectionJpaRepo -> DB : INSERT INTO collections ...
     activate DB
-    DB --> CollectionJpaRepo : savedDM
+    DB --> CollectionJpaRepo : data
     deactivate DB
+    create "savedDM:CollectionOfPublicationsDM" as SavedDM
+    CollectionJpaRepo -->> SavedDM : <<create>>
     CollectionJpaRepo --> CollectionRepo : savedDM
     deactivate CollectionJpaRepo
 
@@ -155,8 +164,11 @@ else [collection does NOT exist]
     CollectionAssembler --> CollectionRepo : savedCP
     deactivate CollectionAssembler
 
-    CollectionRepo --> Controller : savedCP
+    CollectionRepo --> Service : savedCP
     deactivate CollectionRepo
+
+    Service --> Controller : savedCP
+    deactivate Service
 
     Controller --> UI : savedCP
     deactivate Controller
