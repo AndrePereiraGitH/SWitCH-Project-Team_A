@@ -7,6 +7,7 @@ actor Buyer
 participant ":UI" as UI
 participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
 
+
 participant ":IAuction\nRepository" as AuctionRepo
 participant ":IAuction\nRepositoryJPA" as AJPA
 participant ":Auction\nAssembler" as AuctionAssembler

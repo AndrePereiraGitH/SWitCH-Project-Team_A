@@ -1,0 +1,110 @@
+@startuml
+hide footbox
+autonumber
+title To Get a List Of Items On Auction By A Given Genre Sorted Ascending by Auction Deadline
+
+actor Buyer
+participant ":UI" as UI
+participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
+
+
+participant ":IAuction\nRepository" as AuctionRepo
+participant ":IAuction\nRepositoryJPA" as AJPA
+participant ":Auction\nAssembler" as AuctionAssembler
+participant ":Auction\nFactory" as Factory
+participant "auctionDMList:\nList<AuctionDM>"
+participant "listOfAuctionOnGivenGenreSortedAsc\nList<Auction>"
+participant ":US022Auction\nMapper" as AuctionMapper
+participant "DataBase" as DB
+
+Buyer -> UI : I want to get a list of items\n on auction of a given genre\nsorted ascending \nby auction deadline
+activate UI
+
+UI -> Controller : getAllGenres()
+activate Controller
+ref over Controller
+[[2.GetAllGenres.puml Get All Genres]]
+end ref
+Controller --> UI : listOfGenreDTO
+deactivate Controller
+
+UI --> Buyer : Show genres! Choose
+deactivate UI
+
+Buyer -> UI : Select genre
+activate UI
+
+UI -> Controller : findListOfItemsOnAuctionBy\nGenreIdSortedByDeadlineAsc(genre)
+activate Controller
+
+ref over Controller
+find BibliograghicalData By Genre ID
+[[3.findBdByGenreID.puml]]
+end ref
+
+ref over Controller
+Find ItemsId By BibliographicalDataId
+[[4.findItemsIdByBdId.puml]]
+end ref
+
+
+ref over Controller
+Find ListingId By ItemsId
+[[5.findListingByItemId.puml]]
+end ref
+
+
+Controller -> AuctionRepo : findByListingIdInOrder\nByAuctionDeadlineAsc(listOfListing)
+activate AuctionRepo
+AuctionRepo -> AJPA : findByListingIdInOrder\nByAuctionDeadlineAsc(listOfListingId)
+activate AJPA
+AJPA -> DB : SELECT * FROM auction\nWHERE listing_id IN\nORDER BY auctionEndDateTime ASC
+activate DB
+DB --> AJPA : data
+deactivate DB
+AJPA -->> "auctionDMList:\nList<AuctionDM>" ** : <<create>>
+AJPA --> AuctionRepo : auctionDMList
+deactivate AJPA
+
+AuctionRepo -->> "listOfAuctionOnGivenGenreSortedAsc\nList<Auction>" ** : <<create>>
+
+loop for each dm in auctionDMList
+    AuctionRepo -> AuctionAssembler : toDomain(dm)
+    activate AuctionAssembler
+    AuctionAssembler -> Factory : create(dm.getAuctionId(), .... )
+    activate Factory
+    Factory -->> "auction:Auction" ** : <<create>>
+    Factory --> AuctionAssembler : auction
+    deactivate Factory
+    AuctionAssembler --> AuctionRepo : auction
+    deactivate AuctionAssembler
+
+    opt
+    AuctionRepo -> AuctionRepo : listOfAuctionOnGivenGenreSortedASC.add(auction)
+    end
+end
+
+deactivate AJPA
+AuctionRepo --> Controller : listOfAuctionOnGivenGenreSortedASC
+deactivate AuctionRepo
+
+Controller -> AuctionMapper : toDTOList(listOfAuctionOnGivenGenreSortedASC)
+activate AuctionMapper
+AuctionMapper -->> "listOfAuctionDTO:\nList<US022AuctionDTO>" ** : <<create>>
+
+loop for each Auction in listOfAuctionOfGivenGenre
+
+    AuctionMapper -> "AuctionDTO:\nUS022AuctionDTO" ** : toDTO
+    AuctionMapper -> AuctionMapper : listOfAuctionDTO.add(auctionDTO)
+end
+
+AuctionMapper --> Controller : listOfAuctionDTO
+deactivate AuctionMapper
+
+Controller --> UI : listOfAuctionDTO
+deactivate Controller
+
+UI --> Buyer : Display items
+deactivate UI
+
+@enduml

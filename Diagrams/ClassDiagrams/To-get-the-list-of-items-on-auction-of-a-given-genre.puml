@@ -5,8 +5,9 @@ title Class Diagram – To Get a List Of Items On Auction By A Given Genre
 class UI
 
 class ToGetListOfItemsOnAuctionOfGivenGenreController {
-    + getAllGenres() : Genre
+    + getAllGenres() : List<Genre>
     + findListOfItemsOnAuctionByGenreId(genreDTO) : (US022GenreDTO) : List
+    + findListOfItemsOnAuctionByGenreIdSortedByDeadlineAsc(genreDTO) : (US022GenreDTO) : List
 }
 
 UI "1"-.> "1"ToGetListOfItemsOnAuctionOfGivenGenreController : uses
@@ -77,6 +78,7 @@ interface IAuctionRepository {
 
 interface IAuctionRepositoryJPA {
     + findAllByListingId(listOfListingId : List<ListingId>) : List<AuctionDM>
+    + findByListingIdInOrderByAuctionEndDateTimeAsc(listOfListingId : List <ListingId>) : List<AuctionDM>
 }
 
 class AuctionRepositoryJPAImpl{}

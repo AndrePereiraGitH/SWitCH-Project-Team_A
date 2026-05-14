@@ -1,9 +1,11 @@
 package TOPSECRET.persistence.repositoryjpa;
 
+import TOPSECRET.controller.ToGetListOfItemsOnAuctionOfGivenGenreController;
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.Bid;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.dto.US022AuctionDTO;
 import TOPSECRET.persistence.repositoryjpa.assembler.AuctionAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AuctionDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IAuctionRepositoryJPA;
@@ -253,5 +255,37 @@ class AuctionRepositoryJPAImplTest {
 
         // Assert
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByListingIdInOrderByAuctionDeadlineAsc_shouldReturnSortedAuctions() {
+
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        List<ListingId> listingIds = List.of(listingIdDouble);
+
+        AuctionDM auctionDM1Double = mock(AuctionDM.class);
+        AuctionDM auctionDM2Double = mock(AuctionDM.class);
+
+        Auction auction1Double = mock(Auction.class);
+        Auction auction2Double = mock(Auction.class);
+
+        List<AuctionDM> auctionsDM = List.of(auctionDM1Double, auctionDM2Double);
+
+        when(auctionRepoJPA.findByListingIdInOrderByAuctionEndDateTimeAsc(listingIds)).thenReturn(auctionsDM);
+
+        when(auctionAssembler.toDomain(auctionDM1Double)).thenReturn(auction1Double);
+        when(auctionAssembler.toDomain(auctionDM2Double)).thenReturn(auction2Double);
+
+        // Act
+        List<Auction> result = repository.findByListingIdInOrderByAuctionDeadlineAsc(listingIds);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        assertEquals(auction1Double, result.get(0));
+        assertEquals(auction2Double, result.get(1));
     }
 }
