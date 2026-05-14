@@ -1,7 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.persistence.repositoryjpa.assembler.EditionAssembler;
@@ -84,7 +84,7 @@ class EditionRepositoryJPAImplTest {
     @Test
     void existsById_shouldReturnFalse_whenEditionDoesNotExist() {
         // Arrange
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
 
         when(jpa.existsById(editionIdDouble)).thenReturn(false);
 
@@ -99,7 +99,7 @@ class EditionRepositoryJPAImplTest {
     void existsById_shouldReturnTrue_whenExists() {
 
         // Arrange
-        EditionID id = mock(EditionID.class);
+        EditionId id = mock(EditionId.class);
         when(jpa.existsById(id)).thenReturn(true);
 
         // Act
@@ -126,7 +126,7 @@ class EditionRepositoryJPAImplTest {
     void findEditionById_shouldReturn_whenFound() {
 
         // Arrange
-        EditionID id = mock(EditionID.class);
+        EditionId id = mock(EditionId.class);
         EditionDM dm = mock(EditionDM.class);
         Edition edition = mock(Edition.class);
 
@@ -145,7 +145,7 @@ class EditionRepositoryJPAImplTest {
     void findById_shouldReturnEmpty_whenNotFound() {
 
         // Arrange
-        EditionID id = mock(EditionID.class);
+        EditionId id = mock(EditionId.class);
         when(jpa.findById(id)).thenReturn(Optional.empty());
 
         // Act
@@ -197,8 +197,8 @@ class EditionRepositoryJPAImplTest {
         EditionDM dm1 = mock(EditionDM.class);
         EditionDM dm2 = mock(EditionDM.class);
 
-        EditionID id1 = mock(EditionID.class);
-        EditionID id2 = mock(EditionID.class);
+        EditionId id1 = mock(EditionId.class);
+        EditionId id2 = mock(EditionId.class);
 
         when(dm1.getPublisherId()).thenReturn(publisherID);
         when(dm1.getEditionID()).thenReturn(id1);
@@ -208,7 +208,7 @@ class EditionRepositoryJPAImplTest {
         when(jpa.findAll()).thenReturn(List.of(dm1, dm2));
 
         // Act
-        List<EditionID> result = repo.findIdsByPublisherId(publisherID);
+        List<EditionId> result = repo.findIdsByPublisherId(publisherID);
 
         // Assert
         assertEquals(1, result.size());

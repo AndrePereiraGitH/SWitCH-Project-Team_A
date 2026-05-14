@@ -40,17 +40,22 @@ import static org.mockito.Mockito.*;
  *
  * <p>The tests confirm that:</p>
  * <ul>
- *   <li>exactly one {@link PublicationSample} instance is constructed per factory call;</li>
- *   <li>the returned object corresponds to the constructed instance;</li>
- *   <li>both creation paths correctly delegate object instantiation.</li>
+ *   <li><b>New object</b> — {@link PublicationSampleFactory#create(BibliographicalDataId, UserId, PublicationStatus, EditionId, Condition)}:
+ *       identity is generated internally by the domain object.</li>
+ *   <li><b>Reconstruction</b> — {@link PublicationSampleFactory#create(PublicationSampleId, BibliographicalDataId, UserId, PublicationStatus, EditionId, Condition, LibraryId, CollectionOfPublicationsId)}:
+ *       a pre-existing identity is supplied, restoring a previously persisted object.</li>
  * </ul>
+ *
+ * <p>{@link MockedConstruction} is used to intercept {@link PublicationSample} construction,
+ * isolating the factory from the domain entity's internal logic and confirming
+ * that exactly one instance is created per factory call.</p>
  */
 class PublicationSampleFactoryTest {
 
     private PublicationSampleId pbSampleIdDouble;
-    private BibliographicalDataID bdIdDouble;
+    private BibliographicalDataId bdIdDouble;
     private UserId userIdDouble;
-    private EditionID editionIdDouble;
+    private EditionId editionIdDouble;
     private PublicationStatus status;
     private Condition condition;
     private LibraryId libraryId;
@@ -60,9 +65,9 @@ class PublicationSampleFactoryTest {
     @BeforeEach
     void setup(){
         pbSampleIdDouble = mock(PublicationSampleId.class);
-        bdIdDouble = mock(BibliographicalDataID.class);
+        bdIdDouble = mock(BibliographicalDataId.class);
         userIdDouble = mock(UserId.class);
-        editionIdDouble = mock(EditionID.class);
+        editionIdDouble = mock(EditionId.class);
         status = PublicationStatus.READ;
         condition = Condition.NEW;
         libraryId = mock(LibraryId.class);

@@ -8,7 +8,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US026AuctionDTO;
@@ -150,9 +150,9 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
         AuthorId authorId = mock(AuthorId.class);
 
-        BibliographicalDataID bdId1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2 = mock(BibliographicalDataID.class);
-        List<BibliographicalDataID> bibliographicalDataIds = List.of(bdId1, bdId2);
+        BibliographicalDataId bdId1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
+        List<BibliographicalDataId> bibliographicalDataIds = List.of(bdId1, bdId2);
 
         PublicationSampleId sampleId1 = mock(PublicationSampleId.class);
         PublicationSampleId sampleId2 = mock(PublicationSampleId.class);
@@ -198,7 +198,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
         AuthorId authorId = mock(AuthorId.class);
 
-        List<BibliographicalDataID> bibliographicalDataIds = List.of();
+        List<BibliographicalDataId> bibliographicalDataIds = List.of();
         List<PublicationSampleId> publicationSampleIds = List.of();
         List<ListingId> listingIds = List.of();
         List<Auction> auctions = List.of();
@@ -235,12 +235,12 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
         AuthorId authorId = mock(AuthorId.class);
 
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSampleId sampleId = mock(PublicationSampleId.class);
         ListingId listingId = mock(ListingId.class);
         Auction auction = mock(Auction.class);
 
-        List<BibliographicalDataID> bibliographicalDataIds = List.of(bdId);
+        List<BibliographicalDataId> bibliographicalDataIds = List.of(bdId);
         List<PublicationSampleId> publicationSampleIds = List.of(sampleId);
         List<ListingId> listingIds = List.of(listingId);
         List<Auction> auctions = List.of(auction);

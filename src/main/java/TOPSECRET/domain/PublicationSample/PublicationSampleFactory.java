@@ -2,6 +2,10 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.ValueObjects.*;
 import org.springframework.stereotype.Service;
 
@@ -52,8 +56,8 @@ public class PublicationSampleFactory {
      *
      * @throws IllegalArgumentException if any argument is {@code null}
      */
-    public PublicationSample create(BibliographicalDataID bibliographicalDataId, UserId userId,
-                                    PublicationStatus publicationStatus, EditionID editionId, Condition condition){
+    public PublicationSample create(BibliographicalDataId bibliographicalDataId, UserId userId,
+                                    PublicationStatus publicationStatus, EditionId editionId, Condition condition) {
 
         return new PublicationSample(bibliographicalDataId, userId, publicationStatus, editionId, condition);
     }
@@ -98,10 +102,10 @@ public class PublicationSampleFactory {
      */
     public PublicationSample create(
             PublicationSampleId pubSampleId,
-            BibliographicalDataID bibliographicalDataId,
+            BibliographicalDataId bibliographicalDataId,
             UserId userId,
             PublicationStatus publicationStatus,
-            EditionID editionId,
+            EditionId editionId,
             Condition condition,
             LibraryId libraryId,
             CollectionOfPublicationsId collectionOfPublicationsId) {

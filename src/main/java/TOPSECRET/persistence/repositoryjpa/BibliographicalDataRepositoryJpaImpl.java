@@ -3,7 +3,7 @@ package TOPSECRET.persistence.repositoryjpa;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.persistence.repositoryjpa.assembler.BibliographicalDataAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.BibliographicalDataDM;
@@ -89,7 +89,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      */
     @Override
     public Optional<BibliographicalData> findById(
-            BibliographicalDataID bibliographicalDataId
+            BibliographicalDataId bibliographicalDataId
     ) {
         Objects.requireNonNull(
                 bibliographicalDataId,
@@ -106,7 +106,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public List<BibliographicalDataID> findAllByGenreId(GenreId genreId) {
+    public List<BibliographicalDataId> findAllByGenreId(GenreId genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("genreId cannot be null");
         }
@@ -122,7 +122,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public Optional<BibliographicalDataID> findIdByTitle(String bdTitle) {
+    public Optional<BibliographicalDataId> findIdByTitle(String bdTitle) {
         Objects.requireNonNull(bdTitle, "Title must not be null");
 
         if (bdTitle.isBlank()) {
@@ -139,7 +139,7 @@ public class BibliographicalDataRepositoryJpaImpl implements IBibliographicalDat
      * @InheritDoc
      */
     @Override
-    public List<BibliographicalDataID> findIdByAuthorId(AuthorId authorId) {
+    public List<BibliographicalDataId> findIdByAuthorId(AuthorId authorId) {
         if (authorId == null) {
             throw new IllegalArgumentException("authorId cannot be null.");
         }

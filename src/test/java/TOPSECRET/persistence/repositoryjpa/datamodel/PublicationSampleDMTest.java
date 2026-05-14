@@ -34,9 +34,9 @@ import static org.mockito.Mockito.mock;
 class PublicationSampleDMTest {
 
     private PublicationSampleId pubSampleId;
-    private BibliographicalDataID bdId;
+    private BibliographicalDataId bdId;
     private UserId ownerId;
-    private EditionID editionId;
+    private EditionId editionId;
     private LibraryId libraryId;
     private CollectionOfPublicationsId collectionOfPublicationsId;
     private PublicationStatus publicationStatus;
@@ -45,9 +45,9 @@ class PublicationSampleDMTest {
     @BeforeEach
     void setup(){
         pubSampleId = mock(PublicationSampleId.class);
-        bdId = mock(BibliographicalDataID.class);
+        bdId = mock(BibliographicalDataId.class);
         ownerId = mock(UserId.class);
-        editionId = mock(EditionID.class);
+        editionId = mock(EditionId.class);
         libraryId = mock(LibraryId.class);
         collectionOfPublicationsId = mock(CollectionOfPublicationsId.class);
         publicationStatus = PublicationStatus.READ;

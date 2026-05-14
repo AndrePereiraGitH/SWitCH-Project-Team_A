@@ -2,7 +2,7 @@ package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.GenreId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class BibliographicalDataFactoryTest {
     GenreId genreId;
 
     @Mock
-    BibliographicalDataID bdID;
+    BibliographicalDataId bdID;
 
     @BeforeEach
     void setUp() {

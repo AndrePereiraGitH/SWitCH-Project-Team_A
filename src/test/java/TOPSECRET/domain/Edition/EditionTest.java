@@ -647,7 +647,7 @@ class EditionTest {
                 "Book",
                 Locale.ENGLISH, LocalDate.of(2020, 1, 1), binding);
 
-        EditionID id = e.id();
+        EditionId id = e.id();
 
         // Assert
         assertFalse(id.getID().isBlank());
@@ -690,7 +690,7 @@ class EditionTest {
     void reCreate_shouldPreserveId() {
 
         // Arrange
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
 
         TypeOfBinding binding = mock(TypeOfBinding.class);
 

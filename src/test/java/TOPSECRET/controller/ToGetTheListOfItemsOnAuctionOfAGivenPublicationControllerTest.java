@@ -4,7 +4,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
@@ -158,7 +158,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getAuctionListingsByTitle_ShouldReturnEmptyList_WhenNoAuctionListingsExist() {
         // Arrange
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
 
         PublicationSampleId pubId_1 = mock(PublicationSampleId.class);
         PublicationSampleId pubId_2 = mock(PublicationSampleId.class);
@@ -181,7 +181,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     @Test
     void getAuctionListingsByTitle_ShouldReturnListOfDTOs_WhenAuctionListingsExist() {
         // Arrange
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
 
         PublicationSampleId pubId_1 = mock(PublicationSampleId.class);
         PublicationSampleId pubId_2 = mock(PublicationSampleId.class);

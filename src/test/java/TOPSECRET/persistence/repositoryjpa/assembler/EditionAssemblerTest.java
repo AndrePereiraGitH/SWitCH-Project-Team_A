@@ -49,7 +49,7 @@ class EditionAssemblerTest {
     private PublicationTypeId publicationTypeIdDouble;
     private PublisherID publisherIDdouble;
     private TypeOfBinding typeOfBindingDouble;
-    private EditionID editionIDDouble;
+    private EditionId editionIdDouble;
 
     @BeforeEach
     void setup() {
@@ -64,7 +64,7 @@ class EditionAssemblerTest {
         publicationTypeIdDouble = mock(PublicationTypeId.class);
         publisherIDdouble = mock(PublisherID.class);
         typeOfBindingDouble = mock(TypeOfBinding.class);
-        editionIDDouble = mock(EditionID.class);
+        editionIdDouble = mock(EditionId.class);
 
         when(editionDMDouble.getCode()).thenReturn(codeDouble);
         when(editionDMDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);
@@ -80,7 +80,7 @@ class EditionAssemblerTest {
         // Arrange
         assembler = new EditionAssembler(factory);
 
-        when(editionDouble.id()).thenReturn(editionIDDouble);
+        when(editionDouble.id()).thenReturn(editionIdDouble);
         when(editionDouble.getEditionNumber()).thenReturn("1st");
         when(editionDouble.getCode()).thenReturn(codeDouble);
         when(editionDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);
@@ -96,7 +96,7 @@ class EditionAssemblerTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals(editionIDDouble, result.getEditionID());
+        assertEquals(editionIdDouble, result.getEditionID());
         assertEquals("1st", result.getEditionNumber());
         assertEquals(codeDouble, result.getCode());
         assertEquals(physicalAttributesDouble, result.getPhysicalAttributes());
@@ -120,7 +120,7 @@ class EditionAssemblerTest {
         // Arrange
         assembler = new EditionAssembler(factory);
 
-        when(editionDMDouble.getEditionID()).thenReturn(editionIDDouble);
+        when(editionDMDouble.getEditionID()).thenReturn(editionIdDouble);
         when(editionDMDouble.getEditionNumber()).thenReturn("1st");
         when(editionDMDouble.getCode()).thenReturn(codeDouble);
         when(editionDMDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);
@@ -134,7 +134,7 @@ class EditionAssemblerTest {
         Edition expectedEdition = mock(Edition.class);
 
         when(factory.create(
-                eq(editionIDDouble),
+                eq(editionIdDouble),
                 eq("1st"),
                 eq(codeDouble),
                 eq(physicalAttributesDouble),

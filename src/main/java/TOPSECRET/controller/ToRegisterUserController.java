@@ -21,9 +21,12 @@ public class ToRegisterUserController {
     private final UserService userService;
 
     public ToRegisterUserController(UserService userService) {
+
+        if(userService == null){
+            throw new IllegalArgumentException("UserService cannot be null");
+        }
         this.userService = userService;
     }
-
 
     /**
      * Registers a new user in the system.

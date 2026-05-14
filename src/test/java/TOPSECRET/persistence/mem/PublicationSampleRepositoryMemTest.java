@@ -3,8 +3,8 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.ValueObjects.*;
@@ -27,8 +27,8 @@ import static org.mockito.Mockito.*;
  * including construction, creation, persistence, identity lookup, and
  * domain-specific queries.</p>
  *
- * <p>All collaborators ({@link PublicationSampleFactory}, {@link BibliographicalDataID},
- * {@link UserId}, {@link EditionID}) are provided as Mockito test doubles,
+ * <p>All collaborators ({@link PublicationSampleFactory}, {@link BibliographicalDataId},
+ * {@link UserId}, {@link EditionId}) are provided as Mockito test doubles,
  * keeping each test focused on the behaviour of the repository in isolation.</p>
  *
  * <p>Test coverage is organised into the following sections:</p>
@@ -57,15 +57,15 @@ import static org.mockito.Mockito.*;
  */
 class PublicationSampleRepositoryMemTest {
 
-    private BibliographicalDataID bibliographicalDataID_Double;
-    private EditionID editionID_Double;
+    private BibliographicalDataId bibliographicalDataId_Double;
+    private EditionId editionId_Double;
     private UserId userID_Double;
 
     @BeforeEach
     void setUp() {
         userID_Double = createDoubleUserID();
-        editionID_Double = createDoubleEditionID();
-        bibliographicalDataID_Double = createDoubleBibliographicalDataID();
+        editionId_Double = createDoubleEditionID();
+        bibliographicalDataId_Double = createDoubleBibliographicalDataID();
     }
 
 
@@ -441,8 +441,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
         PublicationSampleId pbId_3 = mock(PublicationSampleId.class);
 
-        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
@@ -479,8 +479,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
         PublicationSampleId pbId_3 = mock(PublicationSampleId.class);
 
-        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
@@ -521,8 +521,8 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findPubSampleIdsByBibliographicalDataId_shouldReturnEmptyList_whenNoMatchesBdId()  {
         // Arrange
-        BibliographicalDataID bdId_1 = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId_2 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_2);
@@ -555,11 +555,11 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
         PublicationSampleId pbId_3 = mock(PublicationSampleId.class);
 
-        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId1Double = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2Double = mock(BibliographicalDataId.class);
 
-        EditionID editionId1Double = mock(EditionID.class);
-        EditionID editionId2Double = mock(EditionID.class);
+        EditionId editionId1Double = mock(EditionId.class);
+        EditionId editionId2Double = mock(EditionId.class);
 
         PublicationSample pbSample1 = mock(PublicationSample.class);
         when(pbSample1.getEditionID()).thenReturn(editionId1Double);
@@ -594,11 +594,11 @@ class PublicationSampleRepositoryMemTest {
         PublicationSampleId id_1 = mock(PublicationSampleId.class);
         PublicationSampleId id_2 = mock(PublicationSampleId.class);
 
-        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId1Double = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2Double = mock(BibliographicalDataId.class);
 
-        EditionID editionId1Double = mock(EditionID.class);
-        EditionID editionId2Double = mock(EditionID.class);
+        EditionId editionId1Double = mock(EditionId.class);
+        EditionId editionId2Double = mock(EditionId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getEditionID()).thenReturn(editionId1Double);
@@ -633,11 +633,11 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findIdsByEditionIdIn_shouldReturnEmptyList_whenNoPubSampleMatchesEditionIds()  {
         // Arrange
-        BibliographicalDataID bdId1Double = mock(BibliographicalDataID.class);
-        BibliographicalDataID bdId2Double = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId1Double = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2Double = mock(BibliographicalDataId.class);
 
-        EditionID editionId1Double = mock(EditionID.class);
-        EditionID editionId2Double = mock(EditionID.class);
+        EditionId editionId1Double = mock(EditionId.class);
+        EditionId editionId2Double = mock(EditionId.class);
 
         PublicationSample pbSample_1 = mock(PublicationSample.class);
         when(pbSample_1.getEditionID()).thenReturn(editionId1Double);
@@ -1191,6 +1191,132 @@ class PublicationSampleRepositoryMemTest {
     }
 
     // ===========================================================
+    // == Tests for findPublicationSamplesIdsByBiblioDataIds =====
+    // ===========================================================
+
+    @Test
+    void findPublicationSamplesIdsByBiblioDataIds_shouldReturnListWithMultipleIds_whenMultiplePublicationSamplesIdsMatchGivenBdIds() {
+        // Arrange
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_3 = mock(BibliographicalDataId.class);
+
+        PublicationSampleId psId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_2 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_3 = mock(PublicationSampleId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
+        when(pbSample_1.id()).thenReturn(psId_1);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getBibliographicalDataID()).thenReturn(bdId_2);
+        when(pbSample_2.id()).thenReturn(psId_2);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
+        when(pbSample_3.id()).thenReturn(psId_3);
+
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        repo.save(pbSample_1);
+        repo.save(pbSample_2);
+        repo.save(pbSample_3);
+
+        List<BibliographicalDataId> bds = List.of(bdId_1, bdId_2);
+
+        // Act
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(psId_1));
+        assertTrue(result.contains(psId_2));
+        assertFalse(result.contains(psId_3));
+    }
+
+    @Test
+    void findPublicationSamplesIdsByBiblioDataIds_shouldReturnListWithOneId_whenOnePublicationSampleMatchesGivenBdIds()  {
+        // Arrange
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_3 = mock(BibliographicalDataId.class);
+
+        PublicationSampleId psId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_2 = mock(PublicationSampleId.class);
+        PublicationSampleId psId_3 = mock(PublicationSampleId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
+        when(pbSample_1.id()).thenReturn(psId_1);
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getBibliographicalDataID()).thenReturn(bdId_2);
+        when(pbSample_2.id()).thenReturn(psId_2);
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
+        when(pbSample_3.id()).thenReturn(psId_3);
+
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        repo.save(pbSample_1);
+        repo.save(pbSample_2);
+        repo.save(pbSample_3);
+
+        List<BibliographicalDataId> bds = List.of(bdId_2);
+
+        // Act
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(psId_2, result.get(0));
+    }
+
+    @Test
+    void findPublicationSamplesIdsByBiblioDataIds_shouldReturnEmptyList_whenNoPublicationSampleMatchesGivenBdIds() {
+        // Arrange
+        BibliographicalDataId bdId_1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_2 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId_3 = mock(BibliographicalDataId.class);
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        when(pbSample_1.getBibliographicalDataID()).thenReturn(bdId_1);
+        when(pbSample_1.id()).thenReturn(mock(PublicationSampleId.class));
+
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        when(pbSample_2.getBibliographicalDataID()).thenReturn(bdId_2);
+        when(pbSample_2.id()).thenReturn(mock(PublicationSampleId.class));
+
+        PublicationSample pbSample_3 = mock(PublicationSample.class);
+        when(pbSample_3.getBibliographicalDataID()).thenReturn(bdId_3);
+        when(pbSample_3.id()).thenReturn(mock(PublicationSampleId.class));
+
+
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        List<BibliographicalDataId> bds = List.of(mock(BibliographicalDataId.class));
+
+        // Act
+        List<PublicationSampleId> result = repo.findPublicationSamplesIdsByBiblioDataIds(bds);
+
+        // Assert
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void findPublicationSamplesIdsByBiblioDataIds_shouldThrowException_whenBdIdsListIsNull() {
+        // Arrange
+        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesIdsByBiblioDataIds(null));
+    }
+
+    // ===========================================================
     // ======== Tests for addPublicationToLibrary ================
     // ===========================================================
 
@@ -1298,7 +1424,7 @@ class PublicationSampleRepositoryMemTest {
         // Arrange
         PublicationSampleId psDoubleId = mock(PublicationSampleId.class);
         PublicationSample psDouble = mock(PublicationSample.class);
-        when(psDouble.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+        when(psDouble.getBibliographicalDataID()).thenReturn(bibliographicalDataId_Double);
         when(psDouble.id()).thenReturn(psDoubleId);
 
         IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
@@ -1306,7 +1432,7 @@ class PublicationSampleRepositoryMemTest {
 
         // Act
         List<PublicationSampleId> result =
-                repo.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataID_Double));
+                repo.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId_Double));
 
         // Assert
         assertEquals(1, result.size());
@@ -1316,7 +1442,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findIdsByBibliographicalDataIdIn_shouldReturnEmptyList_whenNoMatch() {
         // Arrange
-        BibliographicalDataID bdIdDouble1 = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdIdDouble1 = mock(BibliographicalDataId.class);
         PublicationSampleId psDoubleId = mock(PublicationSampleId.class);
         PublicationSample psDouble = mock(PublicationSample.class);
         when(psDouble.getBibliographicalDataID()).thenReturn(bdIdDouble1);
@@ -1327,7 +1453,7 @@ class PublicationSampleRepositoryMemTest {
 
         // Act
         List<PublicationSampleId> result =
-                repo.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataID_Double));
+                repo.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId_Double));
 
         // Assert
         assertTrue(result.isEmpty());
@@ -1342,8 +1468,8 @@ class PublicationSampleRepositoryMemTest {
         PublicationSample psDouble1 = mock(PublicationSample.class);
         PublicationSample psDouble2 = mock(PublicationSample.class);
 
-        when(psDouble1.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
-        when(psDouble2.getBibliographicalDataID()).thenReturn(bibliographicalDataID_Double);
+        when(psDouble1.getBibliographicalDataID()).thenReturn(bibliographicalDataId_Double);
+        when(psDouble2.getBibliographicalDataID()).thenReturn(bibliographicalDataId_Double);
         when(psDouble1.id()).thenReturn(idDouble1);
         when(psDouble2.id()).thenReturn(idDouble2);
 
@@ -1353,7 +1479,7 @@ class PublicationSampleRepositoryMemTest {
 
         // Act
         List<PublicationSampleId> result =
-                repo.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataID_Double));
+                repo.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId_Double));
 
         // Assert
         assertEquals(2, result.size());
@@ -1524,8 +1650,8 @@ class PublicationSampleRepositoryMemTest {
     // =================== Helper Methods ========================
     // ===========================================================
 
-    private static BibliographicalDataID createDoubleBibliographicalDataID() {
-        BibliographicalDataID bdID = mock(BibliographicalDataID.class);
+    private static BibliographicalDataId createDoubleBibliographicalDataID() {
+        BibliographicalDataId bdID = mock(BibliographicalDataId.class);
         when(bdID.getID()).thenReturn(UUID.randomUUID().toString());
         return bdID;
     }
@@ -1536,8 +1662,8 @@ class PublicationSampleRepositoryMemTest {
         return userID;
     }
 
-    private static EditionID createDoubleEditionID() {
-        EditionID editionID = mock(EditionID.class);
+    private static EditionId createDoubleEditionID() {
+        EditionId editionID = mock(EditionId.class);
         when(editionID.getID()).thenReturn(UUID.randomUUID().toString());
         return editionID;
     }

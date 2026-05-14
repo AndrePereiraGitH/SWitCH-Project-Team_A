@@ -20,10 +20,10 @@ import java.util.UUID;
 public class PublicationSample implements AggregateRoot<PublicationSampleId> {
 
     private final PublicationSampleId _pubSampleID;
-    private final BibliographicalDataID _bdID;
+    private final BibliographicalDataId _bdID;
     private final UserId _ownerID;
     private PublicationStatus _publicationStatus;
-    private final EditionID _editionID;
+    private final EditionId _editionId;
     private final Condition _condition;
     private LibraryId _libraryId;
     private CollectionOfPublicationsId _collecOfPubID;
@@ -42,8 +42,8 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
      * @param condition           the physical condition of this copy; must not be null
      * @throws IllegalArgumentException if any argument is null
      */
-    protected PublicationSample(BibliographicalDataID bdID, UserId ownerID, PublicationStatus publicationStatus,
-                                EditionID editionID, Condition condition) {
+    protected PublicationSample(BibliographicalDataId bdID, UserId ownerID, PublicationStatus publicationStatus,
+                                EditionId editionID, Condition condition) {
         if (bdID == null || ownerID == null || publicationStatus == null || editionID == null || condition == null) {
             throw new IllegalArgumentException("All criteria must not be null");
         }
@@ -54,7 +54,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         _bdID = bdID;
         _ownerID = ownerID;
         _publicationStatus = publicationStatus;
-        _editionID = editionID;
+        _editionId = editionID;
         _condition = condition;
     }
 
@@ -76,10 +76,10 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
      * @throws IllegalArgumentException if any argument is {@code null}
      */
     protected PublicationSample(PublicationSampleId pubSampleId,
-                                BibliographicalDataID bibliographicalDataId,
+                                BibliographicalDataId bibliographicalDataId,
                                 UserId userId,
                                 PublicationStatus publicationStatus,
-                                EditionID editionId,
+                                EditionId editionId,
                                 Condition condition,
                                 LibraryId libraryId,
                                 CollectionOfPublicationsId collectionOfPublicationsId) {
@@ -96,7 +96,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         _publicationStatus = Objects.requireNonNull(publicationStatus,
                 "PublicationStatus cannot be null");
 
-        _editionID = Objects.requireNonNull(editionId,
+        _editionId = Objects.requireNonNull(editionId,
                 "EditionId cannot be null");
 
         _condition = Objects.requireNonNull(condition,
@@ -112,7 +112,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
     // -------------------------------------------------------------------------
 
 
-    public BibliographicalDataID getBibliographicalDataID() {
+    public BibliographicalDataId getBibliographicalDataID() {
         return _bdID;
     }
 
@@ -126,8 +126,8 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
     }
 
 
-    public EditionID getEditionID() {
-        return _editionID;
+    public EditionId getEditionID() {
+        return _editionId;
     }
 
 
@@ -259,7 +259,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
                 _bdID,
                 _ownerID,
                 _publicationStatus,
-                _editionID,
+                _editionId,
                 _condition
         );
     }
@@ -281,6 +281,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         return _publicationStatus.isAvailableForSale();
     }
 
+
     // -------------------------------------------------------------------------
     // Identity (AggregateRoot)
     // -------------------------------------------------------------------------
@@ -296,7 +297,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         if (o == null || getClass() != o.getClass()) return false;
         PublicationSample that = (PublicationSample) o;
         return Objects.equals(_bdID, that._bdID) && Objects.equals(_ownerID, that._ownerID) &&
-                Objects.equals(_editionID, that._editionID) &&
+                Objects.equals(_editionId, that._editionId) &&
                 _condition == that._condition;
     }
 
@@ -329,10 +330,10 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
      * @param condition           the physical condition of the publication
      */
     public record PublicationDetails(
-            BibliographicalDataID bibliographicalData,
+            BibliographicalDataId bibliographicalData,
             UserId owner,
             PublicationStatus publicationStatus,
-            EditionID edition,
+            EditionId edition,
             Condition condition
     ) {
     }

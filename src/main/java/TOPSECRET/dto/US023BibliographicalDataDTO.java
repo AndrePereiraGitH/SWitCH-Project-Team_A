@@ -1,7 +1,6 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 
 import java.util.List;
 
