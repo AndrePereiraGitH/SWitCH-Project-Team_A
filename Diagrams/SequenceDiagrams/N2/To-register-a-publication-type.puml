@@ -14,7 +14,7 @@ participant ":PublicationTypeFactory" as Factory
 participant ":IPublicationTypeRepositoryJPA" as JpaRepo
 participant ":pubType:\nPublicationType" as pubType
 database "database" as DB
-participant "pubTypeList:\nList<PublicationTypeDM>" as pubTypeList
+participant "pubTypeList:\nOptional<PublicationType>" as pubTypeList
 
 User --> UI : I want to register a \nnew publication type
 activate UI

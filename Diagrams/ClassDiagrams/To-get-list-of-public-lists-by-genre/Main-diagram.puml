@@ -165,14 +165,14 @@ GenreRepositoryJpaImpl ..> IGenreRepositoryJpa : uses
 GenreRepositoryJpaImpl --> GenreAssembler : maps DM to domain
 
 GenreAssembler --> GenreFactory : uses
-GenreFactory --> GenreDM : creates
+GenreFactory --> Genre : creates
 
 UserRepositoryJPAImpl ..|> IUserRepository : implements
 UserRepositoryJPAImpl ..> IUserRepositoryJPA : uses
 UserRepositoryJPAImpl --> UserAssembler : maps DM to domain
 
 UserAssembler --> UserFactory : uses
-UserFactory --> UserDM : creates
+UserFactory --> User : creates
 
 ICollectionOfPublicationsRepositoryJpa --> CollectionOfPublicationsDM : retrieves
 IGenreRepositoryJpa --> GenreDM : retrieves
@@ -183,7 +183,6 @@ CollectionOfPublicationsAssembler ..> CollectionOfPublicationsDM : reads
 CollectionOfPublicationsAssembler ..> CollectionOfPublications : maps
 
 CollectionOfPublicationsFactory ..> CollectionOfPublications : creates
-CollectionOfPublicationsFactory ..> CollectionOfPublicationsDM : creates
 
 US013GenreDTO ..> Genre : created from
 US020CollectionOfPublicationsDTO ..> CollectionOfPublications : created from
