@@ -77,7 +77,7 @@ PublicationSampleAssembler ..> PublicationSampleDM : crafts
 LibraryAssembler ..> LibraryDM : converts data into
 LibraryRepositoryJPAImpl ..> LibraryAssembler : uses
 LibraryAssembler ..> LibraryFactory : uses
-PublicationSampleAssembler ..> PublicationSample : reconstructs
+PublicationSampleFactory ..> PublicationSample : (re)create
 
 ' ===== PublicationSample Layer Communication =====
 IPublicationSampleRepository <|.. PublicationSampleRepositoryJPAImpl : implements
