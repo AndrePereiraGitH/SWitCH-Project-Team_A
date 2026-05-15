@@ -3,9 +3,16 @@ package TOPSECRET.services;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.springframework.stereotype.Service;
+
+import javax.management.InstanceNotFoundException;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -86,5 +93,56 @@ public class CollectionOfPublicationsService {
                 collectionOfPublicationsRepository.save(createdCollection);
 
         return savedCollection;
+    }
+
+    /**
+     * Makes the collection of publications with the given identifier public.
+     *
+     * @param collectionId the identifier of the collection to make public; must not be null
+     * @return {@code true} if the collection was changed to public,
+     *         {@code false} if it was already public
+     * @throws NullPointerException if {@code collectionId} is null
+     * @throws IllegalArgumentException if no collection is found with the given identifier
+     */
+    public boolean makeCollectionPublic(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
+
+        boolean changed = collection.makePublic();
+
+        if (changed) {
+            collectionOfPublicationsRepository.update(collection);
+        }
+
+        return changed;
+    }
+
+    /**
+     * Makes a collection of publications public until the specified date and time.
+     *
+     * @param collectionId the identifier of the collection of publications to make public
+     * @param publicUntil the date and time until which the collection should remain public
+     * @return {@code true} if the collection was changed and updated; {@code false} otherwise
+     * @throws InstanceNotFoundException if no collection of publications exists with the given identifier
+     * @throws NullPointerException if {@code collectionId} or {@code publicUntil} is {@code null}
+     */
+    public boolean makeCollectionPublicUntil(CollectionOfPublicationsId collectionId, LocalDateTime publicUntil) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
+        Objects.requireNonNull(publicUntil, "Public until date cannot be null");
+
+        CollectionOfPublications collection =
+                collectionOfPublicationsRepository.findById(collectionId);
+
+        boolean changed = collection.makePublicUntil(publicUntil);
+
+        if (changed) {
+            collectionOfPublicationsRepository.update(collection);
+        }
+
+        return changed;
+
     }
 }

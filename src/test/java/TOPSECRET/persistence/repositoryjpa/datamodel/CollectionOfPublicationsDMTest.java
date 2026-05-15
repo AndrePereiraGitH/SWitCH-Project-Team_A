@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -40,6 +41,7 @@ class CollectionOfPublicationsDMTest {
     private GenreId genreId;
     private UserId userId;
     private boolean isPrivate;
+    private LocalDateTime publicUntil;
 
     @BeforeEach
     void setup() {
@@ -48,6 +50,7 @@ class CollectionOfPublicationsDMTest {
         genreId = mock(GenreId.class);
         userId = mock(UserId.class);
         isPrivate = true;
+        publicUntil = LocalDateTime.now().plusDays(5);
     }
 
     // =========================================================================
@@ -64,7 +67,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Assert
@@ -81,7 +85,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 ));
     }
 
@@ -95,7 +100,8 @@ class CollectionOfPublicationsDMTest {
                         null,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 ));
     }
 
@@ -109,7 +115,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         null,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 ));
     }
 
@@ -123,7 +130,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         null,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 ));
     }
 
@@ -152,7 +160,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Act + Assert
@@ -169,7 +178,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Act + Assert
@@ -186,7 +196,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Act + Assert
@@ -203,7 +214,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Act + Assert
@@ -211,7 +223,7 @@ class CollectionOfPublicationsDMTest {
     }
 
     @Test
-    void isPrivateShouldReturnCorrectValue() {
+    void getIsPrivateShouldReturnCorrectValue() {
 
         // Arrange
         CollectionOfPublicationsDM result =
@@ -220,7 +232,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Act + Assert
@@ -228,7 +241,7 @@ class CollectionOfPublicationsDMTest {
     }
 
     @Test
-    void isPrivateShouldReturnFalseWhenCollectionIsPublic() {
+    void isPrivateShouldReturnFalseWhenCollectionGetIsPublic() {
 
         // Arrange
         boolean isPrivate = false;
@@ -239,7 +252,8 @@ class CollectionOfPublicationsDMTest {
                         collectionName,
                         genreId,
                         userId,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Act + Assert
