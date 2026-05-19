@@ -7,7 +7,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US022AuctionDTO;
@@ -120,7 +120,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
             throw new IllegalArgumentException("genreId cannot be null");
         }
 
-        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllByGenreId(genreDTO.genreId());
+        List<BibliographicalDataId> bdId = bibliographicalDataRepository.findAllByGenreId(genreDTO.genreId());
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
 
@@ -149,7 +149,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
             throw new IllegalArgumentException("genreId cannot be null");
         }
 
-        List<BibliographicalDataID> bdId = bibliographicalDataRepository.findAllByGenreId(genreDTO.genreId());
+        List<BibliographicalDataId> bdId = bibliographicalDataRepository.findAllByGenreId(genreDTO.genreId());
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
 

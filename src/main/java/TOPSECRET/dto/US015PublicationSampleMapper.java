@@ -8,8 +8,8 @@ import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -128,7 +128,7 @@ public class US015PublicationSampleMapper {
      * @throws InstanceNotFoundException if no bibliographical data is found for the publication's ID
      */
     private BibliographicalData getBibliographicalData(PublicationSample publication) throws InstanceNotFoundException {
-        BibliographicalDataID bibliographicalDataId = publication.getBibliographicalDataID();
+        BibliographicalDataId bibliographicalDataId = publication.getBibliographicalDataID();
         BibliographicalData bd = _bdRepo.findById(bibliographicalDataId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("BibliographicalData id was not found:" + bibliographicalDataId));
@@ -144,7 +144,7 @@ public class US015PublicationSampleMapper {
      * @throws InstanceNotFoundException if no edition is found for the publication's edition ID
      */
     private Edition getEdition(PublicationSample publication) throws InstanceNotFoundException {
-        EditionID editionId = publication.getEditionID();
+        EditionId editionId = publication.getEditionID();
         Edition edition = _editionRepo.findById(editionId)
                 .orElseThrow(() ->
                         new InstanceNotFoundException("Edition was not found:" + editionId));

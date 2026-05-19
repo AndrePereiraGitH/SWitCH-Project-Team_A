@@ -5,7 +5,6 @@ import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -14,7 +13,7 @@ class EditionDMTest {
 
     private Code codeDouble = mock(Code.class);
     private PhysicalAttributes physicalAttributesDouble = mock(PhysicalAttributes.class);
-    private EditionID editionIDDouble = mock(EditionID.class);
+    private EditionId editionIdDouble = mock(EditionId.class);
     private PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
     private PublisherID publisherIDDouble = mock(PublisherID.class);
     private TypeOfBinding typeOfBindingDouble = mock(TypeOfBinding.class);
@@ -24,7 +23,7 @@ class EditionDMTest {
 
     private EditionDM createValidDM() {
         return new EditionDM(
-                editionIDDouble,
+                editionIdDouble,
                 "1st",
                 codeDouble,
                 physicalAttributesDouble,
@@ -59,7 +58,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, null, codeDouble,
+                        editionIdDouble, null, codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
                         "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
@@ -71,7 +70,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "   ", codeDouble,
+                        editionIdDouble, "   ", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
                         "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
@@ -83,7 +82,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "1st", codeDouble,
+                        editionIdDouble, "1st", codeDouble,
                         null, publicationTypeIdDouble, publisherIDDouble,
                         "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
@@ -94,7 +93,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "1st", codeDouble,
+                        editionIdDouble, "1st", codeDouble,
                         physicalAttributesDouble, null, publisherIDDouble,
                         "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
@@ -106,7 +105,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "1st", codeDouble,
+                        editionIdDouble, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, null,
                         "Book", "pt-PT", dateDouble, typeOfBindingDouble
                 ));
@@ -118,7 +117,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "1st", codeDouble,
+                        editionIdDouble, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
                         null, "pt-PT", dateDouble, typeOfBindingDouble
                 ));
@@ -130,7 +129,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "1st", codeDouble,
+                        editionIdDouble, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
                         "Book", null, dateDouble, typeOfBindingDouble
                 ));
@@ -142,7 +141,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
+                        editionIdDouble, "1st", codeDouble, physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
                         "Book", "pt-PT", null, typeOfBindingDouble
                 ));
     }
@@ -154,7 +153,7 @@ class EditionDMTest {
         //Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new EditionDM(
-                        editionIDDouble, "1st", codeDouble,
+                        editionIdDouble, "1st", codeDouble,
                         physicalAttributesDouble, publicationTypeIdDouble, publisherIDDouble,
                         "Book", "pt-PT", dateDouble, null
                 ));
@@ -171,7 +170,7 @@ class EditionDMTest {
         EditionDM dm = createValidDM();
 
         // Assert
-        assertEquals(editionIDDouble, dm.getEditionID());
+        assertEquals(editionIdDouble, dm.getEditionID());
         assertEquals("1st", dm.getEditionNumber());
         assertEquals(codeDouble, dm.getCode());
         assertEquals(physicalAttributesDouble, dm.getPhysicalAttributes());

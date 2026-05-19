@@ -5,8 +5,8 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
@@ -73,8 +73,8 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             throw new IllegalArgumentException("PublicationSample cannot be null");
         }
 
-        for(PublicationSample pbSample: allPublicationsInSystem){
-            if(pbSample.id().equals(publicationSampleId)){
+        for (PublicationSample pbSample : allPublicationsInSystem) {
+            if (pbSample.id().equals(publicationSampleId)) {
                 return true;
             }
         }
@@ -119,8 +119,8 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             throw new NullPointerException("PublicationSampleID cannot be null");
         }
 
-        for(PublicationSample pbSample: allPublicationsInSystem){
-            if(pbSample.id().equals(pbSampleId)){
+        for (PublicationSample pbSample : allPublicationsInSystem) {
+            if (pbSample.id().equals(pbSampleId)) {
                 return Optional.of(pbSample);
             }
         }
@@ -131,15 +131,15 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataID bdId){
+    public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataId bdId) {
         if (bdId == null) {
             throw new NullPointerException("PublicationSampleID cannot be null");
         }
 
         List<PublicationSampleId> listOfPubSampleId = new ArrayList<>();
 
-        for(PublicationSample pbSample:allPublicationsInSystem){
-            if(pbSample.getBibliographicalDataID().equals(bdId)){
+        for (PublicationSample pbSample : allPublicationsInSystem) {
+            if (pbSample.getBibliographicalDataID().equals(bdId)) {
                 listOfPubSampleId.add(pbSample.id());
             }
         }
@@ -150,14 +150,14 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionID> listOfEditionIds) {
+    public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
         if (listOfEditionIds == null) {
             throw new NullPointerException("listOfEditionIds cannot be null");
         }
 
         List<PublicationSampleId> listOfPubSampleIds = new ArrayList<>();
 
-        for(EditionID editionId: listOfEditionIds) {
+        for (EditionId editionId : listOfEditionIds) {
             for (PublicationSample pbSample : allPublicationsInSystem) {
                 if (pbSample.getEditionID().equals(editionId)) {
                     listOfPubSampleIds.add(pbSample.id());
@@ -172,19 +172,19 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // -------------------------------------------------------------------------
 
     @Override
-    public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataID> bdIds) {
-        if(bdIds == null) {
+    public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
+        if (bdIds == null) {
             throw new IllegalArgumentException("BibliographicalDataID List cannot be null");
         }
 
         List<PublicationSampleId> publicationSampleIds = new ArrayList<>();
 
-        for (PublicationSample pbSample : allPublicationsInSystem){
+        for (PublicationSample pbSample : allPublicationsInSystem) {
 
-            BibliographicalDataID bdId = pbSample.getBibliographicalDataID();
+            BibliographicalDataId bdId = pbSample.getBibliographicalDataID();
 
-            for(BibliographicalDataID bdId2: bdIds){
-                if(bdId.equals(bdId2)){
+            for (BibliographicalDataId bdId2 : bdIds) {
+                if (bdId.equals(bdId2)) {
                     publicationSampleIds.add(pbSample.id());
                     break;
                 }
@@ -205,16 +205,16 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId){
+    public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId) {
 
-        if(userId == null){
+        if (userId == null) {
             throw new NullPointerException("UserId must not be null");
         }
 
         List<PublicationSample> listOfPublications = new ArrayList<>();
 
-        for(PublicationSample pubSample: allPublicationsInSystem) {
-            if(pubSample.isOwnedByUser(userId) && pubSample.isInUserLibrary()) {
+        for (PublicationSample pubSample : allPublicationsInSystem) {
+            if (pubSample.isOwnedByUser(userId) && pubSample.isInUserLibrary()) {
                 listOfPublications.add(pubSample);
             }
         }
@@ -225,21 +225,41 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId){
+    public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
 
-        if(userId == null){
+        if (userId == null) {
             throw new NullPointerException("UserId must not be null");
         }
 
         List<PublicationSample> listOfPublicationsNotInLibrary = new ArrayList<>();
 
-        for(PublicationSample pubSample: allPublicationsInSystem){
-            if(pubSample.isOwnedByUser(userId) && !pubSample.isInUserLibrary()){
+        for (PublicationSample pubSample : allPublicationsInSystem) {
+            if (pubSample.isOwnedByUser(userId) && !pubSample.isInUserLibrary()) {
                 listOfPublicationsNotInLibrary.add(pubSample);
             }
         }
 
         return listOfPublicationsNotInLibrary;
+    }
+
+    /**
+     * Retrieves all publication sample IDs whose bibliographical data ID is in the given list.
+     *
+     * @param bds the list of bibliographical data IDs; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     */
+    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataId> bds) {
+
+        if (bds == null) {
+            throw new IllegalArgumentException("List of BibliographicalDataId cannot be null.");
+        }
+
+        List<PublicationSampleId> samplesOfAuthor = allPublicationsInSystem.stream()
+                .filter(pub -> bds.contains(pub.getBibliographicalDataID()))
+                .map(PublicationSample::id)
+                .toList();
+
+        return samplesOfAuthor;
     }
 
     /**
@@ -257,7 +277,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * {@inheritDoc}
      */
-    public boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId){
+    public boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId) {
 
         if (publicationSample == null) {
             throw new IllegalArgumentException("PublicationSample cannot be null");
@@ -285,7 +305,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         List<PublicationSample> listOfAvailablePublications = new ArrayList<>();
 
         for (PublicationSample pbSample : allPublications) {
-            if(pbSample.isAvailableForSale()) {
+            if (pbSample.isAvailableForSale()) {
                 listOfAvailablePublications.add(pbSample);
             }
         }

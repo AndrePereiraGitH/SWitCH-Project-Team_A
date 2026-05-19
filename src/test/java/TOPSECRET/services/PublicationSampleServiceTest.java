@@ -5,8 +5,8 @@ import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,17 +40,17 @@ class PublicationSampleServiceTest {
     // Test Doubles (Collaborators)
     // =========================================================================
 
-    private BibliographicalDataID bdIdDouble;
+    private BibliographicalDataId bdIdDouble;
     private UserId userIdDouble;
-    private EditionID editionIdDouble;
+    private EditionId editionIdDouble;
     private PublicationStatus status;
     private Condition condition;
 
     @BeforeEach
     public void setUp() {
-        bdIdDouble = mock(BibliographicalDataID.class);
+        bdIdDouble = mock(BibliographicalDataId.class);
         userIdDouble = mock(UserId.class);
-        editionIdDouble = mock(EditionID.class);
+        editionIdDouble = mock(EditionId.class);
         status = PublicationStatus.READ;
         condition = Condition.NEW;
     }

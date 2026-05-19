@@ -35,7 +35,7 @@ public interface IEditionRepository {
      *
      * @throws NullPointerException if {@code id} is null
      */
-    boolean existsById(EditionID id);
+    boolean existsById(EditionId id);
 
     /**
      * Finds an edition by its unique identifier.
@@ -45,7 +45,7 @@ public interface IEditionRepository {
      *         or an empty {@link Optional} if no edition with the given ID exists
      * @throws NullPointerException if {@code editionID} is {@code null}
      */
-    Optional<Edition> findById(EditionID editionID);
+    Optional<Edition> findById(EditionId editionID);
 
     /**
      * Retrieves all Edition aggregates stored in the repository.
@@ -61,7 +61,7 @@ public interface IEditionRepository {
     List<Edition> findAll();
 
     /**
-     * Retrieves all {@link EditionID} values associated with the given {@link PublisherID}.
+     * Retrieves all {@link EditionId} values associated with the given {@link PublisherID}.
      * <p>
      * This method performs a repository-level query that returns the identifiers of all editions
      * published by the specified publisher. If no editions exist for the given publisher, the method
@@ -70,12 +70,12 @@ public interface IEditionRepository {
      *
      * @param publisherId the identifier of the publisher whose edition IDs should be retrieved;
      *                    must not be null
-     * @return an immutable list of {@link EditionID} values associated with the given publisher;
+     * @return an immutable list of {@link EditionId} values associated with the given publisher;
      *         never null, but may be empty
      *
      * @throws IllegalArgumentException if {@code publisherId} is null
      */
-    List<EditionID> findIdsByPublisherId(PublisherID publisherId);
+    List<EditionId> findIdsByPublisherId(PublisherID publisherId);
 
     /**
      * Finds all Edition aggregates associated with the given publisher.

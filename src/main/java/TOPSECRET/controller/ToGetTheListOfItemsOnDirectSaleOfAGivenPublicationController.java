@@ -2,8 +2,8 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.*;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
@@ -103,13 +103,13 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
     /**
      * Retrieves all direct‑sale listings that contain publication samples linked to the
-     * given {@link BibliographicalDataID}, and converts them into {@link US023ListingDTO}.
+     * given {@link BibliographicalDataId}, and converts them into {@link US023ListingDTO}.
      *
      * @param bdId the bibliographical data identifier
      * @return a list of listing DTOs
      * @throws InstanceNotFoundException if any Listing does not correspond to an existing Listing
      */
-    public List<US023ListingDTO> findListOfItemsOnDirectSale(BibliographicalDataID bdId) throws InstanceNotFoundException {
+    public List<US023ListingDTO> findListOfItemsOnDirectSale(BibliographicalDataId bdId) throws InstanceNotFoundException {
 
         if (bdId == null) {
             throw new IllegalArgumentException("bdId cannot be null");

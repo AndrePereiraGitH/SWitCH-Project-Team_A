@@ -2,7 +2,7 @@ package TOPSECRET.domain.BibliographicalData;
 
 import TOPSECRET.ddd.AggregateRoot;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 
 import java.time.LocalDate;
@@ -27,9 +27,9 @@ import java.util.UUID;
  */
 
 
-public class BibliographicalData implements AggregateRoot<BibliographicalDataID> {
+public class BibliographicalData implements AggregateRoot<BibliographicalDataId> {
 
-    private final BibliographicalDataID _bibliographicalDataID;
+    private final BibliographicalDataId _bibliographicalDataId;
     private final String _title;
     private final List<AuthorId> _authors;
     private final Locale _originalLanguage;
@@ -68,7 +68,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
             throw new IllegalArgumentException("Genres list cannot be empty");
         }
 
-        this._bibliographicalDataID = new BibliographicalDataID(UUID.randomUUID().toString());
+        this._bibliographicalDataId = new BibliographicalDataId(UUID.randomUUID().toString());
         this._title = title;
         this._authors = List.copyOf(authors);
         this._originalLanguage = originalLanguage;
@@ -80,7 +80,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
     // Reconstructor ==================================================================================================
 
     protected BibliographicalData(
-            BibliographicalDataID bibliographicalDataID,
+            BibliographicalDataId bibliographicalDataID,
             String title,
             List<AuthorId> authors,
             Locale originalLanguage,
@@ -104,7 +104,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
             throw new IllegalArgumentException("Genres list cannot be empty");
         }
 
-        this._bibliographicalDataID = bibliographicalDataID;
+        this._bibliographicalDataId = bibliographicalDataID;
         this._title = title;
         this._authors = List.copyOf(authors);
         this._originalLanguage = originalLanguage;
@@ -122,7 +122,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
      * @return the non-null ID
      */
 
-    public BibliographicalDataID id() { return _bibliographicalDataID; }
+    public BibliographicalDataId id() { return _bibliographicalDataId; }
 
     /**
      * Returns the title of the work.
@@ -236,7 +236,7 @@ public class BibliographicalData implements AggregateRoot<BibliographicalDataID>
     public boolean sameAs(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         BibliographicalData that = (BibliographicalData) o;
-        return Objects.equals(_bibliographicalDataID, that._bibliographicalDataID);
+        return Objects.equals(_bibliographicalDataId, that._bibliographicalDataId);
     }
 
 

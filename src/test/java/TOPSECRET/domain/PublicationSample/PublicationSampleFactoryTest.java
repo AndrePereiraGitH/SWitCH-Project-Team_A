@@ -2,8 +2,8 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,9 +18,9 @@ import static org.mockito.Mockito.*;
  *
  * <p>Verifies both creation paths exposed by the factory:</p>
  * <ul>
- *   <li><b>New object</b> — {@link PublicationSampleFactory#create(BibliographicalDataID, UserId, PublicationStatus, EditionID, Condition)}:
+ *   <li><b>New object</b> — {@link PublicationSampleFactory#create(BibliographicalDataId, UserId, PublicationStatus, EditionId, Condition)}:
  *       identity is generated internally by the domain object.</li>
- *   <li><b>Reconstruction</b> — {@link PublicationSampleFactory#create(PublicationSampleId, BibliographicalDataID, UserId, PublicationStatus, EditionID, Condition)}:
+ *   <li><b>Reconstruction</b> — {@link PublicationSampleFactory#create(PublicationSampleId, BibliographicalDataId, UserId, PublicationStatus, EditionId, Condition)}:
  *       a pre-existing identity is supplied, restoring a previously persisted object.</li>
  * </ul>
  *
@@ -31,9 +31,9 @@ import static org.mockito.Mockito.*;
 class PublicationSampleFactoryTest {
 
     private PublicationSampleId pbSampleIdDouble;
-    private BibliographicalDataID bdIdDouble;
+    private BibliographicalDataId bdIdDouble;
     private UserId userIdDouble;
-    private EditionID editionIdDouble;
+    private EditionId editionIdDouble;
     private PublicationStatus status;
     private Condition condition;
 
@@ -41,9 +41,9 @@ class PublicationSampleFactoryTest {
     @BeforeEach
     void setup(){
         pbSampleIdDouble = mock(PublicationSampleId.class);
-        bdIdDouble = mock(BibliographicalDataID.class);
+        bdIdDouble = mock(BibliographicalDataId.class);
         userIdDouble = mock(UserId.class);
-        editionIdDouble = mock(EditionID.class);
+        editionIdDouble = mock(EditionId.class);
         status = PublicationStatus.READ;
         condition = Condition.NEW;
     }

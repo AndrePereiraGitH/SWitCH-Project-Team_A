@@ -202,12 +202,12 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         US022GenreDTO genreDto = mock(US022GenreDTO.class);
         when(genreDto.genreId()).thenReturn(genreId);
 
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSampleId itemId = mock(PublicationSampleId.class);
         ListingId listingId = mock(ListingId.class);
         AuctionId auctionId = mock(AuctionId.class);
 
-        List<BibliographicalDataID> bdIds = List.of(bdId);
+        List<BibliographicalDataId> bdIds = List.of(bdId);
         List<PublicationSampleId> itemIds = List.of(itemId);
         List<ListingId> listingIds = List.of(listingId);
 
@@ -451,7 +451,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         // Arrange
         GenreId genreId = mock(GenreId.class);
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
 
         US022GenreDTO genreDTO = mock(US022GenreDTO.class);
         when(genreDTO.genreId()).thenReturn(genreId);
@@ -482,7 +482,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         // Arrange
         GenreId genreId = mock(GenreId.class);
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSampleId sampleId = mock(PublicationSampleId.class);
         US022GenreDTO genreDTO = mock(US022GenreDTO.class);
 
@@ -529,7 +529,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         when(genreDto.genreId()).thenReturn(genreId);
 
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSampleId itemId = mock(PublicationSampleId.class);
         ListingId listingId = mock(ListingId.class);
 
@@ -592,11 +592,11 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         when(genreDTO.genreId()).thenReturn(genreId);
 
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSampleId itemId = mock(PublicationSampleId.class);
         ListingId listingId = mock(ListingId.class);
 
-        List<BibliographicalDataID> bdIds = List.of(bdId);
+        List<BibliographicalDataId> bdIds = List.of(bdId);
         List<PublicationSampleId> itemIds = List.of(itemId);
         List<ListingId> listingIds = List.of(listingId);
 

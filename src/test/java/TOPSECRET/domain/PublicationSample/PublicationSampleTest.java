@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
  * assignment logic, status transitions, ownership and library membership checks,
  * and equality/identity behaviour of {@code PublicationSample}.</p>
  *
- * <p>All collaborators ({@link BibliographicalDataID}, {@link UserId}, {@link EditionID},
+ * <p>All collaborators ({@link BibliographicalDataId}, {@link UserId}, {@link EditionId},
  * {@link PublicationStatus}, {@link Condition}) are provided as Mockito test doubles,
  * keeping each test focused on the behaviour of {@code PublicationSample} in isolation.</p>
  *
@@ -43,9 +43,9 @@ class PublicationSampleTest {
     // Test Doubles (Collaborators)
     // =========================================================================
 
-    private final BibliographicalDataID bdID = mock(BibliographicalDataID.class);
+    private final BibliographicalDataId bdID = mock(BibliographicalDataId.class);
     private final UserId ownerID = mock(UserId.class);
-    private final EditionID editionID = mock(EditionID.class);
+    private final EditionId editionID = mock(EditionId.class);
     private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
     private final Condition anyCondition = mock(Condition.class);
     private final PublicationSampleFactory factory = new PublicationSampleFactory();
@@ -408,7 +408,7 @@ class PublicationSampleTest {
         when(bdID.getID()).thenReturn("123");
 
         // Act
-        BibliographicalDataID bdID_real = anySample.getBibliographicalDataID();
+        BibliographicalDataId bdID_real = anySample.getBibliographicalDataID();
 
         //Assert
         assertEquals(bdID, bdID_real);
@@ -450,10 +450,10 @@ class PublicationSampleTest {
                 editionID, anyCondition);
 
         // Act
-        EditionID editionID_real = anySample.getEditionID();
+        EditionId editionId_real = anySample.getEditionID();
 
         //Assert
-        assertEquals(editionID_real, editionID);
+        assertEquals(editionId_real, editionID);
     }
 
     @Test
@@ -624,13 +624,13 @@ class PublicationSampleTest {
     void sameAs_shouldReturnFalse_WhenTwoObjectsAreDifferent() {
 
         // Arrange
-        EditionID editionID2 = mock(EditionID.class);
+        EditionId editionId2 = mock(EditionId.class);
 
         PublicationSample sample1 = new PublicationSample(bdID, ownerID,
                 anyPublicationStatus, editionID, anyCondition);
 
         PublicationSample sample2 = new PublicationSample(bdID, ownerID,
-                anyPublicationStatus, editionID2, anyCondition);
+                anyPublicationStatus, editionId2, anyCondition);
 
         //Act
         boolean result = sample1.sameAs(sample2);

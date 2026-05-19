@@ -70,7 +70,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
      * {@inheritDoc}
      */
     @Override
-    public boolean existsById(EditionID id) {
+    public boolean existsById(EditionId id) {
 
         Objects.requireNonNull(id, "Edition ID cannot be null");
         if(editionRepositoryJpa.existsById(id)){
@@ -83,7 +83,7 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Edition> findById(EditionID editionID) {
+    public Optional<Edition> findById(EditionId editionID) {
 
         Optional<EditionDM> optionalEditionDM = editionRepositoryJpa.findById(editionID);
 
@@ -114,13 +114,13 @@ public class EditionRepositoryJPAImpl implements IEditionRepository {
      * {@inheritDoc}
      */
     @Override
-    public List<EditionID> findIdsByPublisherId(PublisherID publisherId) {
+    public List<EditionId> findIdsByPublisherId(PublisherID publisherId) {
 
         Objects.requireNonNull(publisherId, "PublisherID cannot be null");
 
         List<EditionDM> editionsDM = editionRepositoryJpa.findAll();
 
-        List<EditionID> editionIds = new ArrayList<>();
+        List<EditionId> editionIds = new ArrayList<>();
 
         for (EditionDM editionDM : editionsDM) {
             if (editionDM.getPublisherId().equals(publisherId)) {

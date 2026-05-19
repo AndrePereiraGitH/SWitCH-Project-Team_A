@@ -8,9 +8,9 @@ import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -121,7 +121,7 @@ class US015PublicationSampleMapperTest {
     @Test
     void toDTO_shouldThrowException_whenBibliographicalDataNotFound() {
         // Arrange
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         PublicationSample publication = mock(PublicationSample.class);
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
         when(bdRepo.findById(bdId)).thenReturn(Optional.empty());
@@ -138,10 +138,10 @@ class US015PublicationSampleMapperTest {
         String expectedTitle = "Title1";
         List<String> expectedAuthors = List.of("Author1");
 
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         BibliographicalData bd = createDoubleBibliographicalData(expectedTitle, expectedAuthors);
 
-        EditionID editionId = mock(EditionID.class);
+        EditionId editionId = mock(EditionId.class);
         PublicationSample publication = mock(PublicationSample.class);
 
         when(publication.getBibliographicalDataID()).thenReturn(bdId);
@@ -158,14 +158,14 @@ class US015PublicationSampleMapperTest {
     @Test
     void toDTO_shouldThrowException_whenAuthorNotFound() {
         // Arrange
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         AuthorId authorId = mock(AuthorId.class);
 
         BibliographicalData bd = mock(BibliographicalData.class);
         when(bd.getTitle()).thenReturn("Title1");
         when(bd.getAuthors()).thenReturn(List.of(authorId));
 
-        EditionID editionId = mock(EditionID.class);
+        EditionId editionId = mock(EditionId.class);
         Edition edition = createDoubleEdition("12345678910", "Book");
 
         PublicationSample publication = mock(PublicationSample.class);
@@ -232,8 +232,8 @@ class US015PublicationSampleMapperTest {
     //==================================================================================================================
 
     private PublicationSample createDoublePublicationSample(String title, List<String> authorNames, String code, String pubType) {
-        BibliographicalDataID bdId = mock(BibliographicalDataID.class);
-        EditionID editionId = mock(EditionID.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        EditionId editionId = mock(EditionId.class);
 
         BibliographicalData bd = createDoubleBibliographicalData(title, authorNames);
         Edition edition = createDoubleEdition(code, pubType);

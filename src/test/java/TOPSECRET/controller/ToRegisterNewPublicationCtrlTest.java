@@ -3,8 +3,8 @@ package TOPSECRET.controller;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
-import TOPSECRET.domain.ValueObjects.EditionID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublicationSampleService;
 import org.junit.jupiter.api.Test;
@@ -33,10 +33,10 @@ import static org.mockito.Mockito.*;
 class ToRegisterNewPublicationCtrlTest {
 
     // Doubles
-    private final BibliographicalDataID anyBiblioDataId = mock(BibliographicalDataID.class);
+    private final BibliographicalDataId anyBiblioDataId = mock(BibliographicalDataId.class);
     private final UserId anyUserId = mock(UserId.class);
     private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
-    private final EditionID anyEditionId = mock(EditionID.class);
+    private final EditionId anyEditionId = mock(EditionId.class);
     private final Condition anyCondition = mock(Condition.class);
     private final PublicationSampleService publicationSampleService = mock(PublicationSampleService.class);
     private final PublicationSample publicationSample = mock(PublicationSample.class);
@@ -58,7 +58,7 @@ class ToRegisterNewPublicationCtrlTest {
 
         // Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                anyController.registerNewPublication(
+                anyController.register(
                         null,
                         anyUserId,
                         anyPublicationStatus,
@@ -73,7 +73,7 @@ class ToRegisterNewPublicationCtrlTest {
 
         // Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                anyController.registerNewPublication(
+                anyController.register(
                         anyBiblioDataId,
                         null,
                         anyPublicationStatus,
@@ -88,7 +88,7 @@ class ToRegisterNewPublicationCtrlTest {
 
         // Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                anyController.registerNewPublication(
+                anyController.register(
                         anyBiblioDataId,
                         anyUserId,
                         null,
@@ -103,7 +103,7 @@ class ToRegisterNewPublicationCtrlTest {
 
         // Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                anyController.registerNewPublication(
+                anyController.register(
                         anyBiblioDataId,
                         anyUserId,
                         anyPublicationStatus,
@@ -118,7 +118,7 @@ class ToRegisterNewPublicationCtrlTest {
 
         // Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                anyController.registerNewPublication(
+                anyController.register(
                         anyBiblioDataId,
                         anyUserId,
                         anyPublicationStatus,
@@ -141,7 +141,7 @@ class ToRegisterNewPublicationCtrlTest {
         )).thenReturn(publicationSample);
 
         // Act
-        boolean result = anyController.registerNewPublication(
+        PublicationSample result = anyController.register(
                 anyBiblioDataId,
                 anyUserId,
                 anyPublicationStatus,
@@ -150,7 +150,8 @@ class ToRegisterNewPublicationCtrlTest {
         );
 
         // Assert
-        assertTrue(result);
+        assertNotNull(result);
+        assertEquals(publicationSample, result);
     }
 
     @Test
@@ -169,7 +170,7 @@ class ToRegisterNewPublicationCtrlTest {
 
         // Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                anyController.registerNewPublication(
+                anyController.register(
                         anyBiblioDataId,
                         anyUserId,
                         anyPublicationStatus,

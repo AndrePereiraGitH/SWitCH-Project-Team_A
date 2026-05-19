@@ -90,7 +90,7 @@ public interface IPublicationSampleRepository {
      * @param bdId the bibliographical data ID; must not be {@code null}
      * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      */
-    List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataID bdId);
+    List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataId bdId);
 
     /**
      * Retrieves all publication sample IDs whose bibliographical data ID is in the given list.
@@ -98,7 +98,7 @@ public interface IPublicationSampleRepository {
      * @param bdIds the list of bibliographical data IDs; must not be {@code null}
      * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      */
-    List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataID> bdIds);
+    List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds);
 
     /**
      * Retrieves all publication sample IDs associated with any of the given edition IDs.
@@ -106,7 +106,7 @@ public interface IPublicationSampleRepository {
      * @param listOfEditionIds the list of edition IDs; must not be {@code null}
      * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      */
-    List<PublicationSampleId> findIdsByEditionIdIn(List<EditionID> listOfEditionIds);
+    List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds);
 
     /**
      * Retrieves all publication samples that belong to the specified library.

@@ -5,7 +5,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US024AucListingDTO;
 import TOPSECRET.dto.US024AucListingMapper;
@@ -85,7 +85,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
             throw new IllegalArgumentException("Title can not be blank");
         }
 
-        BibliographicalDataID bdId = _bdRepo.findIdByTitle(titleDTO)
+        BibliographicalDataId bdId = _bdRepo.findIdByTitle(titleDTO)
                 .orElseThrow(() ->
                         new IllegalArgumentException("Title is not valid or not found"));
 

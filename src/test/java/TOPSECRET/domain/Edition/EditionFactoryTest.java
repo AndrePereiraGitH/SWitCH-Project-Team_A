@@ -198,11 +198,11 @@ class EditionFactoryTest {
         // Arrange
         factory = new EditionFactory();
 
-        EditionID editionIDDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
 
         // Act
         Edition edition = factory.create(
-                editionIDDouble,
+                editionIdDouble,
                 "1st",
                 validCodeDouble,
                 validPhysicalAttributesDouble,
@@ -215,7 +215,7 @@ class EditionFactoryTest {
         );
 
         // Assert
-        assertEquals(editionIDDouble, edition.id());
+        assertEquals(editionIdDouble, edition.id());
     }
 
     @Test
@@ -223,11 +223,11 @@ class EditionFactoryTest {
 
         // Arrange
         factory = new EditionFactory();
-        EditionID editionIDDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
 
         // Act
         Edition edition = factory.create(
-                editionIDDouble,
+                editionIdDouble,
                 "1st",
                 validCodeDouble,
                 validPhysicalAttributesDouble,
@@ -278,7 +278,7 @@ class EditionFactoryTest {
 
         // Arrange
         factory = new EditionFactory();
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -301,7 +301,7 @@ class EditionFactoryTest {
 
         // Arrange
         factory = new EditionFactory();
-        EditionID editionIdDouble = mock(EditionID.class);
+        EditionId editionIdDouble = mock(EditionId.class);
 
         Code invalidCodeDouble = mock(Code.class);
         when(invalidCodeDouble.getIsbn13()).thenReturn(null);
