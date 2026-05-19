@@ -11,7 +11,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import java.util.Optional;
 
@@ -129,7 +129,7 @@ class US025DirectSaleMapperTest {
         Author authorDouble = mock(Author.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
-        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
 
         IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
         IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);

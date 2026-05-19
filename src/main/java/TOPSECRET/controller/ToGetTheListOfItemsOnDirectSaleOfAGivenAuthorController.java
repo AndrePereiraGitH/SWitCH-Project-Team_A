@@ -8,7 +8,7 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US025AuthorDTO;
 import TOPSECRET.dto.US025DirectSaleDTO;
@@ -97,7 +97,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
         if (authorId == null)
             throw new IllegalArgumentException("AuthorId cannot be null");
 
-        List<BibliographicalDataID> bdIds =
+        List<BibliographicalDataId> bdIds =
                 bibliographicalDataRepository.findIdByAuthorId(authorId);
 
         List<PublicationSampleId> pubIds =
