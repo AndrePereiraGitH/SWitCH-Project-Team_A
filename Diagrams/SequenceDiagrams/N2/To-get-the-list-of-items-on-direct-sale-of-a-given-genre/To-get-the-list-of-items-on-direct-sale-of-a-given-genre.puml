@@ -1,24 +1,51 @@
 @startuml
 hide footbox
 autonumber
-title To get the list of items on direct sale of a given genre
+title To get the list of items on direct sale of a given genre (full diagram))
 
 actor Buyer
 
 ' Participants
 participant ":UI" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+
+' Genre
 participant ":IGenreRepository" as IGenreRepo
+participant ":IGenreRepositoryJPA" as IGenreRepoJPA
+participant "listOfAllGenreDMs:\nList<GenreDM>" as listGenreDMs
+participant "listOfAllGenres:\nList<Genre>" as listOfAllGenres
+participant ":GenreAssembler" as GenreAss
+participant ":GenreFactory" as GenreFact
+participant "genre:\nGenre" as Genre
 participant ":US021GenreMapper" as GenreMapper
 participant "listOfGenreDTO:\nList<US021GenreDTO>" as LGDTO
+participant "genreDTO:\nUS021GenreDTO" as GenreDTO
+
+' BibliographicalData
 participant ":IBibliographicalDataRepository" as IBDRepo
+participant ":IBibliographicalDataRepositoryJPA" as IBDRepoJPA
+participant "listOfBDDMs:\nList<BibliographicalDataDM" as listOfBDDMs
+participant "listOfBDIds:\nList<BibliographicalDataID>" as listOfBDIds
+
+' PublicationSample
 participant ":IPublicationSampleRepository" as IPSRepo
+participant ":IPublicationSampleRepositoryJPA" as IPSRepoJPA
+participant "listOfPubSampleDMs:\nList<PublicationSampleDM" as listOfPSDMs
+participant "listOfPubSampleIds:\nList<PublicationSampleId>" as listOfPSIds
+
+' Listing
 participant ":IListingRepository" as IListingRepo
+participant ":IListingRepositoryJPA" as IListingRepoJPA
+participant "listOfListingDMs:\nList<ListingDM" as listOfListingDMs
+participant "listOfDirectSaleListings:\nList<Listing>" as listListings
+participant ":ListingAssembler" as ListAss
+participant ":ListingFactory" as ListFact
+participant "listing:\nListing" as Listing
 participant ":US021DirSaleListingMapper" as Mapper
 participant "listOfDirectSaleDTO:\nList<US021DirSaleListingDTO>" as LDTO
+participant "dirSaleDTO:\nUS021DirSaleListingDTO" as dto
 
-
-' Interactions
+database "database" as DB
 
 ' Section 1 - Get all genres
 Buyer -> UI : I want to get the list of items on direct sale of a given genre
@@ -27,9 +54,31 @@ activate UI
 UI -> Ctrl : getAllGenres()
 activate Ctrl
 
-Ctrl -> IGenreRepo : getAllGenres()
+Ctrl -> IGenreRepo : findAll()
 activate IGenreRepo
-IGenreRepo -->> "listOfAllGenres:\nList<Genre>" ** : «create»
+IGenreRepo -> IGenreRepoJPA: findAll()
+activate IGenreRepoJPA
+IGenreRepoJPA -> DB: query *
+activate DB
+DB --> IGenreRepoJPA: data
+deactivate DB
+IGenreRepoJPA -->> listGenreDMs **: «create»
+IGenreRepoJPA --> IGenreRepo: listOfAllGenreDMs
+deactivate IGenreRepoJPA
+IGenreRepo -->> listOfAllGenres ** : «create»
+loop for each genreDM in listOfAllGenreDMs
+    IGenreRepo -> GenreAss: toDomain(genreDM)
+    activate GenreAss
+    GenreAss -> GenreFact: create(genreId, genreType)
+    activate GenreFact
+    GenreFact -->> Genre **: «create»
+    GenreFact --> GenreAss: genre
+    deactivate GenreFact
+    GenreAss --> IGenreRepo: genre
+    deactivate GenreAss
+    IGenreRepo -> listOfAllGenres: add(genre)
+end
+
 IGenreRepo --> Ctrl : listOfAllGenres
 deactivate IGenreRepo
 
@@ -37,7 +86,7 @@ Ctrl -> GenreMapper : toDTOList(listOfAllGenres)
 activate GenreMapper
 GenreMapper -->> LGDTO ** : «create»
 loop for each genre in listOfAllGenres
-    GenreMapper -->> "genreDTO:\nUS021GenreDTO" ** : toDTO(genre)
+    GenreMapper -->> GenreDTO ** : toDTO(genre)
     GenreMapper -> LGDTO : add(genreDTO)
 end
 GenreMapper --> Ctrl : listOfGenreDTO
@@ -49,37 +98,92 @@ deactivate Ctrl
 UI --> Buyer : Which genre? Choose!
 deactivate UI
 
-' Section 2 - Get list of direct sales with the genre chosen
+' Section 2 - Get list of bibliographicalDataIds for that genreId
 Buyer -> UI : selectedGenreDTO
 activate UI
-
 UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenreId)
 activate Ctrl
 
-Ctrl -> IBDRepo : findAllBibliographicalDataByGenreId(selectedGenreId)
+Ctrl -> IBDRepo : findAllByGenreId(selectedGenreId)
 activate IBDRepo
-IBDRepo -->> "listOfBdIds:\nList<BibliographicalDataID>" ** : «create»
-IBDRepo --> Ctrl : listOfBdIds
+IBDRepo -> IBDRepoJPA: findByGenreIdsContaining(selectedGenreId)
+activate IBDRepoJPA
+IBDRepoJPA -> DB: query by genreId
+activate DB
+DB --> IBDRepoJPA: data
+deactivate DB
+IBDRepoJPA -->> listOfBDDMs ** : «create»
+IBDRepoJPA --> IBDRepo: listOfBDDMs
+deactivate IBDRepoJPA
+IBDRepo -->> listOfBDIds ** : «create»
+loop for each bdDM in listOfBDIds
+    IBDRepo -> listOfBDDMs: getId()
+    activate listOfBDDMs
+    listOfBDDMs --> IBDRepo: id
+    deactivate listOfBDDMs
+    IBDRepo -> listOfBDIds: add(id)
+end
+IBDRepo --> Ctrl : listOfBDIds
 deactivate IBDRepo
 
-Ctrl -> IPSRepo : findAllItemsIdByBibliographicalDataId(listOfBdIds)
+
+' Section 3 - Get list of PublicationSampleIds for that list of BibliographicalDataIds
+Ctrl -> IPSRepo : findIdsByBibliographicalDataIdIn(listOfBDIds)
 activate IPSRepo
-IPSRepo -->> "listOfPubSampleIds:\nList<PublicationSampleId>" ** : «create»
+IPSRepo -> IPSRepoJPA: findAllByBdId(listOfBDIds)
+activate IPSRepoJPA
+IPSRepoJPA -> DB: query by bdIds
+activate DB
+DB --> IPSRepoJPA: data
+deactivate DB
+IPSRepoJPA -->> listOfPSDMs **: «create»
+IPSRepoJPA --> IPSRepo: listOfPubSampleDMs
+deactivate IPSRepoJPA
+IPSRepo -->> listOfPSIds ** : «create»
+loop for each pubSampleDM in listOfPubSampleDMs
+    IPSRepo -> listOfPSDMs: getId()
+    activate listOfPSDMs
+    listOfPSDMs --> IPSRepo: id
+    deactivate listOfPSDMs
+    IPSRepo -> listOfPSIds: add(id)
+end
 IPSRepo --> Ctrl : listOfPubSampleIds
 deactivate IPSRepo
 
-Ctrl -> IListingRepo : findDirectSaleListingsContaining(listOfPubSampleIds)
+' Section 4 - Get list of Listings for that list of PublicationSampleIds
+Ctrl -> IListingRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
 activate IListingRepo
-IListingRepo -->> "listOfDirectSaleListings:\nList<Listing>" ** : «create»
+IListingRepo -> IListingRepoJPA: findAllByItemsId(listOfPubSampleIds)
+activate IListingRepoJPA
+IListingRepoJPA -> DB: query by pubSampleIds
+activate DB
+DB --> IListingRepoJPA: data
+deactivate DB
+IListingRepoJPA -->> listOfListingDMs** : «create»
+IListingRepoJPA --> IListingRepo: listOfListingDMs
+deactivate IListingRepoJPA
+IListingRepo -->> listListings ** : «create»
+loop for each listingDM in listOfListingDMs
+    IListingRepo -> ListAss: toDomain(listingDM)
+    activate ListAss
+    ListAss -> ListFact: create(listingId,listingTitle, itemsId, saleType,\nprice, shortDescription, sellerId, pictures)
+    activate ListFact
+    ListFact -->> Listing**: «create»
+    ListFact --> ListAss: listing
+    deactivate ListFact
+    ListAss --> IListingRepo: listing
+    deactivate ListAss
+    IListingRepo -> listListings: add(listing)
+end
 IListingRepo --> Ctrl : listOfDirectSaleListings
 deactivate IListingRepo
 
-' Section 3 - Convert to DTO
+' Section 5 - Convert Listings to DTOs
 Ctrl -> Mapper : toDTOs(listOfDirectSaleListings)
 activate Mapper
 Mapper -->> LDTO ** : «create»
 loop for each listing in listOfDirectSaleListings
-    Mapper -->> "dirSaleDTO:\nUS021DirSaleListingDTO" ** : toDTO(listing)
+    Mapper -->> dto ** : toDTO(listing)
     Mapper -> LDTO : add(dirSaleDTO)
 end
 Mapper --> Ctrl : listOfDirectSaleDTO
@@ -87,7 +191,6 @@ deactivate Mapper
 
 Ctrl --> UI : listOfDirectSaleDTO
 deactivate Ctrl
-
 UI --> Buyer : Shows the list of items on direct sale
 deactivate UI
 

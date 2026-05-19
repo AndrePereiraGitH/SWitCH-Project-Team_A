@@ -1,0 +1,53 @@
+@startuml
+hide footbox
+autonumber
+title To Get PublicationSampleIds by BibliographicalDataIdIn
+
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+
+' PublicationSample
+participant ":IPublicationSampleRepository" as IPSRepo
+participant ":IPublicationSampleRepositoryJPA" as IPSRepoJPA
+participant "listOfPubSampleDMs:\nList<PublicationSampleDM" as listOfPSDMs
+participant "listOfPubSampleIds:\nList<PublicationSampleId>" as listOfPSIds
+
+database "database" as DB
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+' Section 1 - Get list of PublicationSampleIds for that list of BibliographicalDataIds
+Ctrl -> IPSRepo : findIdsByBibliographicalDataIdIn(listOfBDIds)
+activate Ctrl
+activate IPSRepo
+IPSRepo -> IPSRepoJPA: findAllByBdId(listOfBDIds)
+activate IPSRepoJPA
+IPSRepoJPA -> DB: query by bdIds
+activate DB
+DB --> IPSRepoJPA: data
+deactivate DB
+IPSRepoJPA -->> listOfPSDMs **: «create»
+IPSRepoJPA --> IPSRepo: listOfPubSampleDMs
+deactivate IPSRepoJPA
+IPSRepo -->> listOfPSIds ** : «create»
+loop for each pubSampleDM in listOfPubSampleDMs
+    IPSRepo -> listOfPSDMs: getId()
+    activate listOfPSDMs
+    listOfPSDMs --> IPSRepo: id
+    deactivate listOfPSDMs
+    IPSRepo -> listOfPSIds: add(id)
+end
+IPSRepo --> Ctrl : listOfPubSampleIds
+deactivate IPSRepo
+deactivate Ctrl
+
+@enduml

@@ -7,19 +7,20 @@ participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
 participant ":US021DirSaleListingMapper" as Mapper
 participant "listOfDirectSaleDTO:\nList<US021DirSaleListingDTO>" as LDTO
 
-note over Ctrl, Mapper #E3F2FD
+note over Ctrl #E3F2FD
 <b>Fragment</b>
 ---
 This diagram is a fragment of the main sequence diagram.
 end note
 
-note over Ctrl, Mapper #E3F2FD
+note over Ctrl #E3F2FD
 <b>Navigation</b>
 ---
 [[1.MainDiagram.puml Return to Main Diagram]]
 end note
 
 Ctrl -> Mapper : toDTOs(listOfDirectSaleListings)
+activate Ctrl
 activate Mapper
 
 Mapper -->> LDTO ** : «create»
@@ -31,5 +32,6 @@ end
 
 Mapper --> Ctrl : listOfDirectSaleDTO
 deactivate Mapper
+deactivate Ctrl
 
 @enduml

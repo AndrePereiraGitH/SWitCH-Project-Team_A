@@ -1,82 +1,253 @@
 @startuml
 title To get the list of items on direct sale of a given genre
 
-class UI021 {
+class UI {}
+
+rectangle database {
 }
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController {
-  +getAllGenres() : List<US021GenreDTO>
-  +getListOfItemsOnDirectSale(selectedGenreId: GenreID) : List<US021DirSaleListingDTO>
+  +getAllGenres(): List<US021GenreDTO>
+  +getListOfItemsOnDirectSale(selectedGenreId: GenreId) : List<US021DirectSaleListingDTO>
 }
 
-interface IGenreRepository {
-  +getAllGenres() : List<Genre>
+' --- Genre ---------
+
+together{
+    together{
+        interface IGenreRepository {
+          +findAll() : List<Genre>
+        }
+
+        interface IGenreRepositoryJPA {
+          +findAll() : List<GenreDM>
+        }
+
+        class GenreRepositoryJPAImpl {
+          +findAll() : List<Genre>
+        }
+
+        class AutomaticGeneratedGenreRepositoryJPAImpl{}
+
+        class GenreAssembler {
+            + toDomain(genreDM: GenreDM): Genre
+        }
+
+        class GenreDM {
+          -id: GenreID
+          -genreType: String
+        }
+
+        class GenreFactory {
+            + create(genreType: String): Genre
+        }
+
+        class Genre {
+          -id: GenreID
+          -genreType: String
+        }
+    }
+
+    together{
+        class US021GenreMapper {
+          +toDTO(genre: Genre) : US021GenreDTO
+          +toDTOList(genres: List<Genre>) : List<US021GenreDTO>
+        }
+
+        class US021GenreDTO {
+          -genreId: GenreID
+          -name: String
+        }
+    }
 }
 
-class Genre {
-  -id: GenreID
-  -genreType: String
+
+' --- BibliographicalData ---------
+
+together{
+    interface IBibliographicalDataRepository {
+      +findAllByGenreId(selectedGenreId: GenreId):\nList<BibliographicalDataId>
+    }
+
+    interface IBibliographicalDataRepositoryJPA {
+      +findByGenreIdsContaining(selectedGenreId: GenreId):\nList<BibliographicalDataDM>
+    }
+
+    class BibliographicalDataRepositoryJPAImpl {
+      +findAllByGenreId(selectedGenreId: GenreId):\nList<BibliographicalDataId>
+    }
+
+    class AutomaticGeneratedBibliographicalDataRepositoryJPAImpl{}
+
+    class BibliographicalDataDM {
+        - id: BibliographicalDataId
+        - title: String
+        - originalLanguage: String
+        - publicationDate: LocalDate
+        - chunksOfText: String
+        - authorsId: List<AuthorId>
+        - genreIds: List<GenreId>
+    }
 }
 
-class US021GenreMapper {
-  +{static} toDTO(genre: Genre) : US021GenreDTO
-  +{static} toDTOList(genres: List<Genre>) : List<US021GenreDTO>
+' --- PublicationSample ---------
+
+together{
+    interface IPublicationSampleRepository {
+      +findIdsByBibliographicalDataIdIn(listOfBDIds:\nList<BibliographicalDataId>): List<PublicationSampleId>
+    }
+
+    interface IPublicationSampleRepositoryJPA {
+      +findAllByBdId(listOfBDIds: List<BibliographicalDataId>):\nList<PublicationSampleDM>
+    }
+
+    class PublicationSampleRepositoryJPAImpl {
+      +findIdsByBibliographicalDataIdIn(listOfBDIds:\nList<BibliographicalDataId>): List<PublicationSampleId>
+    }
+
+    class AutomaticGeneratedPublicationSampleRepositoryJPAImpl{}
+
+    class PublicationSampleDM {
+        - pubSampleId: PublicationSampleId
+        - bdId: BibliographicalDataId
+        - ownerId: UserId
+        - editionId: EditionId
+        - libraryId: LibraryId
+        - collectionOfPublicationsId: CollectionOfPublicationsId
+        - publicationStatus: PublicationStatus
+        - condition: Condition
+    }
 }
 
-class US021GenreDTO {
-  -genreId: GenreID
-  -name: String
-}
+' --- Listing ---------
 
-interface IBibliographicalDataRepository {
-  +findAllBibliographicalDataByGenreId(genreId: GenreID) : List<BibliographicalDataID>
-}
+together{
+    together{
+        interface IListingRepository {
+          +findAllByDirectSaleAndPublicationSampleIdIn\n(listOfPubSampleIds: List<PublicationSampleId>) : List<Listing>
+        }
 
-interface IPublicationSampleRepository {
-  +findAllItemsIdByBibliographicalDataId(bdIds: List<BibliographicalDataID>) : List<PublicationSampleId>
-}
+        interface IListingRepositoryJPA {
+          +findAllByItemsId(listOfPubSampleIds:\nList<PublicationSampleId>): List<ListingDM>
+        }
 
-interface IListingRepository {
-  +findDirectSaleListingsContaining(pubSampleIds: List<PublicationSampleId>) : List<Listing>
-}
+        class ListingRepositoryJPAImpl {
+          +findAllByDirectSaleAndPublicationSampleIdIn\n(listOfPubSampleIds: List<PublicationSampleId>) : List<Listing>
+        }
 
-class Listing {
-  -id: ListingId
-  -listingTitle: String
-  -price: Price
-  -shortDescription: String
-  -sellerId: UserId
-}
+        class AutomaticGeneratedListingRepositoryJPAImpl{}
 
-class US021DirSaleListingMapper {
-  +toDTO(listing: Listing) : US021DirSaleListingDTO
-  +toDTOs(listings: List<Listing>) : List<US021DirSaleListingDTO>
-}
+        class ListingAssembler {
+            +toDomain(listingDM: ListingDM): Listing
+        }
 
-class US021DirSaleListingDTO {
-  -listingId: String
-  -listingTitle: String
-  -price: BigDecimal
-  -shortDescription: String
-  -sellerId: String
+        class ListingDM {
+          - listingId: ListingId
+          - listingTitle: String
+          - itemsId: List<PublicationSampleId>
+          - saleType: SaleType
+          - price: String
+          - shortDescription: String
+          - pictures: List<String>
+          - sellerId: UserId
+        }
+
+        class ListingFactory {
+            +create(listingId: ListingId, listingTitle: String,itemsId: List<PublicationSampleId>,\n saleType: SaleType, price: Price, shortDescription: String, sellerId: UserId,\npictures: List<Picture>): Listing
+        }
+
+        class Listing {
+          -id: ListingId
+          -listingTitle: String
+          - saleType: SaleType
+          -price: Price
+          -shortDescription: String
+          -sellerId: UserId
+        }
+
+        enum SaleType {
+            DIRECT_SALE
+            AUCTION
+        }
+    }
+
+    together{
+        class US021DirSaleListingMapper {
+          +toDTO(listing: Listing) : US021DirSaleListingDTO
+          +toDTOs(listings: List<Listing>) : List<US021DirSaleListingDTO>
+        }
+
+        class US021DirSaleListingDTO {
+          -listingId: String
+          -listingTitle: String
+          -price: BigDecimal
+          -shortDescription: String
+          -sellerId: String
+        }
+    }
 }
 
 ' Relationships
-UI021 ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IGenreRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IBibliographicalDataRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IPublicationSampleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IListingRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021GenreMapper : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021DirSaleListingMapper : uses
+UI "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
 
-IGenreRepository "1" --> "*" Genre : manages
-IListingRepository "1" --> "*" Listing : manages
+' Controller
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IGenreRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IBibliographicalDataRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IPublicationSampleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" US021GenreMapper : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" US021DirSaleListingMapper : uses
 
-US021GenreMapper ..> Genre : maps from
+' Genre
+GenreRepositoryJPAImpl "1" ..|> "1" IGenreRepository: implements
+GenreRepositoryJPAImpl "1" ..> "1" IGenreRepositoryJPA: uses
+AutomaticGeneratedGenreRepositoryJPAImpl "1" ..|> "1" IGenreRepositoryJPA: implements
+AutomaticGeneratedGenreRepositoryJPAImpl "1" ...> "1" database: queries
+
+GenreRepositoryJPAImpl "1" --> "1" GenreAssembler: uses
+
+GenreAssembler "1" --> "1" GenreFactory: requests creation to
+GenreAssembler "1" ..> "1" GenreDM: creates
+
+IGenreRepositoryJPA "1" ..> "1" GenreDM: creates
+
+GenreFactory "1" ..> "1" Genre : creates
+
 US021GenreMapper ..> US021GenreDTO : creates
 
-US021DirSaleListingMapper ..> Listing : maps from
+' BibliographicalData
+BibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepository: implements
+BibliographicalDataRepositoryJPAImpl "1" ..> "1" IBibliographicalDataRepositoryJPA: uses
+AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepositoryJPA: implements
+AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ...> "1" database: queries
+
+IBibliographicalDataRepositoryJPA "1" ..> "1" BibliographicalDataDM: creates
+
+' PublicationSample
+PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository: implements
+PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: uses
+AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
+AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ...> "1" database: queries
+
+IPublicationSampleRepositoryJPA "1" ..> "1" PublicationSampleDM: creates
+
+' Listing
+ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
+ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
+AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
+AutomaticGeneratedListingRepositoryJPAImpl "1" ...> "1" database: queries
+
+ListingRepositoryJPAImpl "1" --> "1" ListingAssembler: uses
+
+ListingAssembler "1" --> "1" ListingFactory: requests creation to
+ListingAssembler "1" ..> "1" ListingDM: creates
+
+IListingRepositoryJPA "1" ..> "1" ListingDM: creates
+
+ListingFactory "1" ..> "1" Listing: creates
+
+Listing "*" --> "1" SaleType : for sale in
+
 US021DirSaleListingMapper ..> US021DirSaleListingDTO : creates
 
 @enduml
