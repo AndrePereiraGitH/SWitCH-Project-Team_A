@@ -1,0 +1,62 @@
+@startuml
+hide footbox
+autonumber
+title Find Listings By PublicationSampleIds
+
+participant ":Controller" as Ctrl
+participant ":IListingRepository" as listingRepo
+participant ":IListingRepositoryJPA" as listingRepoJPA
+participant "listingDMList\n:List<ListingDM>" as listingDMList
+participant ":ListingAssembler" as assembler
+participant "listingList\n:List<Listing>" as listingList
+participant ":ListingFactory" as factory
+participant "listing\n:Listing" as listingObj
+
+database "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> listingRepo : findAllByDirectSaleAndPublicationSampleIdIn(pubIdList)
+activate listingRepo
+
+listingRepo -> listingRepoJPA : findAllByItemsIdAndSaleType(pubIdList, DIRECT_SALE)
+activate listingRepoJPA
+
+listingRepoJPA -> db : query listing by publicationSampleId\nwhere saleType = DIRECT_SALE
+activate db
+db --> listingRepoJPA : listing records
+deactivate db
+
+listingRepoJPA -->> listingDMList ** : <<create>>
+listingRepoJPA --> listingRepo : listingDMList
+deactivate listingRepoJPA
+
+listingRepo -->> listingList ** : <<create>>
+
+loop for each listingDM in listingDMList
+    listingRepo -> assembler : toDomain(listingDM)
+    activate assembler
+    assembler -> factory : create(listingDM)
+        activate factory
+        factory -->> listingObj ** : <<create>>
+        factory --> assembler : listing
+        deactivate factory
+    assembler --> listingRepo : listing
+    deactivate assembler
+    listingRepo -> listingList : add(listing)
+end
+
+listingRepo --> Ctrl : listingList
+deactivate listingRepo
+
+@enduml

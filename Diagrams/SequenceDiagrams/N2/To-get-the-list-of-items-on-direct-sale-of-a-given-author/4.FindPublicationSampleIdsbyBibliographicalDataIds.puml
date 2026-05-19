@@ -1,0 +1,55 @@
+@startuml
+hide footbox
+autonumber
+title Find Publication Sample Ids By BibliographicalData Ids
+
+participant ":Controller" as Ctrl
+participant ":IPublicationSampleRepository" as pubRepo
+participant ":IPublicationSampleRepositoryJPA" as pubRepoJPA
+participant "bdIdList\n:List<BibliographicalDataId>" as bdIdList
+participant "pubIdList\n:List<PublicationSampleId>" as pubIdList
+participant "pubDMList\n:List<PublicationSampleDM>" as pubDMList
+database "Database" as db
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> pubRepo : findIdsByBibliographicalDataId(bdId)
+activate pubRepo
+
+pubRepo -> pubRepoJPA : findIdsByBibliographicalDataId(bdId)
+activate pubRepoJPA
+
+pubRepoJPA -> db : query publicationSample by bibliographicalDataId
+activate db
+db --> pubRepoJPA : publicationSample data
+deactivate db
+
+pubRepoJPA -->> pubDMList ** : <<create>>
+
+pubRepoJPA -->> pubIdList ** : <<create>>
+
+loop for each pubDM in pubDMList
+pubRepoJPA -> pubDMList : getId()
+activate pubDMList
+pubDMList --> pubRepoJPA : id
+deactivate pubDMList
+pubRepoJPA -> pubRepoJPA : pubIdList.add(id)
+end
+
+pubRepoJPA --> pubRepo : pubIdList
+deactivate pubRepoJPA
+
+pubRepo --> Ctrl : pubIdList
+deactivate pubRepo
+
+@enduml
