@@ -164,6 +164,11 @@ together{
           -shortDescription: String
           -sellerId: UserId
         }
+
+        enum SaleType {
+            DIRECT_SALE
+            AUCTION
+        }
     }
 
     together{
@@ -183,15 +188,15 @@ together{
 }
 
 ' Relationships
-UI ..> ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
+UI "1" ..> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController : uses
 
 ' Controller
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IGenreRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IBibliographicalDataRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IPublicationSampleRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> IListingRepository : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021GenreMapper : uses
-ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController ..> US021DirSaleListingMapper : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IGenreRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IBibliographicalDataRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IPublicationSampleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" IListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" US021GenreMapper : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController "1" --> "1" US021DirSaleListingMapper : uses
 
 ' Genre
 GenreRepositoryJPAImpl "1" ..|> "1" IGenreRepository: implements
@@ -199,14 +204,14 @@ GenreRepositoryJPAImpl "1" ..> "1" IGenreRepositoryJPA: uses
 AutomaticGeneratedGenreRepositoryJPAImpl "1" ..|> "1" IGenreRepositoryJPA: implements
 AutomaticGeneratedGenreRepositoryJPAImpl "1" ...> "1" database: queries
 
-GenreRepositoryJPAImpl "1" ..> "1" GenreAssembler: uses
+GenreRepositoryJPAImpl "1" --> "1" GenreAssembler: uses
 
-GenreAssembler "1" ..> "1" GenreFactory: requests creation to
+GenreAssembler "1" --> "1" GenreFactory: requests creation to
 GenreAssembler "1" ..> "1" GenreDM: creates
 
-IGenreRepositoryJPA "1" ..> "1" GenreDM: manages
+IGenreRepositoryJPA "1" ..> "1" GenreDM: creates
 
-GenreFactory "1" --> "1" Genre : creates
+GenreFactory "1" ..> "1" Genre : creates
 
 US021GenreMapper ..> US021GenreDTO : creates
 
@@ -216,7 +221,7 @@ BibliographicalDataRepositoryJPAImpl "1" ..> "1" IBibliographicalDataRepositoryJ
 AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepositoryJPA: implements
 AutomaticGeneratedBibliographicalDataRepositoryJPAImpl "1" ...> "1" database: queries
 
-IBibliographicalDataRepositoryJPA "1" ..> "1" BibliographicalDataDM: uses
+IBibliographicalDataRepositoryJPA "1" ..> "1" BibliographicalDataDM: creates
 
 ' PublicationSample
 PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository: implements
@@ -224,7 +229,7 @@ PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: 
 AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
 AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ...> "1" database: queries
 
-IPublicationSampleRepositoryJPA "1" ..> "1" PublicationSampleDM: uses
+IPublicationSampleRepositoryJPA "1" ..> "1" PublicationSampleDM: creates
 
 ' Listing
 ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
@@ -232,14 +237,14 @@ ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
 AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
 AutomaticGeneratedListingRepositoryJPAImpl "1" ...> "1" database: queries
 
-ListingRepositoryJPAImpl "1" ..> "1" ListingAssembler: uses
+ListingRepositoryJPAImpl "1" --> "1" ListingAssembler: uses
 
-ListingAssembler "1" ..> "1" ListingFactory: requests creation to
+ListingAssembler "1" --> "1" ListingFactory: requests creation to
 ListingAssembler "1" ..> "1" ListingDM: creates
 
 IListingRepositoryJPA "1" ..> "1" ListingDM: creates
 
-ListingFactory "1" --> "1" Listing: creates
+ListingFactory "1" ..> "1" Listing: creates
 
 Listing "*" --> "1" SaleType : for sale in
 
