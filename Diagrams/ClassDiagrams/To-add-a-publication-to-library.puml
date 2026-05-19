@@ -1,0 +1,110 @@
+@startuml
+title Add publication to library
+hide circle
+
+class AddPublicationToLibraryController{
++getListOfPublicationsNotInLibrary(UserId userId) : List<PublicationSample>
++addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId) : Boolean
+}
+
+class IPublicationSampleRepository{
++findByUserIdAndLibraryIdIsNull(userId) : List<PublicationSample>
++save(PublicationSample publicationSample) : PublicationSample
++add(publicationSample) : Boolean
+}
+
+class ILibraryRepository{
++getByUserId(userId) : Library
+}
+
+class PublicationSample{
+-_pubSampleID : PublicationSampleId
+-_bdID : BibliographicalDataId
+-_ownerID : UserId
+-_publicationStatus : PublicationStatus
+-_editionId : EditionId
+-_condition : Condition
+-_libraryId : LibraryId
+-_collecOfPubID : CollectionOfPublicationsId
++addPublicationToLibrary(LibraryId libraryId) : LibraryId
+}
+
+class IPublicationSampleRepositoryJPA{
++findAllByOwnerIdAndLibraryIdIsNull(userId) : List<PublicationSampleDM>
+}
+
+class ILibraryRepositoryJPA{
++getByUserId(userId) : LibraryDM
+}
+
+class PublicationSampleAssembler{
++toDomain(PubSampleDM) : PublicationSample
++toDm(PubSample) : PublicationSampleDM
+}
+
+class PublicationSampleFactory{
++create(BibliographicalDataID bibliographicalDataId, UserId userId, PublicationStatus publicationStatus,EditionID editionId, Condition condition) : PublicationSample
++create(PublicationSampleId pubSampleId, BibliographicalDataID bibliographicalDataId, UserId userId, PublicationStatus publicationStatus, EditionID editionId, Condition condition, LibraryId libraryId, CollectionOfPublicationsId collectionOfPublicationsId) : PublicationSample
+}
+
+class PublicationSampleRepositoryJPAImpl{
+}
+
+class AutomatedGeneratedPublicationSampleRepositoryJPAImpl{
+}
+
+class LibraryRepositoryJPAImpl{
+}
+
+class AutomatedGeneratedLibraryRepositoryJPAImpl{
+}
+
+class LibraryAssembler{
++toDm(Library library) : Library
++toDomain(LibraryDM libraryDM) : LibraryDM
++toDomainList(Iterable<LibraryDM> listDataModel) : List<Library>
+}
+
+class LibraryFactory{
++create(String libraryName, UserId userId)
++create(LibraryId libraryId, String libraryName, UserId userId)
+}
+
+class Library{
+-_libraryName : String
+-_userId : UserId
+-_id : LibraryId
+}
+
+
+Rectangle Database{
+}
+' ------ Interactions ------
+
+AddPublicationToLibraryController "1" ..> "1" IPublicationSampleRepository : uses
+PublicationSampleRepositoryJPAImpl "1" ..> "1" PublicationSampleAssembler : uses
+PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
+AddPublicationToLibraryController "1" ..> "1" ILibraryRepository : accesses
+AddPublicationToLibraryController "1" ..> "1" PublicationSample : asks to assign library
+PublicationSampleAssembler ..> PublicationSampleDM : crafts
+LibraryAssembler ..> LibraryDM : converts data into
+LibraryRepositoryJPAImpl ..> LibraryAssembler : uses
+LibraryAssembler ..> LibraryFactory : uses
+PublicationSampleFactory ..> PublicationSample : (re)create
+LibraryFactory ..> Library : (re)creates
+
+' ===== PublicationSample Layer Communication =====
+IPublicationSampleRepository <|.. PublicationSampleRepositoryJPAImpl : implements
+PublicationSampleRepositoryJPAImpl ..> PublicationSampleDM : retrieves
+PublicationSampleRepositoryJPAImpl ..> IPublicationSampleRepositoryJPA : uses
+IPublicationSampleRepositoryJPA <|.. AutomatedGeneratedPublicationSampleRepositoryJPAImpl : implements
+AutomatedGeneratedPublicationSampleRepositoryJPAImpl ..> Database : queries
+
+' ===== Library Layer Communication =====
+ILibraryRepository <|.. LibraryRepositoryJPAImpl : implements
+LibraryRepositoryJPAImpl ..> LibraryDM : retrieves
+LibraryRepositoryJPAImpl ..> ILibraryRepositoryJPA : uses
+AutomatedGeneratedLibraryRepositoryJPAImpl ..|> ILibraryRepositoryJPA : implements
+AutomatedGeneratedLibraryRepositoryJPAImpl ..> Database : queries
+
+@enduml
