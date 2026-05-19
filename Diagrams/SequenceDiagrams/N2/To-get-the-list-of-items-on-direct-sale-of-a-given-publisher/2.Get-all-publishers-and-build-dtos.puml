@@ -1,0 +1,77 @@
+@startuml
+
+hide footbox
+autonumber
+title To Get the List of All Publishers DTOs
+
+'Controller
+participant ":ToGetTheListOfItemsOn\nDirectSaleOfAGivenPublisherController" as Ctrl
+
+'Publisher
+participant ":IPublisher\nRepository" as PublisherRepo
+participant ":IPublisher\nRepositoryJPA" as PublisherRepoJPA
+participant "listPublisherDMs:\nList<PublisherDM>" as listPublisherDM
+participant "listOfAllPublishers:\nList<Publisher>" as listAllPublishers
+participant ":PublisherAssembler" as PublisherAss
+participant ":PublisherFactory" as PublisherFact
+participant "publisher:\nPublisher" as Publisher
+participant ":US027Publisher\nMapper" as PublisherMapper
+participant "listOfAllPublishersDTO:\nList<US027PublisherDTO>" as listAllPublisherDTOs
+participant "publisherDTO:\nUS027PublisherDTO" as publisherDTO
+
+'DB
+database "database" as DB
+
+' Section 1 - Get all publishers
+
+ref over Ctrl
+[[1.Main-Diagram.puml Back to main diagram]]
+end ref
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+
+Ctrl -> PublisherRepo: findAll()
+activate Ctrl
+activate PublisherRepo
+PublisherRepo -> PublisherRepoJPA: findAll()
+activate PublisherRepoJPA
+PublisherRepoJPA -> DB: query * publishers
+activate DB
+DB --> PublisherRepoJPA: data
+deactivate DB
+PublisherRepoJPA -->> listPublisherDM **: «create»
+PublisherRepoJPA --> PublisherRepo: listPublisherDMs
+deactivate PublisherRepoJPA
+PublisherRepo -->> listAllPublishers ** : «create»
+loop for each publisherDM in listPublisherDMs
+    PublisherRepo -> PublisherAss: toDomain(publisherDM)
+    activate PublisherAss
+    PublisherAss -> PublisherFact: create(id, name, vatNumber, contact)
+    activate PublisherFact
+    PublisherFact -->> Publisher**: «create»
+    PublisherFact --> PublisherAss: publisher
+    deactivate PublisherFact
+    PublisherAss --> PublisherRepo: publisher
+    deactivate PublisherAss
+    PublisherRepo -> listAllPublishers: add(publisher)
+end
+PublisherRepo --> Ctrl: listOfAllPublishers
+deactivate PublisherRepo
+
+' Section 2 - Converts listOfAllPublishers to DTO
+Ctrl -> PublisherMapper: toDTOs(listOfAllPublishers)
+activate PublisherMapper
+PublisherMapper -->> listAllPublisherDTOs ** : «create»
+loop for each publisher
+    PublisherMapper -->> publisherDTO **: «create»
+    PublisherMapper -> listAllPublisherDTOs: add(publisherDTO)
+end
+PublisherMapper --> Ctrl : listOfAllPublishersDTO
+deactivate PublisherMapper
+
+@enduml

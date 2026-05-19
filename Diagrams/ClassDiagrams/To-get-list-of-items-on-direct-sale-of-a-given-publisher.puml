@@ -1,0 +1,271 @@
+@startuml
+title To get the list of items on direct sale of a given publisher
+
+
+class UI {}
+
+'rectangle database {}
+
+class ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController {
+    + findAllPublishers(): List<US027PublisherDTO>
+    + findListOfItemsOnDirectSaleByPublisherId(PublisherId publisherId): List<US027ListingDTO>
+}
+
+' -------------------------
+' Publisher
+' -------------------------
+
+together{
+    interface IPublisherRepository {
+        + findAll(): List<Publisher>
+    }
+
+    interface IPublisherRepositoryJPA {
+        + findAll(): List<PublisherDM>
+    }
+
+    class PublisherRepositoryJPAImpl {
+        + findAll(): List<Publisher>
+    }
+
+    /'
+    class AutomaticGeneratedPublisherRepositoryJPAImpl {
+    }
+    '/
+
+    class PublisherAssembler {
+        + toDomain(PublisherDM publisherDM): Publisher
+    }
+
+    class PublisherDM {
+        - publisherId: PublisherId
+        - name: String
+    }
+
+    class PublisherFactory {
+        + create(PublisherId id, String name, String vatNumber, Contact contact): Publisher
+    }
+
+    class Publisher {
+        - publisherId: PublisherId
+        - name: String
+    }
+}
+
+together{
+    class US027PublisherMapper {
+        + toDTOs(List<Publisher> listOfAllPublishers):\nList<US027PublisherDTO>
+    }
+
+    class US027PublisherDTO {
+        + publisherId: PublisherId
+        + name: String
+    }
+}
+
+' -------------------------
+' Edition
+' -------------------------
+
+together{
+    interface IEditionRepository {
+        + findIdsByPublisherId\n(PublisherId publisherId): List<EditionId>
+    }
+
+    interface IEditionRepositoryJPA {
+        + findIdsByPublisherId\n(PublisherId publisherId): List<EditionDM>
+    }
+
+    class EditionRepositoryJPAImpl {
+        + findIdsByPublisherId\n(PublisherId publisherId): List<Edition>
+    }
+
+    /'
+    class AutomaticGeneratedEditionRepositoryJPAImpl {
+    }
+    '/
+
+    class EditionDM {
+        - editionId: EditionId
+        - publisherId: PublisherId
+    }
+
+    /'
+    class Edition {
+        - editionId: EditionId
+        - publisherId: PublisherId
+    }
+    '/
+}
+
+' -------------------------
+' PublicationSample
+' -------------------------
+
+together{
+    interface IPublicationSampleRepository {
+        + findIdsByEditionIdIn\n(List<EditionId> editionIds): List<PublicationSampleId>
+    }
+
+    interface IPublicationSampleRepositoryJPA {
+        + findAllByEditionIdIn\n(List<EditionId> editionIds): List<PublicationSampleDM>
+    }
+
+    class PublicationSampleRepositoryJPAImpl {
+        + findIdsByEditionIdIn\n(List<EditionId> editionIds): List<PublicationSample>
+    }
+
+    /'
+    class AutomaticGeneratedPublicationSampleRepositoryJPAImpl {
+    }
+    '/
+
+    class PublicationSampleDM {
+        - publicationSampleId:\n PublicationSampleId
+        - editionId: EditionId
+    }
+
+    /'
+    class PublicationSample {
+        - publicationSampleId:\n PublicationSampleId
+        - editionId: EditionId
+    }
+    '/
+}
+
+' -------------------------
+' Listing
+' -------------------------
+
+together{
+    interface IListingRepository {
+        + findAllByDirectSaleAndPublicationSampleIdIn\n(List<PublicationSampleId> listOfPubSampleIds): List<Listing>
+    }
+
+    interface IListingRepositoryJPA {
+        + findAllByItemsId\n(List<PublicationSampleId> listOfPubSampleIds): List<ListingDM>
+    }
+
+    class ListingRepositoryJPAImpl {
+        + findAllByDirectSaleAndPublicationSampleIdIn\n(List<PublicationSampleId> listOfPubSampleIds): List<Listing>
+    }
+
+    /'
+    class AutomaticGeneratedListingRepositoryJPAImpl {
+    }
+    '/
+
+    class ListingAssembler {
+        + toDomain(ListingDM listingDM): Listing
+    }
+
+    class ListingDM {
+        - listingId: ListingId
+        - itemsId: List<PublicationSampleId>
+        - listingTitle: String
+        - sellerId: UserId
+        - saleType: SaleType
+        - price: String
+        - pictures: List<Pictures>
+        - shortDescription: String
+    }
+
+    class ListingFactory {
+        + create(ListingId listingId, String listingTitle, List<PublicationSampleId> itemsId, SaleType saleType,\n Price price, String shortDescription, UserId sellerId, List<Picture> pictures): Listing
+    }
+
+    class Listing {
+        - listingId: ListingId
+        - listingTitle: String
+        - publicationSampleId:\nList<PublicationSampleId>
+        - saleType: SaleType
+        - price: Price
+    }
+
+    enum SaleType {
+        DIRECT_SALE
+        AUCTION
+    }
+}
+
+together{
+    class US027ListingMapper {
+        + toDTOs(List<Listing> listOfListings):\nList<US027ListingDTO>
+    }
+
+    class US027ListingDTO {
+        - listingId: ListingId
+        - listingTitle: String
+        - price: String
+        - pubTitle: String
+        - authorsName: List<String>
+    }
+}
+
+' -------------------------
+' RELATIONSHIPS
+' -------------------------
+
+' --- UI ---
+UI ..> ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController : invokes
+
+' --- Controller ---
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" -> "1" IPublisherRepository: uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController .> US027PublisherMapper : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" -> "1" IPublicationSampleRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" -> "1" IEditionRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController "1" --> "1" IListingRepository : uses
+ToGetTheListOfItemsOnDirectSaleOfAGivenPublisherController ..> US027ListingMapper : uses
+
+' --- Listing ---
+ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository: implements
+ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA: uses
+'AutomaticGeneratedListingRepositoryJPAImpl "1" ..|> "1" IListingRepositoryJPA: implements
+'AutomaticGeneratedListingRepositoryJPAImpl ..> database: uses
+
+ListingRepositoryJPAImpl "1" ..> "1" ListingAssembler: uses
+IListingRepositoryJPA "1" ..> "1" ListingDM: creates
+
+ListingAssembler "1" ..> "1" ListingFactory: uses
+ListingAssembler "1" ..> "1" ListingDM: creates
+
+ListingFactory "1" -> "1" Listing: creates
+
+US027ListingMapper ..> US027ListingDTO : creates
+
+Listing "*" -> "1" SaleType: for sale in
+
+' --- PubSample ---
+PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository: implements
+PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA: uses
+'AutomaticGeneratedPublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepositoryJPA: implements
+'AutomaticGeneratedPublicationSampleRepositoryJPAImpl ..> database: uses
+
+IPublicationSampleRepositoryJPA "1" ..> "1" PublicationSampleDM: creates
+
+' --- Edition ---
+EditionRepositoryJPAImpl "1" ..|> "1" IEditionRepository: implements
+EditionRepositoryJPAImpl "1" ..> "1" IEditionRepositoryJPA: uses
+'AutomaticGeneratedEditionRepositoryJPAImpl "1" ..|> "1" IEditionRepositoryJPA: implements
+'AutomaticGeneratedEditionRepositoryJPAImpl ..> database: uses
+
+IEditionRepositoryJPA "1" ..> "1" EditionDM: creates
+
+
+' --- Publisher ---
+PublisherRepositoryJPAImpl "1" ..|> "1" IPublisherRepository: implements
+PublisherRepositoryJPAImpl "1" ..> "1" IPublisherRepositoryJPA: uses
+'AutomaticGeneratedPublisherRepositoryJPAImpl "1" ..|> "1" IPublisherRepositoryJPA: implements
+'AutomaticGeneratedPublisherRepositoryJPAImpl ..> database: uses
+
+PublisherRepositoryJPAImpl "1" ..> "1" PublisherAssembler: uses
+
+PublisherAssembler "1" ..> "1" PublisherFactory: uses
+PublisherAssembler "1" ..> "1" PublisherDM: creates
+IPublisherRepositoryJPA "1" ..> "1" PublisherDM: creates
+
+PublisherFactory "1" -> "1" Publisher: creates
+
+US027PublisherMapper ..> US027PublisherDTO : creates
+
+@enduml

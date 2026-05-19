@@ -1,7 +1,6 @@
 package TOPSECRET.dto;
 
 import TOPSECRET.domain.Publisher.Publisher;
-import TOPSECRET.domain.ValueObjects.PublisherID;
 
 import java.util.ArrayList;
 import java.util.List;
