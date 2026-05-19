@@ -176,11 +176,8 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     @Test
     void findListOfItemsOnDirectSaleByPublisherId_ShouldReturnEmptyListWhenNoPublicationSampleIdsAreFound() throws InstanceNotFoundException {
         // Arrange
-        PublisherID pubId1 = new PublisherID("publisherId1Double");
-        EditionId editionId1 = new EditionId("editionId1");
-
-        when(editionRepoDouble.findIdsByPublisherId(pubId1)).thenReturn(List.of(editionId1));
-        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1))).thenReturn(List.of());
+        when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenReturn(List.of());
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
@@ -188,7 +185,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         // Act
         List<US027ListingDTO> result =
-                controller.findListOfItemsOnDirectSaleByPublisherId(pubId1);
+                controller.findListOfItemsOnDirectSaleByPublisherId(publisherId1Double);
 
         // Assert
         assertTrue(result.isEmpty());
