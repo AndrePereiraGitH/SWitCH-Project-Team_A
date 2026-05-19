@@ -1,0 +1,85 @@
+@startuml
+title To Register an Author
+
+' ── UI Layer ───────────────────────────────────────────────
+class UI {
+}
+
+' ── Controller Layer ───────────────────────────────────────
+class ToRegisterAuthorCtrl {
+  + register(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+}
+
+' ── Application Layer ──────────────────────────────────────
+class AuthorService {
+  + createAndSave(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+}
+
+' ── Domain Layer ───────────────────────────────────────────
+interface IAuthorRepository {
+  + save(author: Author): Author
+  + existsById(authorId: AuthorId): boolean
+}
+
+class AuthorFactory {
+  + create(name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+  + create(id: AuthorId, name: String, countryId: CountryId, dateOfBirth: LocalDate, biography: String): Author
+}
+
+class Author {
+  - id: AuthorId
+  - name: String
+  - countryId: CountryId
+  - dateOfBirth: LocalDate
+  - biography: String
+}
+
+' ── Infrastructure Layer ───────────────────────────────────
+class AuthorRepositoryJPAImpl {
+  + save(author: Author): Author
+  + existsById(authorId: AuthorId): boolean
+}
+
+class AutomaticGeneratedAuthorJPAImpl {
+}
+
+interface IAuthorRepositoryJPA {
+  + existsById(authorId: AuthorId): boolean
+}
+
+class AuthorAssembler {
+  + toDM(author: Author): AuthorDM
+  + toDomain(authorDM: AuthorDM): Author
+}
+
+class AuthorDM {
+  - id: AuthorId
+  - name: String
+  - countryId: CountryId
+  - dateOfBirth: LocalDate
+  - biography: String
+}
+
+Rectangle Database {
+}
+
+' ── Relationships ──────────────────────────────────────────
+UI "1" ..> "1" ToRegisterAuthorCtrl : uses
+ToRegisterAuthorCtrl "1" ..> "1" AuthorService : uses
+
+AuthorService "1" ..> "1" AuthorFactory : uses
+AuthorService "1" ..> "1" IAuthorRepository : uses
+
+IAuthorRepository <|.. AuthorRepositoryJPAImpl : implements
+AuthorRepositoryJPAImpl "1" ..> "1" IAuthorRepositoryJPA : uses
+AuthorRepositoryJPAImpl "1" ..> "1" AuthorAssembler : uses
+
+IAuthorRepositoryJPA <|.. AutomaticGeneratedAuthorJPAImpl : implements
+AutomaticGeneratedAuthorJPAImpl "1 1" ..> "1" Database : queries
+
+AuthorAssembler "1" ..> "1" AuthorDM : creates
+AuthorAssembler "1" ..> "1" AuthorFactory : uses
+
+AuthorFactory "1" ..> "*" Author : creates
+
+@enduml

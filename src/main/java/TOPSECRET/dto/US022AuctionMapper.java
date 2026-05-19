@@ -21,7 +21,7 @@ public class US022AuctionMapper {
      * @return a DTO representing the auction
      * @throws IllegalArgumentException if auction or its required fields are null
      */
-    public static US022AuctionDTO toDTO(Auction auction) {
+    public US022AuctionDTO toDTO(Auction auction) {
 
         if (auction == null) {
             throw new IllegalArgumentException("auction cannot be null");
@@ -31,6 +31,7 @@ public class US022AuctionMapper {
                 auction.id().getId(),
                 auction.getListingId().getId()
         );
+
     }
 
     /**
@@ -40,20 +41,19 @@ public class US022AuctionMapper {
      * @return list of DTOs
      * @throws IllegalArgumentException if the list is null or contains null elements
      */
-    public static List<US022AuctionDTO> toDTOList(List<Auction> auctions) {
+    public List<US022AuctionDTO> toDTOList(List<Auction> auctions) {
 
         if (auctions == null) {
             throw new IllegalArgumentException("auctions list cannot be null");
         }
 
-        List<US022AuctionDTO> result = new ArrayList<>();
-
+        List<US022AuctionDTO> dtoList = new ArrayList<>();
         for (Auction auction : auctions) {
-
-            result.add(toDTO(auction));
+            dtoList.add(toDTO(auction));
         }
 
-        return result;
+        return dtoList;
     }
+
 }
 

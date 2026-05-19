@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,7 @@ class ListingTest {
     private PublicationSampleId pub2IdDouble;
     private UserId validSellerIdDouble;
     private ListingFactory listingFactory;
+    private LocalDate date;
 
     @BeforeEach
     void setup() {
@@ -42,6 +44,7 @@ class ListingTest {
         severalItemList = List.of(pub1IdDouble, pub2IdDouble);
         validSellerIdDouble = mock(UserId.class);
         listingFactory = new ListingFactory();
+        date = LocalDate.now();
     }
 
 
@@ -123,7 +126,7 @@ class ListingTest {
 
         // Act
         Listing listing = new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                validPrice, validDescription, validSellerIdDouble, validPictures);
+                validPrice, validDescription, validSellerIdDouble, validPictures,date);
 
         // Assert
         assertNotNull(listing);
@@ -136,7 +139,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new Listing(null, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, validPictures));
+                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
     }
 
     @Test
@@ -147,7 +150,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new Listing(listingIdDouble, null, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, validPictures));
+                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
     }
 
     @Test
@@ -158,7 +161,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new Listing(listingIdDouble, validTitle, null, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, validPictures));
+                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
     }
 
     @Test
@@ -169,7 +172,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new Listing(listingIdDouble, validTitle, oneItemList, null,
-                        validPrice, validDescription, validSellerIdDouble, validPictures));
+                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
     }
 
     @Test
@@ -180,7 +183,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        null, validDescription, validSellerIdDouble, validPictures));
+                        null, validDescription, validSellerIdDouble, validPictures,date));
     }
 
     @Test
@@ -191,7 +194,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, null, validSellerIdDouble, validPictures));
+                        validPrice, null, validSellerIdDouble, validPictures,date));
     }
 
     @Test
@@ -202,7 +205,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, null, validPictures));
+                        validPrice, validDescription, null, validPictures,date));
     }
 
     @Test
@@ -213,7 +216,7 @@ class ListingTest {
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, null));
+                        validPrice, validDescription, validSellerIdDouble, null,date));
     }
 
     @Test
@@ -223,7 +226,7 @@ class ListingTest {
 
         // Act
         Listing listing = new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                validPrice, validDescription, validSellerIdDouble, validPictures);
+                validPrice, validDescription, validSellerIdDouble, validPictures,date);
 
         // Assert
         assertSame(listingIdDouble, listing.id());
@@ -418,6 +421,18 @@ class ListingTest {
         //Assert
         assertEquals(severalItemList, itemsId);
         assertNotSame(severalItemList, itemsId);
+    }
+
+    @Test
+    void shouldReturnPublicationDate() {
+        //Arrange
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        LocalDate date = listing.getPublicationDate();
+
+        //Assert
+        assertEquals(date, LocalDate.now());
     }
 
     // ========== ID VALIDATION TESTS ==========

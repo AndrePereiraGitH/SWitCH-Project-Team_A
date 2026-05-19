@@ -1,0 +1,105 @@
+@startuml
+autonumber
+hide footbox
+title Get Official Genres List (with JPA)
+
+actor Buyer as User
+
+participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as C
+participant ":IGenre\nRepository" as GR
+participant ":IGenre\nRepositoryJPA" as GRJPA
+participant ":Genre\nAssembler" as Assembler
+participant ":Genre\nFactory" as Factory
+participant ":US022Genre\nMapper" as MAPPER
+participant ":Genre" as ENTITY
+participant "DataBase" as EM
+
+note over C #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over C #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+C -> GR : findAll()
+activate GR
+
+GR -> GRJPA : findAll()
+activate GRJPA
+
+GRJPA -> EM : Query
+activate EM
+
+note over EM
+Query database (SELECT * FROM genre)
+end note
+
+EM --> GRJPA : data
+deactivate EM
+
+GRJPA -->> "genreDMs : List<genreDM>"** : <<create>>
+
+
+GRJPA --> GR : genreDMs
+deactivate GRJPA
+
+loop for each genreDMs
+    GR -> Assembler : toDomain\n(genreDms)
+    activate Assembler
+
+    create "listOfGenre:\nList<Genre>" as listOfGenre
+    Assembler -->> listOfGenre : <<create>>
+
+
+    Assembler -> Factory : create(GenreId, String genreType)
+
+    activate Factory
+
+    create "genreDomain\n:Genre" as genreDomain
+    Factory -->> genreDomain : <<create>>
+
+    Factory --> Assembler : genreDomain
+    deactivate Factory
+
+    Assembler -> listOfGenre : listOfGenre.add(genreDomain)
+end
+
+Assembler --> GR : listOfGenre
+deactivate Assembler
+
+GR --> C : listOfGenre
+deactivate GR
+
+C -> MAPPER : toDTOList(listOfGenre)
+activate MAPPER
+
+create "listOfGenreDTO:\nList<US022GenreDTO>" as listDTO
+MAPPER -->> listDTO : <<create>>
+
+loop for each Genre
+    MAPPER -> ENTITY : getGenreType()
+    activate ENTITY
+    ENTITY --> MAPPER : genreType
+        deactivate ENTITY
+    MAPPER -> ENTITY : getId()
+    activate ENTITY
+    ENTITY --> MAPPER : genreId
+    deactivate ENTITY
+
+
+    create "genreDTO:\nUS022GenreDTO" as genreDTO
+    MAPPER -> genreDTO : toDTO()
+
+    MAPPER -> listDTO : listOfGenreDTO.add(genreDTO)
+end
+
+MAPPER --> C : listOfGenreDTO
+deactivate MAPPER
+
+
+@enduml

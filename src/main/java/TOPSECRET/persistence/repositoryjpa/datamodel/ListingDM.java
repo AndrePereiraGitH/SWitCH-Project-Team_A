@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ import java.util.Objects;
  * </ul>
  *
  * <p>The no-arg constructor is protected and reserved for JPA use only.
- * Use {@link #ListingDM(ListingId, String, List, UserId, SaleType, String, List, String)}
+ * Use {@link #ListingDM(ListingId, String, List, UserId, SaleType, String, List, String, LocalDate)}
  * to create instances programmatically.
  */
 @Entity
@@ -65,6 +66,10 @@ public class ListingDM {
     @Column(name = "short_description")
     private String shortDescription;
 
+    @Column(name = "publication_date")
+    private LocalDate publicationDate;
+
+
 
     /**
      * Creates a new {@code ListingDM} with all required fields.
@@ -79,10 +84,15 @@ public class ListingDM {
      * @param price           the price of the listing; must not be {@code null}
      * @throws NullPointerException if any parameter is {@code null}
      */
-    public ListingDM(ListingId listingId, String shortDescription,
-                     List<PublicationSampleId> itemsId, UserId sellerId,
-                     SaleType saleType, String listingTitle,
-                     List<String> pictures, String price) {
+    public ListingDM(ListingId listingId,
+                     String shortDescription,
+                     List<PublicationSampleId> itemsId,
+                     UserId sellerId,
+                     SaleType saleType,
+                     String listingTitle,
+                     List<String> pictures,
+                     String price,
+                     LocalDate publicationDate) {
 
         this.listingId = Objects.requireNonNull(listingId);
         this.shortDescription = Objects.requireNonNull(shortDescription);
@@ -92,5 +102,6 @@ public class ListingDM {
         this.listingTitle = Objects.requireNonNull(listingTitle);
         this.pictures = Objects.requireNonNull(pictures);
         this.price = Objects.requireNonNull(price);
+        this.publicationDate = Objects.requireNonNull(publicationDate);
     }
 }

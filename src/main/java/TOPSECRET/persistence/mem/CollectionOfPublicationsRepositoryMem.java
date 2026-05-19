@@ -6,8 +6,11 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -65,6 +68,33 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
     /**
      * {@inheritDoc}
      */
+    @Override
+    public CollectionOfPublications update(CollectionOfPublications collection) {
+
+        Objects.requireNonNull(collection, "collection cannot be null");
+
+//        for (CollectionOfPublications collectionOfPublications : _collectionOfPublicationsList) {
+//            if (collectionOfPublications.id().equals(collection.id())) {
+//
+//            }
+//        }
+
+        for (int i = 0; i < _collectionOfPublicationsList.size(); i++) {
+
+            CollectionOfPublications existingCollection =
+                    _collectionOfPublicationsList.get(i);
+
+            if (existingCollection.id().equals(collection.id())) {
+                _collectionOfPublicationsList.set(i, collection);
+                return collection;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId) {
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsID cannot be null.");
@@ -82,7 +112,28 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * {@inheritDoc}
      */
     @Override
+    public CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(collectionId, "CollectionId cannot be null");
+
+        for (CollectionOfPublications collectionOfPublications : _collectionOfPublicationsList) {
+            if (collectionOfPublications.id().equals(collectionId)) {
+                return collectionOfPublications;
+            }
+        }
+        throw new InstanceNotFoundException("collection not found by Id: " + collectionId);
+    }
+
+    @Override
     public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
+        return List.of();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findAllByOwnerId(UserId ownerId) {
 
         if (ownerId == null) {
             throw new IllegalArgumentException("User cannot be null");
@@ -102,24 +153,6 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
     /**
      * {@inheritDoc}
      */
-    public boolean makeCollectionPublic(CollectionOfPublicationsId id) {
-
-        if (id == null) {
-            throw new NullPointerException("Collection ID must not be null");
-        }
-
-        for (CollectionOfPublications collection : _collectionOfPublicationsList) {
-            if (collection.id().equals(id)) {
-                collection.set_isPrivate();
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
         if (genreId == null) {
@@ -129,7 +162,7 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         List<CollectionOfPublications> collections = new ArrayList<>();
 
         for (CollectionOfPublications c : _collectionOfPublicationsList) {
-            if (c.getCollectionGenre().equals(genreId) && !c.isPrivate()) {
+            if (c.getCollectionGenre().equals(genreId) && !c.getIsPrivate()) {
                 collections.add(c);
             }
         }

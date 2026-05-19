@@ -4,6 +4,8 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -54,8 +56,9 @@ public class ListingFactory {
      * <p>This method is intended for use by the persistence layer only, when rehydrating
      * a {@link Listing} from the database. Unlike
      * {@link #create(String, List, SaleType, Price, String, UserId, List)},
-     * this method does not generate a new identifier — it uses the one provided.
+     * this method does not generate a new identifier or publication date — it uses the ones provided.
      *
+     * @return a reconstructed {@link Listing} instance representing the persisted state
      */
     public Listing create(
             ListingId listingId,
@@ -65,8 +68,9 @@ public class ListingFactory {
             Price price,
             String shortDescription,
             UserId sellerId,
-            List<Picture> pictures) {
+            List<Picture> pictures,
+            LocalDate publicationDate) {
 
-        return new Listing(listingId,listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);
+        return new Listing(listingId, listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures, publicationDate);
     }
 }

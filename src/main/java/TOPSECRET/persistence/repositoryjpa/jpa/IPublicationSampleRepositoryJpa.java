@@ -29,6 +29,20 @@ public interface IPublicationSampleRepositoryJpa extends JpaRepository<Publicati
     List<PublicationSampleDM> findAllByBdId(BibliographicalDataId bdId);
 
     /**
+     * Retrieves all {@link PublicationSampleDM} entities whose bibliographical
+     * data identifier is contained in the given list.
+     *
+     * <p>This method searches for publication samples associated with any of the
+     * provided {@link BibliographicalDataId} values.</p>
+     *
+     * @param bdIds the list of bibliographical data identifiers used for filtering;
+     *              must not be {@code null}
+     * @return a list of matching {@link PublicationSampleDM} entities
+     *         never {@code null}, but may be empty if no matches are found
+     */
+    List<PublicationSampleDM> findAllByBdIdIn(List<BibliographicalDataId> bdIds);
+
+    /**
      * Retrieves all publication samples owned by the given user.
      *
      * @param ownerId the ID of the user whose publications are to be retrieved; must not be null

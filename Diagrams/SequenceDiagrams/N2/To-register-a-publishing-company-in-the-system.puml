@@ -8,9 +8,16 @@ actor Administrator
 participant ":UI" as UI
 end box
 participant ":ToRegisterNewPublisherController" as Controller
-participant ":PublisherRepository" as PublisherRepository
-participant ":PublisherFactory" as PublisherFactory
+participant ":PublisherService" as Service
+participant ":PublisherFactory" as Factory
 participant "publisher:Publisher" as Publisher
+participant ":IPublisherRepository" as Repository
+participant ":IPublisherRepositoryJPA" as RepositoryJPA
+participant ":PublisherAssembler" as Assembler
+participant "publisherDM:PublisherDM" as PublisherDM
+participant "persistedPublisherDM:AuthorDM" as persPublisherDM
+participant "publisher:Publisher" as Publisher
+database "Database" as DB
 
 Administrator -> UI : I want to register a Publishing Company
 activate UI
@@ -22,23 +29,80 @@ activate UI
 UI -> Controller : registerPublisher(name, vatNumber, contact)
 activate Controller
 
-Controller -> PublisherRepository : createAndAdd(name, vatNumber, contact)
-activate PublisherRepository
+Controller -> Service : createAndSave(name, vatNumber, contact)
+activate Service
 
-PublisherRepository -> PublisherFactory : create(name, vatNumber, contact)
-activate PublisherFactory
-PublisherFactory -->> Publisher ** : <<create>>\nPublisher(name, vatNumber, contact)
-PublisherFactory --> PublisherRepository : publisher
-deactivate PublisherFactory
+Service -> Factory : create(name, vatNumber, contact)
+activate Factory
+Factory -->> Publisher ** : <<create>>
+Factory --> Service : publisher
+deactivate Factory
 
-PublisherRepository -> PublisherRepository : exists(publisher)
-PublisherRepository --> PublisherRepository : false
-PublisherRepository -> PublisherRepository : add(publisher)
-PublisherRepository --> Controller : publisher
-deactivate PublisherRepository
+Service -> Repository : save(publisher)
+activate Repository
 
-Controller --> UI : publisher
-deactivate Controller
-UI --> Administrator : success
-deactivate UI
+Repository -> RepositoryJPA : existsById(publisher.id())
+activate RepositoryJPA
+RepositoryJPA -> DB : SELECT
+activate DB
+DB --> RepositoryJPA : data
+deactivate DB
+alt publisher already exists
+    RepositoryJPA --> Repository : true
+        deactivate RepositoryJPA
+    Repository -->> Service : throws IllegalArgumentException
+    deactivate Repository
+    Service -->> Controller : throws IllegalArgumentException
+    deactivate Service
+    Controller -->> UI : throws IllegalArgumentException
+    deactivate Controller
+    UI -->> Administrator : Publisher already exists
+
+
+else publisher does NOT exist
+    activate Repository
+    activate RepositoryJPA
+    activate Service
+    activate Controller
+
+    RepositoryJPA --> Repository : false
+    deactivate RepositoryJPA
+    Repository -> Assembler : toDM(publisher)
+    activate Assembler
+    Assembler -->> PublisherDM ** : <<create>>
+    Assembler --> Repository : publisherDM
+    deactivate Assembler
+
+    Repository -> RepositoryJPA : save(publisherDM)
+    activate RepositoryJPA
+    RepositoryJPA -> DB : INSERT
+    activate DB
+    DB --> RepositoryJPA : data
+    deactivate DB
+    RepositoryJPA -->> persPublisherDM**: <<create>>
+    RepositoryJPA --> Repository : persistedPublisherDM
+    deactivate RepositoryJPA
+
+    Repository -> Assembler : toDomain(persistedPublisherDM)
+    activate Assembler
+    Assembler -> Factory : create(id, name, vatNumber, contact)
+    deactivate Assembler
+    activate Factory
+    Factory -->> Publisher**: <<create>>
+    Factory --> Assembler : publisher
+    deactivate Factory
+    activate Assembler
+    Assembler --> Repository : publisher
+    deactivate Assembler
+
+    Repository --> Service : publisher
+    deactivate Repository
+    Service --> Controller : publisher
+    deactivate Service
+    Controller --> UI : sucess
+    deactivate Controller
+    UI --> Administrator : success
+    deactivate UI
+end
+
 @enduml

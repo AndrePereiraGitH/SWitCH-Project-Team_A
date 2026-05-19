@@ -17,11 +17,13 @@ class US022GenreMapperTest {
     void shouldReturnEmptyListWhenInputIsEmpty() {
 
         // Arrange
+        US022GenreMapper mapper = new US022GenreMapper();
+
         List<Genre> genres = List.of();
 
         // Act
         List<US022GenreDTO> result =
-                US022GenreMapper.toDTOList(genres);
+                mapper.toDTOList(genres);
 
         // Assert
         assertNotNull(result);
@@ -32,6 +34,8 @@ class US022GenreMapperTest {
     void shouldConvertSingleGenre() {
 
         // Arrange
+        US022GenreMapper mapper = new US022GenreMapper();
+
         Genre genreDouble = mock(Genre.class);
         GenreId genreIdDouble = mock(GenreId.class);
         when(genreDouble.id()).thenReturn(genreIdDouble);
@@ -41,17 +45,19 @@ class US022GenreMapperTest {
 
         // Act
         List<US022GenreDTO> result =
-                US022GenreMapper.toDTOList(genres);
+                mapper.toDTOList(genres);
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("Comedy", result.get(0).name());
+        assertEquals("Comedy", result.get(0).genreType());
     }
 
     @Test
     void shouldConvertMultipleGenres() {
 
         // Arrange
+        US022GenreMapper mapper = new US022GenreMapper();
+
         Genre genreDouble1 = mock(Genre.class);
         GenreId genreIdDouble1 = mock(GenreId.class);
         when(genreDouble1.id()).thenReturn(genreIdDouble1);
@@ -66,18 +72,20 @@ class US022GenreMapperTest {
 
         // Act
         List<US022GenreDTO> result =
-                US022GenreMapper.toDTOList(genres);
+                mapper.toDTOList(genres);
 
         // Assert
         assertEquals(2, result.size());
-        assertEquals("Fantasy", result.get(0).name());
-        assertEquals("Romance", result.get(1).name());
+        assertEquals("Fantasy", result.get(0).genreType());
+        assertEquals("Romance", result.get(1).genreType());
     }
 
     @Test
     void shouldPreserveOrderOfGenres() {
 
         // Arrange
+        US022GenreMapper mapper = new US022GenreMapper();
+
         Genre genreDouble1 = mock(Genre.class);
         GenreId genreIdDouble1 = mock(GenreId.class);
         when(genreDouble1.id()).thenReturn(genreIdDouble1);
@@ -92,17 +100,19 @@ class US022GenreMapperTest {
 
         // Act
         List<US022GenreDTO> result =
-                US022GenreMapper.toDTOList(genres);
+                mapper.toDTOList(genres);
 
         // Assert
-        assertEquals("A", result.get(0).name());
-        assertEquals("B", result.get(1).name());
+        assertEquals("A", result.get(0).genreType());
+        assertEquals("B", result.get(1).genreType());
     }
 
     @Test
     void shouldMapGenreTypeCorrectly() {
 
         // Arrange
+        US022GenreMapper mapper = new US022GenreMapper();
+
         Genre genreDouble = mock(Genre.class);
         GenreId genreIdDouble = mock(GenreId.class);
         when(genreDouble.id()).thenReturn(genreIdDouble);
@@ -113,23 +123,26 @@ class US022GenreMapperTest {
 
         // Act
         List<US022GenreDTO> result =
-                US022GenreMapper.toDTOList(genres);
+                mapper.toDTOList(genres);
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("Sci-Fi", result.get(0).name());
+        assertEquals("Sci-Fi", result.get(0).genreType());
     }
 
     @Test
     void shouldThrowExceptionWhenInputIsNull() {
 
         // Arrange
+        US022GenreMapper mapper = new US022GenreMapper();
+
         List<Genre> genres = null;
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                US022GenreMapper.toDTOList(genres)
+                mapper.toDTOList(genres)
         );
+
     }
 }
 

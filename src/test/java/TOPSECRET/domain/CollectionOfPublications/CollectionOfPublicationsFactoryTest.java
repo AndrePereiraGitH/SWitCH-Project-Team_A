@@ -11,6 +11,8 @@ import static org.mockito.Mockito.*;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.time.LocalDateTime;
+
 /**
  * Unit tests for {@link CollectionOfPublicationsFactory}.
  *
@@ -62,7 +64,7 @@ class CollectionOfPublicationsFactoryTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreIdDouble, result.getCollectionGenre());
         assertEquals(userIdDouble, result.getOwnerId());
-        assertTrue(result.isPrivate());
+        assertTrue(result.getIsPrivate());
     }
 
     @Test
@@ -115,7 +117,9 @@ class CollectionOfPublicationsFactoryTest {
         // Arrange
         String name = "Fantasy Collection";
         boolean isPrivate = true;
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
+
 
         // Act
         CollectionOfPublications result =
@@ -124,7 +128,8 @@ class CollectionOfPublicationsFactoryTest {
                         name,
                         genreIdDouble,
                         userIdDouble,
-                        isPrivate
+                        isPrivate,
+                        publicUntil
                 );
 
         // Assert
@@ -132,11 +137,13 @@ class CollectionOfPublicationsFactoryTest {
         assertEquals(name, result.getCollectionName());
         assertEquals(genreIdDouble, result.getCollectionGenre());
         assertEquals(userIdDouble, result.getOwnerId());
-        assertEquals(isPrivate, result.isPrivate());
+        assertEquals(isPrivate, result.getIsPrivate());
     }
 
     @Test
     void recreateShouldThrowExceptionWhenIdIsNull() {
+
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         factory = new CollectionOfPublicationsFactory();
 
@@ -146,52 +153,63 @@ class CollectionOfPublicationsFactoryTest {
                         "Fantasy Collection",
                         genreIdDouble,
                         userIdDouble,
-                        true
+                        true,
+                        publicUntil
                 ));
     }
 
     @Test
     void recreateShouldThrowExceptionWhenNameIsNull() {
-
+        // arrange
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
 
+        // act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(
                         collectionIdDouble,
                         null,
                         genreIdDouble,
                         userIdDouble,
-                        true
+                        true,
+                        publicUntil
                 ));
     }
 
     @Test
     void recreateShouldThrowExceptionWhenGenreIdIsNull() {
 
+        // arrange
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
 
+        // act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(
                         collectionIdDouble,
                         "Fantasy Collection",
                         null,
                         userIdDouble,
-                        true
+                        true,
+                        publicUntil
                 ));
     }
 
     @Test
     void recreateShouldThrowExceptionWhenUserIdIsNull() {
-
+        // arrange
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
 
+        // act + assert
         assertThrows(IllegalArgumentException.class,
                 () -> factory.create(
                         collectionIdDouble,
                         "Fantasy Collection",
                         genreIdDouble,
                         null,
-                        true
+                        true,
+                        publicUntil
                 ));
     }
 }

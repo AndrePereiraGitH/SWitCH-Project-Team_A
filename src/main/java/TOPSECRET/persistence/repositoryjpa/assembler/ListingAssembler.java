@@ -59,7 +59,8 @@ public class ListingAssembler {
                 listing.getSaleType(),
                 listing.getListingTitle(),
                 convertPicturesToDM(listing.getPictures()),
-                listing.getPrice().toString());
+                listing.getPrice().getPrice().toPlainString(),
+                listing.getPublicationDate());
 
         return listingDM;
     }
@@ -87,7 +88,8 @@ public class ListingAssembler {
                 convertPriceToDomain(dm.getPrice()),
                 dm.getShortDescription(),
                 dm.getSellerId(),
-                convertPicturesToDomain(dm.getPictures())
+                convertPicturesToDomain(dm.getPictures()),
+                dm.getPublicationDate()
         );
 
         return listing;

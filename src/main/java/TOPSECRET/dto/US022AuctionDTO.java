@@ -1,4 +1,7 @@
 package TOPSECRET.dto;
+
+import TOPSECRET.domain.ValueObjects.AuctionId;
+
 /**
  * DTO representing an Auction for US022.
  *

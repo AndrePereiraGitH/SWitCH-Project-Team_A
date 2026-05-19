@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -97,7 +98,7 @@ class ListingFactoryTest {
             ListingFactory listingFactory = new ListingFactory();
 
             // act
-            Listing listing = listingFactory.create(listingId,listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures);
+            Listing listing = listingFactory.create(listingId,listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures, LocalDate.now());
 
             // assert
             assertNotNull(listing);

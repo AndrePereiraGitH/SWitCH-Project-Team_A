@@ -12,6 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -57,6 +59,7 @@ class ListingAssemblerTest {
         Price priceDouble         = mock(Price.class);
         Picture pictureDouble     = mock(Picture.class);
         Listing listingDouble     = mock(Listing.class);
+        BigDecimal bigDecimalDouble = mock(BigDecimal.class);
 
         when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getShortDescription()).thenReturn(validDescription);
@@ -66,8 +69,10 @@ class ListingAssemblerTest {
         when(listingDouble.getListingTitle()).thenReturn(validTitle);
         when(listingDouble.getPictures()).thenReturn(List.of(pictureDouble));
         when(listingDouble.getPrice()).thenReturn(priceDouble);
-        when(priceDouble.toString()).thenReturn(validPriceString);
+        when(bigDecimalDouble.toPlainString()).thenReturn(validPriceString);
+        when(priceDouble.getPrice()).thenReturn(bigDecimalDouble);
         when(pictureDouble.getPicture()).thenReturn(validPictureUrl);
+        when(listingDouble.getPublicationDate()).thenReturn(LocalDate.now());
 
         // Act
         ListingDM result = assembler.toDM(listingDouble);
@@ -92,6 +97,7 @@ class ListingAssemblerTest {
         Price priceDouble               = mock(Price.class);
         Picture pictureDouble           = mock(Picture.class);
         Listing listingDouble           = mock(Listing.class);
+        BigDecimal bigDecimalDouble     = mock(BigDecimal.class);
 
         when(listingDouble.id()).thenReturn(listingIdDouble);
         when(listingDouble.getShortDescription()).thenReturn(validDescription);
@@ -101,8 +107,10 @@ class ListingAssemblerTest {
         when(listingDouble.getListingTitle()).thenReturn(validTitle);
         when(listingDouble.getPictures()).thenReturn(List.of(pictureDouble));
         when(listingDouble.getPrice()).thenReturn(priceDouble);
-        when(priceDouble.toString()).thenReturn(validPriceString);
+        when(bigDecimalDouble.toPlainString()).thenReturn(validPriceString);
+        when(priceDouble.getPrice()).thenReturn(bigDecimalDouble);
         when(pictureDouble.getPicture()).thenReturn(validPictureUrl);
+        when(listingDouble.getPublicationDate()).thenReturn(LocalDate.now());
 
         // Act
         ListingDM result = assembler.toDM(listingDouble);
@@ -133,6 +141,7 @@ class ListingAssemblerTest {
         when(dmDouble.getShortDescription()).thenReturn(validDescription);
         when(dmDouble.getSellerId()).thenReturn(userIdDouble);
         when(dmDouble.getPictures()).thenReturn(List.of(validPictureUrl));
+        when(dmDouble.getPublicationDate()).thenReturn(LocalDate.now());
         when(factoryDouble.create(
                 eq(listingIdDouble),
                 eq(validTitle),
@@ -141,7 +150,8 @@ class ListingAssemblerTest {
                 any(Price.class),
                 eq(validDescription),
                 eq(userIdDouble),
-                any()
+                any(),
+                any(LocalDate.class)
         )).thenReturn(listingDouble);
 
         // Act
@@ -155,7 +165,7 @@ class ListingAssemblerTest {
     void toDomain_shouldThrowException_WhenListingDMIsNull() {
 
         // Act + Assert
-        assertThrows(NullPointerException.class, () -> assembler.toDomain((ListingDM) null));
+        assertThrows(NullPointerException.class, () -> assembler.toDomain(null));
     }
 
     @Test
@@ -174,8 +184,9 @@ class ListingAssemblerTest {
         when(dmDouble.getShortDescription()).thenReturn(validDescription);
         when(dmDouble.getSellerId()).thenReturn(userIdDouble);
         when(dmDouble.getPictures()).thenReturn(List.of(validPictureUrl));
+        when(dmDouble.getPublicationDate()).thenReturn(LocalDate.now());
         when(factoryDouble.create(
-                any(), any(), any(), any(), any(), any(), any(), any()
+                any(), any(), any(), any(), any(), any(), any(), any(), any(LocalDate.class)
         )).thenReturn(mock(Listing.class));
 
         // Act
@@ -184,7 +195,7 @@ class ListingAssemblerTest {
         // Assert
         ArgumentCaptor<List<Picture>> pictureCaptor = ArgumentCaptor.forClass(List.class);
         verify(factoryDouble).create(
-                any(), any(), any(), any(), any(), any(), any(), pictureCaptor.capture()
+                any(), any(), any(), any(), any(), any(), any(), pictureCaptor.capture(),any(LocalDate.class)
         );
         List<Picture> capturedPictures = pictureCaptor.getValue();
         assertEquals(1, capturedPictures.size());

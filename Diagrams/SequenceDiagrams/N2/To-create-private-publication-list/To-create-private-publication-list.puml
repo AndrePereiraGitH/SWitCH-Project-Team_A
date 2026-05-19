@@ -6,18 +6,21 @@ title To create a private collection of publications
 actor "User" as User
 participant ":UI" as UI
 participant ":ToCreateCollectionOfPublicationsController" as Controller
-
 participant ":IGenreRepository" as GenreRepo
+participant ":IGenreRepositoryJpa" as GenreJpaRepo
+participant "genreDMList: List<GenreDM>" as GenreDMList
+participant ":GenreAssembler" as GenreAssembler
+participant ":GenreFactory" as GenreFactory
 participant "allGenreList: List<Genre>" as allGenreList
 participant ":US017GenreMapper" as GenreMapper
 participant "listOfGenreDTO: List<US017GenreDTO>" as listOfGenreDTO
 participant ":Genre" as Genre
 participant "genreDTO: US017GenreDTO" as GDTO
-
-participant "selectedGenre: Genre" as SelectedGenre
-participant "user: User" as UserObj
-
+participant ":CollectionOfPublicationsService" as Service
 participant ":ICollectionOfPublicationsRepository" as CollectionRepo
+participant ":ICollectionOfPublicationsRepositoryJpa" as CollectionJpaRepo
+participant "DataBase" as DB
+participant ":CollectionOfPublicationsAssembler" as CollectionAssembler
 participant ":CollectionOfPublicationsFactory" as Factory
 
 ' --- Start ---
@@ -30,18 +33,47 @@ User -> UI : name("My Favorites")
 activate UI
 
 ' =========================
-' Get Genres (DTO)
+' Get Genres
 ' =========================
 UI -> Controller : getAllGenres()
 activate Controller
 
-Controller -> GenreRepo : getAllGenres()
+Controller -> GenreRepo : findAll()
 activate GenreRepo
+
+GenreRepo -> GenreJpaRepo : findAll()
+activate GenreJpaRepo
+GenreJpaRepo -> DB : SELECT * FROM genres
+activate DB
+DB --> GenreJpaRepo : data
+deactivate DB
+GenreJpaRepo -->> GenreDMList ** : <<create>>
+GenreJpaRepo --> GenreRepo : genreDMList
+deactivate GenreJpaRepo
+
 GenreRepo -->> allGenreList ** : <<create>>
+
+loop for each GenreDM
+    GenreRepo -> GenreAssembler : toDomain(genreDM)
+    activate GenreAssembler
+
+    GenreAssembler -> GenreFactory : create(genreId, genreType)
+    activate GenreFactory
+    create ":Genre" as GenreObj
+    GenreFactory -->> GenreObj : <<create>>
+    GenreFactory --> GenreAssembler : genre
+    deactivate GenreFactory
+
+    GenreAssembler --> GenreRepo : genre
+    deactivate GenreAssembler
+
+    GenreRepo -> allGenreList : add(genre)
+end
+
 GenreRepo --> Controller : allGenreList
 deactivate GenreRepo
 
-Controller -> GenreMapper : toDTO(allGenreList)
+Controller -> GenreMapper : toDTOList(allGenreList)
 activate GenreMapper
 GenreMapper -->> listOfGenreDTO ** : <<create>>
 
@@ -52,7 +84,7 @@ loop for each genre in allGenreList
     deactivate Genre
 
     GenreMapper -->> GDTO ** : <<create>>
-    GenreMapper -> GenreMapper : listOfGenreDTO.add(genreDTO)
+    GenreMapper -> listOfGenreDTO : add(genreDTO)
 end
 
 GenreMapper --> Controller : listOfGenreDTO
@@ -70,44 +102,78 @@ deactivate UI
 User -> UI : selectedGenre("Fiction")
 activate UI
 
-UI -> Controller : createCollection(name, selectedGenre, user)
+UI -> Controller : createCollection(name, genreId, userId)
 activate Controller
 
-Controller -> SelectedGenre : id()
-activate SelectedGenre
-SelectedGenre --> Controller : genreId : GenreID
-deactivate SelectedGenre
+Controller -> Service : createAndSave(name, genreId, userId)
+activate Service
 
-Controller -> UserObj : id()
-activate UserObj
-UserObj --> Controller : userId : UserId
-deactivate UserObj
-
-Controller -> CollectionRepo : createAndAdd(userId, name, genreId)
-activate CollectionRepo
-
-loop for each existing collection
-    CollectionRepo -> CollectionRepo : compare(userId, name, genreId)
-    alt [duplicate found]
-        CollectionRepo --> Controller : error: "Collection already exists"
-    end
-end
-
-CollectionRepo -> Factory : create(name, genreId, userId)
+Service -> Factory : create(name, genreId, userId)
 activate Factory
-
-create "cp: CollectionOfPublications"
-Factory -> "cp: CollectionOfPublications" : <<create>>
+create "cp:CollectionOfPublications" as CP
+Factory -->> CP : <<create>>
 note right : _isPrivate = true\n(enforced by constructor)
-Factory --> CollectionRepo : cp
+Factory --> Service : cp
 deactivate Factory
 
-CollectionRepo -> CollectionRepo : _collectionOfPublicationsList.add(cp)
-CollectionRepo --> Controller : cp
-deactivate CollectionRepo
+Service -> CollectionRepo : save(cp)
+activate CollectionRepo
 
-Controller --> UI : cp
-deactivate Controller
+CollectionRepo -> CollectionJpaRepo : existsById(cp.id())
+activate CollectionJpaRepo
+CollectionJpaRepo -> DB : SELECT * FROM collections WHERE id = ?
+activate DB
+DB --> CollectionJpaRepo : result
+deactivate DB
+CollectionJpaRepo --> CollectionRepo : false
+deactivate CollectionJpaRepo
+
+alt [collection already exists]
+    CollectionRepo --> Service : error: "Collection already exists"
+    Service --> Controller : error: "Collection already exists"
+    Controller --> UI : error: "Collection already exists"
+
+else [collection does NOT exist]
+
+    CollectionRepo -> CollectionAssembler : toDM(cp)
+    activate CollectionAssembler
+    create "cpDM:CollectionOfPublicationsDM" as CPDM
+    CollectionAssembler -->> CPDM : <<create>>
+    CollectionAssembler --> CollectionRepo : cpDM
+    deactivate CollectionAssembler
+
+    CollectionRepo -> CollectionJpaRepo : save(cpDM)
+    activate CollectionJpaRepo
+    CollectionJpaRepo -> DB : INSERT INTO collections ...
+    activate DB
+    DB --> CollectionJpaRepo : data
+    deactivate DB
+    create "savedDM:CollectionOfPublicationsDM" as SavedDM
+    CollectionJpaRepo -->> SavedDM : <<create>>
+    CollectionJpaRepo --> CollectionRepo : savedDM
+    deactivate CollectionJpaRepo
+
+    CollectionRepo -> CollectionAssembler : toDomain(savedDM)
+    activate CollectionAssembler
+    CollectionAssembler -> Factory : create(id, name, genreId, userId, isPrivate)
+    activate Factory
+    create "savedCP:CollectionOfPublications" as SavedCP
+    Factory -->> SavedCP : <<create>>
+    Factory --> CollectionAssembler : savedCP
+    deactivate Factory
+    CollectionAssembler --> CollectionRepo : savedCP
+    deactivate CollectionAssembler
+
+    CollectionRepo --> Service : savedCP
+    deactivate CollectionRepo
+
+    Service --> Controller : savedCP
+    deactivate Service
+
+    Controller --> UI : savedCP
+    deactivate Controller
+
+end
 
 UI --> User : Private collection of publications created successfully
 deactivate UI

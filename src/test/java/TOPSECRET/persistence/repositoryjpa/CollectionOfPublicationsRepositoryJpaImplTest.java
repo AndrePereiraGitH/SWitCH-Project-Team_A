@@ -13,7 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -54,6 +57,9 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    // ===========================================================
+    // ========== Tests for Constructor ==========================
+    // ===========================================================
 
     @Test
     void constructor_shouldThrowException_whenRepositoryIsNull() {
@@ -139,6 +145,51 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     }
 
     // ===========================================================
+    // ========== Tests for Update ===============================
+    // ===========================================================
+
+    @Test
+    void update_shouldReturnUpdatedCollection_whenCollectionIsValid() {
+        // arrange
+        CollectionOfPublications collection =
+                mock(CollectionOfPublications.class);
+
+        CollectionOfPublicationsDM collectionDMToUpdate =
+                mock(CollectionOfPublicationsDM.class);
+
+        CollectionOfPublicationsDM updatedCollectionDM =
+                mock(CollectionOfPublicationsDM.class);
+
+        CollectionOfPublications updatedCollection =
+                mock(CollectionOfPublications.class);
+
+        when(assembler.toDM(collection))
+                .thenReturn(collectionDMToUpdate);
+
+        when(jpa.update(collectionDMToUpdate))
+                .thenReturn(updatedCollectionDM);
+
+        when(assembler.toDomain(updatedCollectionDM))
+                .thenReturn(updatedCollection);
+
+        // act
+        CollectionOfPublications result = repo.update(collection);
+
+        // assert
+        assertEquals(updatedCollection, result);
+
+
+    }
+
+    @Test
+    void update_shouldThrow_whenCollectionIsNull() {
+
+        // act + assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> repo.update(null));
+        assertEquals("collection cannot be null", ex.getMessage());
+    }
+
+    // ===========================================================
     // ========== Tests for existsById ===========================
     // ===========================================================
 
@@ -181,36 +232,94 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     }
 
     // ===========================================================
-    // ========== Default return methods =========================
+    // ========== Tests for findById ===========================
     // ===========================================================
 
     @Test
-    void getUserCollectionsShouldReturnEmptyList() {
+    void findById_shouldThrow_whenCollectionIsNull() {
+
+        //act + assert
+        NullPointerException ex = assertThrows(NullPointerException.class, () ->repo.findById(null));
+        assertEquals("CollectionOfPublications Id cannot be null", ex.getMessage());
+
+    }
+
+    @Test
+    void findById_shouldReturnCollection_whenCollectionExists() throws InstanceNotFoundException {
+        // arrange
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublicationsDM collectionDM = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(jpa.findById(id)).thenReturn(Optional.of(collectionDM));
+
+        when(assembler.toDomain(collectionDM)).thenReturn(collection);
+
+        // act
+        CollectionOfPublications result = repo.findById(id);
+
+        // assert
+        assertEquals(result, collection);
+    }
+
+    // ===========================================================
+    // ========== Tests findAllByOwnerId ===========================
+    // ===========================================================
+
+    @Test
+    void findAllByOwnerIdShouldReturnEmptyList() {
 
         // Arrange
         UserId userId = mock(UserId.class);
 
         // Act
         List<CollectionOfPublications> result =
-                repo.getUserCollections(userId);
+                repo.findAllByOwnerId(userId);
 
         // Assert
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void makeCollectionPublicShouldReturnFalse() {
+    void findAllByOwnerId_shouldThrow_whenOwnerIdIsNull() {
 
-        // Arrange
-        CollectionOfPublicationsId id =
-                mock(CollectionOfPublicationsId.class);
-
-        // Act
-        boolean result = repo.makeCollectionPublic(id);
-
-        // Assert
-        assertFalse(result);
+        // act + assert
+        NullPointerException ex = assertThrows(NullPointerException.class, ()-> repo.findAllByOwnerId(null));
+        assertEquals("ownerId cannot be null", ex.getMessage());
     }
+
+    @Test
+    void findAllByUserId_shouldReturnCollections_whenOwnerHasCollections() {
+
+        // arrange
+        UserId ownerId = mock(UserId.class);
+
+        CollectionOfPublicationsDM collectionDM1 = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublicationsDM collectionDM2 = mock(CollectionOfPublicationsDM.class);
+
+        CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
+
+        when(jpa.findAllByOwnerId(ownerId))
+                .thenReturn(List.of(collectionDM1, collectionDM2));
+
+        when(assembler.toDomain(collectionDM1))
+                .thenReturn(collection1);
+
+        when(assembler.toDomain(collectionDM2))
+                .thenReturn(collection2);
+
+        // act
+        List<CollectionOfPublications> result = repo.findAllByOwnerId(ownerId);
+
+        // assert
+        assertEquals(List.of(collection1, collection2), result);
+
+    }
+
+    // ===========================================================
+    // ========== Default return methods =========================
+    // ===========================================================
 
     @Test
     void findPublicCollectionsByGenreIdShouldReturnEmptyList() {

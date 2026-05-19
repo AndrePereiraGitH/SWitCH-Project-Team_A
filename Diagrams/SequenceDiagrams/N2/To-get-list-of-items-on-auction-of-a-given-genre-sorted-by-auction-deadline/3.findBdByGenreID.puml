@@ -1,0 +1,45 @@
+@startuml
+autonumber
+hide footbox
+
+actor Buyer as User
+
+participant ":ToGetListOfItemsOn\nAuctionOfGivenGenreController" as Controller
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":IBibliographicalData\nRepositoryJPA" as BDJPA
+participant "bdDMList:\nList<BibliographicalDataDM>"
+participant "listOfBioDataId:\nList<BibliographicalDataId>"
+participant "DataBase" as DB
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+
+Controller -> BDRepo : findAllByGenreId(genreId)
+activate BDRepo
+BDRepo -> BDJPA : findAllByGenreId(genreId)
+activate BDJPA
+BDJPA -> DB : SELECT * FROM bibliographical_data\nWHERE genre_Id IN
+activate DB
+DB --> BDJPA : data
+deactivate DB
+BDJPA -->> "bdDMList:\nList<BibliographicalDataDM>" ** : <<create>>
+BDJPA -->> "listOfBioDataId:\nList<BibliographicalDataId>" ** : <<create>>
+loop for each dm in bdDMList
+BDJPA -> BDJPA : listOfBioDataId.add(dm.bdId())
+end
+BDJPA --> BDRepo : listOfBioDataId
+deactivate BDJPA
+BDRepo --> Controller : listOfBioDataId
+deactivate BDRepo
+
+@enduml

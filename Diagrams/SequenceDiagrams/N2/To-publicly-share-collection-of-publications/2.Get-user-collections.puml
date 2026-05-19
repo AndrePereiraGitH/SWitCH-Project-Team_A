@@ -1,0 +1,111 @@
+@startuml
+
+hide footbox
+autonumber
+
+
+title Get User's Collections of Publications
+
+
+participant ":Controller" as Controller
+participant ":ICollectionOfPublication\nRepository" as CollectionRepository
+participant ":ICollectionOfPublication\nJPARepository" as collectionRepositoryJPA
+participant ":CollectionOfPublications\nAssembler" as collectionAssembler
+participant "collectionsDMList\n:List<CollectionOfPublicationsDM>" as collectionsDM
+
+participant "listOfUserCollections:\nList<CollectionOfPublications>" as LUC
+
+participant ":CollectionOfPublications\nFatctory" as collectionsFactory
+
+participant "collectionDomain\n:CollectionOfPublications" as collectionDomain
+
+
+database DataBase as db
+
+note over Controller #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Controller #E3F2FD
+<b>Navigation</b>
+---
+[[Main-diagram-To-publicly-share-a-list.puml Return to Main Diagram]]
+end note
+
+' == Section 1 - get user colllections ==
+
+
+Controller -> CollectionRepository: findAllByUserId(userId)
+activate Controller
+activate CollectionRepository
+CollectionRepository -> collectionRepositoryJPA : findAllByOwnerId(userId)
+
+activate collectionRepositoryJPA
+collectionRepositoryJPA -> db : query select by userId
+activate db
+db --> collectionRepositoryJPA : data
+deactivate db
+
+collectionRepositoryJPA -->> collectionsDM** : <<create>>
+collectionRepositoryJPA --> CollectionRepository : collectionsDMList
+
+deactivate collectionRepositoryJPA
+
+'---CONVERT FROM DATA MODEL TO DOMAIN
+
+CollectionRepository -->> LUC ** : «create»
+
+loop for each collectionDM in collectionsDMList
+CollectionRepository -> collectionAssembler : toDomain ( collectionDM)
+activate collectionAssembler
+
+
+collectionAssembler -> collectionsDM : getId()
+activate collectionsDM
+collectionsDM --> collectionAssembler : id
+deactivate collectionsDM
+
+collectionAssembler -> collectionsDM : getCollectionName()
+activate collectionsDM
+collectionsDM --> collectionAssembler  : collectionName
+deactivate collectionsDM
+
+collectionAssembler -> collectionsDM : getGenreId()
+activate collectionsDM
+collectionsDM --> collectionAssembler : genreId
+deactivate collectionsDM
+
+collectionAssembler -> collectionsDM : getUserId()
+activate collectionsDM
+collectionsDM --> collectionAssembler : ownerId
+deactivate collectionsDM
+
+collectionAssembler -> collectionsDM : get_isPrivate()
+activate collectionsDM
+collectionAssembler --> collectionsDM : isPrivate
+deactivate collectionsDM
+
+collectionAssembler -> collectionsFactory : create ( id, collectionName,genreId, ownerId, isPrivate)
+activate collectionsFactory
+
+collectionsFactory -->> collectionDomain** : <<create>>
+
+collectionsFactory --> collectionAssembler : collectionDomain
+deactivate collectionsFactory
+collectionAssembler --> CollectionRepository : collectionDomain
+
+deactivate collectionAssembler
+
+CollectionRepository -> CollectionRepository : listOfUserCollections.add ( collectionDomain)
+end
+
+
+CollectionRepository --> Controller: listOfUserCollections
+deactivate CollectionRepository
+
+
+
+
+@enduml

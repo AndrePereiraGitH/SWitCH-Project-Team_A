@@ -1,0 +1,66 @@
+@startuml
+hide footbox
+autonumber
+
+title Find Public Collections By Genre Id
+
+participant ":PublicListByGenreController" as Ctrl
+
+participant ":ICollectionOfPublicationRepository" as collectionRepo
+participant ":ICollectionOfPublicationsRepositoryJpa" as collectionRepoJpa
+database ":Database" as DB
+participant ":collectionDMList\nList<CollectionOfPublicationsDM>" as collectionDMList
+participant ":CollectionOfPublicationsAssembler" as assembler
+participant ":CollectionOfPublicationsFactory" as factory
+participant "collection:\nCollectionOfPublication" as collection
+participant "publicCollectionsList:\nList<CollectionOfPublications>" as publicCollectionsList
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> collectionRepo : findPublicCollectionsByGenreId(selectedGenreId)
+activate collectionRepo
+
+collectionRepo -> collectionRepoJpa : findByGenreIdAndIsPrivateFalse(genreId)
+activate collectionRepoJpa
+
+collectionRepoJpa -> DB : select collections\nwhere genre_id = genreId\nand is_private = false
+activate DB
+DB --> collectionRepoJpa : data
+deactivate DB
+collectionRepoJpa --> collectionDMList ** : <<create>>
+
+collectionRepoJpa --> collectionRepo : collectionDMList
+deactivate collectionRepoJpa
+
+collectionRepo -->> publicCollectionsList ** : <<create>>
+
+loop for each collectionDM
+    collectionRepo -> assembler : toDomain(collectionDM)
+    activate assembler
+
+    assembler -> factory : create(id, collectionName,\ngenreId, userId, isPrivate)
+    activate factory
+    factory --> collection ** : <<create>>
+    factory --> assembler : collection
+    deactivate factory
+
+    assembler --> collectionRepo : collection
+    deactivate assembler
+
+    collectionRepo -> collectionRepo : publicCollectionsList.add(collection)
+end
+
+collectionRepo --> Ctrl : publicCollectionsList
+deactivate collectionRepo
+
+@enduml

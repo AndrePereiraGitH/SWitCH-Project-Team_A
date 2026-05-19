@@ -238,6 +238,7 @@
                     </outputFormats>
                     <excludedClasses>
                         <param>TOPSECRET.domain.Enum.*</param>
+                        <param>TOPSECRET.ListingDataInitializer</param>
                     </excludedClasses>
                 </configuration>
                 <executions>

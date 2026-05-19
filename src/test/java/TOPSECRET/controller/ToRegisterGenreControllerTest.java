@@ -1,6 +1,6 @@
 package TOPSECRET.controller;
 
-import TOPSECRET.domain.Genre.IGenreRepository;
+import TOPSECRET.services.GenreService;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
@@ -12,42 +12,40 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ToRegisterGenreControllerTest {
 
-    // Null repository must be rejected immediately in the constructor
     @Test
-    void shouldThrowExceptionWhenRepositoryIsNull() {
+    void shouldThrowExceptionWhenServiceIsNull() {
 
         assertThrows(IllegalArgumentException.class,
                 () -> new ToRegisterGenreController(null));
     }
 
-    // Controller must return true when the repository successfully creates the genre
     @Test
-    void shouldRegisterGenreSuccessfully() {
+    void shouldReturnTrueWhenGenreIsRegisteredSuccessfully() {
 
         // Arrange
-        IGenreRepository repoDouble = mock(IGenreRepository.class);
+        GenreService serviceDouble = mock(GenreService.class);
+        ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
 
-        ToRegisterGenreController controller =
-                new ToRegisterGenreController(repoDouble);
+        // Act
+        boolean result = controller.registerGenre("Drama");
 
-        // TODO: re-enable when US003 is refactored to use GenreService.createAndSave()
-//    @Test
-//    void shouldRegisterGenreSuccessfully() {
-//        IGenreRepository repoDouble = mock(IGenreRepository.class);
-//        US003ToRegisterGenreController controller =
-//                new US003ToRegisterGenreController(repoDouble);
-//        boolean result = controller.registerGenre("Drama");
-//        assertTrue(result);
-//    }
+        // Assert
+        assertTrue(result);
+        verify(serviceDouble).createAndSave("Drama");
+    }
 
-//    @Test
-//    void shouldPropagateExceptionWhenGenreAlreadyExists() {
-//        IGenreRepository repoDouble = mock(IGenreRepository.class);
-//        when(repoDouble.createAndAdd("Drama"))
-//                .thenThrow(new IllegalArgumentException("Genre already exists"));
-//        US003ToRegisterGenreController controller =
-//                new US003ToRegisterGenreController(repoDouble);
-//        assertThrows(IllegalArgumentException.class,
-//                () -> controller.registerGenre("Drama"));
-//    }
-    }}
+    @Test
+    void shouldPropagateExceptionWhenGenreAlreadyExists() {
+
+        // Arrange
+        GenreService serviceDouble = mock(GenreService.class);
+        doThrow(new IllegalArgumentException("Genre already exists"))
+                .when(serviceDouble).createAndSave("Drama");
+
+        ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.registerGenre("Drama"));
+    }
+}

@@ -28,4 +28,15 @@ public interface IAuctionRepositoryJPA extends JpaRepository<AuctionDM, AuctionI
      * @return a list of matching {@link AuctionDM} entities; may be empty
      */
     List<AuctionDM> findByListingIdIn(List<ListingId> listingIds);
+
+    /**
+     * Retrieves all auction data models associated with the given listing identifiers,
+     * sorted in ascending order by auction deadline.
+     *
+     * @param listingIds the identifiers of the listings associated with the auctions
+     * @return a list of auction data models sorted by auction end date time ascending
+     */
+    List<AuctionDM> findByListingIdInOrderByAuctionEndDateTimeAsc(List<ListingId> listingIds);
+
+
 }
