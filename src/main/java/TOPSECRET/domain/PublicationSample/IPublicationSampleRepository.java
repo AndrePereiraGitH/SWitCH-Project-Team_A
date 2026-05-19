@@ -101,14 +101,6 @@ public interface IPublicationSampleRepository {
     List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds);
 
     /**
-     * Retrieves all publication sample IDs whose bibliographical data ID is in the given list.
-     *
-     * @param bds the list of bibliographical data IDs; must not be {@code null}
-     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
-     */
-    List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataId> bds);
-
-    /**
      * Retrieves all publication sample IDs associated with any of the given edition IDs.
      *
      * @param listOfEditionIds the list of edition IDs; must not be {@code null}

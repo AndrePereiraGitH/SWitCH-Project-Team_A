@@ -1218,7 +1218,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.id()).thenReturn(psId_3);
 
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -1260,7 +1260,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.id()).thenReturn(psId_3);
 
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem();
 
         repo.save(pbSample_1);
         repo.save(pbSample_2);
@@ -1296,7 +1296,7 @@ class PublicationSampleRepositoryMemTest {
         when(pbSample_3.id()).thenReturn(mock(PublicationSampleId.class));
 
 
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem();
 
         List<BibliographicalDataId> bds = List.of(mock(BibliographicalDataId.class));
 
@@ -1310,7 +1310,7 @@ class PublicationSampleRepositoryMemTest {
     @Test
     void findPublicationSamplesIdsByBiblioDataIds_shouldThrowException_whenBdIdsListIsNull() {
         // Arrange
-        IPublicationSampleRepository repo = new PublicationSampleRepositoryMem();
+        PublicationSampleRepositoryMem repo = new PublicationSampleRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> repo.findPublicationSamplesIdsByBiblioDataIds(null));

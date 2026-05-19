@@ -82,16 +82,16 @@
  PublicationSampleService "1" --> "1" PublicationSampleFactory : creates via
 
  PublicationSampleRepositoryJpaImpl "1" ..|> "1" IPublicationSampleRepository : implements
- PublicationSampleRepositoryJpaImpl "1" --> "1" IPublicationSampleRepositoryJpa : delegates to
+ PublicationSampleRepositoryJpaImpl "1" ..> "1" IPublicationSampleRepositoryJpa : uses
  PublicationSampleRepositoryJpaImpl "1" --> "1" PublicationSampleAssembler : uses
 
- IPublicationSampleRepositoryJpa "1" --> "*" PublicationSampleDM : persists
+ IPublicationSampleRepositoryJpa "1" --> "*" PublicationSampleDM : handles
 
  PublicationSampleAssembler ..> PublicationSampleFactory : reconstructs via
  PublicationSampleAssembler ..> PublicationSample : creates
  PublicationSampleAssembler ..> PublicationSampleDM : maps
 
 
- PublicationSampleFactory "1" --> "*" PublicationSample : creates
+ PublicationSampleFactory "1" ..> "*" PublicationSample : creates
 
  @enduml

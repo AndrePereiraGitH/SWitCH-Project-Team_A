@@ -12,7 +12,7 @@ participant ":PublicationSampleAssembler" as Assembler
 participant ":PublicationSampleFactory" as Factory
 participant ":IPublicationSampleRepositoryJPA" as JPA
 
-participant "pbSample: PublicationSample" as pbSample
+participant "pbSamplePersisted: PublicationSample" as pbSample
 participant "pbSampleDM: PublicationSampleDM" as pbSampleDM
 
 database "DB" as DB
@@ -62,29 +62,29 @@ DB --> JPA : persisted data
 deactivate DB
 
 JPA -->> pbSampleDM** : <<create>>
-JPA --> Repo : persisted pbSampleDM
+JPA --> Repo : pbSampleDM
 deactivate JPA
 
 ' ==============
 ' Reconstruction
 ' ==============
-Repo -> Assembler : toDomain(persisted pbSampleDM)
+Repo -> Assembler : toDomain(pbSampleDM)
 activate Assembler
 
 Assembler -> Factory : create(pubSampleId, bibliographicalDataId,\nuserId, publicationStatus, editionId, condition)
 
 activate Factory
 Factory -->> pbSample** : <<create>>
-Factory --> Assembler : pbSample
+Factory --> Assembler : pbSamplePersisted
 deactivate Factory
 
-Assembler --> Repo : pbSample
+Assembler --> Repo : pbSamplePersisted
 deactivate Assembler
 
-Repo --> Service : pbSample
+Repo --> Service : pbSamplePersisted
 deactivate Repo
 
-Service --> Controller : pbSample
+Service --> Controller : pbSamplePersisted
 deactivate Service
 
 Controller --> UI : success

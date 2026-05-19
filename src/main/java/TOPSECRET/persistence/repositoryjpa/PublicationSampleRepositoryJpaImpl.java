@@ -147,11 +147,6 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return List.of();
     }
 
-    @Override
-    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataId> bds) {
-        return List.of();
-    }
-
     /**
      * {@inheritDoc}
      */

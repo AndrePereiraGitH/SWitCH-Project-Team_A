@@ -2,7 +2,6 @@ package TOPSECRET.controller;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.EditionId;
@@ -43,7 +42,7 @@ public class ToRegisterNewPublicationCtrl {
     /**
      * Creates and persists a new {@link PublicationSample}.
      *
-     * @param bibliographicalData the bibliographical data identifier; must not be {@code null}
+     * @param bibliographicalDataId the bibliographical data identifier; must not be {@code null}
      * @param user                the user identifier; must not be {@code null}
      * @param publicationStatus   the publication status; must not be {@code null}
      * @param edition             the edition identifier; must not be {@code null}
@@ -52,12 +51,12 @@ public class ToRegisterNewPublicationCtrl {
      * @throws IllegalArgumentException if any argument is {@code null} or invalid
      */
     public PublicationSample register(
-            BibliographicalDataId bibliographicalData,
+            BibliographicalDataId bibliographicalDataId,
             UserId user, PublicationStatus publicationStatus, EditionId edition, Condition condition
 
     ) {
 
-        if (bibliographicalData == null) {
+        if (bibliographicalDataId == null) {
             throw new IllegalArgumentException("BibliographicalData cannot be left null");
         }
         if (publicationStatus == null) {
@@ -73,7 +72,7 @@ public class ToRegisterNewPublicationCtrl {
             throw new IllegalArgumentException("Condition cannot be left null");
         }
 
-        return _publicationSampleService.createAndSave(bibliographicalData, user,
+        return _publicationSampleService.createAndSave(bibliographicalDataId, user,
                 publicationStatus, edition, condition);
     }
 }
