@@ -1,0 +1,54 @@
+@startuml
+hide footbox
+autonumber
+title Get BibliographicalDataId By GenreId
+
+participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
+
+' BibliographicalData
+participant ":IBibliographicalDataRepository" as IBDRepo
+participant ":IBibliographicalDataRepositoryJPA" as IBDRepoJPA
+participant "listOfBDDMs:\nList<BibliographicalDataDM" as listOfBDDMs
+participant "listOfBDIds:\nList<BibliographicalDataID>" as listOfBDIds
+
+database "database" as DB
+
+
+note over Ctrl #E3F2FD
+<b>Fragment</b>
+---
+This diagram is a fragment of the main sequence diagram.
+end note
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1.MainDiagram.puml Return to Main Diagram]]
+end note
+
+' Section 2 - Get list of bibliographicalDataIds for that genreId
+Ctrl -> IBDRepo : findAllByGenreId(selectedGenreId)
+activate Ctrl
+activate IBDRepo
+IBDRepo -> IBDRepoJPA: findByGenreIdsContaining(selectedGenreId)
+activate IBDRepoJPA
+IBDRepoJPA -> DB: query by genreId
+activate DB
+DB --> IBDRepoJPA: data
+deactivate DB
+IBDRepoJPA -->> listOfBDDMs ** : «create»
+IBDRepoJPA --> IBDRepo: listOfBDDMs
+deactivate IBDRepoJPA
+IBDRepo -->> listOfBDIds ** : «create»
+loop for each bdDM in listOfBDIds
+    IBDRepo -> listOfBDDMs: getId()
+    activate listOfBDDMs
+    listOfBDDMs --> IBDRepo: id
+    deactivate listOfBDDMs
+    IBDRepo -> listOfBDIds: add(id)
+end
+IBDRepo --> Ctrl : listOfBDIds
+deactivate IBDRepo
+deactivate Ctrl
+
+@enduml

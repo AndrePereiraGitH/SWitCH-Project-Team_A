@@ -1,26 +1,34 @@
 @startuml
 hide footbox
 autonumber
-title To get the list of items on direct sale of a given genre (Main)
+title To get the list of items on direct sale of a given genre (main diagram)
 
 actor Buyer
+
+' Participants
 participant ":UI" as UI
 participant ":ToGetTheListOfItemsOnDirectSaleOfAGivenGenreController" as Ctrl
-participant ":IGenreRepository" as IGenreRepo
-participant ":US021GenreMapper" as GenreMapper
-participant ":IBibliographicalDataRepository" as IBDRepo
-participant ":IPublicationSampleRepository" as IPSRepo
-participant ":IListingRepository" as IListingRepo
-participant ":US021DirSaleListingMapper" as Mapper
 
-Buyer -> UI : I want to get the list of items\n on direct sale of a given genre
+' Listing
+participant ":IListingRepository" as IListingRepo
+participant ":IListingRepositoryJPA" as IListingRepoJPA
+participant "listOfListingDMs:\nList<ListingDM" as listOfListingDMs
+participant "listOfDirectSaleListings:\nList<Listing>" as listListings
+participant ":ListingAssembler" as ListAss
+participant ":ListingFactory" as ListFact
+participant "listing:\nListing" as Listing
+
+database "database" as DB
+
+' Section 1 - Get all genres
+Buyer -> UI : I want to get the list of items on direct sale of a given genre
 activate UI
 
 UI -> Ctrl : getAllGenres()
 activate Ctrl
 
-ref over Ctrl, GenreMapper
-[[2.GetAllGenres.puml Get All Genres]]
+ref over Ctrl
+[[2.GetAllGenres.puml Get All Genres and Build DTOs]]
 end ref
 
 Ctrl --> UI : listOfGenreDTO
@@ -29,23 +37,58 @@ deactivate Ctrl
 UI --> Buyer : Which genre? Choose!
 deactivate UI
 
+' Section 2 - Get list of bibliographicalDataIds for that genreId
 Buyer -> UI : selectedGenreDTO
 activate UI
-
 UI -> Ctrl : getListOfItemsOnDirectSale(selectedGenreId)
 activate Ctrl
 
-ref over Ctrl, IBDRepo, IPSRepo, IListingRepo
-[[3.GetDirectSaleListingsByGenre.puml Get Direct Sale Listings By Genre]]
+ref over Ctrl
+[[3.GetBibliographicalDataIdByGenreId.puml Get BibliographicalDataIds]]
 end ref
 
-ref over Ctrl, Mapper
-[[4.BuildDirectSaleDTOs.puml Build Direct Sale DTOs]]
+' Section 3 - Get list of PublicationSampleIds for that list of BibliographicalDataIds
+
+ref over Ctrl
+[[4.GetPublicationSampleIdByBibliographicalDataIdIn.puml Get PublicationSampleIds]]
+end ref
+
+' Section 4 - Get list of Listings for that list of PublicationSampleIds
+Ctrl -> IListingRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate IListingRepo
+IListingRepo -> IListingRepoJPA: findAllByItemsId(listOfPubSampleIds)
+activate IListingRepoJPA
+IListingRepoJPA -> DB: query by pubSampleIds
+activate DB
+DB --> IListingRepoJPA: data
+deactivate DB
+IListingRepoJPA -->> listOfListingDMs** : «create»
+IListingRepoJPA --> IListingRepo: listOfListingDMs
+deactivate IListingRepoJPA
+IListingRepo -->> listListings ** : «create»
+loop for each listingDM in listOfListingDMs
+    IListingRepo -> ListAss: toDomain(listingDM)
+    activate ListAss
+    ListAss -> ListFact: create(listingId,listingTitle, itemsId, saleType,\nprice, shortDescription, sellerId, pictures)
+    activate ListFact
+    ListFact -->> Listing**: «create»
+    ListFact --> ListAss: listing
+    deactivate ListFact
+    ListAss --> IListingRepo: listing
+    deactivate ListAss
+    IListingRepo -> listListings: add(listing)
+end
+IListingRepo --> Ctrl : listOfDirectSaleListings
+deactivate IListingRepo
+
+' Section 5 - Convert Listings to DTOs
+
+ref over Ctrl
+[[5.BuildDirectSaleListingDTOs.puml Build Direct Sale Listing DTOs]]
 end ref
 
 Ctrl --> UI : listOfDirectSaleDTO
 deactivate Ctrl
-
 UI --> Buyer : Shows the list of items on direct sale
 deactivate UI
 
