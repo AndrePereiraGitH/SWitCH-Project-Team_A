@@ -24,6 +24,7 @@ note over Ctrl #E3F2FD
 end note
 
 Ctrl -> pubRepo : findIdsByBibliographicalDataId(bdId)
+activate Ctrl
 activate pubRepo
 
 pubRepo -> pubRepoJPA : findIdsByBibliographicalDataId(bdId)
@@ -31,25 +32,26 @@ activate pubRepoJPA
 
 pubRepoJPA -> db : query publicationSample by bibliographicalDataId
 activate db
-db --> pubRepoJPA : publicationSample data
+db --> pubRepoJPA : data
 deactivate db
 
 pubRepoJPA -->> pubDMList ** : <<create>>
 
-pubRepoJPA -->> pubIdList ** : <<create>>
+pubRepoJPA --> pubRepo : pubDMList
+deactivate pubRepoJPA
+
+pubRepo -->> pubIdList** : <<create>>
 
 loop for each pubDM in pubDMList
-pubRepoJPA -> pubDMList : getId()
+pubRepo -> pubDMList : getId()
 activate pubDMList
-pubDMList --> pubRepoJPA : id
+pubDMList --> pubRepo : id
 deactivate pubDMList
-pubRepoJPA -> pubRepoJPA : pubIdList.add(id)
+pubRepo -> pubIdList : add(id)
 end
-
-pubRepoJPA --> pubRepo : pubIdList
-deactivate pubRepoJPA
 
 pubRepo --> Ctrl : pubIdList
 deactivate pubRepo
 
+deactivate Ctrl
 @enduml

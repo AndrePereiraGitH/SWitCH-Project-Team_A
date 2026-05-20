@@ -24,6 +24,7 @@ note over Ctrl #E3F2FD
 end note
 
 Ctrl -> bdRepo : findIdsByAuthorId(selectedAuthorID)
+activate Ctrl
 activate bdRepo
 
 bdRepo -> bdRepoJPA : findIdsByAuthorId(selectedAuthorID)
@@ -31,25 +32,26 @@ activate bdRepoJPA
 
 bdRepoJPA -> db : query bibliographical_data by author_id
 activate db
-db --> bdRepoJPA : bibliographicalData data
+db --> bdRepoJPA : data
 deactivate db
 
 bdRepoJPA -->> bdDMList** : <<create>>
 
-bdRepoJPA -->> bdIdList ** : <<create>>
+bdRepoJPA --> bdRepo : bdDMList
+deactivate bdRepoJPA
+
+bdRepo -->> bdIdList** : <<create>>
 
 loop for each bdDM in bdDMList
-bdRepoJPA -> bdDMList : getId()
+bdRepo  -> bdDMList : getId()
 activate bdDMList
-bdDMList --> bdRepoJPA : id
+bdDMList --> bdRepo  : id
 deactivate bdDMList
-bdRepoJPA -> bdRepoJPA : bdIdList.add(id)
+bdRepo  -> bdIdList  : add(id)
 end
-
-bdRepoJPA --> bdRepo : bdIdList
-deactivate bdRepoJPA
 
 bdRepo --> Ctrl : bdIdList
 deactivate bdRepo
 
+deactivate Ctrl
 @enduml

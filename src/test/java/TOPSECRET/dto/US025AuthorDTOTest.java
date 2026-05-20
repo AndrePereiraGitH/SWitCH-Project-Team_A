@@ -48,27 +48,10 @@ class US025AuthorDTOTest {
         US025AuthorDTO sut = new US025AuthorDTO("John Doe");
 
         // ACT
-        String result = sut.getName();
+        String result = sut.name();
 
         // ASSERT
         assertEquals("John Doe", result);
-    }
-
-    // =========================================================================
-    // Immutability
-    // =========================================================================
-
-    /**
-     * Ensures the {@code name} field is declared as {@code final}.
-     */
-    @Test
-    void nameShouldBeFinal() throws NoSuchFieldException {
-
-        // ACT
-        var field = US025AuthorDTO.class.getDeclaredField("name");
-
-        // ASSERT
-        assertTrue(java.lang.reflect.Modifier.isFinal(field.getModifiers()));
     }
 
     // =========================================================================

@@ -36,7 +36,7 @@ authorRepo -> authorRepoJpa : findAll()
 activate authorRepoJpa
 authorRepoJpa -> db : query find all authors
 activate db
-db --> authorRepoJpa : allAuthorsData
+db --> authorRepoJpa : data
 deactivate db
 authorRepoJpa -->> authorDMList ** : <<create>>
 authorRepoJpa --> authorRepo : authorDMList
@@ -97,7 +97,6 @@ AuthorMapper -->> AuthorsListDto ** : <<create>>
 
 loop for each author in authorsList
     AuthorMapper -->> AuthorDTO ** : <<create>>
-    AuthorMapper -> AuthorDTO : fromDomain(author)
     AuthorMapper -> AuthorsListDto : add(authorDTO)
 end
 

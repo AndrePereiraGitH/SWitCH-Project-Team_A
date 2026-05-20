@@ -107,7 +107,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
                 listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(pubIds);
 
         List<US025DirectSaleDTO> dtos = directSaleMapper.toDTOList(listings);
-        dtos.sort(Comparator.comparing(US025DirectSaleDTO::getPublicationTitle));
+        dtos.sort(Comparator.comparing(US025DirectSaleDTO::publicationTitle));
         return dtos;
     }
 }
