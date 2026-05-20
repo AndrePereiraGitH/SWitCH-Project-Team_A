@@ -1,0 +1,118 @@
+@startuml
+autonumber
+hide footbox
+title Add publication to library
+
+
+
+actor "User" as User
+participant ":UI" as UI
+
+participant ":AddPublicationToLibraryController" as Ctrl
+
+participant ":IPublicationSampleRepository" as PubRepo
+
+participant ":ILibraryRepository" as LibDomain
+
+participant ":PublicationSample" as PublicationSample
+
+participant ":IPublicationSampleRepositoryJPA" as IJPA
+
+participant ":ILibraryRepositoryJPA" as ILibJPA
+
+participant ":PublicationSampleAssembler" as PublicationSampleAssembler
+
+participant ":PublicationSampleFactory" as Factory
+
+database "Database"
+
+autonumber
+
+User -> UI : "I want to add a publication\n to my library"
+activate UI
+UI -> Ctrl : getListOfPublicationsNotInLibrary(userId)
+activate Ctrl
+Ctrl -> PubRepo: findByUserIdAndLibraryIdIsNull\n(userId)
+activate PubRepo
+PubRepo -> IJPA : findByUserIdAndLibraryIdIsNull\n(userId)
+activate IJPA
+
+IJPA -> "Database" : Query PublicationSample with userId and libraryId null
+activate "Database"
+"Database" --> IJPA : data
+deactivate "Database"
+create participant "listPubSampleDM: \n List<PublicationSampleDM>" as ListPubSampDM
+IJPA -->> ListPubSampDM : «create»
+IJPA --> PubRepo : listPubSampleDM
+deactivate IJPA
+create participant "listOfPublicationsNotInLibrary:\n List<PublicationSample>" as listOfPublicationsNotInLibrary
+PubRepo -->> listOfPublicationsNotInLibrary : «create»
+loop for each PubSampleDM in listPubSampDM
+PubRepo -> PublicationSampleAssembler : toDomain(PubSampleDM)
+activate PublicationSampleAssembler
+PublicationSampleAssembler -> Factory : create(pubSampleId, bibliographicalDataId, userId, \n publicationStatus, editionId, \ncondition, libraryId, collectionOfPublicationsId)
+activate Factory
+create participant "pubSample: PublicationSample" as PubSample
+Factory -->> PubSample : «create»
+Factory --> PublicationSampleAssembler : pubSample
+deactivate Factory
+PublicationSampleAssembler --> PubRepo : pubSample
+deactivate PublicationSampleAssembler
+PubRepo -> listOfPublicationsNotInLibrary : add (pubSample)
+end
+PubRepo --> Ctrl: listOfPublicationsNotInLibrary
+
+deactivate PubRepo
+Ctrl --> UI: listOfPublicationsNotInLibrary
+deactivate Ctrl
+UI --> User: "Select Publication you wish\n to add to your Library"
+deactivate UI
+
+User -> UI: "I want to add <publicationSample>\n to my Library!"
+activate UI
+UI -> Ctrl: addPublicationToLibrary\n(UserId userId, PublicationSampleId publicationSampleId)
+activate Ctrl
+Ctrl -> LibDomain: getByUserId(userId)
+activate LibDomain
+LibDomain -> ILibJPA : getByUserId(userId)
+activate ILibJPA
+ILibJPA -> "Database" : Query Library with userId
+activate "Database"
+Database --> ILibJPA : data
+deactivate "Database"
+create participant "libraryDM : LibraryDM" as LibraryDM
+ILibJPA -->> LibraryDM : «create»
+ILibJPA --> LibDomain : libraryDM
+deactivate ILibJPA
+LibDomain -> LibraryDM : getId()
+activate LibraryDM
+LibraryDM --> LibDomain : libraryId
+deactivate LibraryDM
+LibDomain --> Ctrl: libraryId
+deactivate LibDomain
+Ctrl -> PublicationSample : addPublicationToLibrary(libraryId)
+activate PublicationSample
+PublicationSample --> Ctrl : libraryId
+deactivate PublicationSample
+Ctrl -> PubRepo: update(publicationSample)
+activate PubRepo
+PubRepo -> IJPA: update\n(publicationSample)
+activate IJPA
+IJPA -> PublicationSampleAssembler : toDM (publicationSample)
+activate PublicationSampleAssembler
+PublicationSampleAssembler --> IJPA : publicationSampleDM
+deactivate PublicationSampleAssembler
+IJPA -> "Database" : save
+activate "Database"
+Database --> IJPA : saved
+deactivate Database
+IJPA --> PubRepo: PublicationSample
+deactivate IJPA
+PubRepo --> Ctrl: PublicationSample
+deactivate PubRepo
+Ctrl --> UI: true
+deactivate Ctrl
+UI --> User: "<publicationSample>\n successfully added to your Library!"
+deactivate UI
+
+@enduml

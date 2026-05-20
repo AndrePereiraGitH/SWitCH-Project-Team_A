@@ -1,0 +1,113 @@
+@startuml
+title Add publication to library
+
+
+class AddPublicationToLibraryController{
++getListOfPublicationsNotInLibrary(UserId userId) : List<PublicationSample>
++addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId) : Boolean
+}
+
+interface IPublicationSampleRepository{
++findByUserIdAndLibraryIdIsNull(userId) : List<PublicationSample>
++save(PublicationSample publicationSample) : PublicationSample
++add(publicationSample) : Boolean
+}
+
+interface ILibraryRepository{
++getByUserId(userId) : Library
+}
+
+class PublicationSample{
+-_pubSampleID : PublicationSampleId
+-_bdID : BibliographicalDataId
+-_ownerID : UserId
+-_publicationStatus : PublicationStatus
+-_editionId : EditionId
+-_condition : Condition
+-_libraryId : LibraryId
+-_collecOfPubID : CollectionOfPublicationsId
++addPublicationToLibrary(LibraryId libraryId) : LibraryId
+}
+
+interface IPublicationSampleRepositoryJPA{
++findAllByOwnerIdAndLibraryIdIsNull(userId) : List<PublicationSampleDM>
+}
+
+interface ILibraryRepositoryJPA{
++getByUserId(userId) : LibraryDM
+}
+
+class PublicationSampleAssembler{
++toDomain(PubSampleDM) : PublicationSample
++toDm(PubSample) : PublicationSampleDM
+}
+
+class PublicationSampleFactory{
++create(BibliographicalDataID bibliographicalDataId, UserId userId, PublicationStatus publicationStatus,EditionID editionId, Condition condition) : PublicationSample
++create(PublicationSampleId pubSampleId, BibliographicalDataID bibliographicalDataId, UserId userId, PublicationStatus publicationStatus, EditionID editionId, Condition condition, LibraryId libraryId, CollectionOfPublicationsId collectionOfPublicationsId) : PublicationSample
+}
+
+class PublicationSampleRepositoryJPAImpl{
+}
+
+class AutomatedGeneratedPublicationSampleRepositoryJPAImpl{
+}
+
+class LibraryRepositoryJPAImpl{
+}
+
+class AutomatedGeneratedLibraryRepositoryJPAImpl{
+}
+
+class LibraryAssembler{
++toDm(Library library) : Library
++toDomain(LibraryDM libraryDM) : LibraryDM
++toDomainList(Iterable<LibraryDM> listDataModel) : List<Library>
+}
+
+class LibraryFactory{
++create(String libraryName, UserId userId)
++create(LibraryId libraryId, String libraryName, UserId userId)
+}
+
+class Library{
+-_libraryName : String
+-_userId : UserId
+-_id : LibraryId
+}
+
+class UI{
+}
+
+
+Rectangle Database{
+}
+' ------ Interactions ------
+UI "1" -.> "1" AddPublicationToLibraryController
+AddPublicationToLibraryController "1" ..> "1" IPublicationSampleRepository : uses
+PublicationSampleRepositoryJPAImpl "1" ..> "1" PublicationSampleAssembler : uses
+PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
+AddPublicationToLibraryController "1" ..> "1" ILibraryRepository : accesses
+AddPublicationToLibraryController "1" ..> "1" PublicationSample : asks to assign library
+PublicationSampleAssembler "1" ..> "1" PublicationSampleDM : crafts
+LibraryAssembler "1"..> "1"LibraryDM : converts
+LibraryRepositoryJPAImpl "1"..> "1" LibraryAssembler : uses
+LibraryAssembler "1" ..> "1" LibraryFactory : uses
+PublicationSampleFactory "1" ..> "1" PublicationSample : create
+LibraryFactory "1" ..> "1" Library : create
+
+' ===== PublicationSample Layer Communication =====
+IPublicationSampleRepository"1" <|.. "1" PublicationSampleRepositoryJPAImpl : implements
+PublicationSampleRepositoryJPAImpl "1" ..>  "1..*"PublicationSampleDM : retrieves
+PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA : uses
+IPublicationSampleRepositoryJPA "1"<|.."1" AutomatedGeneratedPublicationSampleRepositoryJPAImpl : implements
+AutomatedGeneratedPublicationSampleRepositoryJPAImpl "1"..>"1" Database : queries
+
+' ===== Library Layer Communication =====
+ILibraryRepository"1" <|.."1" LibraryRepositoryJPAImpl : implements
+LibraryRepositoryJPAImpl "1"..> "1..*" LibraryDM : retrieves
+LibraryRepositoryJPAImpl "1"..>"1" ILibraryRepositoryJPA : uses
+AutomatedGeneratedLibraryRepositoryJPAImpl "1" ..|> "1" ILibraryRepositoryJPA : implements
+AutomatedGeneratedLibraryRepositoryJPAImpl "1" ..> "1" Database : queries
+
+@enduml

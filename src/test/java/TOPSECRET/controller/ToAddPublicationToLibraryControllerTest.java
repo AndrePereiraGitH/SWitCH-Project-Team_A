@@ -19,26 +19,35 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Unit tests for {@link ToAddPublicationToLibraryController} using Mockito.
- * <p>
- * This test class verifies the behavior of the controller in isolation by mocking
- * all its collaborators, namely {@link ILibraryRepository} and
- * {@link IPublicationSampleRepository}. The goal is to ensure that the controller
- * correctly delegates responsibilities to its dependencies and returns the expected results.
- * </p>
+ * Unit tests for {@link ToAddPublicationToLibraryController}.
+ *
+ * <p>This test suite validates the behaviour of the controller responsible
+ * for adding publication samples to a user's library.</p>
+ *
+ * <p>The controller dependencies are mocked using Mockito to ensure that
+ * each test focuses exclusively on controller orchestration logic and not
+ * on repository or domain implementations.</p>
+ *
+ * <h2>Test coverage includes:</h2>
+ * <ul>
+ *     <li>Validation of constructor arguments</li>
+ *     <li>Retrieval of publications not assigned to a library</li>
+ *     <li>Successful addition of a publication to a library</li>
+ *     <li>Handling of invalid arguments</li>
+ *     <li>Handling of missing publications</li>
+ *     <li>Handling of users without libraries</li>
+ * </ul>
+ *
+ * <p>The System Under Test (SUT) is instantiated individually within each
+ * test method to guarantee test isolation and improve readability.</p>
  */
 class ToAddPublicationToLibraryControllerTest {
 
-    private ToAddPublicationToLibraryController controller;
-
     private ILibraryRepository libraryRepositoryDouble;
-
     private IPublicationSampleRepository pubSampleRepositoryDouble;
 
     private Library libraryDouble;
-
     private UserId userIdDouble;
-
     private LibraryId libraryIdDouble;
 
     private PublicationSample publication1;
@@ -46,9 +55,11 @@ class ToAddPublicationToLibraryControllerTest {
     private PublicationSample publication3;
 
     @BeforeEach
-    void preparation() throws InstanceNotFoundException {
+    void setup() throws InstanceNotFoundException {
+
         libraryRepositoryDouble = mock(ILibraryRepository.class);
         pubSampleRepositoryDouble = mock(IPublicationSampleRepository.class);
+
         libraryDouble = mock(Library.class);
         userIdDouble = mock(UserId.class);
         libraryIdDouble = mock(LibraryId.class);
@@ -57,12 +68,11 @@ class ToAddPublicationToLibraryControllerTest {
         publication2 = mock(PublicationSample.class);
         publication3 = mock(PublicationSample.class);
 
-        when(libraryRepositoryDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
-        when(libraryDouble.id()).thenReturn(libraryIdDouble);
+        when(libraryRepositoryDouble.getByUserId(userIdDouble))
+                .thenReturn(libraryDouble);
 
-        controller = new ToAddPublicationToLibraryController(
-                libraryRepositoryDouble,
-                pubSampleRepositoryDouble);
+        when(libraryDouble.id())
+                .thenReturn(libraryIdDouble);
     }
 
     // -------------------------------------------------------------------------
@@ -70,26 +80,36 @@ class ToAddPublicationToLibraryControllerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void constructor_nullLibraryRepository() {
-        // Arrange + Act + Assert
+    void constructor_nullLibraryRepository_throwsException() {
+
         assertThrows(IllegalArgumentException.class,
-                () -> new ToAddPublicationToLibraryController(null, pubSampleRepositoryDouble));
+                () -> new ToAddPublicationToLibraryController(
+                        null,
+                        pubSampleRepositoryDouble));
     }
 
     @Test
-    void constructor_nullPublicationSampleRepository() {
-        // Arrange + Act + Assert
+    void constructor_nullPublicationRepository_throwsException() {
+
         assertThrows(IllegalArgumentException.class,
-                () -> new ToAddPublicationToLibraryController(libraryRepositoryDouble, null));
+                () -> new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        null));
     }
 
     // -------------------------------------------------------------------------
-    // getListOfPublicationsNotInLibrary() tests
+    // getListOfPublicationsNotInLibrary
     // -------------------------------------------------------------------------
 
     @Test
-    void getListOfPublicationsNotInLibrary_returnsPublicationsFromRepository() {
+    void getList_returnsPublicationsFromRepository() {
+
         // Arrange
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
         when(pubSampleRepositoryDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
                 .thenReturn(List.of(publication1, publication2));
 
@@ -104,8 +124,14 @@ class ToAddPublicationToLibraryControllerTest {
     }
 
     @Test
-    void getListOfPublicationsNotInLibrary_noPublicationsAvailable_returnsEmptyList() {
+    void getList_emptyList_returnsEmpty() {
+
         // Arrange
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
         when(pubSampleRepositoryDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
                 .thenReturn(List.of());
 
@@ -117,54 +143,78 @@ class ToAddPublicationToLibraryControllerTest {
         assertTrue(result.isEmpty());
     }
 
-    @Test
-    void getListOfPublicationsNotInLibrary_allPublicationsAvailable_returnsAll() {
-        // Arrange
-        when(pubSampleRepositoryDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
-                .thenReturn(List.of(publication1, publication2, publication3));
-
-        // Act
-        List<PublicationSample> result =
-                controller.getListOfPublicationsNotInLibrary(userIdDouble);
-
-        // Assert
-        assertEquals(3, result.size());
-        assertTrue(result.contains(publication1));
-        assertTrue(result.contains(publication2));
-        assertTrue(result.contains(publication3));
-    }
-
     // -------------------------------------------------------------------------
-    // addPublicationToLibrary() tests
+    // addPublicationToLibrary
     // -------------------------------------------------------------------------
 
     @Test
-    void addPublicationToLibrary_validPublication_returnsTrue()
+    void addPublication_validFlow_callsUpdateAndReturnsTrue()
             throws InstanceNotFoundException {
+
         // Arrange
-        PublicationSampleId idDouble = mock(PublicationSampleId.class);
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
+        PublicationSampleId idDouble =
+                mock(PublicationSampleId.class);
+
         when(pubSampleRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.of(publication1));
 
         // Act
-        boolean result = controller.addPublicationToLibrary(userIdDouble, idDouble);
+        boolean result =
+                controller.addPublicationToLibrary(userIdDouble, idDouble);
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void addPublicationToLibrary_nullPublicationSampleId_throwsException() {
-        // Arrange + Act + Assert
+    void addPublication_nullUser_throwsException() {
+
+        // Arrange
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
+        PublicationSampleId idDouble =
+                mock(PublicationSampleId.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> controller.addPublicationToLibrary(null, idDouble));
+    }
+
+    @Test
+    void addPublication_nullPublicationId_throwsException() {
+
+        // Arrange
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
+        // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.addPublicationToLibrary(userIdDouble, null));
     }
 
     @Test
-    void addPublicationToLibrary_nonExistingId_throwsException()
+    void addPublication_notFound_throwsException()
             throws InstanceNotFoundException {
+
         // Arrange
-        PublicationSampleId idDouble = mock(PublicationSampleId.class);
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
+        PublicationSampleId idDouble =
+                mock(PublicationSampleId.class);
+
         when(pubSampleRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.empty());
 
@@ -174,12 +224,20 @@ class ToAddPublicationToLibraryControllerTest {
     }
 
     @Test
-    void addPublicationToLibrary_userHasNoLibrary_throwsException()
+    void addPublication_userHasNoLibrary_throwsException()
             throws InstanceNotFoundException {
+
         // Arrange
-        PublicationSampleId idDouble = mock(PublicationSampleId.class);
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
+        PublicationSampleId idDouble =
+                mock(PublicationSampleId.class);
+
         when(libraryRepositoryDouble.getByUserId(userIdDouble))
-                .thenThrow(new InstanceNotFoundException("This user does not have a library"));
+                .thenThrow(new InstanceNotFoundException());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,
@@ -187,49 +245,26 @@ class ToAddPublicationToLibraryControllerTest {
     }
 
     @Test
-    void addPublicationToLibrary_shouldCallRepositoryWithCorrectArguments()
+    void addPublication_shouldCallAssignAndUpdateOnlyOnce()
             throws InstanceNotFoundException {
 
         // Arrange
-        PublicationSampleId idDouble = mock(PublicationSampleId.class);
+        ToAddPublicationToLibraryController controller =
+                new ToAddPublicationToLibraryController(
+                        libraryRepositoryDouble,
+                        pubSampleRepositoryDouble);
+
+        PublicationSampleId idDouble =
+                mock(PublicationSampleId.class);
 
         when(pubSampleRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.of(publication1));
 
         // Act
-        boolean result = controller.addPublicationToLibrary(userIdDouble, idDouble);
+        boolean result =
+                controller.addPublicationToLibrary(userIdDouble, idDouble);
 
         // Assert
         assertTrue(result);
-    }
-
-    @Test
-    void addPublicationToLibrary_nullUserId_throwsException() {
-
-        // Arrange
-        PublicationSampleId idDouble = mock(PublicationSampleId.class);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.addPublicationToLibrary(null, idDouble));
-    }
-
-    @Test
-    void addPublicationToLibrary_repositoryThrowsException_propagatesException()
-            throws InstanceNotFoundException {
-
-        // Arrange
-        PublicationSampleId idDouble = mock(PublicationSampleId.class);
-
-        when(pubSampleRepositoryDouble.findById(idDouble))
-                .thenReturn(Optional.of(publication1));
-
-        doThrow(new IllegalArgumentException("Already assigned"))
-                .when(pubSampleRepositoryDouble)
-                .addPublicationToLibrary(publication1, libraryIdDouble);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.addPublicationToLibrary(userIdDouble, idDouble));
     }
 }

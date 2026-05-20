@@ -227,9 +227,16 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
      */
     @Override
     public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
-        return List.of();
-    }
 
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<PublicationSample> publicationSampleDMs = publicationSampleRepositoryJpa.findAllByOwnerId(userId)
+                .stream().map(publicationSampleAssembler::toDomain)
+                .filter(publicationSample -> !publicationSample.isInUserLibrary()).toList();
+
+
+        return publicationSampleDMs;
+    }
 
     // =========================================================================
     // Domain Operations
