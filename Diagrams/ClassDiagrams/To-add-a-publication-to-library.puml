@@ -1,19 +1,19 @@
 @startuml
 title Add publication to library
-hide circle
+
 
 class AddPublicationToLibraryController{
 +getListOfPublicationsNotInLibrary(UserId userId) : List<PublicationSample>
 +addPublicationToLibrary(UserId userId, PublicationSampleId publicationSampleId) : Boolean
 }
 
-class IPublicationSampleRepository{
+interface IPublicationSampleRepository{
 +findByUserIdAndLibraryIdIsNull(userId) : List<PublicationSample>
 +save(PublicationSample publicationSample) : PublicationSample
 +add(publicationSample) : Boolean
 }
 
-class ILibraryRepository{
+interface ILibraryRepository{
 +getByUserId(userId) : Library
 }
 
@@ -29,11 +29,11 @@ class PublicationSample{
 +addPublicationToLibrary(LibraryId libraryId) : LibraryId
 }
 
-class IPublicationSampleRepositoryJPA{
+interface IPublicationSampleRepositoryJPA{
 +findAllByOwnerIdAndLibraryIdIsNull(userId) : List<PublicationSampleDM>
 }
 
-class ILibraryRepositoryJPA{
+interface ILibraryRepositoryJPA{
 +getByUserId(userId) : LibraryDM
 }
 
@@ -76,35 +76,38 @@ class Library{
 -_id : LibraryId
 }
 
+class UI{
+}
+
 
 Rectangle Database{
 }
 ' ------ Interactions ------
-
+UI "1" -.> "1" AddPublicationToLibraryController
 AddPublicationToLibraryController "1" ..> "1" IPublicationSampleRepository : uses
 PublicationSampleRepositoryJPAImpl "1" ..> "1" PublicationSampleAssembler : uses
 PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
 AddPublicationToLibraryController "1" ..> "1" ILibraryRepository : accesses
 AddPublicationToLibraryController "1" ..> "1" PublicationSample : asks to assign library
-PublicationSampleAssembler ..> PublicationSampleDM : crafts
-LibraryAssembler ..> LibraryDM : converts data into
-LibraryRepositoryJPAImpl ..> LibraryAssembler : uses
-LibraryAssembler ..> LibraryFactory : uses
-PublicationSampleFactory ..> PublicationSample : (re)create
-LibraryFactory ..> Library : (re)creates
+PublicationSampleAssembler "1" ..> "1" PublicationSampleDM : crafts
+LibraryAssembler "1"..> "1"LibraryDM : converts
+LibraryRepositoryJPAImpl "1"..> "1" LibraryAssembler : uses
+LibraryAssembler "1" ..> "1" LibraryFactory : uses
+PublicationSampleFactory "1" ..> "1" PublicationSample : create
+LibraryFactory "1" ..> "1" Library : create
 
 ' ===== PublicationSample Layer Communication =====
-IPublicationSampleRepository <|.. PublicationSampleRepositoryJPAImpl : implements
-PublicationSampleRepositoryJPAImpl ..> PublicationSampleDM : retrieves
-PublicationSampleRepositoryJPAImpl ..> IPublicationSampleRepositoryJPA : uses
-IPublicationSampleRepositoryJPA <|.. AutomatedGeneratedPublicationSampleRepositoryJPAImpl : implements
-AutomatedGeneratedPublicationSampleRepositoryJPAImpl ..> Database : queries
+IPublicationSampleRepository"1" <|.. "1" PublicationSampleRepositoryJPAImpl : implements
+PublicationSampleRepositoryJPAImpl "1" ..>  "1..*"PublicationSampleDM : retrieves
+PublicationSampleRepositoryJPAImpl "1" ..> "1" IPublicationSampleRepositoryJPA : uses
+IPublicationSampleRepositoryJPA "1"<|.."1" AutomatedGeneratedPublicationSampleRepositoryJPAImpl : implements
+AutomatedGeneratedPublicationSampleRepositoryJPAImpl "1"..>"1" Database : queries
 
 ' ===== Library Layer Communication =====
-ILibraryRepository <|.. LibraryRepositoryJPAImpl : implements
-LibraryRepositoryJPAImpl ..> LibraryDM : retrieves
-LibraryRepositoryJPAImpl ..> ILibraryRepositoryJPA : uses
-AutomatedGeneratedLibraryRepositoryJPAImpl ..|> ILibraryRepositoryJPA : implements
-AutomatedGeneratedLibraryRepositoryJPAImpl ..> Database : queries
+ILibraryRepository"1" <|.."1" LibraryRepositoryJPAImpl : implements
+LibraryRepositoryJPAImpl "1"..> "1..*" LibraryDM : retrieves
+LibraryRepositoryJPAImpl "1"..>"1" ILibraryRepositoryJPA : uses
+AutomatedGeneratedLibraryRepositoryJPAImpl "1" ..|> "1" ILibraryRepositoryJPA : implements
+AutomatedGeneratedLibraryRepositoryJPAImpl "1" ..> "1" Database : queries
 
 @enduml

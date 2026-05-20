@@ -47,7 +47,7 @@ IJPA --> PubRepo : listPubSampleDM
 deactivate IJPA
 create participant "listOfPublicationsNotInLibrary:\n List<PublicationSample>" as listOfPublicationsNotInLibrary
 PubRepo -->> listOfPublicationsNotInLibrary : «create»
-loop for each PubSampleDM in ListPubSampDM
+loop for each PubSampleDM in listPubSampDM
 PubRepo -> PublicationSampleAssembler : toDomain(PubSampleDM)
 activate PublicationSampleAssembler
 PublicationSampleAssembler -> Factory : create(pubSampleId, bibliographicalDataId, userId, \n publicationStatus, editionId, \ncondition, libraryId, collectionOfPublicationsId)
@@ -82,12 +82,12 @@ Database --> ILibJPA : data
 deactivate "Database"
 create participant "libraryDM : LibraryDM" as LibraryDM
 ILibJPA -->> LibraryDM : «create»
-ILibJPA -> LibraryDM : getId()
-activate LibraryDM
-LibraryDM --> ILibJPA : libraryId
-deactivate LibraryDM
-ILibJPA --> LibDomain : libraryId
+ILibJPA --> LibDomain : libraryDM
 deactivate ILibJPA
+LibDomain -> LibraryDM : getId()
+activate LibraryDM
+LibraryDM --> LibDomain : libraryId
+deactivate LibraryDM
 LibDomain --> Ctrl: libraryId
 deactivate LibDomain
 Ctrl -> PublicationSample : addPublicationToLibrary(libraryId)
@@ -98,6 +98,10 @@ Ctrl -> PubRepo: update(publicationSample)
 activate PubRepo
 PubRepo -> IJPA: update\n(publicationSample)
 activate IJPA
+IJPA -> PublicationSampleAssembler : toDM (publicationSample)
+activate PublicationSampleAssembler
+PublicationSampleAssembler --> IJPA : publicationSampleDM
+deactivate PublicationSampleAssembler
 IJPA -> "Database" : save
 activate "Database"
 Database --> IJPA : saved
