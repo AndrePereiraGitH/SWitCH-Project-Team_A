@@ -294,10 +294,10 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 .thenReturn(List.of(listingDouble));
 
         US025DirectSaleDTO dtoBDouble = mock(US025DirectSaleDTO.class);
-        when(dtoBDouble.getPublicationTitle()).thenReturn("B Title");
+        when(dtoBDouble.publicationTitle()).thenReturn("B Title");
 
         US025DirectSaleDTO dtoADouble = mock(US025DirectSaleDTO.class);
-        when(dtoADouble.getPublicationTitle()).thenReturn("A Title");
+        when(dtoADouble.publicationTitle()).thenReturn("A Title");
 
         when(directSaleMapperDouble.toDTOList(List.of(listingDouble)))
                 .thenReturn(new ArrayList<>(List.of(dtoBDouble, dtoADouble)));
@@ -316,8 +316,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         // ASSERT
         assertEquals(2, result.size());
-        assertEquals("A Title", result.get(0).getPublicationTitle());
-        assertEquals("B Title", result.get(1).getPublicationTitle());
+        assertEquals("A Title", result.get(0).publicationTitle());
+        assertEquals("B Title", result.get(1).publicationTitle());
     }
 
     /**
@@ -338,7 +338,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         US025DirectSaleDTO dtoDouble = mock(US025DirectSaleDTO.class);
 
-        when(dtoDouble.getPublicationTitle()).thenReturn("Some Title");
+        when(dtoDouble.publicationTitle()).thenReturn("Some Title");
 
         when(bdRepositoryDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of(bdIdDouble));
         when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble)))
