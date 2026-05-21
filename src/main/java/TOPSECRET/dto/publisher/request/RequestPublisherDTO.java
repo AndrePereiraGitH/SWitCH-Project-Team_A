@@ -1,27 +1,19 @@
 package TOPSECRET.dto.publisher.request;
 
-
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NonNull;
 
-@EqualsAndHashCode
-@AllArgsConstructor
-@Getter
-public class RequestPublisherDTO {
+public record RequestPublisherDTO(
 
-    @NonNull
-    @NotBlank
-    private String name;
+        @NotBlank(message = "Publisher name must not be blank")
+        String name,
 
-    @NonNull
-    private String _vatNumber;
+        @NotBlank(message = "VAT number must not be blank")
+        String vatNumber,
 
-    @NonNull
-    private String _phoneNum;
+        @NotBlank(message = "Phone number must not be blank")
+        String phoneNumber,
 
-    @NonNull
-    private String _extension;
-}
+        @NotBlank(message = "Extension must not be blank")
+        String extension
+
+) {}
