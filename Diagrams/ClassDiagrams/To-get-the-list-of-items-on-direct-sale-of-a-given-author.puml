@@ -1,5 +1,10 @@
 @startuml
+allowmixing
 title To get the list of items on direct sale of a given author
+
+class UI {}
+
+UI "1" -.> "1" ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController : uses
 
 class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
   + getAllAuthors() : List<US025AuthorDTO>
@@ -11,7 +16,7 @@ interface IAuthorRepository {
   + findAll() : List<Author>
 }
 
-class AuthorRepositoryImpl {}
+class AuthorRepositoryJPAImpl {}
 
 interface IAuthorRepositoryJPA {
   + findAll() : List<AuthorDM>
@@ -60,7 +65,7 @@ interface IBibliographicalDataRepositoryJPA {
   + findIdsByAuthorId(AuthorId authorId) : List<BibliographicalDataDM>
 }
 
-class BibliographicalDataRepositoryImpl {}
+class BibliographicalDataRepositoryJPAImpl {}
 
 class BibliographicalDataDM {
   - bdId : BibliographicalDataId
@@ -83,7 +88,7 @@ interface IPublicationSampleRepositoryJPA {
   + findIdsByBibliographicalDataId(BibliographicalDataId bdId) : List<PublicationSampleId>
 }
 
-class PublicationSampleRepositoryImpl {}
+class PublicationSampleRepositoryJPAImpl {}
 
 class PublicationSampleId {
 }
@@ -97,7 +102,7 @@ interface IListingRepositoryJPA {
   + findAllByItemsIdAndSaleType(List<PublicationSampleId> itemsId, SaleType saleType) : List<ListingDM>
 }
 
-class ListingRepositoryImpl {}
+class ListingRepositoryJPAImpl {}
 
 class ListingAssembler {
   + toDomain(ListingDM listingDM) : Listing
@@ -161,19 +166,19 @@ AuthorAssembler "1" --> "1" AuthorFactory : uses
 AuthorAssembler "1" ..> "1" AuthorDM : uses
 AuthorFactory "1" --> "1" Author : creates
 US025AuthorMapper "1" ..> "1" US025AuthorDTO : maps to
-AuthorRepositoryImpl "1" ..|> "1" IAuthorRepository : implements
-AuthorRepositoryImpl "1" --> "1" IAuthorRepositoryJPA : uses
+AuthorRepositoryJPAImpl "1" ..|> "1" IAuthorRepository : implements
+AuthorRepositoryJPAImpl "1" --> "1" IAuthorRepositoryJPA : uses
 
 ' --- Bibliographical Data ---
 IBibliographicalDataRepository "1" ..> "1" BibliographicalDataDM : uses
 IBibliographicalDataRepository "1" ..> "1" BibliographicalDataId : returns
-BibliographicalDataRepositoryImpl "1" ..|> "1" IBibliographicalDataRepository : implements
-BibliographicalDataRepositoryImpl "1" --> "1" IBibliographicalDataRepositoryJPA : uses
+BibliographicalDataRepositoryJPAImpl "1" ..|> "1" IBibliographicalDataRepository : implements
+BibliographicalDataRepositoryJPAImpl "1" --> "1" IBibliographicalDataRepositoryJPA : uses
 
 ' --- Publication Sample ---
 IPublicationSampleRepository "1" ..> "1" PublicationSampleId : returns
-PublicationSampleRepositoryImpl "1" ..|> "1" IPublicationSampleRepository : implements
-PublicationSampleRepositoryImpl "1" --> "1" IPublicationSampleRepositoryJPA : uses
+PublicationSampleRepositoryJPAImpl "1" ..|> "1" IPublicationSampleRepository : implements
+PublicationSampleRepositoryJPAImpl "1" --> "1" IPublicationSampleRepositoryJPA : uses
 
 ' --- Listing ---
 IListingRepository "1" --> "1" ListingAssembler : converts DM to Domain
@@ -181,8 +186,15 @@ ListingAssembler "1" --> "1" ListingFactory : uses
 ListingAssembler "1" ..> "1" ListingDM : uses
 ListingFactory "1" --> "1" Listing : creates
 Listing "*" --> "1" SaleType : for sale in
-ListingRepositoryImpl "1" ..|> "1" IListingRepository : implements
-ListingRepositoryImpl "1" --> "1" IListingRepositoryJPA : uses
+ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository : implements
+ListingRepositoryJPAImpl "1" --> "1" IListingRepositoryJPA : uses
 
 US025DirectSaleMapper "1" ..> "1" US025DirectSaleDTO : maps to
+
+database Database
+
+IAuthorRepositoryJPA "1" --> "1" Database : queries
+IBibliographicalDataRepositoryJPA "1" --> "1" Database : queries
+IPublicationSampleRepositoryJPA "1" --> "1" Database : queries
+IListingRepositoryJPA "1" --> "1" Database : queries
 @enduml

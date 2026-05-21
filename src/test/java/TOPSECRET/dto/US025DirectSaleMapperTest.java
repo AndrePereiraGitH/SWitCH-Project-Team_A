@@ -11,7 +11,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataID;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import java.util.Optional;
 
@@ -69,11 +69,11 @@ class US025DirectSaleMapperTest {
         US025DirectSaleDTO result = sut.toDTO(listingDouble, bdDouble, authorNames);
 
         // ASSERT
-        assertEquals("Clean Code", result.getPublicationTitle());
-        assertEquals(authorNames, result.getAuthors());
-        assertEquals(new BigDecimal("29.99"), result.getPrice());
-        assertEquals("Clean Code - Good Condition", result.getListingTitle());
-        assertEquals("seller123", result.getSeller());
+        assertEquals("Clean Code", result.publicationTitle());
+        assertEquals(authorNames, result.authors());
+        assertEquals(new BigDecimal("29.99"), result.price());
+        assertEquals("Clean Code - Good Condition", result.listingTitle());
+        assertEquals("seller123", result.seller());
     }
 
     /**
@@ -107,7 +107,7 @@ class US025DirectSaleMapperTest {
         US025DirectSaleDTO result = sut.toDTO(listingDouble, bdDouble, List.of());
 
         // ASSERT
-        assertTrue(result.getAuthors().isEmpty());
+        assertTrue(result.authors().isEmpty());
     }
 
     // =========================================================================
@@ -129,7 +129,7 @@ class US025DirectSaleMapperTest {
         Author authorDouble = mock(Author.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
         PublicationSampleId pubIdDouble = mock(PublicationSampleId.class);
-        BibliographicalDataID bdIdDouble = mock(BibliographicalDataID.class);
+        BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
 
         IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
         IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);
@@ -160,8 +160,8 @@ class US025DirectSaleMapperTest {
 
         // ASSERT
         assertEquals(1, result.size());
-        assertEquals("Clean Code", result.get(0).getPublicationTitle());
-        assertEquals(List.of("Robert Martin"), result.get(0).getAuthors());
+        assertEquals("Clean Code", result.get(0).publicationTitle());
+        assertEquals(List.of("Robert Martin"), result.get(0).authors());
     }
 
     /**

@@ -27,14 +27,15 @@ note over Ctrl #E3F2FD
 end note
 
 Ctrl -> listingRepo : findAllByDirectSaleAndPublicationSampleIdIn(pubIdList)
+activate Ctrl
 activate listingRepo
 
-listingRepo -> listingRepoJPA : findAllByItemsIdAndSaleType(pubIdList, DIRECT_SALE)
+listingRepo -> listingRepoJPA : findAllByItemsId(pubIdList)
 activate listingRepoJPA
 
-listingRepoJPA -> db : query listing by publicationSampleId\nwhere saleType = DIRECT_SALE
+listingRepoJPA -> db : query listing by publicationSampleId
 activate db
-db --> listingRepoJPA : listing records
+db --> listingRepoJPA : data
 deactivate db
 
 listingRepoJPA -->> listingDMList ** : <<create>>
@@ -53,10 +54,13 @@ loop for each listingDM in listingDMList
         deactivate factory
     assembler --> listingRepo : listing
     deactivate assembler
-    listingRepo -> listingList : add(listing)
+    opt listing.isListingLinkedToADirectSale()
+            listingRepo -> listingList : add(listing)
+        end
 end
 
 listingRepo --> Ctrl : listingList
 deactivate listingRepo
 
+deactivate Ctrl
 @enduml

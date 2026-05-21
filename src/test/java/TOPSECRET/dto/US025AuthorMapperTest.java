@@ -40,7 +40,7 @@ class US025AuthorMapperTest {
         US025AuthorDTO result = sut.toDTO(authorDouble);
 
         // ASSERT
-        assertEquals("John Doe", result.getName());
+        assertEquals("John Doe", result.name());
     }
 
     /**
@@ -80,7 +80,7 @@ class US025AuthorMapperTest {
 
         // ASSERT
         assertEquals(1, result.size());
-        assertEquals("John Doe", result.get(0).getName());
+        assertEquals("John Doe", result.get(0).name());
     }
 
     /**

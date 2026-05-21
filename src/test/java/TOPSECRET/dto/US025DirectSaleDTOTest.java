@@ -58,7 +58,7 @@ class US025DirectSaleDTOTest {
                 PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
 
         // ACT
-        String result = sut.getPublicationTitle();
+        String result = sut.publicationTitle();
 
         // ASSERT
         assertEquals(PUBLICATION_TITLE, result);
@@ -75,7 +75,7 @@ class US025DirectSaleDTOTest {
                 PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
 
         // ACT
-        List<String> result = sut.getAuthors();
+        List<String> result = sut.authors();
 
         // ASSERT
         assertEquals(AUTHORS, result);
@@ -92,7 +92,7 @@ class US025DirectSaleDTOTest {
                 PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
 
         // ACT
-        BigDecimal result = sut.getPrice();
+        BigDecimal result = sut.price();
 
         // ASSERT
         assertEquals(PRICE, result);
@@ -109,7 +109,7 @@ class US025DirectSaleDTOTest {
                 PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
 
         // ACT
-        String result = sut.getListingTitle();
+        String result = sut.listingTitle();
 
         // ASSERT
         assertEquals(LISTING_TITLE, result);
@@ -126,33 +126,9 @@ class US025DirectSaleDTOTest {
                 PUBLICATION_TITLE, AUTHORS, PRICE, LISTING_TITLE, SELLER);
 
         // ACT
-        String result = sut.getSeller();
+        String result = sut.seller();
 
         // ASSERT
         assertEquals(SELLER, result);
-    }
-
-    // =========================================================================
-    // Immutability
-    // =========================================================================
-
-    /**
-     * Ensures all fields are declared as {@code final}.
-     */
-    @Test
-    void allFieldsShouldBeFinal() throws NoSuchFieldException {
-
-        // ARRANGE
-        String[] fieldNames = {"publicationTitle", "authors", "price", "listingTitle", "seller"};
-
-        for (String fieldName : fieldNames) {
-
-            // ACT
-            var field = US025DirectSaleDTO.class.getDeclaredField(fieldName);
-
-            // ASSERT
-            assertTrue(java.lang.reflect.Modifier.isFinal(field.getModifiers()),
-                    "Field " + fieldName + " should be final");
-        }
     }
 }
