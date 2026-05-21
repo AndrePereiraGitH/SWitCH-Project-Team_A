@@ -11,8 +11,8 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.US028ListingDTO;
 import TOPSECRET.dto.US028ListingMapper;
-import TOPSECRET.dto.publisher.response.PublisherDTO;
 
+import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +67,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         when(publisherRepoDouble.findAll()).thenReturn(publishers);
 
         // Act
-        List<PublisherDTO> result = sut.getAllPublishers();
+        List<ResponsePublisherDTO> result = sut.getAllPublishers();
 
         // Assert
         assertNotNull(result);
@@ -90,7 +90,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         when(publisherRepoDouble.findAll()).thenReturn(publishers);
 
         // Act
-        List<PublisherDTO> result = sut.getAllPublishers();
+        List<ResponsePublisherDTO> result = sut.getAllPublishers();
 
         // Assert
         assertTrue(result.isEmpty());

@@ -14,7 +14,7 @@ import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.publisher.PublisherMapper;
 import TOPSECRET.dto.US028ListingDTO;
 import TOPSECRET.dto.US028ListingMapper;
-import TOPSECRET.dto.publisher.response.PublisherDTO;
+import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 
 public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
 
@@ -64,7 +64,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
      *
      * @return list of publisher DTOs
      */
-    public List<PublisherDTO> getAllPublishers() {
+    public List<ResponsePublisherDTO> getAllPublishers() {
         List<Publisher> listOfPublishers = publisherRepo.findAll();
 
         return PublisherMapper.toDTOs(listOfPublishers);

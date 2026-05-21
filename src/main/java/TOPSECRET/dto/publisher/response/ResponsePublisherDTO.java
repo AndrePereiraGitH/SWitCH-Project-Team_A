@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
-import TOPSECRET.domain.ValueObjects.PublisherID;
-
 /**
  * Data Transfer Object representing a Publisher for use case US028.
  * <p>
@@ -23,13 +21,12 @@ import TOPSECRET.domain.ValueObjects.PublisherID;
 @ToString
 @Getter
 @AllArgsConstructor
-public class PublisherDTO extends RepresentationModel<PublisherDTO> {
+public class ResponsePublisherDTO extends RepresentationModel<ResponsePublisherDTO> {
 
-    @NonNull
     @NotBlank
     private final String name;
 
     @NonNull
-    private final PublisherID publisherId;
+    private final String publisherId;
 
 }

@@ -2,7 +2,7 @@ package TOPSECRET.dto.publisher;
 
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.PublisherID;
-import TOPSECRET.dto.publisher.response.PublisherDTO;
+import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
@@ -18,131 +18,112 @@ import static org.mockito.Mockito.*;
  */
 class PublisherMapperTest {
 
-    @Test
-    void shouldThrowExceptionWhenInstantiatingUtilityClass() {
+        @Test
+        void shouldThrowExceptionWhenInstantiatingUtilityClass() throws Exception {
 
-        // ACT + ASSERT
-        InvocationTargetException exception =
-                assertThrows(
-                        InvocationTargetException.class,
-                        () -> {
-                            Constructor<PublisherMapper> constructor = PublisherMapper.class.getDeclaredConstructor();
-                            constructor.setAccessible(true);
-                            constructor.newInstance();
-                        }
-                );
+            Constructor<PublisherMapper> constructor =
+                    PublisherMapper.class.getDeclaredConstructor();
 
-        assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
-        assertEquals("Utility class", exception.getCause().getMessage());
-    }
+            constructor.setAccessible(true);
 
-    @Test
-    void shouldConvertPublisherToDTO() {
+            InvocationTargetException ex =
+                    assertThrows(InvocationTargetException.class, constructor::newInstance);
 
-        // ARRANGE
-        Publisher publisher = mock(Publisher.class);
-        PublisherID pubId = mock(PublisherID.class);
+            assertInstanceOf(UnsupportedOperationException.class, ex.getCause());
+            assertEquals("Utility class", ex.getCause().getMessage());
+        }
 
-        when(publisher.getName()).thenReturn("Test Publisher");
-        when(publisher.id()).thenReturn(pubId);
+        @Test
+        void shouldConvertPublisherToDTO() {
 
-        // ACT
-        PublisherDTO result = PublisherMapper.toDTO(publisher);
+            Publisher publisher = mock(Publisher.class);
 
-        // ASSERT
-        assertEquals("Test Publisher", result.getName());
-        assertEquals(publisher.id(), result.getPublisherId());
-    }
+            when(publisher.getName()).thenReturn("Test Publisher");
+            when(publisher.id()).thenReturn(mock(TOPSECRET.domain.ValueObjects.PublisherID.class));
 
-    @Test
-    void shouldThrowExceptionWhenPublisherIsNull() {
+            ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
-        // ACT + ASSERT
-        NullPointerException exception =
-                assertThrows(
-                        NullPointerException.class,
-                        () -> PublisherMapper.toDTO(null)
-                );
+            assertEquals("Test Publisher", result.getName());
+            assertNotNull(result.getPublisherId());
+        }
 
-        assertEquals("Publisher cannot be null", exception.getMessage());
-    }
+        @Test
+        void shouldThrowExceptionWhenPublisherIsNull() {
 
-    @Test
-    void shouldConvertListOfPublishersToDTOs() {
+            NullPointerException exception =
+                    assertThrows(NullPointerException.class,
+                            () -> PublisherMapper.toDTO(null));
 
-        // ARRANGE
-        Publisher publisher1 = mock(Publisher.class);
-        Publisher publisher2 = mock(Publisher.class);
-        PublisherID publisherId1 = mock(PublisherID.class);
-        PublisherID publisherId2 = mock(PublisherID.class);
+            assertEquals("Publisher cannot be null", exception.getMessage());
+        }
 
+        @Test
+        void shouldConvertListOfPublishersToDTOs() {
 
-        when(publisher1.getName()).thenReturn("Publisher One");
-        when(publisher2.getName()).thenReturn("Publisher Two");
-        when(publisher1.id()).thenReturn(publisherId1);
-        when(publisher2.id()).thenReturn(publisherId2);
+            Publisher p1 = mock(Publisher.class);
+            Publisher p2 = mock(Publisher.class);
 
+            when(p1.getName()).thenReturn("Publisher One");
+            when(p2.getName()).thenReturn("Publisher Two");
 
-        List<Publisher> publishers = List.of(publisher1, publisher2);
+            when(p1.id()).thenReturn(mock(TOPSECRET.domain.ValueObjects.PublisherID.class));
+            when(p2.id()).thenReturn(mock(TOPSECRET.domain.ValueObjects.PublisherID.class));
 
-        // ACT
-        List<PublisherDTO> result = PublisherMapper.toDTOs(publishers);
+            List<Publisher> publishers = List.of(p1, p2);
 
-        // ASSERT
-        assertEquals(2, result.size());
+            List<ResponsePublisherDTO> result = PublisherMapper.toDTOs(publishers);
 
-        assertEquals("Publisher One", result.get(0).getName());
-        assertEquals("Publisher Two", result.get(1).getName());
-    }
+            assertEquals(2, result.size());
+            assertEquals("Publisher One", result.get(0).getName());
+            assertEquals("Publisher Two", result.get(1).getName());
+        }
 
-    @Test
-    void shouldThrowExceptionWhenListOfPublishersIsNull() {
+        @Test
+        void shouldThrowExceptionWhenListOfPublishersIsNull() {
 
-        // ACT + ASSERT
-        NullPointerException exception =
-                assertThrows(
-                        NullPointerException.class,
-                        () -> PublisherMapper.toDTOs(null)
-                );
+            NullPointerException exception =
+                    assertThrows(NullPointerException.class,
+                            () -> PublisherMapper.toDTOs(null));
 
-        assertEquals("Publishers list cannot be null", exception.getMessage());
-    }
+            assertEquals("Publishers list cannot be null", exception.getMessage());
+        }
 
     @Test
     void shouldThrowExceptionWhenListContainsNullPublisher() {
 
-        // Arrays.asList allows null elements, unlike List.of()
-        List<Publisher> publishers = Arrays.asList(null, null);
+        Publisher validPublisher = mock(Publisher.class);
+        PublisherID id = mock(PublisherID.class);
 
-        // ACT + ASSERT
+        when(validPublisher.getName()).thenReturn("Test");
+        when(id.toString()).thenReturn("PUB-1");
+        when(validPublisher.id()).thenReturn(id);
+
+        List<Publisher> publishers = Arrays.asList(
+                validPublisher,
+                null
+        );
+
         NullPointerException exception =
-                assertThrows(
-                        NullPointerException.class,
-                        () -> PublisherMapper.toDTOs(publishers)
-                );
+                assertThrows(NullPointerException.class,
+                        () -> PublisherMapper.toDTOs(publishers));
 
         assertEquals("Publisher cannot be null", exception.getMessage());
     }
 
-    @Test
-    void shouldReturnImmutableList() {
+        @Test
+        void shouldReturnImmutableList() {
 
-        // ARRANGE
-        Publisher publisher = mock(Publisher.class);
-        PublisherID pubId = mock(PublisherID.class);
+            Publisher publisher = mock(Publisher.class);
 
-        when(publisher.getName()).thenReturn("Publisher");
-        when(publisher.id()).thenReturn(pubId);
+            when(publisher.getName()).thenReturn("Publisher");
+            when(publisher.id()).thenReturn(mock(TOPSECRET.domain.ValueObjects.PublisherID.class));
 
-        List<Publisher> publishers = List.of(publisher);
+            List<ResponsePublisherDTO> result =
+                    PublisherMapper.toDTOs(List.of(publisher));
 
-        // ACT
-        List<PublisherDTO> result = PublisherMapper.toDTOs(publishers);
-
-        // ASSERT
-        assertThrows(
-                UnsupportedOperationException.class,
-                () -> result.add(mock(PublisherDTO.class))
-        );
+            assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> result.add(mock(ResponsePublisherDTO.class))
+            );
+        }
     }
-}
