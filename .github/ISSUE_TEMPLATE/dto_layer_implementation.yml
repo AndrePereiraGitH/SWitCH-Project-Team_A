@@ -1,0 +1,74 @@
+name: "Implementation -- API DTO Layer"
+description: "Sub-issue: Implement request DTO, response DTO and mapper for API communication"
+title: "Implementation: API DTO Layer for <FUNCTIONALITY> — request DTO, response DTO and mapper"
+labels: ["sprint5"]
+projects: ["MiteLovers"]
+assignees: []
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Overview
+        This issue tracks the implementation of the API communication layer for `FUNCTIONALITY`,
+        following the approved design artifacts.
+
+        The scope is limited to defining the API boundary objects and mapping logic
+        used for request handling and response generation.
+
+        ---
+
+        ## Scope
+        This issue covers the implementation of:
+
+        - **Request DTO** — input model received from API clients
+        - **Response DTO** — output model returned by the API
+        - **Mapper** — conversion logic between API models and domain objects
+
+        ---
+
+        ## Implementation Checklist
+
+        ### API DTO Layer
+        - [ ] Request DTO implemented
+        - [ ] Response DTO implemented
+        - [ ] Mapper created for Request DTO → Domain conversion
+        - [ ] Mapper created for Domain → Response DTO conversion
+        - [ ] Mapping responsibilities centralized in the Mapper layer
+
+        ### Integration
+        - [ ] Controller consumes Request DTO objects
+        - [ ] Controller returns Response DTO objects
+        - [ ] Service remains independent from transport concerns
+
+        ---
+
+        ## Boundary & Integrity Checklist
+        - [ ] **API Isolation**: DTOs contain no business logic
+        - [ ] **Domain Protection**: Domain entities are not directly exposed by the API
+        - [ ] **Mapping Separation**: conversion logic remains outside Controllers and Domain
+
+        ---
+
+        ## Acceptance Criteria
+        - [ ] Implementation matches the approved design artifacts
+        - [ ] All new classes are covered by unit tests (TDD)
+        - [ ] Test coverage remains at or above the required threshold (≥ 85% line, ≥ 95% mutation)
+        - [ ] No business logic exists inside DTOs
+        - [ ] All public classes and methods are documented with JavaDoc
+        - [ ] Code passes Checkstyle and PMD checks (`./lint`)
+        - [ ] Build and all tests pass locally (`./run`) before opening a PR
+
+        ---
+
+        ## Related Issues
+        <!-- Link the design issue this implementation is based on -->
+        - Blocked by: #<DESIGN_ISSUE_NUMBER>
+
+        ---
+
+        ## Additional Notes
+        <!-- Any extra context, design decisions, blockers, or references. -->
+    validations:
+      required: true
