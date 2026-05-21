@@ -1,16 +1,17 @@
-package TOPSECRET.dto;
+package TOPSECRET.dto.publisher.response;
 
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.hateoas.RepresentationModel;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link US028PublisherDTO}.
+ * Unit tests for {@link PublisherDTO}.
  */
-class US028PublisherDTOTest {
+class PublisherDTOTest {
 
     // ===============================================
     // ================= Set Up ======================
@@ -32,32 +33,38 @@ class US028PublisherDTOTest {
     @Test
     void constructor_ShouldStoreValuesCorrectly() {
         // Act
-        US028PublisherDTO dto = new US028PublisherDTO(name, publisherId);
+        PublisherDTO dto = new PublisherDTO(name, publisherId);
 
         // Assert
-        assertEquals(name, dto.name());
-        assertEquals(publisherId, dto.publisherId());
+        assertEquals(name, dto.getName());
+        assertEquals(publisherId, dto.getPublisherId());
     }
 
     @Test
     void constructor_ShouldThrowWhenNameIsNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new US028PublisherDTO(null, publisherId));
-    }
-
-    @Test
-    void constructor_ShouldThrowWhenNameIsBlank() {
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new US028PublisherDTO("   ", publisherId));
+        assertThrows(NullPointerException.class,
+                () -> new PublisherDTO(null, publisherId));
     }
 
     @Test
     void constructor_ShouldThrowWhenPublisherIdIsNull() {
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> new US028PublisherDTO(name, null));
+        assertThrows(NullPointerException.class,
+                () -> new PublisherDTO(name, null));
+    }
+
+    // ===============================================
+    // ============= RepresentationModel =============
+    // ===============================================
+
+    @Test
+    void shouldBeInstanceOfRepresentationModel() {
+        // Act
+        PublisherDTO dto = new PublisherDTO(name, publisherId);
+
+        // Assert
+        assertInstanceOf(RepresentationModel.class, dto);
     }
 
     // ===============================================
@@ -67,8 +74,8 @@ class US028PublisherDTOTest {
     @Test
     void shouldBeEqual_whenDTOsHaveSameValues() {
         // Arrange
-        US028PublisherDTO dto1 = new US028PublisherDTO(name, publisherId);
-        US028PublisherDTO dto2 = new US028PublisherDTO(name, publisherId);
+        PublisherDTO dto1 = new PublisherDTO(name, publisherId);
+        PublisherDTO dto2 = new PublisherDTO(name, publisherId);
 
         // Act & Assert
         assertEquals(dto1, dto2);
@@ -79,8 +86,8 @@ class US028PublisherDTOTest {
         // Arrange
         PublisherID otherId = mock(PublisherID.class);
 
-        US028PublisherDTO dto1 = new US028PublisherDTO(name, publisherId);
-        US028PublisherDTO dto2 = new US028PublisherDTO("other", otherId);
+        PublisherDTO dto1 = new PublisherDTO(name, publisherId);
+        PublisherDTO dto2 = new PublisherDTO("other", otherId);
 
         // Act & Assert
         assertNotEquals(dto1, dto2);
@@ -89,8 +96,8 @@ class US028PublisherDTOTest {
     @Test
     void shouldHaveSameHashCode_whenDTOsAreEqual() {
         // Arrange
-        US028PublisherDTO dto1 = new US028PublisherDTO(name, publisherId);
-        US028PublisherDTO dto2 = new US028PublisherDTO(name, publisherId);
+        PublisherDTO dto1 = new PublisherDTO(name, publisherId);
+        PublisherDTO dto2 = new PublisherDTO(name, publisherId);
 
         // Act
         int hash1 = dto1.hashCode();
@@ -103,12 +110,14 @@ class US028PublisherDTOTest {
     @Test
     void shouldReturnMeaningfulToString() {
         // Arrange
-        US028PublisherDTO dto = new US028PublisherDTO(name, publisherId);
+        PublisherDTO dto = new PublisherDTO(name, publisherId);
 
         // Act
         String result = dto.toString();
 
         // Assert
+        assertNotNull(result);
+        assertFalse(result.isBlank());
         assertTrue(result.contains(name));
         assertTrue(result.contains("publisherId"));
     }

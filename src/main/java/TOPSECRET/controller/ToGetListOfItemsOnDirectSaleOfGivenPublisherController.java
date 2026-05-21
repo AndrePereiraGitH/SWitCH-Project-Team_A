@@ -7,10 +7,10 @@ import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
+import TOPSECRET.dto.publisher.PublisherMapper;
+import TOPSECRET.dto.publisher.response.PublisherDTO;
 import TOPSECRET.dto.US027ListingDTO;
 import TOPSECRET.dto.US027ListingMapper;
-import TOPSECRET.dto.US027PublisherDTO;
-import TOPSECRET.dto.US027PublisherMapper;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 
@@ -75,13 +75,13 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
     /**
      * Retrieves all publishers stored in the system and converts them into DTOs.
      *
-     * @return a list of {@link US027PublisherMapper} representing all publishers
+     * @return a list of {@link PublisherMapper} representing all publishers
      */
-    public List<US027PublisherDTO> findAllPublishers() {
+    public List<PublisherDTO> findAllPublishers() {
 
         List<Publisher> listOfAllPublishers = _publisherRepo.findAll();
 
-        return US027PublisherMapper.toDTOs(listOfAllPublishers);
+        return PublisherMapper.toDTOs(listOfAllPublishers);
     }
 
     /**

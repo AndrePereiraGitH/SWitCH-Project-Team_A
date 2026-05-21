@@ -10,9 +10,9 @@ import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
+import TOPSECRET.dto.publisher.response.PublisherDTO;
 import TOPSECRET.dto.US027ListingDTO;
 import TOPSECRET.dto.US027ListingMapper;
-import TOPSECRET.dto.US027PublisherDTO;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,7 +106,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
                         publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
-        List<US027PublisherDTO> result = controller.findAllPublishers();
+        List<PublisherDTO> result = controller.findAllPublishers();
 
         // Assert
         assertEquals(2, result.size());
@@ -122,7 +122,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
                         publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
-        List<US027PublisherDTO> result = controller.findAllPublishers();
+        List<PublisherDTO> result = controller.findAllPublishers();
 
         // Assert
         assertTrue(result.isEmpty());

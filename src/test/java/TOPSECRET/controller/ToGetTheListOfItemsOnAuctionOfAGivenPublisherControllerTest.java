@@ -11,8 +11,7 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.US028ListingDTO;
 import TOPSECRET.dto.US028ListingMapper;
-import TOPSECRET.dto.US028PublisherDTO;
-import TOPSECRET.dto.US028PublisherMapper;
+import TOPSECRET.dto.publisher.response.PublisherDTO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,6 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     private IPublicationSampleRepository pubSampleRepoDouble;
     private IListingRepository listingRepoDouble;
     private US028ListingMapper listingMapperDouble;
-    private US028PublisherMapper publisherMapperDouble;
 
     private ToGetListOfItemsOnAuctionOfAGivenPublisherController sut;
 
@@ -42,7 +40,6 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
         listingRepoDouble = mock(IListingRepository.class);
         listingMapperDouble = mock(US028ListingMapper.class);
-        publisherMapperDouble = mock(US028PublisherMapper.class);
     }
 
     // --------- getAllPublishers() -------------
@@ -56,18 +53,21 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 editionRepoDouble,
                 pubSampleRepoDouble,
                 listingRepoDouble,
-                listingMapperDouble,
-                publisherMapperDouble
+                listingMapperDouble
         );
 
         Publisher publisherDouble = mock(Publisher.class);
+        PublisherID pubIdDouble = mock(PublisherID.class);
+
+        when(publisherDouble.getName()).thenReturn("Anabela");
+        when(publisherDouble.id()).thenReturn(pubIdDouble);
 
         List<Publisher> publishers = List.of(publisherDouble);
 
         when(publisherRepoDouble.findAll()).thenReturn(publishers);
 
         // Act
-        List<US028PublisherDTO> result = sut.getAllPublishers();
+        List<PublisherDTO> result = sut.getAllPublishers();
 
         // Assert
         assertNotNull(result);
@@ -82,8 +82,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 editionRepoDouble,
                 pubSampleRepoDouble,
                 listingRepoDouble,
-                listingMapperDouble,
-                publisherMapperDouble
+                listingMapperDouble
         );
 
         List<Publisher> publishers = List.of();
@@ -91,7 +90,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         when(publisherRepoDouble.findAll()).thenReturn(publishers);
 
         // Act
-        List<US028PublisherDTO> result = sut.getAllPublishers();
+        List<PublisherDTO> result = sut.getAllPublishers();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -110,8 +109,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                         editionRepoDouble,
                         pubSampleRepoDouble,
                         listingRepoDouble,
-                        listingMapperDouble,
-                        publisherMapperDouble
+                        listingMapperDouble
                 )
         );
 
@@ -130,9 +128,9 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                         null,
                         pubSampleRepoDouble,
                         listingRepoDouble,
-                        listingMapperDouble,
-                        publisherMapperDouble
+                        listingMapperDouble
                 )
+
         );
 
         // Assert
@@ -150,8 +148,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                         editionRepoDouble,
                         null,
                         listingRepoDouble,
-                        listingMapperDouble,
-                        publisherMapperDouble
+                        listingMapperDouble
                 )
         );
 
@@ -170,8 +167,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                         editionRepoDouble,
                         pubSampleRepoDouble,
                         null,
-                        listingMapperDouble,
-                        publisherMapperDouble
+                        listingMapperDouble
                 )
         );
 
@@ -190,8 +186,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                         editionRepoDouble,
                         pubSampleRepoDouble,
                         listingRepoDouble,
-                        null,
-                        publisherMapperDouble
+                        null
                 )
         );
 
@@ -199,25 +194,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         assertEquals("listingMapper cannot be null", exception.getMessage());
     }
 
-    @Test
-    void constructor_shouldThrowException_whenPublisherMapperIsNull() {
 
-        // Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new ToGetListOfItemsOnAuctionOfAGivenPublisherController(
-                        publisherRepoDouble,
-                        editionRepoDouble,
-                        pubSampleRepoDouble,
-                        listingRepoDouble,
-                        listingMapperDouble,
-                        null
-                )
-        );
-
-        // Assert
-        assertEquals("publisherMapper cannot be null", exception.getMessage());
-    }
 
     // --------- findListOfItemsOnAuctionByPublisherId() -------------
 
@@ -230,8 +207,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 editionRepoDouble,
                 pubSampleRepoDouble,
                 listingRepoDouble,
-                listingMapperDouble,
-                publisherMapperDouble
+                listingMapperDouble
         );
 
         // Act
@@ -253,8 +229,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 editionRepoDouble,
                 pubSampleRepoDouble,
                 listingRepoDouble,
-                listingMapperDouble,
-                publisherMapperDouble
+                listingMapperDouble
         );
 
         PublisherID publisherIdDouble = mock(PublisherID.class);
