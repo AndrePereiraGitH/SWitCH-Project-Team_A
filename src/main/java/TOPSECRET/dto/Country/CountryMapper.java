@@ -2,32 +2,42 @@ package TOPSECRET.dto.Country;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.dto.Country.Response.CountryResponseDTO;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Mapper class responsible for converting {@link Country} domain objects
- * into {@link CountryResponseDTO} data transfer objects used in the presentation layer.
+ * Utility mapper class responsible for converting {@link Country}
+ * domain entities into {@link CountryResponseDTO} objects used in
+ * the presentation layer.
  *
- * <p>This class ensures a clear separation between the domain model and the API layer
- * by transforming domain entities into simplified DTO representations that are safe
- * to expose externally.</p>
+ * <p>This class helps maintain a clear separation between the domain
+ * model and the API layer by transforming internal domain objects
+ * into simplified DTO representations suitable for external exposure.</p>
  *
- * <p>It supports mapping both single {@link Country} objects and collections of countries.</p>
+ * <p>The mapper provides static methods for converting both individual
+ * {@link Country} objects and collections of countries into their
+ * corresponding response DTOs.</p>
+ *
+ * <p>All mapping operations validate input arguments and throw
+ * {@link NullPointerException} when null values are provided.</p>
  */
-
 public class CountryMapper {
 
     /**
-     * Converts a {@link Country} domain object into a {@link CountryResponseDTO}.
+     * Converts a single {@link Country} domain entity into a
+     * {@link CountryResponseDTO}.
      *
-     * @param country the country domain object to convert
-     * @return a DTO representing the given country
+     * <p>The generated DTO contains the country identifier and
+     * country name extracted from the domain object.</p>
+     *
+     * @param country the domain entity to convert
+     * @return a response DTO representing the given country
      * @throws NullPointerException if {@code country} is null
      */
-    public CountryResponseDTO toDTO(Country country){
+    public static CountryResponseDTO toDTO(Country country){
 
         Objects.requireNonNull(country, "Country cannot be null");
 
@@ -38,13 +48,17 @@ public class CountryMapper {
     }
 
     /**
-     * Converts a list of {@link Country} domain objects into a list of {@link CountryResponseDTO}.
+     * Converts a list of {@link Country} domain entities into a list
+     * of {@link CountryResponseDTO} objects.
      *
-     * @param countries the list of country domain objects to convert
-     * @return a list of DTOs representing the given countries
+     * <p>Each country in the provided collection is individually mapped
+     * using {@link #toDTO(Country)}.</p>
+     *
+     * @param countries the list of domain entities to convert
+     * @return a list of response DTOs representing the given countries
      * @throws NullPointerException if {@code countries} is null
      */
-    public List<CountryResponseDTO> toDTOs(List<Country> countries){
+    public static List<CountryResponseDTO> toDTOs(List<Country> countries){
             Objects.requireNonNull(countries, "Countries list cannot be null");
 
             List<CountryResponseDTO> dtos = new ArrayList<>();

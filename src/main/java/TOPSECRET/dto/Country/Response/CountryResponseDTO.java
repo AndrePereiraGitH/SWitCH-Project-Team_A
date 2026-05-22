@@ -1,56 +1,41 @@
 package TOPSECRET.dto.Country.Response;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
-import java.util.Objects;
 
 /**
- * Data Transfer Object used to represent a Country in API responses.
+ * Response Data Transfer Object that represents a Country resource
+ * exposed by the API layer.
  *
- * <p>This DTO is part of the presentation layer and is used to expose
- * country data in a safe and simplified way to clients.</p>
+ * <p>This DTO is used to send country-related data from the application
+ * to external clients while keeping the internal domain model isolated
+ * from the presentation layer.</p>
  *
- * <p>It contains the country's identifier and name, which are the only
- * fields exposed externally from the domain model.</p>
+ * <p>It contains the unique identifier and name of a country, which are
+ * the essential attributes required by clients consuming the API.</p>
  *
- * <p>This class extends {@link RepresentationModel} to support HATEOAS,
- * allowing hypermedia links (such as self-links or related resources)
- * to be attached to the response.</p>
+ * <p>The class extends {@link RepresentationModel} to provide HATEOAS
+ * support, enabling hypermedia links to be attached to the response
+ * representation.</p>
  *
- * <p>Equality and hashCode include both the DTO fields and HATEOAS links
- * (via the superclass implementation), ensuring link-aware comparisons.</p>
+ * <p>Lombok annotations are used to automatically generate common
+ * boilerplate functionality such as:</p>
+ * <ul>
+ *     <li>A constructor for all final fields</li>
+ *     <li>Getter methods</li>
+ *     <li>equals and hashCode implementations</li>
+ *     <li>A toString representation</li>
+ * </ul>
  */
+@RequiredArgsConstructor
+@Getter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class CountryResponseDTO extends RepresentationModel<CountryResponseDTO> {
 
     private final String countryId;
     private final String countryName;
-
-    public CountryResponseDTO(String countryId, String countryName) {
-        this.countryId = countryId;
-        this.countryName = countryName;
-    }
-
-    public String getCountryId() {
-        return countryId;
-    }
-
-    public String getCountryName() {
-        return countryName;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object)
-            return true;
-        if (!(object instanceof CountryResponseDTO other))
-            return false;
-        if (!super.equals(object))
-            return false;
-        return Objects.equals(countryId, other.countryId)
-                && Objects.equals(countryName, other.countryName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), countryId, countryName);
-    }
 }
