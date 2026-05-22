@@ -7,33 +7,34 @@ import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Response Data Transfer Object that represents a Country resource
- * exposed by the API layer.
+ * Response Data Transfer Object used to represent a Country in API responses.
  *
- * <p>This DTO is used to send country-related data from the application
- * to external clients while keeping the internal domain model isolated
- * from the presentation layer.</p>
+ * <p>This DTO belongs to the presentation layer and is responsible for
+ * exposing country data to external clients in a simplified and controlled format,
+ * without leaking the internal domain model.</p>
  *
- * <p>It contains the unique identifier and name of a country, which are
- * the essential attributes required by clients consuming the API.</p>
+ * <p>It contains the essential attributes of a country, specifically its
+ * unique identifier and name, which are sufficient for client-side consumption.</p>
  *
- * <p>The class extends {@link RepresentationModel} to provide HATEOAS
- * support, enabling hypermedia links to be attached to the response
- * representation.</p>
+ * <p>This class extends {@link RepresentationModel} to support HATEOAS,
+ * allowing hypermedia links to be attached to the response and enabling
+ * richer RESTful navigation.</p>
  *
- * <p>Lombok annotations are used to automatically generate common
- * boilerplate functionality such as:</p>
+ * <p>Lombok annotations are used to reduce boilerplate by automatically generating:</p>
  * <ul>
- *     <li>A constructor for all final fields</li>
- *     <li>Getter methods</li>
- *     <li>equals and hashCode implementations</li>
- *     <li>A toString representation</li>
+ *     <li>A required-arguments constructor</li>
+ *     <li>Getter methods for all fields</li>
+ *     <li>equals and hashCode methods</li>
+ *     <li>A toString implementation</li>
  * </ul>
+ *
+ * <p>Note: Equality does not include HATEOAS links due to
+ * {@code @EqualsAndHashCode(callSuper = false)}.</p>
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
+@ToString
 public class CountryResponseDTO extends RepresentationModel<CountryResponseDTO> {
 
     private final String countryId;
