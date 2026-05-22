@@ -38,7 +38,7 @@ class LibraryMapperTest {
     }
 
     @Test
-    void shouldMapListOfLibrariesToDTOs() {
+    void shouldMapListOfLibrariesToDTOList() {
 
         // ARRANGE
         Library lib1 = mock(Library.class);
@@ -50,7 +50,7 @@ class LibraryMapperTest {
         List<Library> libraries = List.of(lib1, lib2);
 
         // ACT
-        List<ResponseLibraryDTO> result = LibraryMapper.toDTOs(libraries);
+        List<ResponseLibraryDTO> result = LibraryMapper.toDTOList(libraries);
 
         // ASSERT
         assertEquals(2, result.size());
@@ -63,7 +63,7 @@ class LibraryMapperTest {
         // ACT + ASSERT
         NullPointerException exception =
                 assertThrows(NullPointerException.class,
-                        () -> LibraryMapper.toDTOs(null));
+                        () -> LibraryMapper.toDTOList(null));
 
         assertEquals("Libraries list cannot be null", exception.getMessage());
     }
@@ -78,7 +78,7 @@ class LibraryMapperTest {
         when(library.getLibraryName()).thenReturn("Lib");
 
         List<ResponseLibraryDTO> result =
-                LibraryMapper.toDTOs(List.of(library));
+                LibraryMapper.toDTOList(List.of(library));
 
         // ASSERT
         assertThrows(UnsupportedOperationException.class,

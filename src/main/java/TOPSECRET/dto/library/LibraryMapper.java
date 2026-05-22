@@ -17,7 +17,7 @@ public final class LibraryMapper {
         );
     }
 
-    public static List<ResponseLibraryDTO> toDTOs(List<Library> libraries) {
+    public static List<ResponseLibraryDTO> toDTOList(List<Library> libraries) {
         Objects.requireNonNull(libraries, "Libraries list cannot be null");
 
         return libraries.stream()
