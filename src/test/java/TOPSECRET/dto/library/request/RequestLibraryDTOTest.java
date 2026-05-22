@@ -11,11 +11,10 @@ class RequestLibraryDTOTest {
 
         // ACT
         RequestLibraryDTO dto =
-                new RequestLibraryDTO("My Library", "USER-1");
+                new RequestLibraryDTO("My Library");
 
         // ASSERT
         assertEquals("My Library", dto.libraryName());
-        assertEquals("USER-1", dto.userId());
     }
 
     @Test
@@ -23,10 +22,10 @@ class RequestLibraryDTOTest {
 
         // ARRANGE
         RequestLibraryDTO dto1 =
-                new RequestLibraryDTO("Lib", "USER-1");
+                new RequestLibraryDTO("Lib");
 
         RequestLibraryDTO dto2 =
-                new RequestLibraryDTO("Lib", "USER-1");
+                new RequestLibraryDTO("Lib");
 
         // ASSERT
         assertEquals(dto1, dto2);
@@ -37,10 +36,10 @@ class RequestLibraryDTOTest {
 
         // ARRANGE
         RequestLibraryDTO dto1 =
-                new RequestLibraryDTO("Lib1", "USER-1");
+                new RequestLibraryDTO("Lib1");
 
         RequestLibraryDTO dto2 =
-                new RequestLibraryDTO("Lib2", "USER-2");
+                new RequestLibraryDTO("Lib2");
 
         // ASSERT
         assertNotEquals(dto1, dto2);
@@ -51,10 +50,10 @@ class RequestLibraryDTOTest {
 
         // ARRANGE
         RequestLibraryDTO dto1 =
-                new RequestLibraryDTO("Lib", "USER-1");
+                new RequestLibraryDTO("Lib");
 
         RequestLibraryDTO dto2 =
-                new RequestLibraryDTO("Lib", "USER-1");
+                new RequestLibraryDTO("Lib");
 
         // ASSERT
         assertEquals(dto1.hashCode(), dto2.hashCode());
@@ -65,12 +64,11 @@ class RequestLibraryDTOTest {
 
         // ACT
         RequestLibraryDTO dto =
-                new RequestLibraryDTO("My Library", "USER-1");
+                new RequestLibraryDTO("My Library");
 
         String result = dto.toString();
 
         // ASSERT
         assertTrue(result.contains("My Library"));
-        assertTrue(result.contains("USER-1"));
     }
 }

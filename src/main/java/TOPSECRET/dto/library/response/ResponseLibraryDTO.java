@@ -12,5 +12,4 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 public class ResponseLibraryDTO extends RepresentationModel<ResponseLibraryDTO> {
     private final String libraryName;
-    private final String userId;
 }

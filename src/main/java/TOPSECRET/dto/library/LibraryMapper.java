@@ -13,8 +13,7 @@ public final class LibraryMapper {
         Objects.requireNonNull(library, "Library cannot be null");
 
         return new ResponseLibraryDTO(
-                library.getLibraryName(),
-                library.getUserId().toString()
+                library.getLibraryName()
         );
     }
 

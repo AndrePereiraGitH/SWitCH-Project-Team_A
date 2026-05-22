@@ -12,11 +12,10 @@ class ResponseLibraryDTOTest {
 
         // ACT
         ResponseLibraryDTO dto =
-                new ResponseLibraryDTO("My Library", "USER-1");
+                new ResponseLibraryDTO("My Library");
 
         // ASSERT
         assertEquals("My Library", dto.getLibraryName());
-        assertEquals("USER-1", dto.getUserId());
     }
 
     @Test
@@ -24,10 +23,10 @@ class ResponseLibraryDTOTest {
 
         // ARRANGE
         ResponseLibraryDTO dto1 =
-                new ResponseLibraryDTO("Lib", "USER-1");
+                new ResponseLibraryDTO("Lib" );
 
         ResponseLibraryDTO dto2 =
-                new ResponseLibraryDTO("Lib", "USER-1");
+                new ResponseLibraryDTO("Lib" );
 
         // ASSERT
         assertEquals(dto1, dto2);
@@ -38,10 +37,10 @@ class ResponseLibraryDTOTest {
 
         // ARRANGE
         ResponseLibraryDTO dto1 =
-                new ResponseLibraryDTO("Lib1", "USER-1");
+                new ResponseLibraryDTO("Lib1" );
 
         ResponseLibraryDTO dto2 =
-                new ResponseLibraryDTO("Lib2", "USER-2");
+                new ResponseLibraryDTO("Lib2");
 
         // ASSERT
         assertNotEquals(dto1, dto2);
@@ -52,10 +51,10 @@ class ResponseLibraryDTOTest {
 
         // ARRANGE
         ResponseLibraryDTO dto1 =
-                new ResponseLibraryDTO("Lib", "USER-1");
+                new ResponseLibraryDTO("Lib" );
 
         ResponseLibraryDTO dto2 =
-                new ResponseLibraryDTO("Lib", "USER-1");
+                new ResponseLibraryDTO("Lib" );
 
         // ASSERT
         assertEquals(dto1.hashCode(), dto2.hashCode());
@@ -66,15 +65,13 @@ class ResponseLibraryDTOTest {
 
         // ARRANGE
         ResponseLibraryDTO dto =
-                new ResponseLibraryDTO("My Library", "USER-1");
+                new ResponseLibraryDTO("My Library" );
 
         // ACT
         String result = dto.toString();
 
         // ASSERT
-        assertNotNull(result);
         assertTrue(result.contains("My Library"));
-        assertTrue(result.contains("USER-1"));
     }
 
     @Test
@@ -82,7 +79,7 @@ class ResponseLibraryDTOTest {
 
         // ACT
         ResponseLibraryDTO dto =
-                new ResponseLibraryDTO("Lib", "USER-1");
+                new ResponseLibraryDTO("Lib" );
 
         // ASSERT
         assertInstanceOf(RepresentationModel.class, dto);
