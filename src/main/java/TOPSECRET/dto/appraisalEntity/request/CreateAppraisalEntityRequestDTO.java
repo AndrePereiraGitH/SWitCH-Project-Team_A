@@ -1,5 +1,6 @@
 package TOPSECRET.dto.appraisalEntity.request;
 
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,6 +37,7 @@ public class CreateAppraisalEntityRequestDTO {
     String extension;
 
     // Email
+    @Email
     @NotNull
     String email;
 
