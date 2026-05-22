@@ -1,5 +1,9 @@
 package TOPSECRET.dto.appraisalEntity.request;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,6 +14,14 @@ import static org.junit.jupiter.api.Assertions.*;
  * Unit tests for {@link CreateAppraisalEntityRequestDTO}.
  */
 class CreateAppraisalEntityRequestDTOTest {
+
+    private Validator validator;
+
+    @BeforeEach
+    void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
 
     @Test
     void getNameShouldReturnAssignedValue() {
@@ -387,4 +399,251 @@ class CreateAppraisalEntityRequestDTOTest {
         // ASSERT
         assertTrue(result.contains("Entity"));
     }
+
+    @Test
+    void shouldPassValidationWhenEmailIsValid() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        // ACT
+        var violations = validator.validate(dto);
+
+        // ASSERT
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void shouldFailValidationWhenEmailIsInvalid() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "invalid-email",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        // ACT
+        var violations = validator.validate(dto);
+
+        // ASSERT
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void equalsShouldReturnFalseForNull() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto1 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        // ACT
+        boolean result = dto1.equals(null);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void equalsShouldReturnTrueWhenSameInstance() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto1 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        // ACT
+        boolean result = dto1.equals(dto1);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void equalsShouldReturnFalseForDifferentEmail() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto1 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        CreateAppraisalEntityRequestDTO dto2 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "different@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        // ACT
+        boolean result = dto1.equals(dto2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void equalsShouldReturnFalseForDifferentPublicationTypes() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto1 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        CreateAppraisalEntityRequestDTO dto2 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1"), // diferente
+                List.of("GEN1", "GEN2")
+        );
+
+        // ACT
+        boolean result = dto1.equals(dto2);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void equalsShouldReturnTrueWhenListsAreNull() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto1 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                null,
+                null
+        );
+
+        CreateAppraisalEntityRequestDTO dto2 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                null,
+                null
+        );
+
+        // ACT
+        boolean result = dto1.equals(dto2);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void hashCodeShouldReturnDifferentValuesForDifferentObjects() {
+
+        // ARRANGE
+        CreateAppraisalEntityRequestDTO dto1 = new CreateAppraisalEntityRequestDTO(
+                "Entity",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        CreateAppraisalEntityRequestDTO dto2 = new CreateAppraisalEntityRequestDTO(
+                "Different",
+                "912345678",
+                "123",
+                "test@test.com",
+                "Street",
+                "10",
+                "4000-000",
+                "1",
+                List.of("PUB1", "PUB2"),
+                List.of("GEN1", "GEN2")
+        );
+
+        // ACT
+        int hash1 = dto1.hashCode();
+        int hash2 = dto2.hashCode();
+
+        // ASSERT
+        assertNotEquals(hash1, hash2);
+    }
+
+
 }
