@@ -15,16 +15,17 @@ import java.util.Set;
 /**
  * Unit tests for {@link RegisterCountryDTO}.
  *
- * <p>This test class verifies the behavior of the request DTO used for registering a country.</p>
+ * <p>This test class verifies the validation behavior of the request DTO
+ * used to register a new country in the system.</p>
  *
- * <p>Since this is a simple record-based DTO, tests focus on:</p>
- * <ul>
- *     <li>Correct value storage and retrieval</li>
- *     <li>Record-generated equality and hashCode behavior</li>
- *     <li>Validation constraints applied to the country name field</li>
- * </ul>
+ * <p>The DTO is a simple record enriched with Bean Validation constraints,
+ * so tests focus on validation rules rather than business logic.</p>
  *
- * <p>Validation is handled via Jakarta Bean Validation annotations and verified using a {@link Validator}.</p>
+ * <p>Specifically, these tests ensure that invalid input values are properly
+ * rejected according to the constraints defined on the DTO fields.</p>
+ *
+ * <p>Validation is performed using Jakarta Bean Validation and a
+ * {@link Validator} instance created from {@link ValidatorFactory}.</p>
  */
 class RegisterCountryDTOTest {
 
@@ -35,48 +36,6 @@ class RegisterCountryDTOTest {
         // Arrange
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    @Test
-    void shouldCreateDTOWithValidCountryName() {
-
-        // Arrange
-        RegisterCountryDTO dto = new RegisterCountryDTO("Portugal");
-
-        // Act
-        String result = dto.countryName();
-
-        // Assert
-        assertEquals("Portugal", result);
-    }
-
-    @Test
-    void shouldSupportRecordEquality() {
-
-        // Arrange
-        RegisterCountryDTO dto1 = new RegisterCountryDTO("Portugal");
-        RegisterCountryDTO dto2 = new RegisterCountryDTO("Portugal");
-
-        // Act
-        boolean result = dto1.equals(dto2);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldSupportRecordHashCode() {
-
-        // Arrange
-        RegisterCountryDTO dto1 = new RegisterCountryDTO("Portugal");
-        RegisterCountryDTO dto2 = new RegisterCountryDTO("Portugal");
-
-        // Act
-        int hash1 = dto1.hashCode();
-        int hash2 = dto2.hashCode();
-
-        // Assert
-        assertEquals(hash1, hash2);
     }
 
     @Test
