@@ -5,15 +5,14 @@ import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 
 /**
- * Data Transfer Object representing a Publisher for use case US028.
+ * Data Transfer Object representing publisher data exposed to clients.
  * <p>
- * This DTO is used in the application layer to expose publisher information
- * to the client without leaking the internal domain model
+ * This DTO is used in the application layer to transfer publisher
+ * information without exposing the internal domain model
  * ({@link TOPSECRET.domain.Publisher.Publisher}).
  * <p>
- * This class is a pure data container and does not contain any HATEOAS logic.
- * Hypermedia links should be added externally using Spring HATEOAS
- * {@code EntityModel}.
+ * By extending {@link RepresentationModel}, this DTO supports the addition
+ * of HATEOAS links externally in the controller layer.
  */
 
 

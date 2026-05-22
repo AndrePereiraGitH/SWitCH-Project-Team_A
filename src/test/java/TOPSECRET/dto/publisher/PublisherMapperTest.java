@@ -1,7 +1,9 @@
 package TOPSECRET.dto.publisher;
 
 import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.PublisherID;
+import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +60,7 @@ class PublisherMapperTest {
         }
 
         @Test
-        void shouldConvertListOfPublishersToDTOs() {
+        void shouldConvertListOfPublishersToDTOList() {
 
             Publisher p1 = mock(Publisher.class);
             Publisher p2 = mock(Publisher.class);
@@ -71,7 +73,7 @@ class PublisherMapperTest {
 
             List<Publisher> publishers = List.of(p1, p2);
 
-            List<ResponsePublisherDTO> result = PublisherMapper.toDTOs(publishers);
+            List<ResponsePublisherDTO> result = PublisherMapper.toDTOList(publishers);
 
             assertEquals(2, result.size());
             assertEquals("Publisher One", result.get(0).getName());
@@ -83,7 +85,7 @@ class PublisherMapperTest {
 
             NullPointerException exception =
                     assertThrows(NullPointerException.class,
-                            () -> PublisherMapper.toDTOs(null));
+                            () -> PublisherMapper.toDTOList(null));
 
             assertEquals("Publishers list cannot be null", exception.getMessage());
         }
@@ -105,7 +107,7 @@ class PublisherMapperTest {
 
         NullPointerException exception =
                 assertThrows(NullPointerException.class,
-                        () -> PublisherMapper.toDTOs(publishers));
+                        () -> PublisherMapper.toDTOList(publishers));
 
         assertEquals("Publisher cannot be null", exception.getMessage());
     }
@@ -119,11 +121,92 @@ class PublisherMapperTest {
             when(publisher.id()).thenReturn(mock(TOPSECRET.domain.ValueObjects.PublisherID.class));
 
             List<ResponsePublisherDTO> result =
-                    PublisherMapper.toDTOs(List.of(publisher));
+                    PublisherMapper.toDTOList(List.of(publisher));
 
             assertThrows(
                     UnsupportedOperationException.class,
                     () -> result.add(mock(ResponsePublisherDTO.class))
             );
         }
+
+
+    @Test
+    void shouldConvertRequestDTOToContactSuccessfullyInfoPhone() {
+        // ARRANGE
+        RequestPublisherDTO dto = new RequestPublisherDTO(
+                "123456789",
+                "123456789",
+                "911111111",
+                "1",
+                "john",
+                "gmail.com",
+                "Main Street",
+                "10",
+                "2388776",
+                "1000-001"
+        );
+
+        // ACT
+        Contact contact = PublisherMapper.toContact(dto);
+
+        // ASSERT
+        assertEquals("911111111", contact.getPhoneNum());
+        assertEquals("1", contact.getExtension());
+    }
+
+    @Test
+    void shouldConvertRequestDTOToContactSuccessfullyInfoEmail() {
+        // ARRANGE
+        RequestPublisherDTO dto = new RequestPublisherDTO(
+                "123456789",
+                "123456789",
+                "911111111",
+                "1",
+                "john",
+                "gmail.com",
+                "Main Street",
+                "10",
+                "2388776",
+                "1000-001"
+        );
+
+        // ACT
+        Contact contact = PublisherMapper.toContact(dto);
+
+        // ASSERT
+        assertEquals("john", contact.getEmail().getUserName());
+        assertEquals("gmail.com", contact.getEmail().getDomain());
+    } @Test
+    void shouldConvertRequestDTOToContactSuccessfullyInfoAddress() {
+        // ARRANGE
+        RequestPublisherDTO dto = new RequestPublisherDTO(
+                "Anabela",
+                "123456789",
+                "123456789",
+                "911111111",
+                "john",
+                "gmail.com",
+                "Main Street",
+                "2388776",
+                "1000-001",
+                "1"
+        );
+
+        // ACT
+        Contact contact = PublisherMapper.toContact(dto);
+
+        // ASSERT
+        assertEquals("Main Street", contact.getAddress().getStreet());
+        assertEquals("2388776", contact.getAddress().getNumber());
+        assertEquals("1000-001", contact.getAddress().getZipCode());
+        assertEquals("1", contact.getAddress().getCityID().getCityID());
+
+    }
+
+    @Test
+    void shouldThrowNullPointerException_whenDTOIsNull() {
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> PublisherMapper.toContact(null));
+    }
     }

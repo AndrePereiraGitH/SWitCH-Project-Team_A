@@ -67,7 +67,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
     public List<ResponsePublisherDTO> getAllPublishers() {
         List<Publisher> listOfPublishers = publisherRepo.findAll();
 
-        return PublisherMapper.toDTOs(listOfPublishers);
+        return PublisherMapper.toDTOList(listOfPublishers);
     }
 
     /**

@@ -1,6 +1,8 @@
 package TOPSECRET.dto.publisher;
 
 import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 
 import java.util.List;
@@ -47,11 +49,20 @@ public final class PublisherMapper {
      * @return an immutable list of {@link ResponsePublisherDTO}
      * @throws NullPointerException if publishers is null or any element is null
      */
-    public static List<ResponsePublisherDTO> toDTOs(List<Publisher> publishers) {
+    public static List<ResponsePublisherDTO> toDTOList(List<Publisher> publishers) {
         Objects.requireNonNull(publishers, "Publishers list cannot be null");
 
         return publishers.stream()
                 .map(PublisherMapper::toDTO)
                 .toList();
+    }
+
+    public static Contact toContact(RequestPublisherDTO pubDTO) {
+
+        Email email = new Email(pubDTO.username(), pubDTO.domain());
+        CityId cityId = new CityId(pubDTO.cityId());
+        Address address = new Address(pubDTO.street(), pubDTO.number(), pubDTO.zipCode(), cityId);
+
+        return new Contact(pubDTO.phoneNumber(), pubDTO.extension(), email, address);
     }
 }

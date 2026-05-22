@@ -81,7 +81,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
         List<Publisher> listOfAllPublishers = _publisherRepo.findAll();
 
-        return PublisherMapper.toDTOs(listOfAllPublishers);
+        return PublisherMapper.toDTOList(listOfAllPublishers);
     }
 
     /**
