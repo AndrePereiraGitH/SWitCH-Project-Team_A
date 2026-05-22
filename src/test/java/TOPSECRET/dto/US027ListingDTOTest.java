@@ -1,6 +1,6 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.dto.listing.US027ListingDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

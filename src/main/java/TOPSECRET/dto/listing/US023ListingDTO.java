@@ -1,10 +1,10 @@
-package TOPSECRET.dto;
+package TOPSECRET.dto.listing;
 
 import java.util.List;
 
 /**
- * Data Transfer Object (DTO) used in US027 to represent a listing
- * when retrieving items on direct sale for a given publisher.
+ * Data Transfer Object (DTO) used in US023 to represent a listing
+ * when retrieving items on direct sale for a given publication.
  * <p>
  * This record ensures immutability and validates all required fields.
  * </p>
@@ -17,9 +17,9 @@ import java.util.List;
  *
  * @throws IllegalArgumentException if any argument is null, blank, or invalid
  */
-public record US027ListingDTO(String listingId, String listingTitle, String price, List<String> pubTitles, List<String> authorsName) {
+public record US023ListingDTO(String listingId, String listingTitle, String price, List<String> pubTitles, List<String> authorsName) {
 
-    public US027ListingDTO {
+    public US023ListingDTO {
         if (listingId == null) throw new IllegalArgumentException("ListingId cannot be null");
         if (listingTitle == null || listingTitle.isBlank()) throw new IllegalArgumentException("ListingTitle cannot be null or blank");
         if (price == null || price.isBlank()) throw new IllegalArgumentException("Price cannot be null or blank");

@@ -1,4 +1,4 @@
-package TOPSECRET.dto;
+package TOPSECRET.dto.listing;
 
 
 /**

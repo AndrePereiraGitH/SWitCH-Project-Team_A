@@ -1,4 +1,4 @@
-package TOPSECRET.dto;
+package TOPSECRET.dto.listing;
 
 import TOPSECRET.domain.Listing.Listing;
 

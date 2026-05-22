@@ -3,6 +3,8 @@ package TOPSECRET.dto;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.dto.listing.US028ListingDTO;
+import TOPSECRET.dto.listing.US028ListingMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
