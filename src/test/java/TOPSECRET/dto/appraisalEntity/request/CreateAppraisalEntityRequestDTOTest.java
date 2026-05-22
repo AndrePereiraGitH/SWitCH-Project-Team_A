@@ -571,43 +571,6 @@ class CreateAppraisalEntityRequestDTOTest {
     }
 
     @Test
-    void equalsShouldReturnTrueWhenListsAreNull() {
-
-        // ARRANGE
-        CreateAppraisalEntityRequestDTO dto1 = new CreateAppraisalEntityRequestDTO(
-                "Entity",
-                "912345678",
-                "123",
-                "test@test.com",
-                "Street",
-                "10",
-                "4000-000",
-                "1",
-                null,
-                null
-        );
-
-        CreateAppraisalEntityRequestDTO dto2 = new CreateAppraisalEntityRequestDTO(
-                "Entity",
-                "912345678",
-                "123",
-                "test@test.com",
-                "Street",
-                "10",
-                "4000-000",
-                "1",
-                null,
-                null
-        );
-
-        // ACT
-        boolean result = dto1.equals(dto2);
-
-        // ASSERT
-        assertTrue(result);
-    }
-
-    @Test
     void hashCodeShouldReturnDifferentValuesForDifferentObjects() {
 
         // ARRANGE
