@@ -17,9 +17,6 @@ import org.springframework.hateoas.RepresentationModel;
 @Getter
 public class GenreResponseDTO extends RepresentationModel<GenreResponseDTO> {
 
-    @NonNull
     String id;
-
-    @NonNull
     String genreName;
 }

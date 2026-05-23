@@ -1,16 +1,12 @@
 package TOPSECRET.dto.genre.request;
 
-import lombok.*;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * DTO used to receive Genre information from client requests.
  */
-@EqualsAndHashCode
-@AllArgsConstructor
-@ToString
-@Getter
-public class GenreRequestDTO {
+public record GenreRequestDTO (
 
-    @NonNull
-    String genreName;
+    @NotBlank(message = "Genre name must be informed")
+    String genreName){
 }
