@@ -1,5 +1,6 @@
 package TOPSECRET.dto.publisher.request;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 /**
@@ -16,9 +17,8 @@ import jakarta.validation.constraints.NotBlank;
  * // Contact information
  * @param phoneNumber the publisher phone number
  * @param extension   the publisher phone extension
- * // Email information
- * @param username    the email username (part before '@')
- * @param domain      the email domain (part after '@')
+ * // Email
+ * @param email       the publisher email
  * // Address information
  * @param street      the street name
  * @param number      the street/building number
@@ -42,11 +42,9 @@ public record RequestPublisherDTO(
         String extension,
 
         // Email
-        @NotBlank(message = "Email username must not be blank")
-        String username,
-
-        @NotBlank(message = "Email domain must not be blank")
-        String domain,
+        @Email(message = "Invalid email format")
+        @NotBlank(message = "Email is required")
+        String email,
 
         // Address
         @NotBlank(message = "Street must not be blank")

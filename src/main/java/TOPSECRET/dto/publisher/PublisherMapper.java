@@ -59,10 +59,25 @@ public final class PublisherMapper {
 
     public static Contact toContact(RequestPublisherDTO pubDTO) {
 
-        Email email = new Email(pubDTO.username(), pubDTO.domain());
         CityId cityId = new CityId(pubDTO.cityId());
         Address address = new Address(pubDTO.street(), pubDTO.number(), pubDTO.zipCode(), cityId);
 
-        return new Contact(pubDTO.phoneNumber(), pubDTO.extension(), email, address);
+        return new Contact(pubDTO.phoneNumber(), pubDTO.extension(), toEmail(pubDTO), address);
+    }
+    /**
+     * Creates an {@link Email} Value Object from the email value
+     * contained in the request DTO.
+     *
+     * @param pubDTO the request DTO containing the email information
+     * @return the constructed Email object
+     * @throws IllegalArgumentException if the email format is invalid
+     */
+    public static Email toEmail(RequestPublisherDTO pubDTO) {
+
+        Objects.requireNonNull(pubDTO, "RequestPublisherDTO cannot be null");
+
+        String[] split = pubDTO.email().split("@");
+
+        return new Email(split[0], split[1]);
     }
 }
