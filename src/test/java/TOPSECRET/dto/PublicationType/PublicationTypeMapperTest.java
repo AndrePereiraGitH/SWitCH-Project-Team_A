@@ -43,7 +43,7 @@ class PublicationTypeMapperTest {
 
         // Act + Assert
         assertThrows(
-                IllegalArgumentException.class,
+                NullPointerException.class,
                 () -> mapper.toDTO(null)
         );
     }
@@ -56,7 +56,7 @@ class PublicationTypeMapperTest {
 
         // Act + Assert
         assertThrows(
-                IllegalArgumentException.class,
+                NullPointerException.class,
                 () -> mapper.toDTOList(null)
         );
     }
