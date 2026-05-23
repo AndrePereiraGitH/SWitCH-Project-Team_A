@@ -2,6 +2,8 @@ package TOPSECRET.dto.appraisalEntity;
 
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Email;
+import TOPSECRET.domain.ValueObjects.GenreId;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import org.junit.jupiter.api.Test;
 
@@ -212,5 +214,79 @@ class AppraisalEntityMapperTest {
         );
     }
 
+    @Test
+    void ToPubTypeIdsShouldConvertListSizeCorrectly() {
 
+        // ARRANGE
+        RequestAppraisalEntityDTO dto =
+                new RequestAppraisalEntityDTO(
+                        "name",
+                        "912345678",
+                        "123",
+                        "john@test.com",
+                        "street",
+                        "10",
+                        "1234",
+                        "city",
+                        List.of("A", "B"),
+                        List.of()
+                );
+
+        // ACT
+        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(dto);
+
+        // ASSERT
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void ToPubTypeIdsShouldThrowExceptionWhenDtoIsNull() {
+
+        // ARRANGE
+        RequestAppraisalEntityDTO dto = null;
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toPubTypeIds(dto)
+        );
+    }
+
+    @Test
+    void ToGenreIdsShouldConvertListSizeCorrectly() {
+
+        // ARRANGE
+        RequestAppraisalEntityDTO dto =
+                new RequestAppraisalEntityDTO(
+                        "name",
+                        "912345678",
+                        "123",
+                        "john@test.com",
+                        "street",
+                        "10",
+                        "1234",
+                        "city",
+                        List.of(),
+                        List.of("Drama", "Action")
+                );
+
+        // ACT
+        List<GenreId> result = AppraisalEntityMapper.toGenreIds(dto);
+
+        // ASSERT
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void ToGenreIdsShouldThrowExceptionWhenDtoIsNull() {
+
+        // ARRANGE
+        RequestAppraisalEntityDTO dto = null;
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toGenreIds(dto)
+        );
+    }
 }
