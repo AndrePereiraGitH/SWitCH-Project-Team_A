@@ -2,6 +2,8 @@ package TOPSECRET.dto.appraisalEntity;
 
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Email;
+import TOPSECRET.domain.ValueObjects.GenreId;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import org.junit.jupiter.api.Test;
 
@@ -212,5 +214,107 @@ class AppraisalEntityMapperTest {
         );
     }
 
+    @Test
+    void ToPubTypeIdsShouldConvertListSizeCorrectly() {
 
+        // ARRANGE
+        List<String> input = List.of("A", "B", "C");
+
+        // ACT
+        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(input);
+
+        // ASSERT
+        assertEquals(3, result.size());
+    }
+
+    @Test
+    void ToPubTypeIdsShouldConvertFirstElementCorrectly() {
+
+        // ARRANGE
+        List<String> input = List.of("A");
+
+        // ACT
+        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(input);
+
+        // ASSERT
+        assertEquals("A", result.get(0).toString());
+    }
+
+    @Test
+    void ToPubTypeIdsShouldReturnEmptyList() {
+
+        // ARRANGE
+        List<String> input = List.of();
+
+        // ACT
+        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(input);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ToPubTypeIdsShouldThrowExceptionWhenListIsNull() {
+
+        // ARRANGE
+        List<String> input = null;
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toPubTypeIds(input)
+        );
+    }
+
+    @Test
+    void ToGenreIdsShouldConvertListSizeCorrectly() {
+
+        // ARRANGE
+        List<String> input = List.of("Drama", "Action");
+
+        // ACT
+        List<GenreId> result = AppraisalEntityMapper.toGenreIds(input);
+
+        // ASSERT
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void ToGenreIdsShouldConvertFirstElementCorrectly() {
+
+        // ARRANGE
+        List<String> input = List.of("Drama");
+
+        // ACT
+        List<GenreId> result = AppraisalEntityMapper.toGenreIds(input);
+
+        // ASSERT
+        assertEquals("Drama", result.get(0).toString());
+    }
+
+    @Test
+    void ToGenreIdsShouldReturnEmptyList() {
+
+        // ARRANGE
+        List<String> input = List.of();
+
+        // ACT
+        List<GenreId> result = AppraisalEntityMapper.toGenreIds(input);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ToGenreIdsShouldThrowExceptionWhenListIsNull() {
+
+        // ARRANGE
+        List<String> input = null;
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toGenreIds(input)
+        );
+    }
 }
