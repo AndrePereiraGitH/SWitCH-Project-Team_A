@@ -7,10 +7,10 @@ import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
-import TOPSECRET.dto.publisher.PublisherMapper;
-import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import TOPSECRET.dto.US027ListingDTO;
 import TOPSECRET.dto.US027ListingMapper;
+import TOPSECRET.dto.US027PublisherDTO;
+import TOPSECRET.dto.US027PublisherMapper;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 
@@ -58,10 +58,10 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      * @param mapper the mapper responsible for converting listings into DTOs
      */
     public ToGetListOfItemsOnDirectSaleOfGivenPublisherController(IPublisherRepository publisherRepo,
-                                                                       IListingRepository listingRepo,
-                                                                       IPublicationSampleRepository pubSampleRepo,
-                                                                       IEditionRepository editionRepo,
-                                                                       US027ListingMapper mapper) {
+                                                                  IListingRepository listingRepo,
+                                                                  IPublicationSampleRepository pubSampleRepo,
+                                                                  IEditionRepository editionRepo,
+                                                                  US027ListingMapper mapper) {
 
         this._publisherRepo = publisherRepo;
         this._listingRepo = listingRepo;
@@ -70,18 +70,18 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
         this._mapper = mapper;
     }
 
-     // ================================================================================================================
+    // ================================================================================================================
 
     /**
      * Retrieves all publishers stored in the system and converts them into DTOs.
      *
-     * @return a list of {@link PublisherMapper} representing all publishers
+     * @return a list of {@link US027PublisherMapper} representing all publishers
      */
-    public List<ResponsePublisherDTO> findAllPublishers() {
+    public List<US027PublisherDTO> findAllPublishers() {
 
         List<Publisher> listOfAllPublishers = _publisherRepo.findAll();
 
-        return PublisherMapper.toDTOList(listOfAllPublishers);
+        return US027PublisherMapper.toDTOs(listOfAllPublishers);
     }
 
     /**

@@ -12,9 +12,9 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.dto.US027ListingDTO;
 import TOPSECRET.dto.US027ListingMapper;
+import TOPSECRET.dto.US027PublisherDTO;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
-import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -106,7 +106,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
                         publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
-        List<ResponsePublisherDTO> result = controller.findAllPublishers();
+        List<US027PublisherDTO> result = controller.findAllPublishers();
 
         // Assert
         assertEquals(2, result.size());
@@ -122,7 +122,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
                         publisherRepoDouble, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
-        List<ResponsePublisherDTO> result = controller.findAllPublishers();
+        List<US027PublisherDTO> result = controller.findAllPublishers();
 
         // Assert
         assertTrue(result.isEmpty());
@@ -263,7 +263,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double, editionId2Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double, editionId2Double)))
-            .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
+                .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
         when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double, pubSampleId2Double)))
                 .thenReturn(List.of(listingDouble1, listingDouble2));
         when(mapperDouble.toDTOs(List.of(listingDouble1, listingDouble2))).thenReturn(List.of(listingDTODouble1, listingDTODouble2));
