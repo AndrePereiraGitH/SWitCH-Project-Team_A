@@ -51,7 +51,7 @@ class UserMapperTest {
         Email email     = mock(Email.class);
 
         when(user.id()).thenReturn(userId);
-        when(userId.getUsername()).thenReturn("bruno123");
+        when(userId.getUserId()).thenReturn("bruno123");
         when(user.getUserName()).thenReturn("bruno123");
         when(user.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Bruno");
@@ -77,7 +77,7 @@ class UserMapperTest {
         Email email     = mock(Email.class);
 
         when(user.id()).thenReturn(userId);
-        when(userId.getUsername()).thenReturn("bruno123");
+        when(userId.getUserId()).thenReturn("bruno123");
         when(user.getUserName()).thenReturn("bruno123");
         when(user.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Bruno");
@@ -103,7 +103,7 @@ class UserMapperTest {
         Email email     = mock(Email.class);
 
         when(user.id()).thenReturn(userId);
-        when(userId.getUsername()).thenReturn("bruno123");
+        when(userId.getUserId()).thenReturn("bruno123");
         when(user.getUserName()).thenReturn("bruno123");
         when(user.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Bruno");
@@ -129,7 +129,7 @@ class UserMapperTest {
         Email email     = mock(Email.class);
 
         when(user.id()).thenReturn(userId);
-        when(userId.getUsername()).thenReturn("bruno123");
+        when(userId.getUserId()).thenReturn("bruno123");
         when(user.getUserName()).thenReturn("bruno123");
         when(user.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Bruno");
@@ -155,7 +155,7 @@ class UserMapperTest {
         Email email     = mock(Email.class);
 
         when(user.id()).thenReturn(userId);
-        when(userId.getUsername()).thenReturn("bruno123");
+        when(userId.getUserId()).thenReturn("bruno123");
         when(user.getUserName()).thenReturn("bruno123");
         when(user.getProfile()).thenReturn(profile);
         when(profile.getName()).thenReturn("Bruno");

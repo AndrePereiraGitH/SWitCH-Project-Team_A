@@ -92,7 +92,7 @@ public final class UserMapper {
         Objects.requireNonNull(user, "User cannot be null");
 
         return new ResponseUserDTO(
-                user.id().getUsername(),
+                user.id().getUserId(),
                 user.getUserName(),
                 user.getProfile().getName(),
                 user.getProfile().getContact().getEmail().getEmail(),
