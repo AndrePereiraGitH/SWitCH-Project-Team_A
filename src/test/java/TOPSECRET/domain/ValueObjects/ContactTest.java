@@ -104,17 +104,65 @@ class ContactTest {
     }
 
     @Test
-    void shouldReturnFalseWhenPhoneNumberIsNullInOneObject() {
+    void testConstructorWithNullPhoneShouldThrowException() {
 
         // ARRANGE
-        Contact contact1 = createContact(null, "351", null, null);
-        Contact contact2 = createContact("912345678", "351", null, null);
+        Email email = new Email("test.user", "example.com");
 
-        // ACT
-        boolean result = contact1.equals(contact2);
+        Address address = new Address("Main Street", "10", "12345", anyCity);
 
-        // ASSERT
-        assertFalse(result);
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> new Contact(
+                        null,
+                        "351",
+                        email,
+                        address));
+    }
+
+    @Test
+    void testConstructorWithPhoneLessThan7DigitsShouldThrowException() {
+
+        // ARRANGE + ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> createContact(
+                        "123456",
+                        "351",
+                        null,
+                        null
+                )
+        );
+    }
+
+    @Test
+    void testConstructorWithPhoneGreaterThan10DigitsShouldThrowException() {
+
+        // ARRANGE + ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> createContact(
+                        "12345678901",
+                        "351",
+                        null,
+                        null
+                )
+        );
+    }
+
+    @Test
+    void testConstructorWithPhoneContainingLettersShouldThrowException() {
+
+        // ARRANGE + ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> createContact(
+                        "91A345678",
+                        "351",
+                        null,
+                        null
+                )
+        );
     }
 
     // Test getExtension
@@ -138,17 +186,33 @@ class ContactTest {
     }
 
     @Test
-    void shouldReturnFalseWhenExtensionIsNullInOneObject() {
+    void testConstructorWithExtensionGreaterThan3DigitsShouldThrowException() {
 
-        // ARRANGE
-        Contact contact1 = new Contact();
-        Contact contact2 = createContact("912345678", "351", null, null);
+        // ARRANGE + ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> createContact(
+                        "912345678",
+                        "1234",
+                        null,
+                        null
+                )
+        );
+    }
 
-        // ACT
-        boolean result = contact1.equals(contact2);
+    @Test
+    void testConstructorWithExtensionContainingLettersShouldThrowException() {
 
-        // ASSERT
-        assertFalse(result);
+        // ARRANGE + ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> createContact(
+                        "912345678",
+                        "3A1",
+                        null,
+                        null
+                )
+        );
     }
 
     @Test
@@ -162,20 +226,6 @@ class ContactTest {
         boolean result = contact1.equals(contact2);
 
         // ASSERT
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldReturnFalseWhenOneExtensionIsNullViaEmptyConstructor() {
-
-        // ARRANGE
-        Contact contact1 = new Contact();
-        Contact contact2 = createContact("912345678", "351", null, null);
-
-        // ACT
-        boolean result = contact1.equals(contact2);
-
-        // Assert
         assertFalse(result);
     }
 
@@ -339,7 +389,7 @@ class ContactTest {
         String result = contact.getFullPhone();
 
         // Assert
-        assertEquals("351 987654321", result);
+        assertEquals("+351987654321", result);
     }
 
     @Test
@@ -358,7 +408,7 @@ class ContactTest {
         String result = contact.getFullContactInfo();
 
         // Assert
-        assertTrue(result.contains("351 987654321"));
+        assertTrue(result.contains("+351987654321"));
         assertTrue(result.contains(email.toString()));
         assertTrue(result.contains(address.toString()));
     }
