@@ -1,4 +1,4 @@
-package TOPSECRET.dto.Country.Response;
+package TOPSECRET.dto.country.Response;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
