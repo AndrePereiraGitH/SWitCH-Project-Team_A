@@ -30,14 +30,6 @@ import static org.mockito.Mockito.*;
 class GenreMapperTest {
 
     @Test
-    void toDTO() {
-    }
-
-    @Test
-    void toDTOs() {
-    }
-
-    @Test
     void toDTO_shouldMapIdCorrectly() {
         // ARRANGE
         Genre genre = mock(Genre.class);
