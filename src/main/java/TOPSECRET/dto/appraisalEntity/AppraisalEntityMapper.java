@@ -1,12 +1,10 @@
 package TOPSECRET.dto.appraisalEntity;
 
 
-import TOPSECRET.domain.ValueObjects.Address;
-import TOPSECRET.domain.ValueObjects.CityId;
-import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.Email;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -92,4 +90,42 @@ public class AppraisalEntityMapper {
 
         return new Address(dto.street(), dto.number(), dto.zipCode(), cityId);
     }
+
+    /**
+     * Converts a list of Strings into a list of {@link PublicationTypeId}.
+     *
+     * <p>Each String is wrapped into a new {@code PubTypeId} instance,
+     * ensuring strong typing and enforcing the use of Value Objects
+     * in the domain layer.</p>
+     *
+     * @param ids list of publication type identifiers as Strings
+     * @return list of {@code PubTypeId} created from the provided values
+     */
+    public static List<PublicationTypeId> toPubTypeIds(RequestAppraisalEntityDTO ids) {
+
+        Objects.requireNonNull(ids, "RequestAppraisalEntityDTO cannot be null");
+
+        return ids.publicationTypeIds().stream()
+                .map(PublicationTypeId::new)
+                .toList();
+    }
+
+    /**
+     * Converts a list of Strings into a list of {@link GenreId}.
+     *
+     * <p>Each String is transformed into a {@code GenreId} Value Object,
+     * ensuring type safety and consistency across the domain model.</p>
+     *
+     * @param ids list of genre identifiers as Strings
+     * @return list of {@code GenreId} created from the provided values
+     */
+    public static List<GenreId> toGenreIds(RequestAppraisalEntityDTO ids) {
+
+        Objects.requireNonNull(ids, "RequestAppraisalEntityDTO cannot be null");
+
+        return ids.genreIds().stream()
+                .map(GenreId::new)
+                .toList();
+    }
+
 }
