@@ -25,6 +25,7 @@ public record RequestAppraisalEntityDTO(
         @NotBlank(message = "Phone number is required")
         String phoneNumber,
 
+        @NotBlank(message = "Phone number extension is required")
         String extension,
 
         // Email information

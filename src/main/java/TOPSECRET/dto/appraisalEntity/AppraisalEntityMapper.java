@@ -7,6 +7,8 @@ import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Email;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 
+import java.util.Objects;
+
 /**
  * Utility mapper responsible for converting AppraisalEntity request DTOs
  * into domain Value Objects used during AppraisalEntity creation.
@@ -28,7 +30,7 @@ public class AppraisalEntityMapper {
      * @throws UnsupportedOperationException always thrown because this is
      *                                       a utility class
      */
-    protected AppraisalEntityMapper(){
+    AppraisalEntityMapper(){
         throw new UnsupportedOperationException("Utility class");
     }
 
@@ -47,21 +49,14 @@ public class AppraisalEntityMapper {
      */
     public static Contact toContact(RequestAppraisalEntityDTO dto) {
 
-        Email email = toEmail(dto);
-        CityId cityId = new CityId(dto.cityId());
-        Address address = new Address(dto.street(), dto.number(), dto.zipCode(), cityId);
+        Objects.requireNonNull(dto, "RequestAppraisalEntityDTO cannot be null");
 
-        return new Contact(dto.phoneNumber(), dto.extension(), email, address);
+        return new Contact(dto.phoneNumber(), dto.extension(), toEmail(dto), toAddress(dto));
     }
 
     /**
      * Creates an {@link Email} Value Object from the email value
      * contained in the request DTO.
-     *
-     * <p>
-     * The email address is split into username and domain parts
-     * using the '@' separator.
-     * </p>
      *
      * @param dto the request DTO containing the email information
      * @return the constructed Email object
@@ -69,12 +64,32 @@ public class AppraisalEntityMapper {
      */
     public static Email toEmail(RequestAppraisalEntityDTO dto) {
 
+        Objects.requireNonNull(dto, "RequestAppraisalEntityDTO cannot be null");
+
         String[] split = dto.email().split("@");
 
-        if(split.length != 2){
-            throw new IllegalArgumentException("Invalid email");
-        }
-
         return new Email(split[0], split[1]);
+    }
+
+    /**
+     * Creates an {@link Address} Value Object from the address value
+     * contained in the request DTO.
+     *
+     * <p>
+     * This method also creates the associated{@link CityId},
+     * object required for the Address construction.
+     * </p>
+     *
+     * @param dto the request DTO containing address information
+     * @return the constructed Address object
+     * @throws IllegalArgumentException if the provided data is invalid
+     */
+    public static Address toAddress (RequestAppraisalEntityDTO dto){
+
+        Objects.requireNonNull(dto, "RequestAppraisalEntityDTO cannot be null");
+
+        CityId cityId = new CityId(dto.cityId());
+
+        return new Address(dto.street(), dto.number(), dto.zipCode(), cityId);
     }
 }
