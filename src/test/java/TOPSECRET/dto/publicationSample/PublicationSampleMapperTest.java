@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Locale;
 
+import static TOPSECRET.dto.publicationSample.PublicationSampleMapper.toCondition;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -342,6 +343,39 @@ class PublicationSampleMapperTest {
 
         // Assert
         assertEquals("ed-7", id.getID());
+    }
+
+    @Test
+    void toCondition_validDescription_returnsCorrectCondition() {
+        // Arrange
+        String conditionString = "Good";
+
+        // Act
+        Condition result = toCondition(conditionString);
+
+        // Assert
+        assertEquals(Condition.GOOD, result);
+    }
+
+    @Test
+    void toCondition_caseInsensitive_returnsCorrectCondition() {
+        // Arrange
+        String conditionString = "very good";
+
+        // Act
+        Condition result = toCondition(conditionString);
+
+        // Assert
+        assertEquals(Condition.VERY_GOOD, result);
+    }
+
+    @Test
+    void toCondition_invalidString_throwsIllegalArgumentException() {
+        // Arrange
+        String conditionString = "UNKNOWN";
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> toCondition(conditionString));
     }
 
 

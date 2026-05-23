@@ -32,5 +32,5 @@ public record RegisterPublicationSampleDTO(
         String editionId,
 
         @NotNull(message = "Condition cannot be null")
-        Condition condition) {
+        String condition) {
 }

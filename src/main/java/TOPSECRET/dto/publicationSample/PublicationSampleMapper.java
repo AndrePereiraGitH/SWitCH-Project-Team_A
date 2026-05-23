@@ -3,6 +3,7 @@ package TOPSECRET.dto.publicationSample;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.User;
@@ -250,6 +251,21 @@ public class PublicationSampleMapper {
     public static EditionId toEditionId(String id){
         EditionId editionId = new EditionId(id);
         return editionId;
+    }
+
+    /**
+     * Converts a string representation to its corresponding {@link Condition} enum value.
+     *
+     * <p>Accepts both the human-readable description (e.g. {@code "Like New"})
+     * and the enum name (e.g. {@code "LIKE_NEW"}), case-insensitively.</p>
+     *
+     * @param conditionString the string to convert; must not be {@code null}
+     * @return the matching {@link Condition} enum value
+     * @throws IllegalArgumentException if no matching {@link Condition} is found
+     */
+    public static Condition toCondition(String conditionString) {
+        Condition condition = Condition.fromString(conditionString);
+        return condition;
     }
 
     // -------------------------------------------------------------------------
