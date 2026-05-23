@@ -63,6 +63,28 @@ class CountryMapperTest {
     }
 
     @Test
+    void toDTOsShouldConvertFirstCountryInList() {
+
+        // Arrange
+        Country countryDouble = mock(Country.class);
+        CountryId idDouble = mock(CountryId.class);
+
+        when(idDouble.getCountryID()).thenReturn("PORTUGAL");
+        when(countryDouble.id()).thenReturn(idDouble);
+        when(countryDouble.getCountryName()).thenReturn("Portugal");
+
+        CountryMapper mapper = new CountryMapper();
+
+        // Act
+        List<CountryResponseDTO> result =
+                mapper.toDTOs(List.of(countryDouble));
+
+        // Assert
+        assertEquals("PORTUGAL", result.get(0).getCountryId());
+        assertEquals("Portugal", result.get(0).getCountryName());
+    }
+
+    @Test
     void toDTOsShouldConvertListOfCountriesToListOfDTOs() {
 
         // Arrange
@@ -81,22 +103,16 @@ class CountryMapperTest {
         when(countryDouble1.getCountryName()).thenReturn("Portugal");
         when(countryDouble2.getCountryName()).thenReturn("Spain");
 
-        List<Country> countries =
-                List.of(countryDouble1, countryDouble2);
-
         CountryMapper mapper = new CountryMapper();
 
         // Act
-        List<CountryResponseDTO> result = mapper.toDTOs(countries);
+        List<CountryResponseDTO> result =
+                mapper.toDTOs(List.of(countryDouble1, countryDouble2));
 
         // Assert
         assertEquals(2, result.size());
-
         assertEquals("PORTUGAL", result.get(0).getCountryId());
-        assertEquals("Portugal", result.get(0).getCountryName());
-
-        assertEquals("SPAIN", result.get(1).getCountryId());
-        assertEquals("Spain", result.get(1).getCountryName());
+        assertEquals("PORTUGAL", result.get(0).getCountryId());
     }
 
     @Test

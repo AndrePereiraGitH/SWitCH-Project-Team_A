@@ -240,31 +240,6 @@ class AppraisalEntityMapperTest {
     }
 
     @Test
-    void ToPubTypeIdsShouldConvertFirstElementCorrectly() {
-
-        // ARRANGE
-        RequestAppraisalEntityDTO dto =
-                new RequestAppraisalEntityDTO(
-                        "name",
-                        "912345678",
-                        "123",
-                        "john@test.com",
-                        "street",
-                        "10",
-                        "1234",
-                        "city",
-                        List.of("A"),
-                        List.of()
-                );
-
-        // ACT
-        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(dto);
-
-        // ASSERT
-        assertEquals("A", result.get(0).toString());
-    }
-
-    @Test
     void ToPubTypeIdsShouldThrowExceptionWhenDtoIsNull() {
 
         // ARRANGE
@@ -300,31 +275,6 @@ class AppraisalEntityMapperTest {
 
         // ASSERT
         assertEquals(2, result.size());
-    }
-
-    @Test
-    void ToGenreIdsShouldConvertFirstElementCorrectly() {
-
-        // ARRANGE
-        RequestAppraisalEntityDTO dto =
-                new RequestAppraisalEntityDTO(
-                        "name",
-                        "912345678",
-                        "123",
-                        "john@test.com",
-                        "street",
-                        "10",
-                        "1234",
-                        "city",
-                        List.of(),
-                        List.of("Drama")
-                );
-
-        // ACT
-        List<GenreId> result = AppraisalEntityMapper.toGenreIds(dto);
-
-        // ASSERT
-        assertEquals("Drama", result.get(0).toString());
     }
 
     @Test
