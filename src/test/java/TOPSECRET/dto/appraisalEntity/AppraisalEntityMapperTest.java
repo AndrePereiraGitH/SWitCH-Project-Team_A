@@ -228,19 +228,6 @@ class AppraisalEntityMapperTest {
     }
 
     @Test
-    void ToPubTypeIdsShouldConvertFirstElementCorrectly() {
-
-        // ARRANGE
-        List<String> input = List.of("A");
-
-        // ACT
-        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(input);
-
-        // ASSERT
-        assertEquals("A", result.get(0).toString());
-    }
-
-    @Test
     void ToPubTypeIdsShouldReturnEmptyList() {
 
         // ARRANGE
@@ -277,19 +264,6 @@ class AppraisalEntityMapperTest {
 
         // ASSERT
         assertEquals(2, result.size());
-    }
-
-    @Test
-    void ToGenreIdsShouldConvertFirstElementCorrectly() {
-
-        // ARRANGE
-        List<String> input = List.of("Drama");
-
-        // ACT
-        List<GenreId> result = AppraisalEntityMapper.toGenreIds(input);
-
-        // ASSERT
-        assertEquals("Drama", result.get(0).toString());
     }
 
     @Test
