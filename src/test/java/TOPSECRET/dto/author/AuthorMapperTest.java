@@ -1,4 +1,4 @@
-package TOPSECRET.dto.Author;
+package TOPSECRET.dto.author;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
@@ -6,8 +6,8 @@ import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryId;
-import TOPSECRET.dto.Author.request.CreateAuthorDTO;
-import TOPSECRET.dto.Author.response.AuthorDTO;
+import TOPSECRET.dto.author.request.CreateAuthorDTO;
+import TOPSECRET.dto.author.response.AuthorDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

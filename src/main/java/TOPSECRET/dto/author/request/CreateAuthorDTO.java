@@ -1,4 +1,4 @@
-package TOPSECRET.dto.Author.request;
+package TOPSECRET.dto.author.request;
 
 import jakarta.validation.constraints.NotBlank;
 

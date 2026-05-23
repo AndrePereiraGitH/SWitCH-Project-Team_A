@@ -1,4 +1,4 @@
-package TOPSECRET.dto.Author.response;
+package TOPSECRET.dto.author.response;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
