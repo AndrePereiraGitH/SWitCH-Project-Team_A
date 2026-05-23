@@ -311,7 +311,7 @@ class PublicationSampleMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void condition2VO_matchesByDescription() {
+    void toCondition_matchesByDescription() {
         // Arrange
 
         // Act & Assert
@@ -319,7 +319,7 @@ class PublicationSampleMapperTest {
     }
 
     @Test
-    void condition2VO_caseInsensitive() {
+    void toCondition_caseInsensitive() {
         // Arrange
 
         // Act & Assert
@@ -329,7 +329,7 @@ class PublicationSampleMapperTest {
     }
 
     @Test
-    void condition2VO_throwsOnUnknownValue() {
+    void toCondition_throwsOnUnknownValue() {
         // Arrange
 
         // Act
@@ -341,7 +341,7 @@ class PublicationSampleMapperTest {
     }
 
     @Test
-    void condition2VO_throwsOnEmptyString() {
+    void toCondition_throwsOnEmptyString() {
         // Arrange
 
         // Act & Assert
@@ -354,7 +354,7 @@ class PublicationSampleMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toPubId2VO_wrapsId() {
+    void toPubId_wrapsId() {
         // Arrange
 
         // Act
@@ -365,7 +365,7 @@ class PublicationSampleMapperTest {
     }
 
     @Test
-    void bdId2VO_wrapsId() {
+    void toBdId_wrapsId() {
         // Arrange
 
         // Act
@@ -376,7 +376,7 @@ class PublicationSampleMapperTest {
     }
 
     @Test
-    void editionId2VO_wrapsId() {
+    void toEditionId_wrapsId() {
         // Arrange
 
         // Act
