@@ -2,23 +2,15 @@ package TOPSECRET.dto.genre;
 
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.dto.genre.response.GenreResponseDTO;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Mapper responsible for converting {@link Genre} domain objects
  * into Genre DTO representations.
  */
-@Component
 public class GenreMapper {
-
-    /**
-     * Constructor
-     */
-    public GenreMapper (){
-
-    }
 
     /**
      * Converts a {@link Genre} domain object into a
@@ -28,11 +20,9 @@ public class GenreMapper {
      * @return the corresponding GenreResponseDTO
      * @throws IllegalArgumentException if the genre is null
      */
-    public GenreResponseDTO toDTO (Genre genre){
+    public static GenreResponseDTO toDTO (Genre genre){
 
-        if(genre == null){
-            throw new IllegalArgumentException ("Genre can't be null");
-         }
+       Objects.requireNonNull(genre, "Genre can't be null");
 
         return new GenreResponseDTO(genre.id().getID(), genre.getGenreType());
     }
@@ -45,14 +35,12 @@ public class GenreMapper {
      * @return the corresponding list of GenreResponseDTO
      * @throws IllegalArgumentException if the genre list is null
      */
-    public List<GenreResponseDTO> toDTOs (List<Genre> genres){
+    public static List<GenreResponseDTO> toDTOs(List<Genre> genres){
 
-        if(genres == null){
-            throw new IllegalArgumentException ("Genre can't be null");
-        }
+        Objects.requireNonNull(genres, "Genre list can't be null");
 
         return genres.stream()
-                .map(this::toDTO)
+                .map(GenreMapper::toDTO)
                 .toList();
 
     }
