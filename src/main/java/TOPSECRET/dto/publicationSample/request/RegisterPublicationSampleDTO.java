@@ -1,6 +1,7 @@
 package TOPSECRET.dto.publicationSample.request;
 
 
+import TOPSECRET.domain.Enum.Condition;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -18,7 +19,7 @@ import jakarta.validation.constraints.NotNull;
  * @param editionId             the unique identifier of the specific edition being registered;
  *                              must not be null or blank
  * @param condition             the initial condition of the publication sample
- *                              (e.g., "New", "Good", "Poor"); must not be null or blank
+ *                              (e.g., "New", "Good", "Poor"); must not be null
  */
 public record RegisterPublicationSampleDTO(
 
@@ -31,6 +32,5 @@ public record RegisterPublicationSampleDTO(
         String editionId,
 
         @NotNull(message = "Condition cannot be null")
-        @NotBlank(message = "Condition cannot be blank")
-        String condition) {
+        Condition condition) {
 }

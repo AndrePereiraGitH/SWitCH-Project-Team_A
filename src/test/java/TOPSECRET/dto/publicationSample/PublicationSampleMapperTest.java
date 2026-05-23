@@ -306,51 +306,9 @@ class PublicationSampleMapperTest {
         assertTrue(PublicationSampleMapper.toReferenceDTOs(List.of(), List.of()).isEmpty());
     }
 
-    // -------------------------------------------------------------------------
-    // condition2VO
-    // -------------------------------------------------------------------------
-
-    @Test
-    void toCondition_matchesByDescription() {
-        // Arrange
-
-        // Act & Assert
-        assertEquals(Condition.NEW, PublicationSampleMapper.toCondition("New"));
-    }
-
-    @Test
-    void toCondition_caseInsensitive() {
-        // Arrange
-
-        // Act & Assert
-        assertEquals(Condition.NEW,  PublicationSampleMapper.toCondition("new"));
-        assertEquals(Condition.GOOD, PublicationSampleMapper.toCondition("GOOD"));
-        assertEquals(Condition.POOR, PublicationSampleMapper.toCondition("pOoR"));
-    }
-
-    @Test
-    void toCondition_throwsOnUnknownValue() {
-        // Arrange
-
-        // Act
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
-                PublicationSampleMapper.toCondition("Mint"));
-
-        // Assert
-        assertTrue(ex.getMessage().contains("Mint"));
-    }
-
-    @Test
-    void toCondition_throwsOnEmptyString() {
-        // Arrange
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                PublicationSampleMapper.toCondition(""));
-    }
 
     // -------------------------------------------------------------------------
-    // pubId2VO / bdId2VO / editionId2VO
+    // toPubId / toBdId / toEditionId
     // -------------------------------------------------------------------------
 
     @Test

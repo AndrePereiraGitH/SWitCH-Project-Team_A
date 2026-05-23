@@ -3,7 +3,6 @@ package TOPSECRET.dto.publicationSample;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.User;
@@ -14,7 +13,6 @@ import TOPSECRET.dto.publicationSample.response.PublicationDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationDetailsDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationReferenceDTO;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -252,21 +250,6 @@ public class PublicationSampleMapper {
     public static EditionId toEditionId(String id){
         EditionId editionId = new EditionId(id);
         return editionId;
-    }
-
-    /**
-     * Converts a string value into a {@link Condition} enum based on its description.
-     * The match is performed in a case-insensitive manner.
-     *
-     * @param value the string description of the condition
-     * @return the corresponding {@link Condition} enum value
-     * @throws IllegalArgumentException if no matching condition is found for the given value
-     */
-    public static Condition toCondition(String value) {
-        return Arrays.stream(Condition.values())
-                .filter(c -> c.getDescription().equalsIgnoreCase(value))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown condition: " + value));
     }
 
     // -------------------------------------------------------------------------
