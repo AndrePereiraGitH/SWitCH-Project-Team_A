@@ -218,38 +218,62 @@ class AppraisalEntityMapperTest {
     void ToPubTypeIdsShouldConvertListSizeCorrectly() {
 
         // ARRANGE
-        List<String> input = List.of("A", "B", "C");
+        RequestAppraisalEntityDTO dto =
+                new RequestAppraisalEntityDTO(
+                        "name",
+                        "912345678",
+                        "123",
+                        "john@test.com",
+                        "street",
+                        "10",
+                        "1234",
+                        "city",
+                        List.of("A", "B"),
+                        List.of()
+                );
 
         // ACT
-        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(input);
+        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(dto);
 
         // ASSERT
-        assertEquals(3, result.size());
+        assertEquals(2, result.size());
     }
 
     @Test
-    void ToPubTypeIdsShouldReturnEmptyList() {
+    void ToPubTypeIdsShouldConvertFirstElementCorrectly() {
 
         // ARRANGE
-        List<String> input = List.of();
+        RequestAppraisalEntityDTO dto =
+                new RequestAppraisalEntityDTO(
+                        "name",
+                        "912345678",
+                        "123",
+                        "john@test.com",
+                        "street",
+                        "10",
+                        "1234",
+                        "city",
+                        List.of("A"),
+                        List.of()
+                );
 
         // ACT
-        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(input);
+        List<PublicationTypeId> result = AppraisalEntityMapper.toPubTypeIds(dto);
 
         // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals("A", result.get(0).toString());
     }
 
     @Test
-    void ToPubTypeIdsShouldThrowExceptionWhenListIsNull() {
+    void ToPubTypeIdsShouldThrowExceptionWhenDtoIsNull() {
 
         // ARRANGE
-        List<String> input = null;
+        RequestAppraisalEntityDTO dto = null;
 
         // ACT + ASSERT
         assertThrows(
                 NullPointerException.class,
-                () -> AppraisalEntityMapper.toPubTypeIds(input)
+                () -> AppraisalEntityMapper.toPubTypeIds(dto)
         );
     }
 
@@ -257,38 +281,62 @@ class AppraisalEntityMapperTest {
     void ToGenreIdsShouldConvertListSizeCorrectly() {
 
         // ARRANGE
-        List<String> input = List.of("Drama", "Action");
+        RequestAppraisalEntityDTO dto =
+                new RequestAppraisalEntityDTO(
+                        "name",
+                        "912345678",
+                        "123",
+                        "john@test.com",
+                        "street",
+                        "10",
+                        "1234",
+                        "city",
+                        List.of(),
+                        List.of("Drama", "Action")
+                );
 
         // ACT
-        List<GenreId> result = AppraisalEntityMapper.toGenreIds(input);
+        List<GenreId> result = AppraisalEntityMapper.toGenreIds(dto);
 
         // ASSERT
         assertEquals(2, result.size());
     }
 
     @Test
-    void ToGenreIdsShouldReturnEmptyList() {
+    void ToGenreIdsShouldConvertFirstElementCorrectly() {
 
         // ARRANGE
-        List<String> input = List.of();
+        RequestAppraisalEntityDTO dto =
+                new RequestAppraisalEntityDTO(
+                        "name",
+                        "912345678",
+                        "123",
+                        "john@test.com",
+                        "street",
+                        "10",
+                        "1234",
+                        "city",
+                        List.of(),
+                        List.of("Drama")
+                );
 
         // ACT
-        List<GenreId> result = AppraisalEntityMapper.toGenreIds(input);
+        List<GenreId> result = AppraisalEntityMapper.toGenreIds(dto);
 
         // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals("Drama", result.get(0).toString());
     }
 
     @Test
-    void ToGenreIdsShouldThrowExceptionWhenListIsNull() {
+    void ToGenreIdsShouldThrowExceptionWhenDtoIsNull() {
 
         // ARRANGE
-        List<String> input = null;
+        RequestAppraisalEntityDTO dto = null;
 
         // ACT + ASSERT
         assertThrows(
                 NullPointerException.class,
-                () -> AppraisalEntityMapper.toGenreIds(input)
+                () -> AppraisalEntityMapper.toGenreIds(dto)
         );
     }
 }

@@ -101,11 +101,11 @@ public class AppraisalEntityMapper {
      * @param ids list of publication type identifiers as Strings
      * @return list of {@code PubTypeId} created from the provided values
      */
-    public static List<PublicationTypeId> toPubTypeIds(List<String> ids) {
+    public static List<PublicationTypeId> toPubTypeIds(RequestAppraisalEntityDTO ids) {
 
-        Objects.requireNonNull(ids, "At least one publication type must be selected");
+        Objects.requireNonNull(ids, "RequestAppraisalEntityDTO cannot be null");
 
-        return ids.stream()
+        return ids.publicationTypeIds().stream()
                 .map(PublicationTypeId::new)
                 .toList();
     }
@@ -119,11 +119,11 @@ public class AppraisalEntityMapper {
      * @param ids list of genre identifiers as Strings
      * @return list of {@code GenreId} created from the provided values
      */
-    public static List<GenreId> toGenreIds(List<String> ids) {
+    public static List<GenreId> toGenreIds(RequestAppraisalEntityDTO ids) {
 
-        Objects.requireNonNull(ids, "At least one genre must be selected");
+        Objects.requireNonNull(ids, "RequestAppraisalEntityDTO cannot be null");
 
-        return ids.stream()
+        return ids.genreIds().stream()
                 .map(GenreId::new)
                 .toList();
     }
