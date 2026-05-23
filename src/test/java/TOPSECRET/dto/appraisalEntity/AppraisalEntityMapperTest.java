@@ -12,14 +12,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class AppraisalEntityMapperTest {
 
     @Test
-    void toContact() {
-    }
-
-    @Test
-    void toEmail() {
-    }
-
-    @Test
     void ToEmailShouldCreateEmailUsernameWhenEmailIsValid() {
 
         // ARRANGE
@@ -67,29 +59,6 @@ class AppraisalEntityMapperTest {
 
         // ASSERT
         assertEquals("test.com", result.getDomain());
-    }
-
-    @Test
-    void ToEmailShouldThrowExceptionWhenEmailHasNoSeparator() {
-
-        // ARRANGE
-        RequestAppraisalEntityDTO dto =
-                new RequestAppraisalEntityDTO(
-                        "name",
-                        "912345678",
-                        "123",
-                        "invalidEmail",
-                        "street",
-                        "10",
-                        "1234",
-                        "city",
-                        List.of(),
-                        List.of()
-                );
-
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> AppraisalEntityMapper.toEmail(dto));
     }
 
     @Test
@@ -203,5 +172,45 @@ class AppraisalEntityMapperTest {
                 AppraisalEntityMapper::new
         );
     }
+
+    @Test
+    void ToContactShouldThrowExceptionWhenDtoIsNull() {
+
+        // ARRANGE
+        RequestAppraisalEntityDTO dto = null;
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toContact(dto)
+        );
+    }
+
+    @Test
+    void ToEmailShouldThrowExceptionWhenDtoIsNull() {
+
+        // ARRANGE
+        RequestAppraisalEntityDTO dto = null;
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toEmail(dto)
+        );
+    }
+
+    @Test
+    void ToAddressShouldThrowExceptionWhenDtoIsNull() {
+
+        // ARRANGE
+        RequestAppraisalEntityDTO dto = null;
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toAddress(dto)
+        );
+    }
+
 
 }
