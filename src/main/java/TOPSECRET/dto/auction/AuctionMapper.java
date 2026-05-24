@@ -1,10 +1,10 @@
-package TOPSECRET.dto.Auction;
+package TOPSECRET.dto.auction;
 
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
-import TOPSECRET.dto.Auction.response.AuctionDTO;
+import TOPSECRET.dto.auction.response.AuctionDTO;
 
 import java.util.ArrayList;
 import java.util.List;

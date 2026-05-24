@@ -1,4 +1,4 @@
-package TOPSECRET.dto.Auction.response;
+package TOPSECRET.dto.auction.response;
 
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;

@@ -1,4 +1,4 @@
-package TOPSECRET.dto.Auction.request;
+package TOPSECRET.dto.auction.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
