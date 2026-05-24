@@ -1,7 +1,7 @@
 name: "Implementation -- API DTO Layer"
 description: "Sub-issue: Implement request DTO, response DTO and mapper for API communication"
 title: "Implementation: API DTO Layer for <FUNCTIONALITY> — request DTO, response DTO and mapper"
-labels: ["sprint5"]
+labels: ["sprint6"]
 projects: ["MiteLovers"]
 assignees: []
 body:
