@@ -1,4 +1,4 @@
-package TOPSECRET.dto.country.Request;
+package TOPSECRET.dto.country.request;
 
 import jakarta.validation.constraints.NotBlank;
 

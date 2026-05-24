@@ -2,7 +2,7 @@ package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.CountryId;
-import TOPSECRET.dto.country.Response.CountryResponseDTO;
+import TOPSECRET.dto.country.response.CountryResponseDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.dto.country.Response.CountryResponseDTO;
+import TOPSECRET.dto.country.response.CountryResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
