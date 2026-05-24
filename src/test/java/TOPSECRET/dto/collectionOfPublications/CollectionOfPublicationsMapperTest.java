@@ -2,6 +2,7 @@ package TOPSECRET.dto.collectionOfPublications;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,6 @@ class CollectionOfPublicationsMapperTest {
         when(collectionDouble.id()).thenReturn(idDouble);
         when(idDouble.getId()).thenReturn("collection-123");
         when(idDouble.toString()).thenReturn("collection-123");
-        // toString() used in mapper — notify reviewers when PR opens ^
         when(collectionDouble.getCollectionName()).thenReturn("My Collection");
     }
 
@@ -109,5 +109,29 @@ class CollectionOfPublicationsMapperTest {
 
         // ASSERT
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void toGenreIdShouldReturnGenreIdWhenStringIsValid() {
+        // ARRANGE
+        String genreIdString = "genre-123";
+
+        // ACT
+        GenreId result = CollectionOfPublicationsMapper.toGenreId(genreIdString);
+
+        // ASSERT
+        assertEquals(genreIdString, result.getID());
+    }
+
+    @Test
+    void toGenreIdShouldThrowIllegalArgumentExceptionWhenStringIsNull() {
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () -> CollectionOfPublicationsMapper.toGenreId(null));
+    }
+
+    @Test
+    void toGenreIdShouldThrowIllegalArgumentExceptionWhenStringIsBlank() {
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class, () -> CollectionOfPublicationsMapper.toGenreId("   "));
     }
 }

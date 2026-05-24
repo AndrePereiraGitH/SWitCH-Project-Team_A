@@ -1,6 +1,8 @@
 package TOPSECRET.dto.collectionOfPublications;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.ValueObjects.AuctionId;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
 
 import java.util.List;
@@ -55,5 +57,16 @@ public final class CollectionOfPublicationsMapper {
                 .filter(Objects::nonNull)
                 .map(CollectionOfPublicationsMapper::toDTO)
                 .toList();
+    }
+
+    /**
+     * Converts a {@link String} identifier into an {@link GenreId} Value Object.
+     *
+     * @param genreId the string representation of the auction identifier; must not be {@code null}
+     * @return the corresponding {@link GenreId}
+     */
+    public static GenreId toGenreId(String genreId) {
+
+        return new GenreId(genreId);
     }
 }
