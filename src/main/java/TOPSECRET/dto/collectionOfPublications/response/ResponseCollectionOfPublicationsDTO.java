@@ -21,15 +21,11 @@ public class ResponseCollectionOfPublicationsDTO extends
 
     /**
      * The name of the collection.
-     * Must not be blank.
      */
-    @NotBlank
     private final String collectionName;
 
     /**
      * The unique identifier of the collection.
-     * Must not be blank.
      */
-    @NotBlank
     private final String collectionId;
 }
