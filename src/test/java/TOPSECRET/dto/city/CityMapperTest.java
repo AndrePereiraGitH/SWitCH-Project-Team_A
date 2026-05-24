@@ -1,13 +1,14 @@
 package TOPSECRET.dto.city;
 
 import TOPSECRET.domain.City.City;
-import TOPSECRET.domain.City.CityFactory;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.dto.city.request.RequestCityDTO;
 import TOPSECRET.dto.city.response.ResponseCityDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for {@link CityMapper}.
@@ -18,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>As {@link CityMapper} is stateless with only static methods,
  * no instance is created — all methods are called directly on the class.</p>
+ * <p>A {@link City} double is used instead of a real domain object so that
+ * the mapper tests remain isolated from factory or domain logic changes.</p>
  */
 class CityMapperTest {
 
@@ -28,11 +31,11 @@ class CityMapperTest {
     @Test
     void toDTO_ShouldReturnCorrectResponseCityDTO_WhenCityIsValid() {
         // ARRANGE
-        CityFactory realFactory = new CityFactory();
-        City city = realFactory.create(new CountryId("PT"), "Porto");
+        City cityDouble = mock(City.class);
+        when(cityDouble.getCityName()).thenReturn("Porto");
 
         // ACT
-        ResponseCityDTO result = CityMapper.toDTO(city, "Portugal");
+        ResponseCityDTO result = CityMapper.toDTO(cityDouble, "Portugal");
 
         // ASSERT
         assertEquals("Porto", result.getCityName());
@@ -40,14 +43,25 @@ class CityMapperTest {
     }
 
     @Test
-    void toDTO_ShouldThrowNullPointerException_WhenCityIsNull() {
+    void toDTO_ShouldThrowNullPointerException_WhenCountryNameIsNull() {
         // ARRANGE
-        CityFactory realFactory = new CityFactory();
-        City city = realFactory.create(new CountryId("PT"), "Porto");
+        City cityDouble = mock(City.class);
+        when(cityDouble.getCityName()).thenReturn("Porto");
 
         // ACT & ASSERT
-        assertThrows(NullPointerException.class, () -> CityMapper.toDTO(city, null));
+        assertThrows(NullPointerException.class, () -> CityMapper.toDTO(cityDouble, null));
     }
+
+    @Test
+    void toDTO_ShouldThrowNullPointerException_WhenCityIsNull() {
+        // ARRANGE
+        City cityDouble = mock(City.class);
+        when(cityDouble.getCityName()).thenReturn("Porto");
+
+        // ACT & ASSERT
+        assertThrows(NullPointerException.class, () -> CityMapper.toDTO(null, "Portugal"));
+    }
+
 
     // -----------
     // toCountryId
