@@ -11,8 +11,8 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
-import TOPSECRET.dto.listing.US028ListingDTO;
-import TOPSECRET.dto.listing.US028ListingMapper;
+import TOPSECRET.dto.US028ListingDTO;
+import TOPSECRET.dto.US028ListingMapper;
 import TOPSECRET.dto.US028PublisherDTO;
 import TOPSECRET.dto.US028PublisherMapper;
 

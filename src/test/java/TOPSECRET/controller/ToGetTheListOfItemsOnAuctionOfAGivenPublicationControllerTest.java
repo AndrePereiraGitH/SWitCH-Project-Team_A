@@ -8,7 +8,7 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.dto.listing.US024AucListingDTO;
+import TOPSECRET.dto.US024AucListingDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

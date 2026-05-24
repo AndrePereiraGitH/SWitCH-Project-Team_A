@@ -1,4 +1,4 @@
-package TOPSECRET.dto.listing;
+package TOPSECRET.dto;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;

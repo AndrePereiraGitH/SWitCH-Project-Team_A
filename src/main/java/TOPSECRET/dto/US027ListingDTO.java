@@ -1,4 +1,4 @@
-package TOPSECRET.dto.listing;
+package TOPSECRET.dto;
 
 import java.util.List;
 

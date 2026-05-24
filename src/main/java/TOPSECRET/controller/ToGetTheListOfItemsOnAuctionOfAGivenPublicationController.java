@@ -7,8 +7,8 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.dto.listing.US024AucListingDTO;
-import TOPSECRET.dto.listing.US024AucListingMapper;
+import TOPSECRET.dto.US024AucListingDTO;
+import TOPSECRET.dto.US024AucListingMapper;
 
 import java.util.List;
 

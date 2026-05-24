@@ -1,6 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.dto.listing.US028ListingDTO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
