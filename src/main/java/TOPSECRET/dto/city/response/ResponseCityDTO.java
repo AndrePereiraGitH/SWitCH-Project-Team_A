@@ -1,4 +1,4 @@
-package TOPSECRET.dto.City.response;
+package TOPSECRET.dto.city.response;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

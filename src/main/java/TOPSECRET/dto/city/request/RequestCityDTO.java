@@ -1,4 +1,4 @@
-package TOPSECRET.dto.City.request;
+package TOPSECRET.dto.city.request;
 
 import jakarta.validation.constraints.NotBlank;
 
