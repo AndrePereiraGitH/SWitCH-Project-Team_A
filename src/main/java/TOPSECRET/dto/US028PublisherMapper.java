@@ -17,15 +17,15 @@ public class US028PublisherMapper {
      * @return the corresponding DTO.
      */
     public US028PublisherDTO toDTO(Publisher publisher) {
-            if (publisher == null) {
-                throw new IllegalArgumentException ("Publisher cannot be null");
-            }
-
-            return new US028PublisherDTO(
-                    publisher.getName(),
-                    publisher.id()
-            );
+        if (publisher == null) {
+            throw new IllegalArgumentException ("Publisher cannot be null");
         }
+
+        return new US028PublisherDTO(
+                publisher.getName(),
+                publisher.id()
+        );
+    }
 
     /**
      * Converts a list of {@link Publisher} objects into a list of DTOs.

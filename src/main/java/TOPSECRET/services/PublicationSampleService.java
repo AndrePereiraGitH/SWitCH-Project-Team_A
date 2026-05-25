@@ -51,7 +51,6 @@ public class PublicationSampleService {
      *
      * @param bibliographicalDataId the bibliographical data identifier; must not be {@code null}
      * @param userId                the identifier of the owning user; must not be {@code null}
-     * @param publicationStatus     the initial publication status; must not be {@code null}
      * @param editionId             the edition identifier; must not be {@code null}
      * @param condition             the physical condition of the sample; must not be {@code null}
      * @return the persisted {@link PublicationSample}
@@ -60,12 +59,11 @@ public class PublicationSampleService {
     public PublicationSample createAndSave(
             BibliographicalDataId bibliographicalDataId,
             UserId userId,
-            PublicationStatus publicationStatus,
             EditionId editionId,
             Condition condition) {
 
         PublicationSample created = factory.create(
-                bibliographicalDataId, userId, publicationStatus, editionId, condition);
+                bibliographicalDataId, userId, editionId, condition);
 
         return publicationSampleRepository.save(created);
     }

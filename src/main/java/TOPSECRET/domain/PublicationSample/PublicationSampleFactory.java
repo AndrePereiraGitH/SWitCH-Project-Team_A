@@ -45,8 +45,6 @@ public class PublicationSampleFactory {
      *                              with the publication; must not be {@code null}
      * @param userId the identifier of the user who owns the publication sample;
      *               must not be {@code null}
-     * @param publicationStatus the current publication status;
-     *                          must not be {@code null}
      * @param editionId the identifier of the publication edition;
      *                  must not be {@code null}
      * @param condition the physical condition of the publication sample;
@@ -57,9 +55,9 @@ public class PublicationSampleFactory {
      * @throws IllegalArgumentException if any argument is {@code null}
      */
     public PublicationSample create(BibliographicalDataId bibliographicalDataId, UserId userId,
-                                    PublicationStatus publicationStatus, EditionId editionId, Condition condition) {
+                                    EditionId editionId, Condition condition) {
 
-        return new PublicationSample(bibliographicalDataId, userId, publicationStatus, editionId, condition);
+        return new PublicationSample(bibliographicalDataId, userId, editionId, condition);
     }
 
 
