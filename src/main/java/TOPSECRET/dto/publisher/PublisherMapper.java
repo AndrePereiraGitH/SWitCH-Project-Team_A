@@ -57,7 +57,18 @@ public final class PublisherMapper {
                 .toList();
     }
 
+    /**
+     * Creates a {@link Contact} Value Object from the information
+     * contained in the request DTO.
+     *
+     * @param pubDTO the request DTO containing contact information
+     * @return the constructed Contact object
+     * @throws NullPointerException if pubDTO is null
+     * @throws IllegalArgumentException if any Value Object data is invalid
+     */
     public static Contact toContact(RequestPublisherDTO pubDTO) {
+
+        Objects.requireNonNull(pubDTO, "RequestPublisherDTO cannot be null");
 
         CityId cityId = new CityId(pubDTO.cityId());
         Address address = new Address(pubDTO.street(), pubDTO.number(), pubDTO.zipCode(), cityId);
