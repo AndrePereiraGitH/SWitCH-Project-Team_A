@@ -35,7 +35,6 @@ class ToRegisterNewPublicationCtrlTest {
     // Doubles
     private final BibliographicalDataId anyBiblioDataId = mock(BibliographicalDataId.class);
     private final UserId anyUserId = mock(UserId.class);
-    private final PublicationStatus anyPublicationStatus = mock(PublicationStatus.class);
     private final EditionId anyEditionId = mock(EditionId.class);
     private final Condition anyCondition = mock(Condition.class);
     private final PublicationSampleService publicationSampleService = mock(PublicationSampleService.class);
@@ -61,7 +60,6 @@ class ToRegisterNewPublicationCtrlTest {
                 anyController.register(
                         null,
                         anyUserId,
-                        anyPublicationStatus,
                         anyEditionId,
                         anyCondition
                 )
@@ -76,27 +74,12 @@ class ToRegisterNewPublicationCtrlTest {
                 anyController.register(
                         anyBiblioDataId,
                         null,
-                        anyPublicationStatus,
                         anyEditionId,
                         anyCondition
                 )
         );
     }
 
-    @Test
-    void shouldThrowWhenPublicationStatusIsNull() {
-
-        // Act + assert
-        assertThrows(IllegalArgumentException.class, () ->
-                anyController.register(
-                        anyBiblioDataId,
-                        anyUserId,
-                        null,
-                        anyEditionId,
-                        anyCondition
-                )
-        );
-    }
 
     @Test
     void shouldThrowWhenEditionIdIsNull() {
@@ -106,7 +89,6 @@ class ToRegisterNewPublicationCtrlTest {
                 anyController.register(
                         anyBiblioDataId,
                         anyUserId,
-                        anyPublicationStatus,
                         null,
                         anyCondition
                 )
@@ -121,7 +103,6 @@ class ToRegisterNewPublicationCtrlTest {
                 anyController.register(
                         anyBiblioDataId,
                         anyUserId,
-                        anyPublicationStatus,
                         anyEditionId,
                         null
                 )
@@ -135,7 +116,6 @@ class ToRegisterNewPublicationCtrlTest {
         when(publicationSampleService.createAndSave(
                 anyBiblioDataId,
                 anyUserId,
-                anyPublicationStatus,
                 anyEditionId,
                 anyCondition
         )).thenReturn(publicationSample);
@@ -144,7 +124,6 @@ class ToRegisterNewPublicationCtrlTest {
         PublicationSample result = anyController.register(
                 anyBiblioDataId,
                 anyUserId,
-                anyPublicationStatus,
                 anyEditionId,
                 anyCondition
         );
@@ -161,7 +140,6 @@ class ToRegisterNewPublicationCtrlTest {
         when(publicationSampleService.createAndSave(
                 anyBiblioDataId,
                 anyUserId,
-                anyPublicationStatus,
                 anyEditionId,
                 anyCondition
         )).thenThrow(new IllegalArgumentException(
@@ -173,7 +151,6 @@ class ToRegisterNewPublicationCtrlTest {
                 anyController.register(
                         anyBiblioDataId,
                         anyUserId,
-                        anyPublicationStatus,
                         anyEditionId,
                         anyCondition
                 )
