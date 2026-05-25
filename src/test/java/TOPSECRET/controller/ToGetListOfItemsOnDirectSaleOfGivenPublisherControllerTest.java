@@ -263,7 +263,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double, editionId2Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double, editionId2Double)))
-            .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
+                .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
         when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double, pubSampleId2Double)))
                 .thenReturn(List.of(listingDouble1, listingDouble2));
         when(mapperDouble.toDTOs(List.of(listingDouble1, listingDouble2))).thenReturn(List.of(listingDTODouble1, listingDTODouble2));
