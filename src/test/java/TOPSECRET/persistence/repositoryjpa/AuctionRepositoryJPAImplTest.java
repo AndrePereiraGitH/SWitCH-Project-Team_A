@@ -1,11 +1,9 @@
 package TOPSECRET.persistence.repositoryjpa;
 
-import TOPSECRET.controller.ToGetListOfItemsOnAuctionOfGivenGenreController;
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.Bid;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
-import TOPSECRET.dto.US022AuctionDTO;
 import TOPSECRET.persistence.repositoryjpa.assembler.AuctionAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.AuctionDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.IAuctionRepositoryJPA;
