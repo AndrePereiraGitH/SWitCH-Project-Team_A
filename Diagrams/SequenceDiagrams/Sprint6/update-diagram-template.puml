@@ -1,0 +1,179 @@
+@startuml
+
+hide footbox
+autonumber
+title Generic UPDATE Flow (Controlled Rebuild of Domain)\n\nTemplate for PUT/PATCH operations
+
+actor User
+participant ":UI" as UI
+
+participant ":ControllerRest" as Controller
+
+participant ":EntityMapper" as Mapper
+
+participant ":ResponseDTO" as ResponseDTO
+
+participant ":EntityService" as Service
+
+participant ":IEntityRepository" as Repo
+participant ":IEntityRepositoryJPA" as RepoJPA
+
+participant ":EntityAssembler" as Assembler
+participant ":EntityFactory" as Factory
+
+participant "entityDM:EntityDM" as DM
+participant "domainEntity:Entity" as Domain
+participant "updatedDomain:Entity" as DomainU
+
+database "DB" as DB
+
+
+' =========================================================
+' 1. USER REQUEST
+' =========================================================
+User -> UI : Submit update request
+activate UI
+
+UI -> Controller : PUT/PATCH /entity/{id}
+activate Controller
+
+
+' =========================================================
+' 2. DTO MAPPING (INPUT)
+' =========================================================
+Controller -> Mapper : toUpdateInput(requestDTO)
+activate Mapper
+
+Mapper --> Controller : updateData
+deactivate Mapper
+
+
+' =========================================================
+' 3. LOAD EXISTING ENTITY
+' =========================================================
+Controller -> Service : update(id, updateData)
+activate Service
+
+Service -> Repo : findById(id)
+activate Repo
+
+Repo -> RepoJPA : findById(id)
+activate RepoJPA
+
+RepoJPA -> DB : SELECT
+activate DB
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> Repo : entityDM
+deactivate RepoJPA
+
+
+' =========================================================
+' 4. DM → DOMAIN (RECONSTRUCTION)
+' =========================================================
+Repo -> Assembler : toDomain(entityDM)
+activate Assembler
+
+Assembler -> Factory : create(entityDM)
+activate Factory
+
+Factory --> Domain ** : <<create>>
+Factory --> Assembler : domainEntity
+deactivate Factory
+
+Assembler --> Repo : domainEntity
+deactivate Assembler
+
+Repo --> Service : domainEntity
+deactivate Repo
+
+
+' =========================================================
+' 5. APPLY UPDATE (DOMAIN BEHAVIOR)
+' =========================================================
+Service -> Domain : update(updateData)
+activate Domain
+
+Domain --> Service : domainEntityUpdated
+deactivate
+
+note right of Domain
+Domain applies business rules:
+- validation
+- invariants
+- state transition
+end note
+
+
+' =========================================================
+' 6. PERSIST UPDATED ENTITY
+' =========================================================
+Service -> Repo : save(domainEntityUpdated)
+activate Repo
+
+Repo -> Assembler : toDM(domainEntityUpdated)
+activate Assembler
+
+Assembler --> DM **: <<update>>
+Assembler --> Repo : entityDM
+deactivate Assembler
+
+
+Repo -> RepoJPA : save(entityDM)
+activate RepoJPA
+
+RepoJPA -> DB : UPDATE
+activate DB
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> Repo : persistedDM
+deactivate RepoJPA
+
+
+' =========================================================
+' 7. DM → DOMAIN (POST PERSISTENCE)
+' =========================================================
+Repo -> Assembler : toDomain(persistedDM)
+activate Assembler
+
+Assembler -> Factory : create(persistedDM)
+activate Factory
+
+Factory --> DomainU ** : <<create>>
+Factory --> Assembler : updatedDomain
+deactivate Factory
+
+Assembler --> Repo : updatedDomain
+deactivate Assembler
+
+Repo --> Service : updatedDomain
+deactivate Repo
+
+' =========================================================
+' 8. RESPONSE MAPPING
+' =========================================================
+Service --> Controller : updatedDomain
+deactivate Service
+
+Controller -> Mapper : toResponse(updatedDomain)
+activate Mapper
+
+Mapper --> ResponseDTO ** : <<create>>
+Mapper --> Controller : responseDTO
+deactivate Mapper
+
+
+' =========================================================
+' 9. HATEOAS + RESPONSE
+' =========================================================
+Controller -> Controller : addLinks(responseDTO)
+
+Controller --> UI : ResponseDTO + HTTP 200 OK
+deactivate Controller
+
+UI --> User : Success
+deactivate UI
+
+@enduml

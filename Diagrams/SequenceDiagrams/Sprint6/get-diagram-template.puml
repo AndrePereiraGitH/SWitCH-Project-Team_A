@@ -1,0 +1,126 @@
+@startuml
+
+hide footbox
+autonumber
+title Generic GET Flow (Retrieve Data / List Data)\n\nTEMPLATE FOR READ OPERATIONS (single or list)\n \n Method name and attributes must be adjusted
+
+actor User
+participant ":UI" as UI
+
+participant ":ControllerRest" as Controller
+
+participant ":EntityMapper" as Mapper
+participant "responseDTO:ResponseDTO" as ResponseDTO
+
+participant ":EntityService" as Service
+
+participant ":IEntityRepository" as Repo
+participant ":IEntityRepositoryJPA" as RepoJPA
+
+participant ":EntityAssembler" as Assembler
+participant "entityDM:EntityDM" as DM
+
+participant "domainEntity:Entity" as Domain
+
+database "DB" as DB
+
+
+' =========================================================
+' 1. USER REQUEST
+' =========================================================
+User -> UI : Request data (GET /entity or GET /entities)
+activate UI
+
+UI -> Controller : GET request (id or filter)
+activate Controller
+
+
+' =========================================================
+' 2. SERVICE LAYER (QUERY ORCHESTRATION)
+' =========================================================
+Controller -> Service : getData(data)
+activate Service
+
+
+' =========================================================
+' 3. REPOSITORY QUERY (DB ACCESS)
+' =========================================================
+Service -> Repo : find(data)
+activate Repo
+
+Repo -> RepoJPA : findById() / findAll()
+activate RepoJPA
+
+RepoJPA -> DB : SELECT
+activate DB
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> Repo : entityDM / List<entityDM>
+deactivate RepoJPA
+
+
+' =========================================================
+' 4. DM → DOMAIN (ASSEMBLER)
+' =========================================================
+Repo -> Assembler : toDomain(entityDM or list)
+activate Assembler
+
+note right of Assembler
+Converts:
+- DM → Domain
+- Supports single or list
+end note
+
+Assembler --> Domain ** : <<create>>
+Assembler --> Repo : domainEntity / list<domainEntity>
+deactivate Assembler
+
+Repo --> Service : domainEntity / list<domainEntity>
+deactivate Repo
+
+
+' =========================================================
+' 5. DOMAIN → DTO (MAPPER)
+' =========================================================
+Service --> Controller : domainEntity / list<domainEntity>
+deactivate Service
+
+
+Controller -> Mapper : toResponse(domainData)
+activate Mapper
+
+note right of Mapper
+Converts:
+- Domain → ResponseDTO
+- Handles single or list mapping
+end note
+
+Mapper --> ResponseDTO ** : <<create>>
+Mapper --> Controller : responseDTO / list<responseDTO>
+deactivate Mapper
+
+
+' =========================================================
+' 6. HATEOAS ENRICHMENT
+' =========================================================
+Controller -> Controller : addLinks(responseDTO)
+
+note right of Controller
+Includes:
+- self
+- related resources
+- navigation links
+end note
+
+
+' =========================================================
+' 7. RESPONSE TO USER
+' =========================================================
+Controller --> UI : ResponseDTO / List<ResponseDTO> + HTTP 200 OK
+deactivate Controller
+
+UI --> User : Display data
+deactivate UI
+
+@enduml
