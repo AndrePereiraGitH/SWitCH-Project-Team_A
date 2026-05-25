@@ -8,6 +8,8 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.*;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.dto.US023ListingDTO;
+import TOPSECRET.dto.US023ListingMapper;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
