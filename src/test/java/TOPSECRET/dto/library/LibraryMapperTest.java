@@ -4,12 +4,47 @@ import TOPSECRET.domain.Library.Library;
 import TOPSECRET.dto.library.response.ResponseLibraryDTO;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class LibraryMapperTest {
+
+    @Test
+    void shouldThrowExceptionWhenInstantiatingUtilityClass() throws Exception {
+
+        // ARRANGE
+        Constructor<LibraryMapper> constructor =
+                LibraryMapper.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+
+        // ACT
+        InvocationTargetException ex =
+                assertThrows(InvocationTargetException.class, constructor::newInstance);
+
+        // ASSERT
+        assertInstanceOf(UnsupportedOperationException.class, ex.getCause());
+        assertEquals("Utility class", ex.getCause().getMessage());
+    }
+
+    @Test
+    void shouldReturnImmutableListACT() {
+
+        // ARRANGE
+        Library library = mock(Library.class);
+        when(library.getLibraryName()).thenReturn("Lib");
+
+        // ACT
+        List<ResponseLibraryDTO> result =
+                LibraryMapper.toDTOList(List.of(library));
+
+        // ASSERT
+        assertThrows(UnsupportedOperationException.class,
+                () -> result.add(mock(ResponseLibraryDTO.class)));
+    }
 
     @Test
     void shouldMapLibraryToDTO() {

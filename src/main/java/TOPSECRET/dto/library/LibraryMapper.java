@@ -8,6 +8,9 @@ import java.util.Objects;
 
 public final class LibraryMapper {
 
+    private LibraryMapper() {
+        throw new UnsupportedOperationException("Utility class");
+    }
 
     public static ResponseLibraryDTO toDTO(Library library) {
         Objects.requireNonNull(library, "Library cannot be null");
