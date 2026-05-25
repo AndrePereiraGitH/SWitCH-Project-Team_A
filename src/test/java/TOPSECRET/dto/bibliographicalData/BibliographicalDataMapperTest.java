@@ -1,34 +1,48 @@
 package TOPSECRET.dto.bibliographicalData;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
+import TOPSECRET.services.BibliographicalDataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for the BibliographicalDataMapper class.
+ * <p>
+ * This test suite validates the behavior of the mapper responsible for
+ * converting BibliographicalData domain objects into
+ * responseBibliographicalDataDTO objects. It covers constructor validation,
+ * null argument handling, successful DTO mappings, exception scenarios when
+ * authors are not found, and list conversion operations.
+ */
+@ExtendWith(MockitoExtension.class)
 class BibliographicalDataMapperTest {
 
-    private IAuthorRepository authorRepo;
+    @Mock
+    private BibliographicalDataService service;
+
+    @InjectMocks
     private BibliographicalDataMapper mapper;
 
     @BeforeEach
     void setUp() {
-        authorRepo = mock(IAuthorRepository.class);
-        mapper = new BibliographicalDataMapper(authorRepo);
+        mapper = new BibliographicalDataMapper(service);
     }
 
     @Test
-    void constructor_nullAuthorRepo_throwsNullPointerException() {
+    void constructor_nullService_throwsNullPointerException() {
         // Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
@@ -36,7 +50,7 @@ class BibliographicalDataMapperTest {
         );
 
         // Assert
-        assertEquals("Author repository cannot be null", exception.getMessage());
+        assertEquals("Service cannot be null", exception.getMessage());
     }
 
     @Test
@@ -58,44 +72,37 @@ class BibliographicalDataMapperTest {
 
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
 
-        AuthorId authorId = mock(AuthorId.class);
-        Author author = mock(Author.class);
-
         when(bd.id()).thenReturn(bdId);
         when(bdId.getID()).thenReturn("BD1");
         when(bd.getTitle()).thenReturn("Title example");
-        when(bd.getAuthors()).thenReturn(List.of(authorId));
 
-        when(authorRepo.findById(authorId)).thenReturn(Optional.of(author));
-        when(author.getName()).thenReturn("Author example");
+        when(service.getAuthors(bd)).thenReturn(List.of("Author name"));
 
         // Act
         responseBibliographicalDataDTO dto = mapper.toDTO(bd);
 
-        // Arrange
+        // Assert
         assertEquals("BD1", dto.getBdId());
         assertEquals("Title example", dto.getPubTitle());
-        assertEquals(List.of("Author example"), dto.getAuthorName());
+        assertEquals(List.of("Author name"), dto.getAuthorName());
     }
 
     @Test
-    void toDTO_authorNotFound_throwsInstanceNotFoundException() {
+    void toDTO_authorNotFound_throwsInstanceNotFoundException() throws InstanceNotFoundException {
+        // Arrange
         BibliographicalData bd = mock(BibliographicalData.class);
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
-        AuthorId authorId = mock(AuthorId.class);
 
         when(bd.id()).thenReturn(bdId);
-        when(bdId.toString()).thenReturn("BD1");
-        when(bd.getTitle()).thenReturn("Some title");
-        when(bd.getAuthors()).thenReturn(List.of(authorId));
+        when(service.getAuthors(bd)).thenThrow(new InstanceNotFoundException("Author was not found:"));
 
-        when(authorRepo.findById(authorId)).thenReturn(Optional.empty());
-
+        // Act
         InstanceNotFoundException exception = assertThrows(
                 InstanceNotFoundException.class,
                 () -> mapper.toDTO(bd)
         );
 
+        // Assert
         assertTrue(exception.getMessage().contains("Author was not found:"));
     }
 
@@ -120,22 +127,14 @@ class BibliographicalDataMapperTest {
         AuthorId authorId1 = mock(AuthorId.class);
         AuthorId authorId2 = mock(AuthorId.class);
 
-        Author author1 = mock(Author.class);
-        Author author2 = mock(Author.class);
-
         when(bd1.id()).thenReturn(new BibliographicalDataId("BD1"));
         when(bd1.getTitle()).thenReturn("Book One");
-        when(bd1.getAuthors()).thenReturn(List.of(authorId1));
 
         when(bd2.id()).thenReturn(new BibliographicalDataId("BD2"));
         when(bd2.getTitle()).thenReturn("Book Two");
-        when(bd2.getAuthors()).thenReturn(List.of(authorId2));
 
-        when(authorRepo.findById(authorId1)).thenReturn(Optional.of(author1));
-        when(authorRepo.findById(authorId2)).thenReturn(Optional.of(author2));
-
-        when(author1.getName()).thenReturn("Author One");
-        when(author2.getName()).thenReturn("Author Two");
+        when(service.getAuthors(bd1)).thenReturn(List.of("Author One"));
+        when(service.getAuthors(bd2)).thenReturn(List.of("Author Two"));
 
         // Act
         List<responseBibliographicalDataDTO> result = mapper.toDTOs(List.of(bd1, bd2));
