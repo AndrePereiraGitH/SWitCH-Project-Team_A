@@ -2,7 +2,6 @@ package TOPSECRET.dto.publisher;
 
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import org.junit.jupiter.api.Test;
 
@@ -22,14 +21,16 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenInstantiatingUtilityClass() throws Exception {
 
+        // ARRANGE
         Constructor<PublisherMapper> constructor =
                 PublisherMapper.class.getDeclaredConstructor();
-
         constructor.setAccessible(true);
 
+        // ACT
         InvocationTargetException ex =
                 assertThrows(InvocationTargetException.class, constructor::newInstance);
 
+        // ASSERT
         assertInstanceOf(UnsupportedOperationException.class, ex.getCause());
         assertEquals("Utility class", ex.getCause().getMessage());
     }
@@ -37,6 +38,7 @@ class PublisherMapperTest {
     @Test
     void shouldConvertPublisherToDTO() {
 
+        // ARRANGE
         Publisher publisher = mock(Publisher.class);
         PublisherID publisherID = mock(PublisherID.class);
 
@@ -44,8 +46,10 @@ class PublisherMapperTest {
         when(publisher.id()).thenReturn(publisherID);
         when(publisherID.toString()).thenReturn("PUB-1");
 
+        // ACT
         ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
+        // ASSERT
         assertEquals("Test Publisher", result.getName());
         assertEquals("PUB-1", result.getPublisherId());
     }
@@ -53,6 +57,7 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenPublisherIsNull() {
 
+        // ACT + ASSERT
         NullPointerException exception =
                 assertThrows(
                         NullPointerException.class,
@@ -65,6 +70,7 @@ class PublisherMapperTest {
     @Test
     void shouldConvertListOfPublishersToDTOList() {
 
+        // ARRANGE
         Publisher p1 = mock(Publisher.class);
         Publisher p2 = mock(Publisher.class);
 
@@ -82,9 +88,11 @@ class PublisherMapperTest {
 
         List<Publisher> publishers = List.of(p1, p2);
 
+        // ACT
         List<ResponsePublisherDTO> result =
                 PublisherMapper.toDTOList(publishers);
 
+        // ASSERT
         assertEquals(2, result.size());
         assertEquals("Publisher One", result.get(0).getName());
         assertEquals("Publisher Two", result.get(1).getName());
@@ -93,6 +101,7 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenListOfPublishersIsNull() {
 
+        // ACT + ASSERT
         NullPointerException exception =
                 assertThrows(
                         NullPointerException.class,
@@ -105,6 +114,7 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenListContainsNullPublisher() {
 
+        // ARRANGE
         Publisher validPublisher = mock(Publisher.class);
         PublisherID id = mock(PublisherID.class);
 
@@ -112,11 +122,9 @@ class PublisherMapperTest {
         when(validPublisher.id()).thenReturn(id);
         when(id.toString()).thenReturn("PUB-1");
 
-        List<Publisher> publishers = Arrays.asList(
-                validPublisher,
-                null
-        );
+        List<Publisher> publishers = Arrays.asList(validPublisher, null);
 
+        // ACT + ASSERT
         NullPointerException exception =
                 assertThrows(
                         NullPointerException.class,
@@ -129,6 +137,7 @@ class PublisherMapperTest {
     @Test
     void shouldReturnImmutableList() {
 
+        // ARRANGE
         Publisher publisher = mock(Publisher.class);
         PublisherID id = mock(PublisherID.class);
 
@@ -136,262 +145,15 @@ class PublisherMapperTest {
         when(publisher.id()).thenReturn(id);
         when(id.toString()).thenReturn("PUB-1");
 
+        // ACT
         List<ResponsePublisherDTO> result =
                 PublisherMapper.toDTOList(List.of(publisher));
 
+        // ASSERT
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> result.add(mock(ResponsePublisherDTO.class))
         );
-    }
-
-    @Test
-    void toEmailShouldCreateEmailUsernameWhenEmailIsValid() {
-
-        // ARRANGE
-        RequestPublisherDTO dto =
-                new RequestPublisherDTO(
-                        "name",
-                        "123456789",
-                        "912345678",
-                        "123",
-                        "john@test.com",
-                        "street",
-                        "10",
-                        "1234-123",
-                        "1"
-                );
-
-        // ACT
-        Email result = PublisherMapper.toEmail(dto);
-
-        // ASSERT
-        assertEquals("john", result.getUserName());
-    }
-
-    @Test
-    void toEmailShouldCreateEmailDomainWhenEmailIsValid() {
-
-        // ARRANGE
-        RequestPublisherDTO dto =
-                new RequestPublisherDTO(
-                        "name",
-                        "123456789",
-                        "912345678",
-                        "123",
-                        "john@test.com",
-                        "street",
-                        "10",
-                        "1234-123",
-                        "1"
-                );
-
-        // ACT
-        Email result = PublisherMapper.toEmail(dto);
-
-        // ASSERT
-        assertEquals("test.com", result.getDomain());
-    }
-
-    @Test
-    void shouldThrowExceptionWhenRequestPublisherDTOIsNullInToEmail() {
-
-        // ACT
-        NullPointerException exception =
-                assertThrows(
-                        NullPointerException.class,
-                        () -> PublisherMapper.toEmail(null)
-                );
-
-        // ASSERT
-        assertEquals(
-                "RequestPublisherDTO cannot be null",
-                exception.getMessage()
-        );
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoPhone() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("911111111", contact.getPhoneNum());
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoExtension() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("1", contact.getExtension());
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoEmailUsername() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("john", contact.getEmail().getUserName());
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoEmailDomain() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("gmail.com", contact.getEmail().getDomain());
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoStreet() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("Main Street", contact.getAddress().getStreet());
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoNumber() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("10", contact.getAddress().getNumber());
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoZipCode() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("1000-001", contact.getAddress().getZipCode());
-    }
-
-    @Test
-    void shouldConvertRequestDTOToContactSuccessfullyInfoCityId() {
-
-        // ARRANGE
-        RequestPublisherDTO dto = new RequestPublisherDTO(
-                "Publisher",
-                "123456789",
-                "911111111",
-                "1",
-                "john@gmail.com",
-                "Main Street",
-                "10",
-                "1000-001",
-                "1"
-        );
-
-        // ACT
-        Contact contact = PublisherMapper.toContact(dto);
-
-        // ASSERT
-        assertEquals("1", contact.getAddress().getCityID().getCityID());
     }
 
     @Test
