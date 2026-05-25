@@ -23,6 +23,16 @@ import java.util.Objects;
 public final class PublicationTypeMapper {
 
     /**
+     * Private constructor to prevent instantiation of this utility class.
+     *
+     * @throws UnsupportedOperationException always thrown to indicate
+     *         that this class should not be instantiated
+     */
+    private PublicationTypeMapper() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
+    /**
      * Converts a {@link PublicationType} domain object into
      * a {@link PublicationTypeResponseDTO}.
      *
