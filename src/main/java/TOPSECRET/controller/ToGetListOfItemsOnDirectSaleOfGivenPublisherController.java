@@ -58,10 +58,10 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      * @param mapper the mapper responsible for converting listings into DTOs
      */
     public ToGetListOfItemsOnDirectSaleOfGivenPublisherController(IPublisherRepository publisherRepo,
-                                                                       IListingRepository listingRepo,
-                                                                       IPublicationSampleRepository pubSampleRepo,
-                                                                       IEditionRepository editionRepo,
-                                                                       US027ListingMapper mapper) {
+                                                                  IListingRepository listingRepo,
+                                                                  IPublicationSampleRepository pubSampleRepo,
+                                                                  IEditionRepository editionRepo,
+                                                                  US027ListingMapper mapper) {
 
         this._publisherRepo = publisherRepo;
         this._listingRepo = listingRepo;
@@ -70,7 +70,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
         this._mapper = mapper;
     }
 
-     // ================================================================================================================
+    // ================================================================================================================
 
     /**
      * Retrieves all publishers stored in the system and converts them into DTOs.
