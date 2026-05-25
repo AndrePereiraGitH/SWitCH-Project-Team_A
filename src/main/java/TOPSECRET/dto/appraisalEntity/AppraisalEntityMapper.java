@@ -1,7 +1,9 @@
 package TOPSECRET.dto.appraisalEntity;
 
 
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.appraisalEntity.reponse.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 
 import java.util.List;
@@ -20,15 +22,15 @@ import java.util.Objects;
  * This class cannot be instantiated.
  * </p>
  */
-public class AppraisalEntityMapper {
+public final class AppraisalEntityMapper {
 
     /**
      * Prevents instantiation of this utility class.
      *
      * @throws UnsupportedOperationException always thrown because this is
-     *                                       a utility class
+     * a utility class
      */
-    AppraisalEntityMapper() {
+    private AppraisalEntityMapper() {
         throw new UnsupportedOperationException("Utility class");
     }
 
@@ -128,4 +130,28 @@ public class AppraisalEntityMapper {
                 .toList();
     }
 
+    /**
+     * Converts an AppraisalEntity domain object
+     * into its API response representation.
+     *
+     * @param entity domain entity
+     * @return response DTO
+     */
+    public static ResponseAppraisalEntityDTO toResponse(AppraisalEntity entity){
+
+        Objects.requireNonNull(entity, "AppraisalEntity can't be null");
+
+        return new ResponseAppraisalEntityDTO(entity.id().getId(), entity.getName(),
+
+                entity.getPublicationTypeIds()
+                        .stream()
+                        .map(PublicationTypeId::getId)
+                        .toList(),
+                entity.getGenreIds()
+                        .stream()
+                        .map(GenreId::getID)
+                        .toList()
+
+        );
+    }
 }
