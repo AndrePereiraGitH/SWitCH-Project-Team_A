@@ -1,10 +1,8 @@
 package TOPSECRET.dto.bibliographicalData;
 
-import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
+import TOPSECRET.services.BibliographicalDataService;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -16,19 +14,19 @@ import java.util.List;
  */
 public class BibliographicalDataMapper {
 
-    private final IAuthorRepository _authorRepo;
+    private final BibliographicalDataService service;
 
     /**
      * Creates a new bibliographical data mapper.
      *
-     * @param authorRepo repository used to retrieve authors
-     * @throws NullPointerException if the author repository is null
+     * @param service used to retrieve authors
+     * @throws NullPointerException if the service is null
      */
-    public BibliographicalDataMapper(IAuthorRepository authorRepo) {
-        if(authorRepo == null){
-            throw new NullPointerException("Author repository cannot be null");
+    public BibliographicalDataMapper(BibliographicalDataService service) {
+        if(service == null){
+            throw new NullPointerException("Service cannot be null");
         }
-        this._authorRepo = authorRepo;
+        this.service = service;
     }
 
 
@@ -51,7 +49,7 @@ public class BibliographicalDataMapper {
         return new responseBibliographicalDataDTO(
                 bd.id().getID(),
                 bd.getTitle(),
-                getAuthors(bd)
+                service.getAuthors(bd)
         );
     }
 
@@ -78,36 +76,5 @@ public class BibliographicalDataMapper {
         }
 
         return result;
-    }
-
-
-    // =================================================================================================================
-    // ====== PRIVATE HELPERS ==========================================================================================
-    // =================================================================================================================
-
-    /**
-     * Retrieves the names of all authors associated with the given
-     * bibliographical data object.
-     *
-     * @param bd the bibliographical data object
-     * @return list of author names
-     * @throws InstanceNotFoundException if an author cannot be found
-     */
-    private List<String> getAuthors(BibliographicalData bd) throws InstanceNotFoundException {
-
-        List<AuthorId> listOfAuthorsId = bd.getAuthors();
-
-        List<String> authorsName = new ArrayList<>();
-
-        for (AuthorId id : listOfAuthorsId) {
-            Author author = _authorRepo.findById(id)
-                    .orElseThrow(() ->
-                            new InstanceNotFoundException("Author was not found:" + id));
-
-            String authorName = author.getName();
-            authorsName.add(authorName);
-        }
-
-        return authorsName;
     }
 }
