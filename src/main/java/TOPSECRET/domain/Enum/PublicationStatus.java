@@ -4,7 +4,8 @@ public enum PublicationStatus {
     SOLD,
     FOR_SALE,
     READING,
-    READ;
+    READ,
+    CREATED;
 
     /**
      * Indicates whether a publication in this status is eligible to be put for sale.

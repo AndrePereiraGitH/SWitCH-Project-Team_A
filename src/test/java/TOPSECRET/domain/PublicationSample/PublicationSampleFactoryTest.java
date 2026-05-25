@@ -40,7 +40,7 @@ import static org.mockito.Mockito.*;
  *
  * <p>The tests confirm that:</p>
  * <ul>
- *   <li><b>New object</b> — {@link PublicationSampleFactory#create(BibliographicalDataId, UserId, PublicationStatus, EditionId, Condition)}:
+ *   <li><b>New object</b> — {@link PublicationSampleFactory#create(BibliographicalDataId, UserId, EditionId, Condition)}:
  *       identity is generated internally by the domain object.</li>
  *   <li><b>Reconstruction</b> — {@link PublicationSampleFactory#create(PublicationSampleId, BibliographicalDataId, UserId, PublicationStatus, EditionId, Condition, LibraryId, CollectionOfPublicationsId)}:
  *       a pre-existing identity is supplied, restoring a previously persisted object.</li>
@@ -91,7 +91,6 @@ class PublicationSampleFactoryTest {
             PublicationSample result = factory.create(
                     bdIdDouble,
                     userIdDouble,
-                    status,
                     editionIdDouble,
                     condition
             );
