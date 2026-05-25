@@ -63,13 +63,71 @@ class AuctionMapperTest {
     // =================================================================================================================
 
     @Test
-    void shouldMapAllFields_whenAuctionIsClosed() {
+    void shouldMapAuctionIdentifiers_whenAuctionIsClosed() {
+        // Arrange
+        when(auction.id()).thenReturn(auctionId);
+        when(auction.getListingId()).thenReturn(listingId);
+        when(auction.getInitialPrice()).thenReturn(initialPrice);
+        when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
+        when(listing.getListingTitle()).thenReturn("Listing Title");
+        when(listing.getShortDescription()).thenReturn("Listing Description");
+        when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
+
+        // Act
+        AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
+
+        // Assert
+        assertEquals(auctionId.toString(), dto.getAuctionId());
+        assertEquals(listingId.toString(), dto.getListingId());
+    }
+
+    @Test
+    void shouldMapListingFields_whenAuctionIsClosed() {
+        // Arrange
+        when(auction.id()).thenReturn(auctionId);
+        when(auction.getListingId()).thenReturn(listingId);
+        when(auction.getInitialPrice()).thenReturn(initialPrice);
+        when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
+        when(listing.getListingTitle()).thenReturn("Listing Title");
+        when(listing.getShortDescription()).thenReturn("Listing Description");
+        when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
+
+        // Act
+        AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
+
+        // Assert
+        assertEquals("Listing Title", dto.getListingTitle());
+        assertEquals("Listing Description", dto.getListingDescription());
+    }
+
+    @Test
+    void shouldMapTimeWindow_whenAuctionIsClosed() {
         // Arrange
         when(auction.id()).thenReturn(auctionId);
         when(auction.getListingId()).thenReturn(listingId);
         when(auction.getAuctionStartDateTime()).thenReturn(start);
         when(auction.getAuctionEndDateTime()).thenReturn(end);
         when(auction.getClosedAt()).thenReturn(closedAt);
+        when(auction.getInitialPrice()).thenReturn(initialPrice);
+        when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
+        when(listing.getListingTitle()).thenReturn("Listing Title");
+        when(listing.getShortDescription()).thenReturn("Listing Description");
+        when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
+
+        // Act
+        AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
+
+        // Assert
+        assertEquals(start, dto.getAuctionStartDateTime());
+        assertEquals(end, dto.getAuctionEndDateTime());
+        assertEquals(closedAt, dto.getClosedAt());
+    }
+
+    @Test
+    void shouldMapPrices_whenAuctionIsClosed() {
+        // Arrange
+        when(auction.id()).thenReturn(auctionId);
+        when(auction.getListingId()).thenReturn(listingId);
         when(auction.getInitialPrice()).thenReturn(initialPrice);
         when(auction.getBuyoutPrice()).thenReturn(buyoutPrice);
         when(auction.getFinalPrice()).thenReturn(finalPrice);
@@ -84,16 +142,26 @@ class AuctionMapperTest {
         AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
 
         // Assert
-        assertEquals(auctionId.toString(), dto.getAuctionId());
-        assertEquals(listingId.toString(), dto.getListingId());
-        assertEquals("Listing Title", dto.getListingTitle());
-        assertEquals("Listing Description", dto.getListingDescription());
-        assertEquals(start, dto.getAuctionStartDateTime());
-        assertEquals(end, dto.getAuctionEndDateTime());
-        assertEquals(closedAt, dto.getClosedAt());
         assertEquals(BigDecimal.valueOf(100), dto.getInitialPrice());
         assertEquals(BigDecimal.valueOf(500), dto.getBuyoutPrice());
         assertEquals(BigDecimal.valueOf(500), dto.getFinalPrice());
+    }
+
+    @Test
+    void shouldMapAuctionStatus_whenAuctionIsClosed() {
+        // Arrange
+        when(auction.id()).thenReturn(auctionId);
+        when(auction.getListingId()).thenReturn(listingId);
+        when(auction.getInitialPrice()).thenReturn(initialPrice);
+        when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
+        when(listing.getListingTitle()).thenReturn("Listing Title");
+        when(listing.getShortDescription()).thenReturn("Listing Description");
+        when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
+
+        // Act
+        AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
+
+        // Assert
         assertEquals("ENDED_WITH_WINNER", dto.getAuctionStatus());
     }
 
