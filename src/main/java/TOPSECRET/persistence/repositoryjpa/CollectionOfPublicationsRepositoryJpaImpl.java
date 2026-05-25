@@ -76,7 +76,7 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
 
         CollectionOfPublicationsDM collectionDMtOUpdate = collectionOfPublicationsAssembler.toDM(collection);
 
-        CollectionOfPublicationsDM updatedDBCollectionDM = collectionRepositoryJpa.update(collectionDMtOUpdate);
+        CollectionOfPublicationsDM updatedDBCollectionDM = collectionRepositoryJpa.save(collectionDMtOUpdate);
 
         CollectionOfPublications updatedCollection = collectionOfPublicationsAssembler.toDomain(updatedDBCollectionDM);
 

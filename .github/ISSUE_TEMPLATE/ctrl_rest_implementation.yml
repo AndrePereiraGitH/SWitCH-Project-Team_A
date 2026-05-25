@@ -1,0 +1,103 @@
+name: "Implementation -- REST API Layer"
+description: "Sub-issue: Implement REST API support for a functionality"
+title: "Implementation: REST API Layer for <FEATURE_NAME>"
+labels: ["sprint6"]
+projects: ["MiteLovers"]
+assignees: []
+
+body:
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: "Issue Details"
+      value: |
+        ## Overview
+
+        This issue tracks the implementation of the REST API layer for <FEATURE_NAME>.
+
+        The implementation covers API communication, endpoint exposure,
+        application orchestration and authorization integration.
+
+        ---
+
+        ## Scope
+
+        This issue covers:
+
+        ### API Layer
+        - Request DTO
+        - Response DTO
+        - Mapper layer
+        - REST Controller
+        - HATEOAS links
+
+        ### Application Layer
+        - Service implementation
+        - Authorization policy
+        - Link provider
+
+        ---
+
+        ## Implementation Checklist
+
+        ### DTO Layer
+        - [ ] Request DTO implemented
+        - [ ] Response DTO implemented
+        - [ ] Request DTO → Domain mapping implemented
+        - [ ] Domain → Response DTO mapping implemented
+
+        ### REST Controller
+        - [ ] Controller created
+        - [ ] Endpoint mappings implemented
+        - [ ] HTTP responses handled
+        - [ ] Exception handling added
+        - [ ] Controller consumes Request DTO objects
+        - [ ] Controller returns Response DTO objects
+
+        ### HATEOAS
+        - [ ] Link provider implemented
+        - [ ] Self links added
+        - [ ] Authorization-dependent links added
+
+        ### Application Layer
+        - [ ] Service implemented
+        - [ ] Authorization policy implemented
+        - [ ] Dependency injection configured
+
+        ---
+
+        ## Boundary & Integrity Checklist
+
+        - [ ] DTOs contain no business logic
+        - [ ] Controllers contain no business logic
+        - [ ] Domain entities are not exposed directly
+        - [ ] Mapping isolated from Controller and Domain
+        - [ ] Service remains transport-independent
+        - [ ] Authorization isolated in policy classes
+
+        ---
+
+        ## Acceptance Criteria
+
+        - [ ] Implementation matches approved design artifacts
+        - [ ] Unit tests completed (TDD)
+        - [ ] Coverage ≥ 85% line
+        - [ ] Coverage ≥ 95% mutation
+        - [ ] JavaDoc added to all public classes and methods
+        - [ ] Checkstyle / PMD pass (./lint)
+        - [ ] Build and tests pass (./run)
+
+        ---
+
+        ## Related Issues
+
+        Blocked by: #<DESIGN_ISSUE_NUMBER>
+
+        ---
+
+        ## Additional Notes
+
+        References, design decisions, blockers or assumptions.
+
+    validations:
+      required: true

@@ -25,7 +25,8 @@ import java.util.List;
  */
 public interface ICollectionOfPublicationsRepositoryJpa
         extends JpaRepository<CollectionOfPublicationsDM, CollectionOfPublicationsId> {
-    CollectionOfPublicationsDM update(CollectionOfPublicationsDM collectionDMtOUpdate);
+
+
     List<CollectionOfPublicationsDM> findAllByOwnerId(UserId ownerId);
 
 

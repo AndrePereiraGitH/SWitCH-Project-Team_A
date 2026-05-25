@@ -166,7 +166,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         when(assembler.toDM(collection))
                 .thenReturn(collectionDMToUpdate);
 
-        when(jpa.update(collectionDMToUpdate))
+        when(jpa.save(collectionDMToUpdate))
                 .thenReturn(updatedCollectionDM);
 
         when(assembler.toDomain(updatedCollectionDM))

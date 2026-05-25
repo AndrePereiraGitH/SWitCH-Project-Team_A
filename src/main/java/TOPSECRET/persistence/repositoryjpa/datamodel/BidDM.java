@@ -47,7 +47,9 @@ public class BidDM {
     @AttributeOverride(name = "id", column = @Column(name = "bidder_id"))
     private UserId bidderId;
 
+    @Column(name = "bid_value")
     private BigDecimal value;
+
     private LocalDateTime timeOfBid;
 
     // ============================================================
