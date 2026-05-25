@@ -10,6 +10,7 @@ import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Application service responsible for AppraisalEntity use cases.
@@ -81,5 +82,36 @@ public class AppraisalEntityService {
         entity.update(name, contact, publicationTypes, genres);
 
         return repository.save(entity);
+    }
+
+    /**
+     * Finds an AppraisalEntity by its identifier.
+     */
+    public Optional<AppraisalEntity> findById(AppraisalEntityId id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+
+        return repository.findById(id);
+    }
+
+    /**
+     * Retrieves all AppraisalEntities.
+     */
+    public List<AppraisalEntity> findAll() {
+        return repository.findAll();
+    }
+
+    /**
+     * Checks if an entity exists by its identifier.
+     */
+    public boolean existsById(AppraisalEntityId id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("ID cannot be null");
+        }
+
+        return repository.existsById(id);
     }
 }
