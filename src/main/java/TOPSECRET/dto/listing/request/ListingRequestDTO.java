@@ -16,7 +16,7 @@ import java.util.List;
  * or update a listing.
  */
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @ToString
 @Getter
 @NotNull

@@ -71,7 +71,6 @@ class ListingMapperTest {
 
         // assert
 
-        assertNotNull(result);
         assertEquals(result.getId(), listingId.getId());
 
     }
@@ -85,7 +84,6 @@ class ListingMapperTest {
         PublicationSampleId result = ListingMapper.toPublicationId(id);
 
         // Assert
-        assertNotNull(result);
         assertEquals(id, result.getID());
     }
 
@@ -132,7 +130,6 @@ class ListingMapperTest {
         Price result = ListingMapper.toPrice(price);
 
         // Assert
-        assertNotNull(result);
         assertEquals(new BigDecimal("10.50"), result.getPrice());
     }
 
