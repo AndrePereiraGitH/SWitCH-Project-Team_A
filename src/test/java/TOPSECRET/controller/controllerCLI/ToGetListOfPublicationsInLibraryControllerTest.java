@@ -1,0 +1,158 @@
+package TOPSECRET.controller.controllerCLI;
+
+
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.US012PublicationDetailsDTO;
+import TOPSECRET.dto.US012PublicationSampleMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import javax.management.InstanceNotFoundException;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Unit tests for {@link ToGetListOfPublicationsInLibraryController}.
+ *
+ * <p>Verifies the controller's behaviour when retrieving publications from a user's
+ * library and converting them to DTOs, covering input validation, delegation to
+ * collaborators, and edge cases.</p>
+ *
+ * <p>All collaborators ({@link IUserRepository}, {@link IPublicationSampleRepository},
+ * {@link US012PublicationSampleMapper}) are replaced with Mockito doubles to isolate
+ * the controller from persistence and mapping concerns.</p>
+ *
+ * <p>Test coverage includes:</p>
+ * <ul>
+ *   <li><b>Input validation</b> – null and empty username guards.</li>
+ *   <li><b>User lookup</b> – exception when username is not found in the repository.</li>
+ *   <li><b>Happy path</b> – correct DTOs returned when user has publications in library.</li>
+ *   <li><b>Edge case</b> – empty list returned when user has no publications in library.</li>
+ * </ul>
+ */
+class ToGetListOfPublicationsInLibraryControllerTest {
+
+    private IUserRepository userRepo;
+    private IPublicationSampleRepository pubRepo;
+    private US012PublicationSampleMapper mapper;
+
+
+    // ============ Tests ============
+    @BeforeEach
+    void setUp(){
+        userRepo = mock(IUserRepository.class);
+        pubRepo = mock(IPublicationSampleRepository.class);
+        mapper = mock(US012PublicationSampleMapper.class);
+    }
+
+
+    @Test
+    void getListOfPublicationsInLibrary_shouldThrowExceptionWhenUserNameIsEmpty() {
+        // Arrange
+        String emptyUser = "";
+
+        ToGetListOfPublicationsInLibraryController ctrl =
+                new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
+
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibrary(emptyUser));
+    }
+
+    @Test
+    void getListOfPublicationsInLibrary_shouldThrowExceptionWhenUserNameIsNull() {
+        // Act
+        ToGetListOfPublicationsInLibraryController ctrl =
+                new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
+
+
+        // Assert
+        assertThrows(NullPointerException.class, () -> ctrl.getListOfPublicationsInLibrary(null));
+    }
+
+
+    @Test
+    void getListOfPublicationsInLibraryDTO_shouldReturnEmptyList_whenUserHasNoPublicationsInLibrary() throws InstanceNotFoundException {
+        // Arrange
+        String username = "User1";
+
+        User user = mock(User.class);
+        UserId userId = mock(UserId.class);
+
+        when(user.id()).thenReturn(userId);
+        when(user.getUserName()).thenReturn(username);
+
+        when(userRepo.findIdByUsername(username)).thenReturn(Optional.of(userId));
+
+        ToGetListOfPublicationsInLibraryController ctrl =
+                new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
+
+        // Act
+        List<US012PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibrary(username);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getListOfPublicationsInLibrary_shouldThrownAnException_whenUserIsInvalidOrNotFound() {
+        // Arrange
+        String username = "User1";
+
+        User user = mock(User.class);
+        UserId userId = mock(UserId.class);
+
+        when(user.id()).thenReturn(userId);
+        when(user.getUserName()).thenReturn(username);
+
+        when(userRepo.findIdByUsername(username)).thenReturn(Optional.empty());
+
+        ToGetListOfPublicationsInLibraryController ctrl =
+                new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
+
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> ctrl.getListOfPublicationsInLibrary(username));
+    }
+
+
+    @Test
+    void getListOfPublicationsInLibraryDTO_ensureListOfPublicationsInLibraryReturnsDTOs() throws InstanceNotFoundException {
+        // Arrange
+        String username = "User1";
+        UserId userId = mock(UserId.class);
+
+        when(userRepo.findIdByUsername(username)).thenReturn(Optional.of(userId));
+
+
+        PublicationSample pbSample_1 = mock(PublicationSample.class);
+        PublicationSample pbSample_2 = mock(PublicationSample.class);
+        List<PublicationSample> listOfPubs = List.of(pbSample_1,pbSample_2);
+        when(pubRepo.findByUserIdAndLibraryIdIsNotNull(userId)).thenReturn(listOfPubs);
+
+        US012PublicationDetailsDTO dto1 = mock(US012PublicationDetailsDTO.class);
+        US012PublicationDetailsDTO dto2 = mock(US012PublicationDetailsDTO.class);
+        List<US012PublicationDetailsDTO> listOfPubsDTO = List.of(dto1,dto2);
+        when(mapper.toDTOs(listOfPubs)).thenReturn(listOfPubsDTO);
+
+        ToGetListOfPublicationsInLibraryController ctrl =
+                new ToGetListOfPublicationsInLibraryController(userRepo,pubRepo,mapper);
+
+        // Act
+        List<US012PublicationDetailsDTO> result = ctrl.getListOfPublicationsInLibrary(username);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+    }
+
+}
