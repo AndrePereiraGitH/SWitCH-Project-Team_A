@@ -1,6 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.ListingId;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
