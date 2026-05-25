@@ -31,8 +31,6 @@ class PublicationTypeMapperTest {
     void toDTOValidPublicationType() {
 
         // Arrange
-        PublicationTypeMapper mapper = new PublicationTypeMapper();
-
         PublicationType publicationType = mock(PublicationType.class);
         PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
 
@@ -41,7 +39,7 @@ class PublicationTypeMapperTest {
         when(publicationType.getMediaFormat()).thenReturn("Book");
 
         // Act
-        PublicationTypeResponseDTO dto = mapper.toDTO(publicationType);
+        PublicationTypeResponseDTO dto = PublicationTypeMapper.toDTO(publicationType);
 
         // Assert
         assertNotNull(dto);
@@ -52,38 +50,28 @@ class PublicationTypeMapperTest {
     @Test
     void toDTOThrowsWhenPublicationTypeIsNull() {
 
-        // Arrange
-        PublicationTypeMapper mapper = new PublicationTypeMapper();
-
         // Act + Assert
         assertThrows(
                 NullPointerException.class,
-                () -> mapper.toDTO(null)
+                () -> PublicationTypeMapper.toDTO(null)
         );
     }
 
     @Test
     void toDTOListThrowsWhenListIsNull() {
 
-        // Arrange
-        PublicationTypeMapper mapper = new PublicationTypeMapper();
-
         // Act + Assert
         assertThrows(
                 NullPointerException.class,
-                () -> mapper.toDTOList(null)
+                () -> PublicationTypeMapper.toDTOList(null)
         );
     }
 
     @Test
     void toDTOListReturnsEmptyList() {
-
-        // Arrange
-        PublicationTypeMapper mapper = new PublicationTypeMapper();
-
         // Act
         List<PublicationTypeResponseDTO> result =
-                mapper.toDTOList(List.of());
+                PublicationTypeMapper.toDTOList(List.of());
 
         // Assert
         assertNotNull(result);
@@ -95,8 +83,6 @@ class PublicationTypeMapperTest {
     void toDTOListOneElement() {
 
         // Arrange
-        PublicationTypeMapper mapper = new PublicationTypeMapper();
-
         PublicationType publicationType = mock(PublicationType.class);
 
         PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
@@ -107,7 +93,7 @@ class PublicationTypeMapperTest {
 
         // Act
         List<PublicationTypeResponseDTO> result =
-                mapper.toDTOList(
+                PublicationTypeMapper.toDTOList(
                         List.of(publicationType)
                 );
 
@@ -121,8 +107,6 @@ class PublicationTypeMapperTest {
     void toDTOListMultipleElements() {
 
         // Arrange
-        PublicationTypeMapper mapper = new PublicationTypeMapper();
-
         PublicationType pt1 = mock(PublicationType.class);
         PublicationType pt2 = mock(PublicationType.class);
 
@@ -139,7 +123,7 @@ class PublicationTypeMapperTest {
 
         // Act
         List<PublicationTypeResponseDTO> result =
-                mapper.toDTOList(List.of(pt1, pt2));
+                PublicationTypeMapper.toDTOList(List.of(pt1, pt2));
 
         // Assert
         assertEquals(2, result.size());
