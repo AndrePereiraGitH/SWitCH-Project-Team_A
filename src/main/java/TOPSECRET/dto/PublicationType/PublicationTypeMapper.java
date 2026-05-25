@@ -20,7 +20,7 @@ import java.util.Objects;
  * API responses and may later be enriched with HATEOAS links
  * in the representation assembler layer.</p>
  */
-public class PublicationTypeMapper {
+public final class PublicationTypeMapper {
 
     /**
      * Converts a {@link PublicationType} domain object into

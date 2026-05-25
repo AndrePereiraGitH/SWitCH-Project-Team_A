@@ -11,6 +11,20 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link PublicationTypeMapper}.
+ *
+ * <p>
+ * Verifies the correct conversion of {@link PublicationType}
+ * domain entities into {@link PublicationTypeResponseDTO}
+ * objects, including single object mapping and list mapping.
+ * </p>
+ *
+ * <p>
+ * Also validates exceptional scenarios such as null inputs
+ * and empty collections.
+ * </p>
+ */
 class PublicationTypeMapperTest {
 
     @Test
