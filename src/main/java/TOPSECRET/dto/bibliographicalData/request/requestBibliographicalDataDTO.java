@@ -1,4 +1,4 @@
-package TOPSECRET.dto.BibliographicalData.Request;
+package TOPSECRET.dto.bibliographicalData.request;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,4 +1,4 @@
-package TOPSECRET.dto.BibliographicalData.Response;
+package TOPSECRET.dto.bibliographicalData.response;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

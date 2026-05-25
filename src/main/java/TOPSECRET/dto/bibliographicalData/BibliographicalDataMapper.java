@@ -1,10 +1,10 @@
-package TOPSECRET.dto.BibliographicalData;
+package TOPSECRET.dto.bibliographicalData;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.dto.BibliographicalData.Response.responseBibliographicalDataDTO;
+import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
