@@ -43,7 +43,6 @@ class PublicationSampleServiceTest {
     private BibliographicalDataId bdIdDouble;
     private UserId userIdDouble;
     private EditionId editionIdDouble;
-    private PublicationStatus status;
     private Condition condition;
 
     @BeforeEach
@@ -51,7 +50,6 @@ class PublicationSampleServiceTest {
         bdIdDouble = mock(BibliographicalDataId.class);
         userIdDouble = mock(UserId.class);
         editionIdDouble = mock(EditionId.class);
-        status = PublicationStatus.READ;
         condition = Condition.NEW;
     }
 
@@ -65,11 +63,11 @@ class PublicationSampleServiceTest {
         // Arrange
         PublicationSample pbSample = mock(PublicationSample.class);
 
-        when(factory.create(bdIdDouble, userIdDouble, status, editionIdDouble, condition)).thenReturn(pbSample);
+        when(factory.create(bdIdDouble, userIdDouble, editionIdDouble, condition)).thenReturn(pbSample);
         when(publicationSampleRepository.save(pbSample)).thenReturn(pbSample);
 
         // Act
-        PublicationSample result = service.createAndSave(bdIdDouble, userIdDouble, status, editionIdDouble, condition);
+        PublicationSample result = service.createAndSave(bdIdDouble, userIdDouble, editionIdDouble, condition);
 
         // Assert
         assertEquals(pbSample, result);
@@ -79,59 +77,48 @@ class PublicationSampleServiceTest {
     void createAndSave_shouldThrowWhenBibliographicalDataIdIsNull() {
 
         // Arrange
-        when(factory.create(isNull(), eq(userIdDouble), eq(status), eq(editionIdDouble), eq(condition)))
+        when(factory.create(isNull(), eq(userIdDouble), eq(editionIdDouble), eq(condition)))
                 .thenThrow(NullPointerException.class);
 
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                service.createAndSave(null, userIdDouble, status, editionIdDouble, condition));
+                service.createAndSave(null, userIdDouble, editionIdDouble, condition));
     }
 
     @Test
     void createAndSave_shouldThrowWhenUserIdIsNull() {
 
         // Arrange
-        when(factory.create(eq(bdIdDouble), isNull(), eq(status), eq(editionIdDouble), eq(condition)))
+        when(factory.create(eq(bdIdDouble), isNull(), eq(editionIdDouble), eq(condition)))
                 .thenThrow(NullPointerException.class);
 
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                service.createAndSave(bdIdDouble, null, status, editionIdDouble, condition));
+                service.createAndSave(bdIdDouble, null, editionIdDouble, condition));
     }
 
-    @Test
-    void createAndSave_shouldThrowWhenPublicationStatusIsNull() {
-
-        // Arrange
-        when(factory.create(eq(bdIdDouble), eq(userIdDouble), isNull(), eq(editionIdDouble), eq(condition)))
-                .thenThrow(NullPointerException.class);
-
-        // Act + Assert
-        assertThrows(NullPointerException.class, () ->
-                service.createAndSave(bdIdDouble, userIdDouble, null, editionIdDouble, condition));
-    }
 
     @Test
     void createAndSave_shouldThrowWhenEditionIdIsNull() {
 
         // Arrange
-        when(factory.create(eq(bdIdDouble), eq(userIdDouble), eq(status), isNull(), eq(condition)))
+        when(factory.create(eq(bdIdDouble), eq(userIdDouble), isNull(), eq(condition)))
                 .thenThrow(NullPointerException.class);
 
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                service.createAndSave(bdIdDouble, userIdDouble, status, null, condition));
+                service.createAndSave(bdIdDouble, userIdDouble, null, condition));
     }
 
     @Test
     void createAndSave_shouldThrowWhenConditionIsNull() {
 
         // Arrange
-        when(factory.create(eq(bdIdDouble), eq(userIdDouble), eq(status), eq(editionIdDouble), isNull()))
+        when(factory.create(eq(bdIdDouble), eq(userIdDouble), eq(editionIdDouble), isNull()))
                 .thenThrow(NullPointerException.class);
 
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                service.createAndSave(bdIdDouble, userIdDouble, status, editionIdDouble, null));
+                service.createAndSave(bdIdDouble, userIdDouble, editionIdDouble, null));
     }
 }

@@ -2,7 +2,6 @@ package TOPSECRET.domain.PublicationSample;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
-import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
 
@@ -62,7 +61,7 @@ class PublicationSampleTest {
     void shouldCreateValidPubSample() {
 
         //Act
-        PublicationSample validSample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+        PublicationSample validSample = new PublicationSample(bdID, ownerID,
                 editionID, anyCondition);
 
         assertNotNull(validSample);
@@ -73,7 +72,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSample(null, ownerID, anyPublicationStatus, editionID, anyCondition));
+                new PublicationSample(null, ownerID, editionID, anyCondition));
     }
 
     @Test
@@ -81,23 +80,16 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSample(bdID, null, anyPublicationStatus, editionID, anyCondition));
+                new PublicationSample(bdID, null, editionID, anyCondition));
     }
 
-    @Test
-    void shouldThrowExceptionWhen_publicationStatus_isNull() {
-
-        //Act + assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSample(bdID, ownerID, null, editionID, anyCondition));
-    }
 
     @Test
     void shouldThrowExceptionWhen_editionID_isNull() {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSample(bdID, ownerID, anyPublicationStatus, null, anyCondition));
+                new PublicationSample(bdID, ownerID, null, anyCondition));
     }
 
     @Test
@@ -105,7 +97,7 @@ class PublicationSampleTest {
 
         //Act + assert
         assertThrows(IllegalArgumentException.class, () ->
-                new PublicationSample(bdID, ownerID, anyPublicationStatus, editionID, null));
+                new PublicationSample(bdID, ownerID, editionID, null));
     }
 
     // =========================================================================
@@ -170,39 +162,94 @@ class PublicationSampleTest {
                 new PublicationSample(pbSampleId, bdID, ownerID, anyPublicationStatus, editionID, null, libraryId, collectionOfPubsId));
     }
 
-
     // =========================================================================
-    // changeStatusToForSale
+    // changePublicationStatus
     // =========================================================================
 
     @Test
-    void shouldChangeStatusToForSaleCorrectly() {
+    void changePublicationStatus_toForSale_returnsForSale() {
+        // Arrange
+        PublicationSample publicationSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
-        //Arrange
-        PublicationSample sampleRead = new PublicationSample(bdID, ownerID, PublicationStatus.READ,
-                editionID, anyCondition);
+        // Act
+        PublicationStatus result = publicationSample.changePublicationStatus(PublicationStatus.FOR_SALE);
 
-        //Act
-        boolean forSale = sampleRead.changeStatusToForSale();
-
-        //Assert
-        assertTrue(forSale);
+        // Assert
+        assertEquals(PublicationStatus.FOR_SALE, result);
     }
 
     @Test
-    void shouldReturnFalseIfSampleAlreadyForSale() {
+    void changePublicationStatus_toSold_returnsSold() {
+        // Arrange
+        PublicationSample publicationSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
-        //Arrange
-        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID, PublicationStatus.FOR_SALE,
-                editionID, anyCondition);
+        // Act
+        PublicationStatus result = publicationSample.changePublicationStatus(PublicationStatus.SOLD);
 
-        //Act
-        boolean alreadyForSale = sampleForSale.changeStatusToForSale();
-
-        //Assert
-        assertFalse(alreadyForSale);
+        // Assert
+        assertEquals(PublicationStatus.SOLD, result);
     }
 
+    @Test
+    void changePublicationStatus_toReading_returnsReading() {
+        // Arrange
+        PublicationSample publicationSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
+
+        // Act
+        PublicationStatus result = publicationSample.changePublicationStatus(PublicationStatus.READING);
+
+        // Assert
+        assertEquals(PublicationStatus.READING, result);
+    }
+
+    @Test
+    void changePublicationStatus_toRead_returnsRead() {
+        // Arrange
+        PublicationSample publicationSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
+
+        // Act
+        PublicationStatus result = publicationSample.changePublicationStatus(PublicationStatus.READ);
+
+        // Assert
+        assertEquals(PublicationStatus.READ, result);
+    }
+
+    @Test
+    void changePublicationStatus_toCreated_returnsCreated() {
+        // Arrange
+        PublicationSample publicationSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
+
+        // Act
+        PublicationStatus result = publicationSample.changePublicationStatus(PublicationStatus.CREATED);
+
+        // Assert
+        assertEquals(PublicationStatus.CREATED, result);
+    }
+
+    @Test
+    void changePublicationStatus_updatesInternalState() {
+        // Arrange
+        PublicationSample publicationSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
+
+        // Act
+        publicationSample.changePublicationStatus(PublicationStatus.FOR_SALE);
+
+        // Assert
+        assertEquals(PublicationStatus.FOR_SALE, publicationSample.getPublicationStatus());
+    }
+
+    @Test
+    void changePublicationStatus_overwritesPreviousStatus() {
+        // Arrange
+        PublicationSample publicationSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
+        publicationSample.changePublicationStatus(PublicationStatus.FOR_SALE);
+
+        // Act
+        publicationSample.changePublicationStatus(PublicationStatus.SOLD);
+
+        // Assert
+        assertEquals(PublicationStatus.SOLD, publicationSample.getPublicationStatus());
+    }
 
     // =========================================================================
     // Library Assignment
@@ -213,7 +260,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
@@ -230,7 +277,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         //Act + Assert
         assertThrows(NullPointerException.class, () ->
@@ -242,7 +289,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
 
@@ -262,7 +309,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
 
@@ -281,7 +328,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
 
@@ -296,7 +343,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         sample.addPublicationToLibrary(new LibraryId(UUID.randomUUID().toString()));
         sample.addPublicationToCollection(new CollectionOfPublicationsId(UUID.randomUUID().toString()));
@@ -312,7 +359,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         CollectionOfPublicationsId collectionOfPublicationsIdDouble = mock(CollectionOfPublicationsId.class);
         when(collectionOfPublicationsIdDouble.getId()).thenReturn(UUID.randomUUID().toString());
@@ -333,7 +380,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         //Act
         boolean result = sample.isOwnedByUser(ownerID);
@@ -349,7 +396,7 @@ class PublicationSampleTest {
         UserId otherId = mock(UserId.class);
 
         PublicationSample sample = new PublicationSample(
-                bdID, otherId, anyPublicationStatus, editionID, anyCondition);
+                bdID, otherId, editionID, anyCondition);
 
         //Act
         boolean result = sample.isOwnedByUser(ownerID);
@@ -370,7 +417,7 @@ class PublicationSampleTest {
         LibraryId libraryId = mock(LibraryId.class);
 
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         sample.addPublicationToLibrary(libraryId);
 
@@ -386,7 +433,7 @@ class PublicationSampleTest {
 
         // Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         //Act
         boolean result = sample.isInUserLibrary();
@@ -404,8 +451,7 @@ class PublicationSampleTest {
     void getBibliographicalDataID_shouldReturnBibliographicalDataID() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
-                editionID, anyCondition);
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         when(bdID.getID()).thenReturn("123");
 
@@ -420,8 +466,7 @@ class PublicationSampleTest {
     void getUserID_shouldReturnUserID() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
-                editionID, anyCondition);
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         // Act
         UserId userID_real = anySample.getOwnerID();
@@ -434,21 +479,20 @@ class PublicationSampleTest {
     void getPublicationStatus_shouldReturnPublicationStatus() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
-                editionID, anyCondition);
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         // Act
         PublicationStatus realStatus = anySample.getPublicationStatus();
 
         //Assert
-        assertEquals(anyPublicationStatus, realStatus);
+        assertEquals(PublicationStatus.CREATED, realStatus);
     }
 
     @Test
     void getEditionID_shouldReturnEditionID() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+        PublicationSample anySample = new PublicationSample(bdID, ownerID,
                 editionID, anyCondition);
 
         // Act
@@ -462,7 +506,7 @@ class PublicationSampleTest {
     void getCondition_shouldReturnCondition() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+        PublicationSample anySample = new PublicationSample(bdID, ownerID,
                 editionID, anyCondition);
 
         // Act
@@ -476,7 +520,7 @@ class PublicationSampleTest {
     void getLibraryID_shouldReturnLibraryID() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+        PublicationSample anySample = new PublicationSample(bdID, ownerID,
                 editionID, anyCondition);
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
@@ -494,7 +538,7 @@ class PublicationSampleTest {
     void getCollecOfPubID_shouldReturnCollectionOfPublicationsID() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
+        PublicationSample anySample = new PublicationSample(bdID, ownerID,
                 editionID, anyCondition);
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
@@ -516,8 +560,7 @@ class PublicationSampleTest {
     void getDetailsMethodShouldReturnCorrectInfo() {
 
         // Arrange
-        PublicationSample wantDetails = new PublicationSample(bdID, ownerID,
-                anyPublicationStatus, editionID, anyCondition);
+        PublicationSample wantDetails = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         //Act
         PublicationSample.PublicationDetails anyDetails = wantDetails.getDetails();
@@ -525,7 +568,6 @@ class PublicationSampleTest {
         //Assert
         assertEquals(bdID, anyDetails.bibliographicalData());
         assertEquals(ownerID, anyDetails.owner());
-        assertEquals(anyPublicationStatus, anyDetails.publicationStatus());
         assertEquals(editionID, anyDetails.edition());
         assertEquals(anyCondition, anyDetails.condition());
     }
@@ -535,7 +577,7 @@ class PublicationSampleTest {
 
         //Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         //Act
         PublicationSampleId id = sample.id();
@@ -551,8 +593,10 @@ class PublicationSampleTest {
     @Test
     void shouldReturnTrueWhenPublicationStatusIsReading() {
         // Arrange
-        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID, PublicationStatus.READING,
+        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID,
                 editionID, anyCondition);
+
+        sampleForSale.changePublicationStatus(PublicationStatus.READING);
 
         // Act
         boolean result = sampleForSale.isAvailableForSale();
@@ -564,8 +608,10 @@ class PublicationSampleTest {
     @Test
     void shouldReturnTrueWhenPublicationStatusIsRead() {
         // Arrange
-        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID, PublicationStatus.READ,
+        PublicationSample sampleForSale = new PublicationSample(bdID, ownerID,
                 editionID, anyCondition);
+
+        sampleForSale.changePublicationStatus(PublicationStatus.READ);
 
         // Act
         boolean result = sampleForSale.isAvailableForSale();
@@ -577,8 +623,9 @@ class PublicationSampleTest {
     @Test
     void shouldReturnFalseWhenPublicationStatusIsForSale() {
         // Arrange
-        PublicationSample sampleNotForSale = new PublicationSample(bdID, ownerID, PublicationStatus.FOR_SALE,
-                editionID, anyCondition);
+        PublicationSample sampleNotForSale = new PublicationSample(bdID, ownerID, editionID, anyCondition);
+
+        sampleNotForSale.changePublicationStatus(PublicationStatus.FOR_SALE);
 
         // Act
         boolean result = sampleNotForSale.isAvailableForSale();
@@ -590,8 +637,9 @@ class PublicationSampleTest {
     @Test
     void shouldReturnFalseWhenPublicationStatusIsSold() {
         // Arrange
-        PublicationSample sampleNotForSale = new PublicationSample(bdID, ownerID, PublicationStatus.SOLD,
-                editionID, anyCondition);
+        PublicationSample sampleNotForSale = new PublicationSample(bdID, ownerID, editionID, anyCondition);
+
+        sampleNotForSale.changePublicationStatus(PublicationStatus.SOLD);
 
         // Act
         boolean result = sampleNotForSale.isAvailableForSale();
@@ -609,11 +657,9 @@ class PublicationSampleTest {
     void sameAs_shouldReturnTrue_WhenTwoObjectsAreTheSame() {
 
         // Arrange
-        PublicationSample sample1 = new PublicationSample(bdID, ownerID,
-                anyPublicationStatus, editionID, anyCondition);
+        PublicationSample sample1 = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
-        PublicationSample sample2 = new PublicationSample(bdID, ownerID,
-                anyPublicationStatus, editionID, anyCondition);
+        PublicationSample sample2 = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         //Act
         boolean result = sample1.sameAs(sample2);
@@ -628,11 +674,9 @@ class PublicationSampleTest {
         // Arrange
         EditionId editionId2 = mock(EditionId.class);
 
-        PublicationSample sample1 = new PublicationSample(bdID, ownerID,
-                anyPublicationStatus, editionID, anyCondition);
+        PublicationSample sample1 = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
-        PublicationSample sample2 = new PublicationSample(bdID, ownerID,
-                anyPublicationStatus, editionId2, anyCondition);
+        PublicationSample sample2 = new PublicationSample(bdID, ownerID, editionId2, anyCondition);
 
         //Act
         boolean result = sample1.sameAs(sample2);
@@ -645,8 +689,7 @@ class PublicationSampleTest {
     void sameAs_shouldReturnFalse_WhenObjectIsOfDifferentType() {
 
         // Arrange
-        PublicationSample sample = new PublicationSample(bdID, ownerID,
-                anyPublicationStatus, editionID, anyCondition);
+        PublicationSample sample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         Object differentType = new Object();
 
@@ -661,8 +704,7 @@ class PublicationSampleTest {
     void equal_shouldReturnTrue_WhenIDsAreEqual() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
-                editionID, anyCondition);
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         //Act
         boolean result = anySample.equals(anySample);
@@ -675,11 +717,9 @@ class PublicationSampleTest {
     void equal_shouldReturnFalse_WhenIDsAreDifferent() {
 
         //Arrange
-        PublicationSample anySample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
-                editionID, anyCondition);
+        PublicationSample anySample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
-        PublicationSample newSample = new PublicationSample(bdID, ownerID, anyPublicationStatus,
-                editionID, anyCondition);
+        PublicationSample newSample = new PublicationSample(bdID, ownerID, editionID, anyCondition);
 
         //Act
         boolean result = anySample.equals(newSample);
@@ -693,7 +733,7 @@ class PublicationSampleTest {
 
         //Arrange
         PublicationSample sample = new PublicationSample(
-                bdID, ownerID, anyPublicationStatus, editionID, anyCondition);
+                bdID, ownerID, editionID, anyCondition);
 
         PublicationSample nullSample = null;
 
@@ -711,7 +751,6 @@ class PublicationSampleTest {
         PublicationSample sample = new PublicationSample(
                 bdID,
                 ownerID,
-                anyPublicationStatus,
                 editionID,
                 anyCondition
         );
@@ -733,7 +772,6 @@ class PublicationSampleTest {
         PublicationSample sample = new PublicationSample(
                 bdID,
                 ownerID,
-                anyPublicationStatus,
                 editionID,
                 anyCondition
         );
@@ -750,7 +788,6 @@ class PublicationSampleTest {
         PublicationSample sample = new PublicationSample(
                 bdID,
                 ownerID,
-                anyPublicationStatus,
                 editionID,
                 anyCondition
         );

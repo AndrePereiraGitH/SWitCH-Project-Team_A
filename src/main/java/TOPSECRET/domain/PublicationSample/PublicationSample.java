@@ -37,14 +37,13 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
      *
      * @param bdID                the bibliographical data ID of the publication; must not be null
      * @param ownerID             the ID of the user who owns this copy; must not be null
-     * @param publicationStatus   the initial publication status; must not be null
      * @param editionID           the ID of the edition of the publication; must not be null
      * @param condition           the physical condition of this copy; must not be null
      * @throws IllegalArgumentException if any argument is null
      */
-    protected PublicationSample(BibliographicalDataId bdID, UserId ownerID, PublicationStatus publicationStatus,
+    protected PublicationSample(BibliographicalDataId bdID, UserId ownerID,
                                 EditionId editionID, Condition condition) {
-        if (bdID == null || ownerID == null || publicationStatus == null || editionID == null || condition == null) {
+        if (bdID == null || ownerID == null || editionID == null || condition == null) {
             throw new IllegalArgumentException("All criteria must not be null");
         }
 
@@ -53,7 +52,7 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
         _collecOfPubID = null;
         _bdID = bdID;
         _ownerID = ownerID;
-        _publicationStatus = publicationStatus;
+        _publicationStatus = PublicationStatus.CREATED;
         _editionId = editionID;
         _condition = condition;
     }
@@ -149,18 +148,14 @@ public class PublicationSample implements AggregateRoot<PublicationSampleId> {
     // -------------------------------------------------------------------------
 
     /**
-     * Changes the publication status of this copy to {@link PublicationStatus#FOR_SALE}.
+     * Changes the publication status of this copy to the given {@link PublicationStatus}.
      *
-     * @return {@code true} if the status was successfully changed;
-     *         {@code false} if the publication was already marked as for sale
+     * @param publicationStatus the new status to assign; must not be {@code null}
+     * @return the updated {@link PublicationStatus}
      */
-    public boolean changeStatusToForSale() {
-        if (_publicationStatus == PublicationStatus.FOR_SALE) {
-            return false;
-        }
-
-        _publicationStatus = PublicationStatus.FOR_SALE;
-        return true;
+    public PublicationStatus changePublicationStatus(PublicationStatus publicationStatus){
+        _publicationStatus = publicationStatus;
+        return _publicationStatus;
     }
 
 

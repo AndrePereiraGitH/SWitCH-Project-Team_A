@@ -44,7 +44,6 @@ public class ToRegisterNewPublicationCtrl {
      *
      * @param bibliographicalDataId the bibliographical data identifier; must not be {@code null}
      * @param user                the user identifier; must not be {@code null}
-     * @param publicationStatus   the publication status; must not be {@code null}
      * @param edition             the edition identifier; must not be {@code null}
      * @param condition           the physical condition of the publication; must not be {@code null}
      * @return the newly created and persisted {@link PublicationSample}
@@ -52,16 +51,14 @@ public class ToRegisterNewPublicationCtrl {
      */
     public PublicationSample register(
             BibliographicalDataId bibliographicalDataId,
-            UserId user, PublicationStatus publicationStatus, EditionId edition, Condition condition
+            UserId user, EditionId edition, Condition condition
 
     ) {
 
         if (bibliographicalDataId == null) {
             throw new IllegalArgumentException("BibliographicalData cannot be left null");
         }
-        if (publicationStatus == null) {
-            throw new IllegalArgumentException("PublicationStatus cannot be left null");
-        }
+
         if (user == null) {
             throw new IllegalArgumentException("User Id cannot be left blank");
         }
@@ -72,7 +69,6 @@ public class ToRegisterNewPublicationCtrl {
             throw new IllegalArgumentException("Condition cannot be left null");
         }
 
-        return _publicationSampleService.createAndSave(bibliographicalDataId, user,
-                publicationStatus, edition, condition);
+        return _publicationSampleService.createAndSave(bibliographicalDataId, user, edition, condition);
     }
 }
