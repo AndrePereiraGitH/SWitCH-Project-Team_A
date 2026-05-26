@@ -49,7 +49,7 @@ public class LibraryRepositoryMem implements ILibraryRepository {
         if (userId == null) {
             throw new NullPointerException("Username cannot be null");
         }
-        Library library = _libraries.get(userId.getUsername());
+        Library library = _libraries.get(userId.getUserId());
         if (library == null) {
             throw new InstanceNotFoundException("This user does not have a library");
         }
@@ -63,6 +63,6 @@ public class LibraryRepositoryMem implements ILibraryRepository {
         if (userId == null) {
             throw new IllegalArgumentException("UserID can not be null");
         }
-        return _libraries.containsKey(userId.getUsername());
+        return _libraries.containsKey(userId.getUserId());
     }
 }
