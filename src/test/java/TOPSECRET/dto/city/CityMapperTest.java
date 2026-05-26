@@ -1,6 +1,7 @@
 package TOPSECRET.dto.city;
 
 import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.dto.city.request.RequestCityDTO;
 import TOPSECRET.dto.city.response.ResponseCityDTO;
@@ -31,13 +32,18 @@ class CityMapperTest {
     @Test
     void toDTO_ShouldReturnCorrectResponseCityDTO_WhenCityIsValid() {
         // ARRANGE
+        CityId cityIdDouble = mock(CityId.class);
+        when(cityIdDouble.getCityID()).thenReturn("1");
+
         City cityDouble = mock(City.class);
+        when(cityDouble.id()).thenReturn(cityIdDouble);
         when(cityDouble.getCityName()).thenReturn("Porto");
 
         // ACT
         ResponseCityDTO result = CityMapper.toDTO(cityDouble, "Portugal");
 
         // ASSERT
+        assertEquals("1", result.getCityId());
         assertEquals("Porto", result.getCityName());
         assertEquals("Portugal", result.getCountryName());
     }

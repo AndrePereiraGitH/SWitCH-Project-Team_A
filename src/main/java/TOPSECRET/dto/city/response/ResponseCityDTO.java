@@ -20,6 +20,7 @@ import org.springframework.hateoas.RepresentationModel;
 @AllArgsConstructor
 
 public class ResponseCityDTO extends RepresentationModel<ResponseCityDTO> {
+    private final String cityId;
     private final String cityName;
     private final String countryName;
 }
