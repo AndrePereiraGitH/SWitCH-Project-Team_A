@@ -29,10 +29,7 @@ import static org.mockito.Mockito.*;
  */
 class AppraisalEntityRESTControllerTest {
 
-    // -------------------------------------------------------------------------
     // Helpers
-    // -------------------------------------------------------------------------
-
     private RequestAppraisalEntityDTO validDto() {
         return new RequestAppraisalEntityDTO(
                 "name",
@@ -65,10 +62,6 @@ class AppraisalEntityRESTControllerTest {
         );
     }
 
-    // =========================================================================
-    // Success branch
-    // =========================================================================
-
     @Test
     void shouldReturnCreatedStatusWhenEntityIsSuccessfullyCreated() throws Exception {
         // ARRANGE
@@ -80,7 +73,7 @@ class AppraisalEntityRESTControllerTest {
         when(provider.getLinks(any())).thenReturn(new ArrayList<>());
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
@@ -97,7 +90,7 @@ class AppraisalEntityRESTControllerTest {
         when(provider.getLinks(any())).thenReturn(new ArrayList<>());
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertNotNull(result.getBody());
@@ -116,16 +109,12 @@ class AppraisalEntityRESTControllerTest {
         );
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertNotNull(result.getBody());
         assertTrue(result.getBody().hasLinks());
     }
-
-    // =========================================================================
-    // IllegalArgumentException branch
-    // =========================================================================
 
     @Test
     void shouldReturnBadRequestWhenIllegalArgumentExceptionIsThrown() throws Exception {
@@ -138,7 +127,7 @@ class AppraisalEntityRESTControllerTest {
                 .thenThrow(new IllegalArgumentException("invalid"));
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
@@ -155,15 +144,11 @@ class AppraisalEntityRESTControllerTest {
                 .thenThrow(new IllegalArgumentException("invalid"));
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertNull(result.getBody());
     }
-
-    // =========================================================================
-    // AccessDeniedException branch
-    // =========================================================================
 
     @Test
     void shouldReturnForbiddenWhenAccessDeniedExceptionIsThrown() throws Exception {
@@ -176,7 +161,7 @@ class AppraisalEntityRESTControllerTest {
                 .thenThrow(new AccessDeniedException("forbidden"));
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
@@ -193,15 +178,11 @@ class AppraisalEntityRESTControllerTest {
                 .thenThrow(new AccessDeniedException("forbidden"));
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertNull(result.getBody());
     }
-
-    // =========================================================================
-    // Generic Exception branch
-    // =========================================================================
 
     @Test
     void shouldReturnInternalServerErrorWhenUnexpectedExceptionIsThrown() throws Exception {
@@ -214,7 +195,7 @@ class AppraisalEntityRESTControllerTest {
                 .thenThrow(new RuntimeException("unexpected"));
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
@@ -231,7 +212,7 @@ class AppraisalEntityRESTControllerTest {
                 .thenThrow(new RuntimeException("unexpected"));
 
         // ACT
-        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.create(validDto(), adminUserId());
+        ResponseEntity<ResponseAppraisalEntityDTO> result = sut.registerAppraisalEntity(validDto(), adminUserId());
 
         // ASSERT
         assertNull(result.getBody());

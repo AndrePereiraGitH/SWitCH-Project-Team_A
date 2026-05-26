@@ -7,6 +7,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import java.util.List;
 import org.springframework.hateoas.Link;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -20,6 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * of the authenticated user. The available links depend on the
  * authorization rules defined in {@link AppraisalEntityAuthorizationPolicy}.</p>
  */
+@Component
 public class AppraisalEntityLinkProvider {
 
     private final AppraisalEntityAuthorizationPolicy policy;
@@ -54,7 +56,7 @@ public class AppraisalEntityLinkProvider {
 
         if(policy.canRegisterAppraisalEntity(user)){
             links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
-                    .create(null, id))
+                    .registerAppraisalEntity(null, id))
                     .withRel("register-appraisal-entity"));
         }
 

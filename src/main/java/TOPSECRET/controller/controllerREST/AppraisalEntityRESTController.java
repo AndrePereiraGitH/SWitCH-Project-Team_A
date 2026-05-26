@@ -7,6 +7,8 @@ import TOPSECRET.dto.appraisalEntity.AppraisalEntityMapper;
 import TOPSECRET.dto.appraisalEntity.reponse.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import TOPSECRET.services.AppraisalEntityService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,8 @@ import java.util.List;
  * DTOs, domain objects and application services.</p>
  */
 @RestController
-@RequestMapping("/appraisals")
+@Tag(name = "Appraisal Entities", description = "Appraisal Entities management endpoint")
+@RequestMapping(path = "/appraisal-entities")
 public class AppraisalEntityRESTController {
 
     private final AppraisalEntityService service;
