@@ -1,8 +1,7 @@
-package TOPSECRET.dto.Country;
+package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.dto.Country.Response.CountryResponseDTO;
-import org.springframework.stereotype.Component;
+import TOPSECRET.dto.country.response.CountryResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
