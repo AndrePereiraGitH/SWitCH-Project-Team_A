@@ -1,11 +1,11 @@
 package TOPSECRET.controller.controllerCLI;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.EditionId;
@@ -15,10 +15,11 @@ import TOPSECRET.dto.US028ListingDTO;
 import TOPSECRET.dto.US028ListingMapper;
 import TOPSECRET.dto.US028PublisherDTO;
 import TOPSECRET.dto.US028PublisherMapper;
+import TOPSECRET.services.PublisherService;
 
 public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
 
-    private final IPublisherRepository publisherRepo;
+    private final PublisherService publisherService;
     private final IEditionRepository editionRepo;
     private final IPublicationSampleRepository pubSampleRepo;
     private final IListingRepository listingRepo;
@@ -26,15 +27,15 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
     private final US028PublisherMapper publisherMapper;
 
     public ToGetListOfItemsOnAuctionOfAGivenPublisherController(
-            IPublisherRepository publisherRepo,
+            PublisherService publisherService,
             IEditionRepository editionRepo,
             IPublicationSampleRepository pubSampleRepo,
             IListingRepository listingRepo,
             US028ListingMapper listingMapper,
             US028PublisherMapper publisherMapper
     ) {
-        if (publisherRepo == null) {
-            throw new IllegalArgumentException("publisherRepo cannot be null");
+        if (publisherService == null) {
+            throw new IllegalArgumentException("publisherService cannot be null");
         }
 
         if (editionRepo == null) {
@@ -57,7 +58,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
             throw new IllegalArgumentException("publisherMapper cannot be null");
         }
 
-        this.publisherRepo = publisherRepo;
+        this.publisherService = publisherService;
         this.editionRepo = editionRepo;
         this.pubSampleRepo = pubSampleRepo;
         this.listingRepo = listingRepo;
@@ -70,8 +71,8 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
      *
      * @return list of publisher DTOs
      */
-    public List<US028PublisherDTO> getAllPublishers() {
-        List<Publisher> listOfPublishers = publisherRepo.findAll();
+    public List<US028PublisherDTO> getAllPublishers() throws AccessDeniedException {
+        List<Publisher> listOfPublishers = publisherService.findAll();
 
         return publisherMapper.toDTOs(listOfPublishers);
     }

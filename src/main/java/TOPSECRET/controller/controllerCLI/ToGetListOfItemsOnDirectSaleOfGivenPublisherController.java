@@ -12,9 +12,10 @@ import TOPSECRET.dto.US027ListingMapper;
 import TOPSECRET.dto.US027PublisherDTO;
 import TOPSECRET.dto.US027PublisherMapper;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
-import TOPSECRET.domain.Publisher.IPublisherRepository;
+import TOPSECRET.services.PublisherService;
 
 import javax.management.InstanceNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ import java.util.List;
  */
 public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
-    private final IPublisherRepository _publisherRepo;
+    private final PublisherService _publisherService;
     private final IListingRepository _listingRepo;
     private final IPublicationSampleRepository _pubSampleRepo;
     private final IEditionRepository _editionRepo;
@@ -51,19 +52,19 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      * Creates a new controller responsible for retrieving publishers and direct-sale listings
      * associated with a given publisher.
      *
-     * @param publisherRepo the repository used to retrieve publishers
+     * @param publisherService the repository used to retrieve publishers
      * @param listingRepo the repository used to retrieve listings
      * @param pubSampleRepo the repository used to retrieve publication samples
      * @param editionRepo the repository used to retrieve editions
      * @param mapper the mapper responsible for converting listings into DTOs
      */
-    public ToGetListOfItemsOnDirectSaleOfGivenPublisherController(IPublisherRepository publisherRepo,
+    public ToGetListOfItemsOnDirectSaleOfGivenPublisherController(PublisherService publisherService,
                                                                   IListingRepository listingRepo,
                                                                   IPublicationSampleRepository pubSampleRepo,
                                                                   IEditionRepository editionRepo,
                                                                   US027ListingMapper mapper) {
 
-        this._publisherRepo = publisherRepo;
+        this._publisherService = publisherService;
         this._listingRepo = listingRepo;
         this._pubSampleRepo = pubSampleRepo;
         this._editionRepo = editionRepo;
@@ -77,9 +78,9 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      *
      * @return a list of {@link US027PublisherMapper} representing all publishers
      */
-    public List<US027PublisherDTO> findAllPublishers() {
+    public List<US027PublisherDTO> findAllPublishers() throws AccessDeniedException {
 
-        List<Publisher> listOfAllPublishers = _publisherRepo.findAll();
+        List<Publisher> listOfAllPublishers = _publisherService.findAll();
 
         return US027PublisherMapper.toDTOs(listOfAllPublishers);
     }
