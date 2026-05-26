@@ -65,8 +65,13 @@ public final class AppraisalEntityMapper {
     public static Email toEmail(RequestAppraisalEntityDTO dto) {
 
         Objects.requireNonNull(dto, "RequestAppraisalEntityDTO cannot be null");
+        Objects.requireNonNull(dto.email(), "Email cannot be null");
 
         String[] split = dto.email().split("@");
+
+        if (split.length != 2) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
 
         return new Email(split[0], split[1]);
     }

@@ -7,6 +7,8 @@ import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -164,14 +166,26 @@ class AppraisalEntityMapperTest {
     }
 
     @Test
-    void ConstructorShouldThrowException() {
+    void shouldThrowExceptionWhenUtilityClassConstructorIsCalled()
+            throws Exception {
 
         // ARRANGE
+        Constructor<AppraisalEntityMapper> constructor =
+                AppraisalEntityMapper.class
+                        .getDeclaredConstructor();
+
+        constructor.setAccessible(true);
 
         // ACT + ASSERT
-        assertThrows(
+        InvocationTargetException result =
+                assertThrows(
+                        InvocationTargetException.class,
+                        constructor::newInstance
+                );
+
+        assertInstanceOf(
                 UnsupportedOperationException.class,
-                AppraisalEntityMapper::new
+                result.getCause()
         );
     }
 
