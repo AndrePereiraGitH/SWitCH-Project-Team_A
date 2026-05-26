@@ -1,65 +1,36 @@
 package TOPSECRET.dto.author;
 
 import TOPSECRET.domain.Author.Author;
-import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryId;
-import TOPSECRET.dto.author.request.CreateAuthorDTO;
 import TOPSECRET.dto.author.response.AuthorDTO;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
- * Mapper responsible for converting between {@link CreateAuthorDTO} request objects,
- * {@link Author} domain objects, and {@link AuthorDTO} response objects.
+ * Mapper responsible for converting {@link Author} domain objects
+ * into {@link AuthorDTO} response objects used in the presentation layer.
  *
- * <p>This class is the only component that is aware of both the API layer
- * and the domain layer. It centralizes all conversion logic, ensuring that:</p>
- * <ul>
- *   <li>Domain value objects are never exposed through the API boundary</li>
- *   <li>Request primitives are correctly wrapped into domain value objects</li>
- *   <li>Domain objects are flattened into API-safe response representations</li>
- * </ul>
+ * <p>This class ensures a clear separation between the domain model and the API layer
+ * by transforming domain entities into simplified DTO representations that are safe
+ * to expose externally.</p>
+ *
+ * <p>It supports mapping both single {@link Author} objects and collections of authors.</p>
  */
 public class AuthorMapper {
 
     private final ICountryRepository countryRepo;
-    private final AuthorFactory authorFactory;
 
     /**
      * Constructs an {@code AuthorMapper} with the required dependencies.
      *
-     * @param countryRepo   the repository used to resolve country identifiers
-     * @param authorFactory the factory used to create {@link Author} domain objects
+     * @param countryRepo the repository used to resolve country identifiers
      */
-    public AuthorMapper(ICountryRepository countryRepo, AuthorFactory authorFactory) {
+    public AuthorMapper(ICountryRepository countryRepo) {
         this.countryRepo = countryRepo;
-        this.authorFactory = authorFactory;
-    }
-
-    /**
-     * Converts a {@link CreateAuthorDTO} request into a new {@link Author} domain object.
-     *
-     * <p>The country identifier provided in the DTO is validated against the repository.
-     * The date of birth is parsed from ISO format (yyyy-MM-dd).
-     * Domain object creation is delegated to {@link AuthorFactory}.</p>
-     *
-     * @param dto the request DTO containing the author's data; must not be {@code null}
-     * @return a new {@link Author} domain object
-     * @throws NullPointerException     if {@code dto} is null
-     * @throws IllegalArgumentException if the country ID does not match any registered country
-     * @throws java.time.format.DateTimeParseException if the date of birth is not in ISO format
-     */
-    public Author toDomain(CreateAuthorDTO dto) {
-        Objects.requireNonNull(dto, "CreateAuthorDTO cannot be null");
-        CountryId countryId = new CountryId(dto.countryId());
-        countryRepo.findByID(countryId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Invalid country ID: " + dto.countryId()));
-        LocalDate dob = LocalDate.parse(dto.dateOfBirth());
-        return authorFactory.create(dto.name(), countryId, dob, dto.biography());
     }
 
     /**
@@ -87,5 +58,24 @@ public class AuthorMapper {
                 author.getDateOfBirth().toString(),
                 author.getBiography()
         );
+    }
+
+    /**
+     * Converts a list of {@link Author} domain objects into a list of {@link AuthorDTO} responses.
+     *
+     * <p>Each author in the provided collection is individually mapped
+     * using {@link #toDTO(Author)}.</p>
+     *
+     * @param authors the list of domain objects to convert; must not be {@code null}
+     * @return a list of {@link AuthorDTO} representing the given authors
+     * @throws NullPointerException if {@code authors} is null
+     */
+    public List<AuthorDTO> toDTOs(List<Author> authors) {
+        Objects.requireNonNull(authors, "Authors list cannot be null");
+        List<AuthorDTO> dtos = new ArrayList<>();
+        for (Author author : authors) {
+            dtos.add(toDTO(author));
+        }
+        return dtos;
     }
 }
