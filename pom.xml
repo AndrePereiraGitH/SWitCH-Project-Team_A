@@ -139,6 +139,11 @@
             <version>2.5.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -257,10 +262,16 @@
                         <param>TOPSECRET.dto.*.request.*</param>
                         <param>TOPSECRET.dto.*.response.*</param>
                     </excludedClasses>
+
                     <jvmArgs>
-                        <value>-Xmx512m</value>
+                        <value>-Xmx2048m</value>
                     </jvmArgs>
-                    <threads>2</threads>
+
+                    <threads>1</threads>
+
+                    <timeoutFactor>1.25</timeoutFactor>
+                    <timeoutConstant>6000</timeoutConstant>
+
                 </configuration>
                 <executions>
                     <execution>
