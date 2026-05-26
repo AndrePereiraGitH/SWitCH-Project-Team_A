@@ -4,7 +4,7 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.GenreService;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 
 /**
  * Controller responsible for handling the registration of a new genre (US003).

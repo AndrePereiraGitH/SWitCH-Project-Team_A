@@ -5,7 +5,7 @@ import TOPSECRET.services.GenreService;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;

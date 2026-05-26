@@ -57,7 +57,7 @@ public class GenreLinkProvider {
         if(policy.canCreateGenre(user)){
             links.add(linkTo(methodOn(GenreRESTController.class)
                     .createGenre(null, id))
-                    .withRel("get-genre"));
+                    .withRel("create-genre"));
         }
 
         return links;
