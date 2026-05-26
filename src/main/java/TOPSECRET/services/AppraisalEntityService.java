@@ -65,7 +65,7 @@ public class AppraisalEntityService {
         User user = userRepository.findByID(userId).get();
 
         if(!policy.canRegisterAppraisalEntity(user)) {
-            throw new AccessDeniedException ("You do not have permission to create a library");
+            throw new AccessDeniedException ("You do not have permission to register an Appraisal Entity");
         }
 
         AppraisalEntity entity = factory.create(
