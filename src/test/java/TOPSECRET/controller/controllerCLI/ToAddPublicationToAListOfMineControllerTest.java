@@ -3,14 +3,13 @@ package TOPSECRET.controller.controllerCLI;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US018CollectionOfPublicationsDTO;
 import TOPSECRET.dto.US018PublicationSampleDTO;
 import TOPSECRET.dto.US018PublicationSampleMapper;
-
+import TOPSECRET.services.PublicationSampleService;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -30,10 +29,10 @@ import static org.mockito.Mockito.*;
  * <p>
  * The test suite focuses on:
  * <ul>
- *     <li>Retrieving user collections</li>
- *     <li>Retrieving publications available for a collection</li>
- *     <li>Delegating publication assignment operations</li>
- *     <li>Validation of invalid input arguments</li>
+ * <li>Retrieving user collections</li>
+ * <li>Retrieving publications available for a collection</li>
+ * <li>Delegating publication assignment operations and returning the updated entity</li>
+ * <li>Validation of invalid input arguments</li>
  * </ul>
  * </p>
  *
@@ -41,230 +40,207 @@ import static org.mockito.Mockito.*;
  * Dependencies are isolated using Mockito mocks in order to verify only
  * the controller orchestration responsibilities.
  * </p>
- *
- * <p>
- * The controller itself contains no business logic and is expected only
- * to coordinate repository access, mapper transformations, and delegation
- * of domain operations.
- * </p>
  */
 class ToAddPublicationToAListOfMineControllerTest {
 
     @Test
     void shouldReturnUserCollections() {
-
-        // ARRANGE
+        // Arrange
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
+        PublicationSampleService publicationService = mock(PublicationSampleService.class);
         US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
+                        userId, collectionRepo, publicationService, publicationSampleMapper);
 
         List<CollectionOfPublications> collections = new ArrayList<>();
-
         when(collectionRepo.getUserCollections(userId)).thenReturn(collections);
 
-        // ACT
-        List<US018CollectionOfPublicationsDTO> result =
-                controller.getUserCollections();
+        // Act
+        List<US018CollectionOfPublicationsDTO> result = controller.getUserCollections();
 
-        // ASSERT
-        assertEquals(0, result.size());
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void shouldReturnAvailablePublicationsUsingRepositoryMethod() {
-
-        // ARRANGE
+    void shouldReturnAvailablePublicationsUsingServiceMethod() {
+        // Arrange
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
+        PublicationSampleService publicationService = mock(PublicationSampleService.class);
         US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
+                        userId, collectionRepo, publicationService, publicationSampleMapper);
 
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-
         PublicationSample publication = mock(PublicationSample.class);
-        PublicationSampleId pubId = mock(PublicationSampleId.class);
         US018PublicationSampleDTO dto = mock(US018PublicationSampleDTO.class);
 
-        when(publication.id()).thenReturn(pubId);
-
-        when(publicationRepo.findAvailableForCollection(userId, collectionId))
+        when(publicationService.findAvailableForCollection(userId, collectionId))
                 .thenReturn(List.of(publication));
-
         when(publicationSampleMapper.toDTOs(List.of(publication)))
                 .thenReturn(List.of(dto));
 
-        // ACT
-        List<US018PublicationSampleDTO> result =
-                controller.getPublicationsForCollection(collectionId);
+        // Act
+        List<US018PublicationSampleDTO> result = controller.getPublicationsForCollection(collectionId);
 
-        // ASSERT
+        // Assert
         assertEquals(1, result.size());
         assertEquals(dto, result.get(0));
     }
 
     @Test
     void shouldThrowExceptionWhenCollectionIdIsNull() {
-
-        // ARRANGE
+        // Arrange
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
-                        mock(IPublicationSampleRepository.class),
+                        mock(PublicationSampleService.class),
                         mock(US018PublicationSampleMapper.class));
 
-        // ACT + ASSERT
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
                 () -> controller.getPublicationsForCollection(null));
     }
 
     @Test
-    void shouldAssignPublicationsToCollection() {
-
-        // ARRANGE
+    void shouldAssignPublicationsToCollectionAndReturnSample() {
+        // Arrange
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
+        PublicationSampleService publicationService = mock(PublicationSampleService.class);
         US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, publicationSampleMapper);
+                        userId, collectionRepo, publicationService, publicationSampleMapper);
 
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         PublicationSampleId publicationId = mock(PublicationSampleId.class);
 
-        when(publicationRepo.assignPublicationsToCollection(
-                eq(collectionId), anyList()))
-                .thenReturn(true);
+        // Mock the expected returned PublicationSample
+        PublicationSample expectedSample = mock(PublicationSample.class);
 
-        // ACT
-        boolean result =
-                controller.addPublicationToCollection(
-                        collectionId,
-                        List.of(publicationId)
-                );
+        when(publicationService.assignPublicationToCollection(collectionId, publicationId, userId))
+                .thenReturn(expectedSample);
 
-        // ASSERT
-        assertTrue(result);
+        // Act
+        PublicationSample result = controller.addPublicationToCollection(collectionId, publicationId, userId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedSample, result);
     }
 
     @Test
     void shouldThrowExceptionWhenCollectionIdIsNullInAdd() {
-
-        // ARRANGE
+        // Arrange
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
-                        mock(IPublicationSampleRepository.class),
+                        mock(PublicationSampleService.class),
                         mock(US018PublicationSampleMapper.class));
 
-        // ACT + ASSERT
+        PublicationSampleId publicationId = mock(PublicationSampleId.class);
+        UserId userId = mock(UserId.class);
+
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.addPublicationToCollection(null, new ArrayList<>()));
+                () -> controller.addPublicationToCollection(null, publicationId, userId));
     }
 
     @Test
-    void shouldThrowExceptionWhenPublicationListIsNull() {
-
-        // ARRANGE
+    void shouldThrowExceptionWhenPublicationIdIsNull() {
+        // Arrange
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
-                        mock(IPublicationSampleRepository.class),
+                        mock(PublicationSampleService.class),
                         mock(US018PublicationSampleMapper.class));
 
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        UserId userId = mock(UserId.class);
 
-        // ACT + ASSERT
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.addPublicationToCollection(collectionId, null));
+                () -> controller.addPublicationToCollection(collectionId, null, userId));
     }
 
     @Test
-    void shouldThrowExceptionWhenPublicationListIsEmpty() {
-
-        // ARRANGE
+    void shouldThrowExceptionWhenUserIdIsNullInAdd() {
+        // Arrange
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
                         mock(UserId.class),
                         mock(ICollectionOfPublicationsRepository.class),
-                        mock(IPublicationSampleRepository.class),
+                        mock(PublicationSampleService.class),
                         mock(US018PublicationSampleMapper.class));
 
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        PublicationSampleId publicationId = mock(PublicationSampleId.class);
 
-        // ACT + ASSERT
+        // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.addPublicationToCollection(collectionId, new ArrayList<>()));
+                () -> controller.addPublicationToCollection(collectionId, publicationId, null));
     }
 
     @Test
     void shouldReturnMappedCollectionsWithContent() {
-
-        // ARRANGE
+        // Arrange
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
+        PublicationSampleService publicationService = mock(PublicationSampleService.class);
         US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, publicationSampleMapper
-                );
+                        userId, collectionRepo, publicationService, publicationSampleMapper);
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         when(collection.id()).thenReturn(mock(CollectionOfPublicationsId.class));
         when(collection.getCollectionName()).thenReturn("C1");
 
-        when(collectionRepo.getUserCollections(userId))
-                .thenReturn(List.of(collection));
+        when(collectionRepo.getUserCollections(userId)).thenReturn(List.of(collection));
 
-        // ACT
-        List<US018CollectionOfPublicationsDTO> result =
-                controller.getUserCollections();
+        // Act
+        List<US018CollectionOfPublicationsDTO> result = controller.getUserCollections();
 
-        // ASSERT
+        // Assert
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
     }
 
     @Test
-    void shouldReturnFalseWhenRepositoryFails() {
-
-        // ARRANGE
+    void shouldReturnNullWhenServiceFailsToAssign() {
+        // Arrange
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
-        IPublicationSampleRepository publicationRepo = mock(IPublicationSampleRepository.class);
+        PublicationSampleService publicationService = mock(PublicationSampleService.class);
         US018PublicationSampleMapper publicationSampleMapper = mock(US018PublicationSampleMapper.class);
         UserId userId = mock(UserId.class);
 
         ToAddPublicationToAListOfMineController controller =
                 new ToAddPublicationToAListOfMineController(
-                        userId, collectionRepo, publicationRepo, publicationSampleMapper
-                );
+                        userId, collectionRepo, publicationService, publicationSampleMapper);
 
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         PublicationSampleId pubId = mock(PublicationSampleId.class);
 
-        when(publicationRepo.assignPublicationsToCollection(collectionId, List.of(pubId)))
-                .thenReturn(false);
+        // Simulate a failure to find/save the entity returning null
+        when(publicationService.assignPublicationToCollection(collectionId, pubId, userId))
+                .thenReturn(null);
 
-        // ACT
-        boolean result =
-                controller.addPublicationToCollection(collectionId, List.of(pubId));
+        // Act
+        PublicationSample result = controller.addPublicationToCollection(collectionId, pubId, userId);
 
-        // ASSERT
-        assertFalse(result);
+        // Assert
+        assertNull(result);
     }
 }
