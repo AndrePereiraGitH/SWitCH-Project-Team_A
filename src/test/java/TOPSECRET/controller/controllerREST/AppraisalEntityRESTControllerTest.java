@@ -4,7 +4,7 @@ import TOPSECRET.controller.controllerREST.root.linkProvider.AppraisalEntityLink
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.appraisalEntity.reponse.ResponseAppraisalEntityDTO;
+import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import TOPSECRET.services.AppraisalEntityService;
 import org.junit.jupiter.api.Test;

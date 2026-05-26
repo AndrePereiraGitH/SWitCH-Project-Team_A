@@ -4,11 +4,10 @@ import TOPSECRET.controller.controllerREST.root.linkProvider.AppraisalEntityLink
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.appraisalEntity.AppraisalEntityMapper;
-import TOPSECRET.dto.appraisalEntity.reponse.ResponseAppraisalEntityDTO;
+import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import TOPSECRET.services.AppraisalEntityService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +58,7 @@ public class AppraisalEntityRESTController {
      * @return a response entity containing the created AppraisalEntity
      *         or an error status when the operation fails
      */
-    @PostMapping("/appraisal-entities")
+    @PostMapping("")
     public ResponseEntity<ResponseAppraisalEntityDTO> registerAppraisalEntity(
             @RequestBody RequestAppraisalEntityDTO dto,
             @RequestParam UserId userId) {
@@ -77,7 +76,7 @@ public class AppraisalEntityRESTController {
                     userId
             );
 
-            ResponseAppraisalEntityDTO result = AppraisalEntityMapper.toResponse(apEn);
+            ResponseAppraisalEntityDTO result = AppraisalEntityMapper.toDTO(apEn);
 
             // Links
             List<Link> links = provider.getLinks(userId);

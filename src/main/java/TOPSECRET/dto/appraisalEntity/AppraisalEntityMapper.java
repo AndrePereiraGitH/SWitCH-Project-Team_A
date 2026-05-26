@@ -3,24 +3,20 @@ package TOPSECRET.dto.appraisalEntity;
 
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.dto.appraisalEntity.reponse.ResponseAppraisalEntityDTO;
+import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Utility mapper responsible for converting AppraisalEntity request DTOs
- * into domain Value Objects used during AppraisalEntity creation.
+ * Mapper utility class responsible for converting between
+ * AppraisalEntity domain objects and DTO representations.
  *
- * <p>
- * This class provides helper methods to construct domain objects such as
- * {@link Contact} and {@link Email} from request data.
- * </p>
+ * <p>This class also builds Value Objects from request DTOs,
+ * ensuring proper encapsulation of domain rules and validation.</p>
  *
- * <p>
- * This class cannot be instantiated.
- * </p>
+ * <p>It is a non-instantiable utility class.</p>
  */
 public final class AppraisalEntityMapper {
 
@@ -142,7 +138,7 @@ public final class AppraisalEntityMapper {
      * @param entity domain entity
      * @return response DTO
      */
-    public static ResponseAppraisalEntityDTO toResponse(AppraisalEntity entity){
+    public static ResponseAppraisalEntityDTO toDTO(AppraisalEntity entity){
 
         Objects.requireNonNull(entity, "AppraisalEntity can't be null");
 

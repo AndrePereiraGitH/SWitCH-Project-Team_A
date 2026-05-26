@@ -19,8 +19,6 @@ import static org.mockito.Mockito.*;
  *
  * <p>Validates HATEOAS link generation according to user permissions
  * and user existence.</p>
- *
- * <p>Dependencies are mocked and the SUT is instantiated per test.</p>
  */
 class AppraisalEntityLinkProviderTest {
 

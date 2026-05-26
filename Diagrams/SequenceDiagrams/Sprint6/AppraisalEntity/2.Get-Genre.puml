@@ -4,7 +4,7 @@ hide footbox
 autonumber
 title Get Genres - REST Flow
 
-participant ":GenreRestController" as Controller
+participant ":GenreRESTController" as Controller
 
 participant ":IGenreRepository" as GenreRepo
 participant ":IGenreRepositoryJPA" as RepoJPA
