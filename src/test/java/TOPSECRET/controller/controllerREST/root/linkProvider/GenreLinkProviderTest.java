@@ -41,7 +41,7 @@ class GenreLinkProviderTest {
 
         // ASSERT
         assertEquals(1, result.size());
-        assertEquals("get-genre", result.get(0).getRel().value());
+        assertEquals("create-genre", result.get(0).getRel().value());
     }
 
     @Test
