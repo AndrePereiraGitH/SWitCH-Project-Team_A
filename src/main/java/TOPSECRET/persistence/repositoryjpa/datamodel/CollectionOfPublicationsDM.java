@@ -59,8 +59,8 @@ public class CollectionOfPublicationsDM {
      * Identifier of the user who owns the collection.
      */
     @Embedded
-    @AttributeOverride(name = "userId", column = @Column(name = "owner_id"))
-    private UserId userId;
+    @AttributeOverride(name = "ownerId", column = @Column(name = "owner_id"))
+    private UserId ownerId;
 
     /**
      * Indicates whether the collection is private.
@@ -84,14 +84,14 @@ public class CollectionOfPublicationsDM {
      * @param collectionName     name of the collection; must not be null
      * @param genreID            genre associated with the collection;
      *                           must not be null
-     * @param userId             identifier of the owner; must not be null
+     * @param ownerId             identifier of the owner; must not be null
      * @param isPrivate          privacy flag indicating whether the collection
      *                           is private or public
      * @throws NullPointerException if any mandatory argument is null
      */
     public CollectionOfPublicationsDM(CollectionOfPublicationsId collectionOfPub_id,
                                       String collectionName, GenreId genreID,
-                                      UserId userId, boolean isPrivate, LocalDateTime publicUntil) {
+                                      UserId ownerId, boolean isPrivate, LocalDateTime publicUntil) {
 
         this.id = Objects.requireNonNull(collectionOfPub_id,
                 "collectionOfPublicationsId cannot be null");
@@ -102,7 +102,7 @@ public class CollectionOfPublicationsDM {
         this.genreId = Objects.requireNonNull(genreID,
                 "genreID cannot be null");
 
-        this.userId = Objects.requireNonNull(userId,
+        this.ownerId = Objects.requireNonNull(ownerId,
                 "userId cannot be null");
 
         this.isPrivate = isPrivate;

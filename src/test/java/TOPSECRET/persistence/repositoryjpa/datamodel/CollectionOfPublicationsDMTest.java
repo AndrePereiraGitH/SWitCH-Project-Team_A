@@ -219,7 +219,7 @@ class CollectionOfPublicationsDMTest {
                 );
 
         // Act + Assert
-        assertEquals(userId, result.getUserId());
+        assertEquals(userId, result.getOwnerId());
     }
 
     @Test

@@ -1,7 +1,5 @@
 package TOPSECRET.dto;
 
-import TOPSECRET.domain.ValueObjects.ListingId;
-
 import java.util.List;
 
 /**

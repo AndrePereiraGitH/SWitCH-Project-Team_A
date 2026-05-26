@@ -1,0 +1,425 @@
+package TOPSECRET.controller.controllerCLI;
+
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Genre.Genre;
+import TOPSECRET.domain.Genre.IGenreRepository;
+import TOPSECRET.domain.Listing.IListingRepository;
+import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.GenreId;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.dto.US021DirSaleListingDTO;
+import TOPSECRET.dto.US021DirSaleListingMapper;
+import TOPSECRET.dto.US021GenreDTO;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit tests for {@link ToGetListOfItemsOnDirectSaleOfGivenGenreController}.
+ */
+class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
+
+    // ============================================================
+    // Constructor Tests
+    // ============================================================
+
+    @Test
+    void ensureControllerIsCreatedSuccessfully() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        when(genreRepositoryMock.findAll()).thenReturn(new ArrayList<>());
+
+        // Act
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock,
+                        listingRepositoryMock,
+                        publicationSampleRepositoryMock,
+                        bibliographicalDataRepositoryMock,
+                        mapperMock
+                );
+
+        // Assert
+        assertNotNull(controller);
+    }
+
+    @Test
+    void ensureThrowsExceptionWhenGenreRepositoryIsNull() {
+        // Arrange
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        null,
+                        listingRepositoryMock,
+                        publicationSampleRepositoryMock,
+                        bibliographicalDataRepositoryMock,
+                        mapperMock
+                ));
+    }
+
+    @Test
+    void ensureThrowsExceptionWhenListingRepositoryIsNull() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock,
+                        null,
+                        publicationSampleRepositoryMock,
+                        bibliographicalDataRepositoryMock,
+                        mapperMock
+                ));
+    }
+
+    @Test
+    void ensureThrowsExceptionWhenPublicationSampleRepositoryIsNull() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock,
+                        listingRepositoryMock,
+                        null,
+                        bibliographicalDataRepositoryMock,
+                        mapperMock
+                ));
+    }
+
+    @Test
+    void ensureThrowsExceptionWhenBibliographicalDataRepositoryIsNull() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock,
+                        listingRepositoryMock,
+                        publicationSampleRepositoryMock,
+                        null,
+                        mapperMock
+                ));
+    }
+
+    @Test
+    void ensureThrowsExceptionWhenMapperIsNull() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock,
+                        listingRepositoryMock,
+                        publicationSampleRepositoryMock,
+                        bibliographicalDataRepositoryMock,
+                        null
+                ));
+    }
+
+    @Test
+    void ensureThrowsExceptionWhenAllDependenciesAreNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(null, null, null, null, null));
+    }
+
+
+    // ============================================================
+    // getAllGenres() Tests
+    // ============================================================
+
+    @Test
+    void ensureGetAllGenresReturnsEmptyListWhenRepositoryHasNoGenres() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        when(genreRepositoryMock.findAll()).thenReturn(new ArrayList<>());
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act
+        List<US021GenreDTO> result = controller.getAllGenres();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ensureGetAllGenresReturnsDTOsWhenRepositoryHasGenres() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        Genre genre1 = mock(Genre.class);
+        Genre genre2 = mock(Genre.class);
+        GenreId genreId1 = mock(GenreId.class);
+        GenreId genreId2 = mock(GenreId.class);
+
+        when(genre1.id()).thenReturn(genreId1);
+        when(genre1.getGenreType()).thenReturn("Drama");
+        when(genre2.id()).thenReturn(genreId2);
+        when(genre2.getGenreType()).thenReturn("Fiction");
+        when(genreRepositoryMock.findAll()).thenReturn(List.of(genre1, genre2));
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act
+        List<US021GenreDTO> result = controller.getAllGenres();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals("Drama", result.get(0).name());
+        assertEquals("Fiction", result.get(1).name());
+    }
+
+
+    // ============================================================
+    // getListOfItemsOnDirectSale() Tests
+    // ============================================================
+
+    @Test
+    void ensureThrowsExceptionWhenSelectedGenreIsNull() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.getListOfItemsOnDirectSale(null));
+    }
+
+    @Test
+    void ensureReturnsEmptyListWhenNoDirectSaleListingsExist() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        GenreId selectedGenre = mock(GenreId.class);
+
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
+                .thenReturn(new ArrayList<>());
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
+                .thenReturn(new ArrayList<>());
+        when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act
+        List<US021DirSaleListingDTO> result = controller.getListOfItemsOnDirectSale(selectedGenre);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ensureReturnsEmptyListWhenGenreHasNoBibliographicalData() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        GenreId selectedGenre = mock(GenreId.class);
+
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
+                .thenReturn(new ArrayList<>());
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(new ArrayList<>()))
+                .thenReturn(new ArrayList<>());
+        when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act
+        List<US021DirSaleListingDTO> result = controller.getListOfItemsOnDirectSale(selectedGenre);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void ensureReturnsListingsWhenGenreMatchesDirectSaleListings() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        GenreId selectedGenre = mock(GenreId.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        PublicationSampleId psId = new PublicationSampleId("ps-1");
+        Listing listingMock = mock(Listing.class);
+        US021DirSaleListingDTO expectedDTO = mock(US021DirSaleListingDTO.class);
+
+        List<BibliographicalDataId> bdIds = List.of(bdId);
+        List<PublicationSampleId> pubSampleIds = List.of(psId);
+        List<Listing> listings = List.of(listingMock);
+
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
+                .thenReturn(bdIds);
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
+                .thenReturn(pubSampleIds);
+        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
+                .thenReturn(listings);
+        when(mapperMock.toDTOs(listings)).thenReturn(List.of(expectedDTO));
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act
+        List<US021DirSaleListingDTO> result = controller.getListOfItemsOnDirectSale(selectedGenre);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(expectedDTO, result.get(0));
+    }
+
+    @Test
+    void ensureReturnsMultipleListingsWhenSeveralMatchGenre() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        GenreId selectedGenre = mock(GenreId.class);
+        BibliographicalDataId bdId1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
+        PublicationSampleId psId1 = new PublicationSampleId("ps-1");
+        PublicationSampleId psId2 = new PublicationSampleId("ps-2");
+        Listing listing1 = mock(Listing.class);
+        Listing listing2 = mock(Listing.class);
+        US021DirSaleListingDTO dto1 = mock(US021DirSaleListingDTO.class);
+        US021DirSaleListingDTO dto2 = mock(US021DirSaleListingDTO.class);
+
+        List<BibliographicalDataId> bdIds = List.of(bdId1, bdId2);
+        List<PublicationSampleId> pubSampleIds = List.of(psId1, psId2);
+        List<Listing> listings = List.of(listing1, listing2);
+
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
+                .thenReturn(bdIds);
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
+                .thenReturn(pubSampleIds);
+        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
+                .thenReturn(listings);
+        when(mapperMock.toDTOs(listings)).thenReturn(List.of(dto1, dto2));
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act
+        List<US021DirSaleListingDTO> result = controller.getListOfItemsOnDirectSale(selectedGenre);
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void ensureReturnsEmptyListWhenNoPublicationSamplesFoundForBibliographicalData() {
+        // Arrange
+        IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
+        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
+        IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
+        US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
+
+        GenreId selectedGenre = mock(GenreId.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        List<BibliographicalDataId> bdIds = List.of(bdId);
+
+        when(bibliographicalDataRepositoryMock.findAllByGenreId(selectedGenre))
+                .thenReturn(bdIds);
+        when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
+                .thenReturn(new ArrayList<>());
+        when(mapperMock.toDTOs(new ArrayList<>())).thenReturn(new ArrayList<>());
+
+        ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
+                new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
+                        genreRepositoryMock, listingRepositoryMock,
+                        publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
+                );
+
+        // Act
+        List<US021DirSaleListingDTO> result = controller.getListOfItemsOnDirectSale(selectedGenre);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+}
