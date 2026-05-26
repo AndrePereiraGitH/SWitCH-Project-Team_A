@@ -1658,7 +1658,7 @@ class PublicationSampleRepositoryMemTest {
 
     private static UserId createDoubleUserID() {
         UserId userID = mock(UserId.class);
-        when(userID.getUsername()).thenReturn(UUID.randomUUID().toString());
+        when(userID.getUserId()).thenReturn(UUID.randomUUID().toString());
         return userID;
     }
 

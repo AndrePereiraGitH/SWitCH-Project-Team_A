@@ -63,7 +63,7 @@ public class UserId implements DomainID {
      *
      * @return the user identifier string
      */
-    public String getUsername() {
+    public String getUserId() {
         return userId;
     }
 
