@@ -42,7 +42,10 @@ public final class CityMapper {
         Objects.requireNonNull(city, "City cannot be null");
         Objects.requireNonNull(countryName, "Country name cannot be null");
 
-        return new ResponseCityDTO(city.getCityName(), countryName);
+        return new ResponseCityDTO(
+                city.id().getCityID(),
+                city.getCityName(),
+                countryName);
     }
 
     /**
