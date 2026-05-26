@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 
-import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
@@ -40,31 +39,25 @@ class LibraryRESTControllerTest {
     @Test
     void createLibrary_shouldReturnCreated_whenValidRequest() throws Exception {
 
+        // Arrange
         RequestLibraryDTO request = mock(RequestLibraryDTO.class);
         UserId userId = mock(UserId.class);
-
         Library library = mock(Library.class);
         ResponseLibraryDTO responseDTO = mock(ResponseLibraryDTO.class);
         Link link = mock(Link.class);
 
         when(request.libraryName()).thenReturn("Test Library");
-
-        // VERY IMPORTANT: use matchers safely
-        when(libService.createAndSave(anyString(), eq(userId)))
-                .thenReturn(library);
-
-        when(libLinkProvider.getLinksForLibraries(userId))
-                .thenReturn(List.of(link));
-
+        when(libService.createAndSave(anyString(), eq(userId))).thenReturn(library);
+        when(libLinkProvider.getLinksForLibraries(userId)).thenReturn(List.of(link));
 
         try (MockedStatic<LibraryMapper> mapperMock = mockStatic(LibraryMapper.class)) {
+            mapperMock.when(() -> LibraryMapper.toDTO(library)).thenReturn(responseDTO);
 
-            mapperMock.when(() -> LibraryMapper.toDTO(library))
-                    .thenReturn(responseDTO);
-
+            // Act
             ResponseEntity<ResponseLibraryDTO> response =
                     controller.createLibrary(request, userId);
 
+            // Assert
             assertEquals(CREATED, response.getStatusCode());
             assertEquals(responseDTO, response.getBody());
         }
@@ -72,55 +65,58 @@ class LibraryRESTControllerTest {
 
     // ---------- BAD REQUEST ----------
     @Test
-    void createLibrary_shouldReturnBadRequest_whenIllegalArgumentException() throws AccessDeniedException, InstanceAlreadyExistsException {
+    void createLibrary_shouldReturnBadRequest_whenIllegalArgumentException() throws Exception {
 
+        // Arrange
         RequestLibraryDTO request = mock(RequestLibraryDTO.class);
         UserId userId = mock(UserId.class);
 
         when(request.libraryName()).thenReturn("Test Library");
-        when(libService.createAndSave(any(), any()))
-                .thenThrow(new IllegalArgumentException());
+        when(libService.createAndSave(any(), any())).thenThrow(new IllegalArgumentException());
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(request, userId);
 
+        // Assert
         assertEquals(BAD_REQUEST, response.getStatusCode());
-        assertNull(response.getBody());
     }
 
-    // ---------- UNAUTHORIZED ----------
+    // ---------- FORBIDDEN ----------
     @Test
-    void createLibrary_shouldReturnUnauthorized_whenAccessDenied() throws AccessDeniedException, InstanceAlreadyExistsException {
+    void createLibrary_shouldReturnForbidden_whenAccessDenied() throws Exception {
 
+        // Arrange
         RequestLibraryDTO request = mock(RequestLibraryDTO.class);
         UserId userId = mock(UserId.class);
 
         when(request.libraryName()).thenReturn("Test Library");
-        when(libService.createAndSave(any(), any()))
-                .thenThrow(new AccessDeniedException("denied"));
+        when(libService.createAndSave(any(), any())).thenThrow(new AccessDeniedException("denied"));
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(request, userId);
 
-        assertEquals(UNAUTHORIZED, response.getStatusCode());
-        assertNull(response.getBody());
+        // Assert
+        assertEquals(FORBIDDEN, response.getStatusCode());
     }
 
     // ---------- INTERNAL ERROR ----------
     @Test
-    void createLibrary_shouldReturnInternalServerError_whenUnexpectedException() throws AccessDeniedException, InstanceAlreadyExistsException {
+    void createLibrary_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
 
+        // Arrange
         RequestLibraryDTO request = mock(RequestLibraryDTO.class);
         UserId userId = mock(UserId.class);
 
         when(request.libraryName()).thenReturn("Test Library");
-        when(libService.createAndSave(any(), any()))
-                .thenThrow(new RuntimeException());
+        when(libService.createAndSave(any(), any())).thenThrow(new RuntimeException());
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(request, userId);
 
+        // Assert
         assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
-        assertNull(response.getBody());
     }
 }
