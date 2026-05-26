@@ -7,6 +7,8 @@ import TOPSECRET.dto.user.request.RequestUserDTO;
 import TOPSECRET.dto.user.response.ResponseUserDTO;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +38,18 @@ import static org.mockito.Mockito.*;
  * @see User
  */
 class UserMapperTest {
+
+
+    // -------------------------------------------------------------------------
+    // Private constructor
+    // -------------------------------------------------------------------------
+
+    @Test
+    void constructor_shouldThrowException() throws Exception {
+        Constructor<UserMapper> constructor = UserMapper.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        assertThrows(InvocationTargetException.class, constructor::newInstance);
+    }
 
     // -------------------------------------------------------------------------
     // toDTO
@@ -255,6 +269,32 @@ class UserMapperTest {
     void toContact_shouldThrowException_whenDTOIsNull() {
         // Arrange + Act + Assert
         assertThrows(NullPointerException.class, () -> UserMapper.toContact(null));
+    }
+
+
+    // -------------------------------------------------------------------------
+    // toProfile
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toProfile_shouldMapNameCorrectly() {
+        // Arrange
+        RequestUserDTO dto = new RequestUserDTO(
+                "bruno123", "Bruno", "bruno@isep.ipp.pt",
+                "912345678", "351", "2000-05-23", "ADMIN"
+        );
+
+        // Act
+        Profile result = UserMapper.toProfile(dto);
+
+        // Assert
+        assertEquals("Bruno", result.getName());
+    }
+
+    @Test
+    void toProfile_shouldThrowException_whenDTOIsNull() {
+        // Arrange + Act + Assert
+        assertThrows(NullPointerException.class, () -> UserMapper.toProfile(null));
     }
 
     // -------------------------------------------------------------------------
