@@ -1,0 +1,152 @@
+@startuml
+
+hide footbox
+autonumber
+title Generic Create/Register Flow\n \n THIS IS ONLY A TEMPLATE TO GUIDE THE DIAGRAM CREATION AND CODE IMPLEMENTATION\n \n Method name and attributes must be adjusted
+
+actor User
+participant ":UI" as UI
+
+participant ":ControllerRest" as Controller
+
+participant ":EntityMapper" as Mapper
+participant ":ResponseDTO" as ResponseDTO
+
+participant ":EntityService" as Service
+
+participant ":IEntityRepository" as Repo
+
+participant ":EntityAssembler" as Assembler
+participant "entityDM:EntityDM" as DM
+participant ":EntityFactory" as Factory
+participant "domainEntity:Entity" as Domain
+participant "domainEntityPersisted:Entity" as DomainP
+
+participant ":IEntityRepositoryJPA" as RepoJPA
+
+database "DB" as DB
+
+' =========================================================
+' 1. USER REQUEST
+' =========================================================
+User -> UI : Submit create request
+activate UI
+
+UI -> Controller : POST /entity (RequestDTO)
+activate Controller
+
+
+' =========================================================
+' 2. INPUT MAPPING (DTO + VO)
+' =========================================================
+Controller -> Mapper : toDomain(requestDTO)
+activate Mapper
+
+note right of Mapper
+- Validates DTO
+- Converts VO values
+- Prepares domain input
+end note
+
+Mapper --> Controller : domainInput
+deactivate Mapper
+
+
+' =========================================================
+' 3. SERVICE LAYER (BUSINESS CREATION)
+' =========================================================
+Controller -> Service : create(domainInput)
+activate Service
+
+Service -> Factory : create(domainInput)
+activate Factory
+
+Factory -->> Domain ** : <<create>>
+Factory --> Service : domainEntity
+deactivate Factory
+
+
+' =========================================================
+' 4. PERSISTENCE (DOMAIN → DM)
+' =========================================================
+Service -> Repo : save(domainEntity)
+activate Repo
+
+Repo -> Assembler : toDM(domainEntity)
+activate Assembler
+
+Assembler -->> DM ** : <<create>>
+Assembler --> Repo : entityDM
+deactivate Assembler
+
+
+Repo -> RepoJPA : save(entityDM)
+activate RepoJPA
+
+RepoJPA -> DB : INSERT
+activate DB
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> Repo : persistedDM
+deactivate RepoJPA
+
+
+' =========================================================
+' 5. RECONSTRUCTION (DM → DOMAIN)
+' =========================================================
+Repo -> Assembler : toDomain(persistedDM)
+activate Assembler
+
+Assembler -> Factory : create(persistedData)
+activate Factory
+
+Factory -->> DomainP ** : <<create>>
+Factory --> Assembler : domainEntityPersisted
+deactivate Factory
+
+Assembler --> Repo : domainEntity
+deactivate Assembler
+
+Repo --> Service : domainEntity
+deactivate Repo
+
+
+' =========================================================
+' 6. RESPONSE MAPPING (DOMAIN → DTO)
+' =========================================================
+Service --> Controller : createdEntity(domain)
+deactivate Service
+
+Controller -> Mapper : toResponse(domainEntity)
+activate Mapper
+
+Mapper -> ResponseDTO ** : <<create>>
+Mapper --> Controller : responseDTO
+deactivate Mapper
+
+
+' =========================================================
+' 7. HATEOAS + HTTP STATUS
+' =========================================================
+Controller -> Controller : addLinks(responseDTO)
+
+note right of Controller
+Includes:
+- self
+- update
+- delete
+- list
+end note
+
+Controller --> UI : ResponseDTO + HTTP 201 CREATED
+deactivate Controller
+
+
+' =========================================================
+' 8. UI OUTPUT
+' =========================================================
+UI --> User : Success
+deactivate UI
+
+@enduml
