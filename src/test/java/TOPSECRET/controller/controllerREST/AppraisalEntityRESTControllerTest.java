@@ -7,12 +7,16 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import TOPSECRET.services.AppraisalEntityService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,21 +31,27 @@ import static org.mockito.Mockito.*;
  * Tests follow the AAA pattern and cover all three branches of the create()
  * method: success, IllegalArgumentException, AccessDeniedException, and generic Exception.
  */
+@ExtendWith(MockitoExtension.class)
 class AppraisalEntityRESTControllerTest {
+
+    @Mock
+    private AppraisalEntityService service;
+    @Mock
+    private AppraisalEntityLinkProvider provider;
+
+    private AppraisalEntityRESTController sut;
+
+    @BeforeEach
+    void setUp() {
+        sut = new AppraisalEntityRESTController(service, provider);
+    }
 
     // Helpers
     private RequestAppraisalEntityDTO validDto() {
         return new RequestAppraisalEntityDTO(
-                "name",
-                "999999999",
-                "351",
-                "test@mail.com",
-                "street",
-                "10",
-                "1234-000",
-                "cityId",
-                List.of("pub1"),
-                List.of("genre1")
+                "name", "999999999", "351", "test@mail.com",
+                "street", "10", "1234-000", "cityId",
+                List.of("pub1"), List.of("genre1")
         );
     }
 
@@ -63,12 +73,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnCreatedStatusWhenEntityIsSuccessfullyCreated() throws Exception {
+    void registerAppraisalEntity_shouldReturnCreatedStatus_whenEntityIsSuccessfullyCreated() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any())).thenReturn(realEntity());
         when(provider.getLinks(any())).thenReturn(new ArrayList<>());
 
@@ -80,12 +86,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnNonNullBodyWhenEntityIsSuccessfullyCreated() throws Exception {
+    void registerAppraisalEntity_shouldReturnNonNullBody_whenEntityIsSuccessfullyCreated() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any())).thenReturn(realEntity());
         when(provider.getLinks(any())).thenReturn(new ArrayList<>());
 
@@ -97,12 +99,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldAddLinksToBodyWhenProviderReturnsLinks() throws Exception {
+    void registerAppraisalEntity_shouldAddLinksToBody_whenProviderReturnsLinks() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any())).thenReturn(realEntity());
         when(provider.getLinks(any())).thenReturn(
                 new ArrayList<>(List.of(Link.of("http://example.com", "self")))
@@ -117,12 +115,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequestWhenIllegalArgumentExceptionIsThrown() throws Exception {
+    void registerAppraisalEntity_shouldReturnBadRequest_whenIllegalArgumentExceptionIsThrown() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any()))
                 .thenThrow(new IllegalArgumentException("invalid"));
 
@@ -134,12 +128,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnNullBodyWhenIllegalArgumentExceptionIsThrown() throws Exception {
+    void registerAppraisalEntity_shouldReturnNullBody_whenIllegalArgumentExceptionIsThrown() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any()))
                 .thenThrow(new IllegalArgumentException("invalid"));
 
@@ -151,12 +141,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnForbiddenWhenAccessDeniedExceptionIsThrown() throws Exception {
+    void registerAppraisalEntity_shouldReturnForbidden_whenAccessDeniedExceptionIsThrown() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any()))
                 .thenThrow(new AccessDeniedException("forbidden"));
 
@@ -168,12 +154,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnNullBodyWhenAccessDeniedExceptionIsThrown() throws Exception {
+    void registerAppraisalEntity_shouldReturnNullBody_whenAccessDeniedExceptionIsThrown() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any()))
                 .thenThrow(new AccessDeniedException("forbidden"));
 
@@ -185,12 +167,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnInternalServerErrorWhenUnexpectedExceptionIsThrown() throws Exception {
+    void registerAppraisalEntity_shouldReturnInternalServerError_whenUnexpectedExceptionIsThrown() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any()))
                 .thenThrow(new RuntimeException("unexpected"));
 
@@ -202,12 +180,8 @@ class AppraisalEntityRESTControllerTest {
     }
 
     @Test
-    void shouldReturnNullBodyWhenUnexpectedExceptionIsThrown() throws Exception {
+    void registerAppraisalEntity_shouldReturnNullBody_whenUnexpectedExceptionIsThrown() throws Exception {
         // ARRANGE
-        AppraisalEntityService service = mock(AppraisalEntityService.class);
-        AppraisalEntityLinkProvider provider = mock(AppraisalEntityLinkProvider.class);
-        AppraisalEntityRESTController sut = new AppraisalEntityRESTController(service, provider);
-
         when(service.createAndSave(any(), any(), anyList(), anyList(), any()))
                 .thenThrow(new RuntimeException("unexpected"));
 

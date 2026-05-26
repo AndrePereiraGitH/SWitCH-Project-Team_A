@@ -10,8 +10,9 @@ import TOPSECRET.domain.ValueObjects.*;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -62,7 +63,8 @@ public class AppraisalEntityService {
     public AppraisalEntity createAndSave(String name, Contact contact, List<PublicationTypeId> publicationTypes, List<GenreId> genres, UserId userId)
                         throws InstanceAlreadyExistsException, AccessDeniedException {
 
-        User user = userRepository.findByID(userId).get();
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + userId));
 
         if(!policy.canRegisterAppraisalEntity(user)) {
             throw new AccessDeniedException ("You do not have permission to register an Appraisal Entity");
@@ -94,7 +96,8 @@ public class AppraisalEntityService {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        User user = userRepository.findByID(userId).get();
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + userId));
 
         if(!policy.canRegisterAppraisalEntity(user)) {
             throw new AccessDeniedException ("You do not have permission to update an Appraisal Entity");
