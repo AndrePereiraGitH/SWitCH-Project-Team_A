@@ -1,15 +1,179 @@
 @startuml
-'https://plantuml.com/sequence-diagram
 
+hide footbox
 autonumber
+title Register Genre - REST Flow
 
-== Initialization ==
+actor Administrator
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+participant ":UI" as UI
 
-== Repetition ==
+participant ":GenreRESTController" as Controller
+participant ":GenreMapper" as GenreMapper
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+participant ":GenreService" as Service
+participant ":GenreAuthorizationPolicy" as Policy
+participant ":IUserRepository" as UserRepo
+
+participant ":IGenreRepository" as GenreRepo
+participant ":GenreAssembler" as GenreAssembler
+participant ":GenreFactory" as GenreFactory
+
+participant "genre\n:Genre" as Genre
+participant "genreDM\n:GenreDM" as GenreDM
+
+participant ":IGenreRepositoryJPA" as RepoJPA
+
+participant "persistedGenre\n:Genre" as PersistedGenre
+
+participant "responseGenreDTO\n:GenreResponseDTO" as ResponseDTO
+
+database "DB" as DB
+
+
+' =========================
+' USER INTERACTION
+' =========================
+Administrator -> UI : I want to register a new Genre
+activate UI
+
+UI --> Administrator : Please provide the Genre name
+deactivate UI
+
+Administrator -> UI : Sends Genre name
+activate UI
+
+' =========================
+' CONTROLLER
+' =========================
+UI -> Controller : createGenre(requestDTO, userId)
+activate Controller
+
+Controller -> Controller : dto.genreName()
+
+' =========================
+' SERVICE ENTRY
+' =========================
+Controller -> Service : createAndSave(genreName, userId)
+activate Service
+
+' =========================
+' AUTHORIZATION
+' =========================
+Service -> UserRepo : findByID(userId)
+activate UserRepo
+
+UserRepo --> Service : user
+deactivate UserRepo
+
+Service -> Policy : canCreateGenre(user)
+activate Policy
+
+Policy --> Service : true
+deactivate Policy
+
+' =========================
+' CREATE DOMAIN
+' =========================
+Service -> GenreFactory : create(genreName)
+activate GenreFactory
+
+GenreFactory -->> Genre ** : <<create>>
+GenreFactory --> Service : genre
+
+deactivate GenreFactory
+
+
+' =========================
+' SAVE
+' =========================
+Service -> GenreRepo : save(genre)
+activate GenreRepo
+
+GenreRepo -> GenreAssembler : toDM(genre)
+activate GenreAssembler
+
+GenreAssembler -->> GenreDM ** : <<create>>
+
+GenreAssembler --> GenreRepo : genreDM
+deactivate GenreAssembler
+
+GenreRepo -> RepoJPA : save(genreDM)
+activate RepoJPA
+
+RepoJPA -> DB : INSERT genreDM
+activate DB
+
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> GenreRepo : persistedGenreDM
+deactivate RepoJPA
+
+' =========================
+' REBUILD DOMAIN
+' =========================
+GenreRepo -> GenreAssembler : toDomain(persistedGenreDM)
+activate GenreAssembler
+
+GenreAssembler -> GenreDM : getId()
+activate GenreDM
+
+GenreDM --> GenreAssembler : genreId
+deactivate GenreDM
+
+GenreAssembler -> GenreDM : getGenreType()
+activate GenreDM
+
+GenreDM --> GenreAssembler : genreType
+deactivate GenreDM
+
+GenreAssembler -> GenreFactory : create(genreId, genreType)
+activate GenreFactory
+
+GenreFactory -->> PersistedGenre ** : <<create>>
+GenreFactory --> GenreAssembler : persistedGenre
+deactivate GenreFactory
+
+GenreAssembler --> GenreRepo : persistedGenre
+deactivate GenreAssembler
+
+GenreRepo --> Service : persistedGenre
+deactivate GenreRepo
+
+' =========================
+' RESPONSE DTO
+' =========================
+Service --> Controller : persistedGenre
+
+deactivate Service
+
+Controller -> GenreMapper : toDTO(persistedGenre)
+activate GenreMapper
+
+GenreMapper -> PersistedGenre : id()
+activate PersistedGenre
+
+PersistedGenre --> GenreMapper : id
+deactivate PersistedGenre
+
+GenreMapper -> PersistedGenre : getGenreType()
+activate PersistedGenre
+
+PersistedGenre --> GenreMapper : genreType
+deactivate PersistedGenre
+
+GenreMapper -->> ResponseDTO ** : <<create>>
+GenreMapper --> Controller : responseGenreDTO
+deactivate GenreMapper
+
+' =========================
+' RESPONSE
+' =========================
+Controller --> UI : GenreResponseDTO
+deactivate Controller
+
+UI --> Administrator : Success
+deactivate UI
+
 @enduml

@@ -1,15 +1,150 @@
 @startuml
-'https://plantuml.com/sequence-diagram
 
+hide footbox
 autonumber
+title Get Genres - REST Flow
 
-== Initialization ==
+actor User
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+participant ":UI" as UI
 
-== Repetition ==
+participant ":GenreRESTController" as Controller
+participant ":GenreService" as Service
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+participant ":IGenreRepository" as GenreRepo
+participant ":IGenreRepositoryJPA" as RepoJPA
+participant ":GenreAssembler" as GenreAssembler
+
+participant "genreDMList\n:GenreDM[]" as GenreDMs
+participant ":GenreFactory" as GenreFactory
+participant "persistedGenreList\n:List<Genre>" as persistedGenreList
+participant "persistedGenre\n:Genre" as persistedGenre
+
+participant ":GenreMapper" as GenreMapper
+participant "responseGenreList\n:List<GenreResponseDTO>" as GenreDTO
+
+participant ":Genre" as Genre
+participant "responseGenreDTO\n:GenreResponseDTO" as GDTO
+
+database "DB" as DB
+
+
+' =========================
+' USER INTERACTION
+' =========================
+User -> UI : I want to see all available Genres
+activate UI
+
+UI -> Controller : getGenres()
+activate Controller
+
+
+' =========================
+' SERVICE LAYER
+' =========================
+Controller -> Service : findAll()
+activate Service
+
+Service -> GenreRepo : findAll()
+activate GenreRepo
+
+
+' =========================
+' PERSISTENCE
+' =========================
+GenreRepo -> RepoJPA : findAll()
+activate RepoJPA
+
+RepoJPA -> DB : SELECT * FROM Genre
+activate DB
+
+DB --> RepoJPA : data
+deactivate DB
+
+RepoJPA --> GenreDMs ** : <<create>>
+RepoJPA --> GenreRepo : genreDMList
+deactivate RepoJPA
+
+
+' =========================
+' DM → DOMAIN
+' =========================
+GenreRepo -> GenreAssembler : toDomainList(genreDMList)
+activate GenreAssembler
+
+GenreAssembler -->> persistedGenreList ** : <<create>>
+
+loop for each genreDM in genreDMList
+
+    GenreAssembler -> GenreDMs : getId()
+    activate GenreDMs
+    GenreDMs --> GenreAssembler : genreId
+    deactivate GenreDMs
+
+    GenreAssembler -> GenreDMs : getGenreType()
+    activate GenreDMs
+    GenreDMs --> GenreAssembler : genreType
+    deactivate GenreDMs
+
+    GenreAssembler -> GenreFactory : create(genreId, genreType)
+    activate GenreFactory
+
+    GenreFactory -->> persistedGenre ** : <<create>>
+    GenreFactory --> GenreAssembler : persistedGenre
+
+    deactivate GenreFactory
+
+    GenreAssembler -> GenreAssembler : add(persistedGenre)
+
+end
+
+GenreAssembler --> GenreRepo : persistedGenreList
+deactivate GenreAssembler
+
+GenreRepo --> Service : persistedGenreList
+deactivate GenreRepo
+
+Service --> Controller : persistedGenreList
+deactivate Service
+
+
+' =========================
+' DOMAIN → DTO
+' =========================
+Controller -> GenreMapper : toDTOs(persistedGenreList)
+activate GenreMapper
+
+GenreMapper -->> GenreDTO ** : <<create>>
+
+loop for each genre in persistedGenreList
+
+    GenreMapper -> Genre : id()
+    activate Genre
+    Genre --> GenreMapper : genreId
+    deactivate Genre
+
+    GenreMapper -> Genre : getGenreType()
+    activate Genre
+    Genre --> GenreMapper : genreType
+    deactivate Genre
+
+    GenreMapper -->> GDTO ** : <<create>>
+
+    GenreMapper -> GenreMapper : add(responseGenreDTO)
+
+end
+
+GenreMapper --> Controller : responseGenreList
+deactivate GenreMapper
+
+
+' =========================
+' RESPONSE
+' =========================
+Controller --> UI : responseGenreList
+deactivate Controller
+
+UI --> User : Display official Genres
+deactivate UI
+
 @enduml
