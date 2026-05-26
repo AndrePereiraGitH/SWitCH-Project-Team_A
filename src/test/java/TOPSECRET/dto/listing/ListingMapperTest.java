@@ -57,7 +57,7 @@ class ListingMapperTest {
         when(listing.getShortDescription()).thenReturn("short description");
 
         when(listing.getSellerId()).thenReturn(sellerId);
-        when(sellerId.getUsername()).thenReturn("joao");
+        when(sellerId.getUserId()).thenReturn("joao");
 
         when(picture1.getPicture()).thenReturn("pic1.jpg");
         when(picture2.getPicture()).thenReturn("pic2.jpg");

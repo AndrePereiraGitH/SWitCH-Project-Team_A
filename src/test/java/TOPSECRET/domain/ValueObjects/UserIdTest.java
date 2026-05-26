@@ -27,7 +27,7 @@ class UserIdTest {
 
         // Assert
         assertNotNull(userId);
-        assertEquals("david123", userId.getUsername());
+        assertEquals("david123", userId.getUserId());
     }
 
     @Test
@@ -118,12 +118,12 @@ class UserIdTest {
 
     // getUsername() tests
     @Test
-    void getUsername_ReturnsCorrectUsername() {
+    void getUsername_ReturnsCorrectUserId() {
         // Arrange
         UserId userId = new UserId("david123");
 
         // Act
-        String result = userId.getUsername();
+        String result = userId.getUserId();
 
         // Assert
         assertEquals("david123", result);

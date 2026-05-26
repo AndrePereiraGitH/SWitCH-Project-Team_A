@@ -360,7 +360,7 @@ class LibraryTest {
 
     private UserId createMockUser(String name) {
         UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn(name);
+        when(userDouble.getUserId()).thenReturn(name);
         return userDouble;
     }
 }
