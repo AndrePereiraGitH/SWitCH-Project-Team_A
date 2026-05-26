@@ -1,6 +1,10 @@
 package TOPSECRET.controller.controllerCLI;
 
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.GenreService;
+
+import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
 
 /**
  * Controller responsible for handling the registration of a new genre (US003).
@@ -39,8 +43,8 @@ public class ToRegisterGenreController {
      * @return {@code true} if the genre was successfully created and persisted
      * @throws IllegalArgumentException if the genre already exists or the name is invalid
      */
-    public boolean registerGenre(String genreType) {
-        genreService.createAndSave(genreType);
+    public boolean registerGenre(String genreType, UserId userId) throws AccessDeniedException, InstanceAlreadyExistsException {
+        genreService.createAndSave(genreType, userId);
         return true;
     }
 }
