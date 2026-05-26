@@ -37,7 +37,7 @@ public class ListingMapper {
                 listing.getSaleType().toString(),
                 listing.getPrice().toString(),
                 listing.getShortDescription(),
-                listing.getSellerId().getUsername(),
+                listing.getSellerId().getUserId(),
                 listing.getPictures().stream().map(Picture::getPicture).toList(),
                 listing.getPublicationDate()
         );
