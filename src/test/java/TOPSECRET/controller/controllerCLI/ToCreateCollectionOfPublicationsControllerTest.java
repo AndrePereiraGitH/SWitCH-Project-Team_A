@@ -14,6 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -121,7 +123,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     }
 
     @Test
-    void shouldCreateCollectionSuccessfully() {
+    void shouldCreateCollectionSuccessfully() throws AccessDeniedException, InstanceAlreadyExistsException {
         // Arrange
         UserId userId = mock(UserId.class);
         GenreId genreId = mock(GenreId.class);
@@ -137,7 +139,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     }
 
     @Test
-    void shouldPropagateExceptionWhenDuplicateExists() {
+    void shouldPropagateExceptionWhenDuplicateExists() throws AccessDeniedException, InstanceAlreadyExistsException {
         // Arrange
         UserId userId = mock(UserId.class);
         GenreId genreId = mock(GenreId.class);
