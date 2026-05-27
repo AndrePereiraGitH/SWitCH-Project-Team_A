@@ -8,7 +8,6 @@ import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,13 +37,13 @@ class AppraisalEntityServiceTest {
     @Mock private AppraisalEntityFactory factory;
     @Mock private AppraisalEntityAuthorizationPolicy policy;
     @Mock private IUserRepository userRepo;
+    @Mock private UserId userId;
+    @Mock private AppraisalEntityId entityId;
 
     @InjectMocks
     private AppraisalEntityService sut;
 
     // Helpers
-    private UserId userId()              { return mock(UserId.class); }
-    private AppraisalEntityId entityId() { return mock(AppraisalEntityId.class); }
     private Contact contact()            { return mock(Contact.class); }
     private List<PublicationTypeId> pubs()   { return List.of(mock(PublicationTypeId.class)); }
     private List<GenreId> genres()       { return List.of(mock(GenreId.class)); }
@@ -57,13 +56,13 @@ class AppraisalEntityServiceTest {
         // ARRANGE
         User user = user();
         AppraisalEntity entity = entity();
-        when(userRepo.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterAppraisalEntity(user)).thenReturn(true);
         when(factory.create(anyString(), any(), anyList(), anyList())).thenReturn(entity);
         when(repository.save(entity)).thenReturn(entity);
 
         // ACT
-        AppraisalEntity result = sut.createAndSave("name", contact(), pubs(), genres(), userId());
+        AppraisalEntity result = sut.createAndSave("name", contact(), pubs(), genres(), userId);
 
         // ASSERT
         assertEquals(entity, result);
@@ -73,23 +72,23 @@ class AppraisalEntityServiceTest {
     void createAndSave_shouldThrowAccessDenied_whenUserIsNotAdmin() {
         // ARRANGE
         User user = user();
-        when(userRepo.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
 
         // ACT + ASSERT
         assertThrows(AccessDeniedException.class, () ->
-                sut.createAndSave("name", contact(), pubs(), genres(), userId())
+                sut.createAndSave("name", contact(), pubs(), genres(), userId)
         );
     }
 
     @Test
     void createAndSave_shouldThrowNoSuchElement_whenUserNotFound() {
         // ARRANGE
-        when(userRepo.findByID(userId())).thenReturn(Optional.empty());
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
         assertThrows(NoSuchElementException.class, () ->
-                sut.createAndSave("name", contact(), pubs(), genres(), userId())
+                sut.createAndSave("name", contact(), pubs(), genres(), userId)
         );
     }
 
@@ -98,13 +97,13 @@ class AppraisalEntityServiceTest {
         // ARRANGE
         User user = user();
         AppraisalEntity entity = entity();
-        when(userRepo.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterAppraisalEntity(user)).thenReturn(true);
-        when(repository.findById(entityId())).thenReturn(Optional.of(entity));
+        when(repository.findById(entityId)).thenReturn(Optional.of(entity));
         when(repository.save(entity)).thenReturn(entity);
 
         // ACT
-        AppraisalEntity result = sut.update(entityId(), "name", contact(), pubs(), genres(), userId());
+        AppraisalEntity result = sut.update(entityId, "name", contact(), pubs(), genres(), userId);
 
         // ASSERT
         assertEquals(entity, result);
@@ -114,23 +113,23 @@ class AppraisalEntityServiceTest {
     void update_shouldThrowAccessDenied_whenUserIsNotAdmin() {
         // ARRANGE
         User user = user();
-        when(userRepo.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
 
         // ACT + ASSERT
         assertThrows(AccessDeniedException.class, () ->
-                sut.update(entityId(), "name", contact(), pubs(), genres(), userId())
+                sut.update(entityId, "name", contact(), pubs(), genres(), userId)
         );
     }
 
     @Test
     void update_shouldThrowNoSuchElement_whenUserNotFound() {
         // ARRANGE
-        when(userRepo.findByID(userId())).thenReturn(Optional.empty());
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
         assertThrows(NoSuchElementException.class, () ->
-                sut.update(entityId(), "name", contact(), pubs(), genres(), userId())
+                sut.update(entityId, "name", contact(), pubs(), genres(), userId)
         );
     }
 
@@ -139,7 +138,7 @@ class AppraisalEntityServiceTest {
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                sut.update(null, "name", contact(), pubs(), genres(), userId())
+                sut.update(null, "name", contact(), pubs(), genres(), userId)
         );
     }
 
@@ -147,13 +146,13 @@ class AppraisalEntityServiceTest {
     void update_shouldThrowIllegalArgument_whenEntityNotFound() {
         // ARRANGE
         User user = user();
-        when(userRepo.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterAppraisalEntity(user)).thenReturn(true);
-        when(repository.findById(entityId())).thenReturn(Optional.empty());
+        when(repository.findById(entityId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class, () ->
-                sut.update(entityId(), "name", contact(), pubs(), genres(), userId())
+                sut.update(entityId, "name", contact(), pubs(), genres(), userId)
         );
     }
 
@@ -161,10 +160,10 @@ class AppraisalEntityServiceTest {
     void findById_shouldReturnEntity_whenFound() {
         // ARRANGE
         AppraisalEntity entity = entity();
-        when(repository.findById(entityId())).thenReturn(Optional.of(entity));
+        when(repository.findById(entityId)).thenReturn(Optional.of(entity));
 
         // ACT
-        Optional<AppraisalEntity> result = sut.findById(entityId());
+        Optional<AppraisalEntity> result = sut.findById(entityId);
 
         // ASSERT
         assertTrue(result.isPresent());
@@ -174,10 +173,10 @@ class AppraisalEntityServiceTest {
     @Test
     void findById_shouldReturnEmpty_whenNotFound() {
         // ARRANGE
-        when(repository.findById(entityId())).thenReturn(Optional.empty());
+        when(repository.findById(entityId)).thenReturn(Optional.empty());
 
         // ACT
-        Optional<AppraisalEntity> result = sut.findById(entityId());
+        Optional<AppraisalEntity> result = sut.findById(entityId);
 
         // ASSERT
         assertTrue(result.isEmpty());
@@ -218,10 +217,10 @@ class AppraisalEntityServiceTest {
     @Test
     void existsById_shouldReturnTrue_whenEntityExists() {
         // ARRANGE
-        when(repository.existsById(entityId())).thenReturn(true);
+        when(repository.existsById(entityId)).thenReturn(true);
 
         // ACT
-        boolean result = sut.existsById(entityId());
+        boolean result = sut.existsById(entityId);
 
         // ASSERT
         assertTrue(result);
@@ -230,10 +229,10 @@ class AppraisalEntityServiceTest {
     @Test
     void existsById_shouldReturnFalse_whenEntityDoesNotExist() {
         // ARRANGE
-        when(repository.existsById(entityId())).thenReturn(false);
+        when(repository.existsById(entityId)).thenReturn(false);
 
         // ACT
-        boolean result = sut.existsById(entityId());
+        boolean result = sut.existsById(entityId);
 
         // ASSERT
         assertFalse(result);
