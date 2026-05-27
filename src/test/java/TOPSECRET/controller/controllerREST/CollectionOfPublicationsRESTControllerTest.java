@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.CollectionOfPublicationsLinkProvider;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.collectionOfPublications.CollectionOfPublicationsMapper;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -168,5 +170,218 @@ class CollectionOfPublicationsRESTControllerTest {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
             assertNull(response.getBody());
         }
+    }
+
+    // -------------------------------------------------------------------------
+// makeCollectionPublic
+// -------------------------------------------------------------------------
+
+    @Test
+    void makeCollectionPublic_shouldReturnOk_onSuccess()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(collectionService.makeCollectionPublic(collectionIdDouble, userIdDouble))
+                .thenReturn(true);
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertTrue(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublic_shouldReturnOkWithFalse_whenAlreadyPublic()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(collectionService.makeCollectionPublic(collectionIdDouble, userIdDouble))
+                .thenReturn(false);
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertFalse(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublic_shouldReturnBadRequest_onIllegalArgument()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(collectionService.makeCollectionPublic(collectionIdDouble, userIdDouble))
+                .thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublic_shouldReturnForbidden_onAccessDenied()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(collectionService.makeCollectionPublic(collectionIdDouble, userIdDouble))
+                .thenThrow(new AccessDeniedException("denied"));
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode().value());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublic_shouldReturnInternalServerError_onException()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(collectionService.makeCollectionPublic(collectionIdDouble, userIdDouble))
+                .thenThrow(new RuntimeException());
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
+        assertNull(response.getBody());
+    }
+
+// -------------------------------------------------------------------------
+// makeCollectionPublicUntil
+// -------------------------------------------------------------------------
+
+    @Test
+    void makeCollectionPublicUntil_shouldReturnOk_onSuccess()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble))
+                .thenReturn(true);
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertTrue(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldReturnOkWithFalse_whenNotChanged()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble))
+                .thenReturn(false);
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertFalse(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldReturnBadRequest_onIllegalArgument()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble))
+                .thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldReturnForbidden_onAccessDenied()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble))
+                .thenThrow(new AccessDeniedException("denied"));
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode().value());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldReturnInternalServerError_onException()
+            throws Exception {
+
+        // ARRANGE
+        CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+
+        when(collectionService.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble))
+                .thenThrow(new RuntimeException());
+
+        // ACT
+        ResponseEntity<Boolean> response =
+                controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+
+        // ASSERT
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
+        assertNull(response.getBody());
     }
 }
