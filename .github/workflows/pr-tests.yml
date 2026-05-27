@@ -193,13 +193,20 @@ jobs:
               --no-transfer-progress \
               -DoutputFile=target/dependency-tree.txt
 
-      - name: Debug NVD key
+      - name: Check if NVD key is inserted
         run: |
           echo "Key length: ${#NVD_API_KEY}"
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
 
       # OWASP: CVE scan — fails build on HIGH or CRITICAL (CVSS >= 7)
+      - name: Cache NVD database
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: nvd-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
+          restore-keys: nvd-${{ runner.os }}-
+
       - name: OWASP Dependency-Check (CVE gate)
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -207,7 +214,7 @@ jobs:
           mvn org.owasp:dependency-check-maven:check \
           -DfailBuildOnCVSS=7 \
           -DnvdApiKey=${NVD_API_KEY} \
-          -DnvdApiDelay=6000 \
+          -DnvdApiDelay=10000 \
           --no-transfer-progress
 
       - name: Upload dependency inventory
