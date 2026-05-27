@@ -193,15 +193,22 @@ jobs:
               --no-transfer-progress \
               -DoutputFile=target/dependency-tree.txt
 
+      - name: Debug NVD key
+        run: |
+          echo "Key length: ${#NVD_API_KEY}"
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+
       # OWASP: CVE scan — fails build on HIGH or CRITICAL (CVSS >= 7)
       - name: OWASP Dependency-Check (CVE gate)
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
           mvn org.owasp:dependency-check-maven:check \
-              -DfailBuildOnCVSS=7 \
-              -DnvdApiKey=${NVD_API_KEY} \
-              --no-transfer-progress
+          -DfailBuildOnCVSS=7 \
+          -DnvdApiKey=${NVD_API_KEY} \
+          -DnvdApiDelay=6000 \
+          --no-transfer-progress
 
       - name: Upload dependency inventory
         if: always()
