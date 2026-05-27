@@ -75,6 +75,7 @@ class UserRESTControllerTest {
             // Assert
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
             assertEquals(responseDTO, response.getBody());
+            verify(responseDTO).add(linkDouble);
         }
     }
 
