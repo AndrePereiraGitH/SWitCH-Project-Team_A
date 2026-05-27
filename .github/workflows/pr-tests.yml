@@ -339,13 +339,12 @@ jobs:
           cache: maven
 
       # Stamps the version with the short commit SHA for traceability
-      # e.g. 1.0-SNAPSHOT → 1.0-abc1234
       - name: Set version from commit SHA
         run: |
           SHORT_SHA=$(git rev-parse --short HEAD)
           mvn versions:set -DnewVersion="1.0-${SHORT_SHA}" --no-transfer-progress
 
-      # Tests already passed in build-and-test — skip here to save time
+      # Tests already passed in build-and-test
       - name: Build versioned artifact
         run: mvn package -DskipTests --no-transfer-progress
 
