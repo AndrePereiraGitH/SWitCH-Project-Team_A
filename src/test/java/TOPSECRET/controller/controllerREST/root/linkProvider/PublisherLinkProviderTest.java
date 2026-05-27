@@ -10,10 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -32,58 +31,36 @@ class PublisherLinkProviderTest {
     private PublisherLinkProvider provider;
 
     @Test
-    void getLinksForPublisher_shouldReturnCreatePublisherLink_whenUserHasPermission() {
+    void shouldReturnCreatePublisherLink_whenUserHasPermission() {
 
-        // ARRANGE
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
-        when(userRepo.findByID(userId))
-                .thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreatPublisher(user)).thenReturn(true);
 
-        when(authPolicy.canCreatPublisher(user))
-                .thenReturn(true);
-
-        // ACT
-        List<?> result = provider.getLinksForPublisher(userId);
-
-        // ASSERT
-        assertEquals(1, result.size());
+        assertEquals(1, provider.getLinksForPublisher(userId).size());
     }
 
     @Test
-    void getLinksForPublisher_shouldReturnEmptyList_whenUserHasNoPermission() {
+    void shouldReturnEmptyList_whenUserHasNoPermission() {
 
-        // ARRANGE
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
-        when(userRepo.findByID(userId))
-                .thenReturn(Optional.of(user));
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreatPublisher(user)).thenReturn(false);
 
-        when(authPolicy.canCreatPublisher(user))
-                .thenReturn(false);
-
-        // ACT
-        List<?> result = provider.getLinksForPublisher(userId);
-
-        // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals(0, provider.getLinksForPublisher(userId).size());
     }
 
     @Test
-    void getLinksForPublisher_shouldReturnEmptyList_whenUserDoesNotExist() {
+    void shouldReturnEmptyList_whenUserDoesNotExist() {
 
-        // ARRANGE
         UserId userId = mock(UserId.class);
 
-        when(userRepo.findByID(userId))
-                .thenReturn(Optional.empty());
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
-        // ACT
-        List<?> result = provider.getLinksForPublisher(userId);
-
-        // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals(0, provider.getLinksForPublisher(userId).size());
     }
 }

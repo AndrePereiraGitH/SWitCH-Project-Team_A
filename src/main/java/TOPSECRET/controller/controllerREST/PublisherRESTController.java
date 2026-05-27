@@ -1,4 +1,4 @@
-package TOPSECRET.controller.controllerREST.root;
+package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.PublisherLinkProvider;
 import TOPSECRET.domain.Publisher.Publisher;

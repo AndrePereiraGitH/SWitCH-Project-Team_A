@@ -1,6 +1,6 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
-import TOPSECRET.controller.controllerREST.root.PublisherRESTController;
+import TOPSECRET.controller.controllerREST.PublisherRESTController;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublisherAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.UserId;
