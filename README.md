@@ -1,5 +1,4 @@
-# MITE LOVERS - TEAM A
-
+# MITE LOVERS — TEAM A
 
 # DevSecOps Process Documentation
 
@@ -9,7 +8,7 @@
 
 ## Overview
 
-This document describes the DevSecOps workflow adopted by Team A. It covers the local development scripts, static analysis tools, test coverage enforcement, the automated CI pipeline, and the Git workflow conventions. The goal is to ensure every change is built, linted, tested, and validated before being integrated into shared branches.
+This document describes the DevSecOps workflow adopted by Team A. It covers the local development scripts, static analysis tools, test coverage enforcement, the automated CI pipeline, and the Git workflow conventions. The goal is to ensure every change is built, linted, tested, and security-validated before being integrated into shared branches.
 
 ---
 
@@ -122,40 +121,149 @@ File: `.github/workflows/pr-tests.yml`
 
 ### Trigger
 
-The pipeline runs automatically on every **Pull Request** that targets any of the following branches:
+The pipeline runs automatically on:
 
-- `main`
-- `teamA_1`
-- `teamA_2`
+- **Pull Requests** (opened or updated) targeting `main`, `teamA_1`, or `teamA_2`
+- **Pushes** to `main`, `teamA_1`, or `teamA_2`
+- **Manual dispatch** (`workflow_dispatch`)
 
-It is triggered when a PR is **opened** or **updated** (new commits pushed).
+### Pipeline Overview
 
-### Pipeline Steps
+The pipeline is composed of five parallel and sequential jobs:
 
 ```
-Code checkout
-     ↓
-Install Java 17 (Temurin, with Maven cache)
-     ↓
-mvn clean verify
-  ├── Compile
-  ├── Run tests (Surefire)
-  ├── JaCoCo: measure line coverage → fail if < 85%
-  └── PITest: measure mutation coverage → fail if < 95%
-     ↓
-Upload JaCoCo report (artifact)
-     ↓
-Upload PITest report (artifact)
+┌─────────────────────────────────────────────────────────┐
+│                  Parallel (no dependencies)             │
+│  build-and-test   static-analysis   secret-detection   dependency-scan  │
+└────────────────────────┬────────────────────────────────┘
+                         ↓ (all must pass)
+                    pr-validation
+                         ↓ (push events only)
+                   publish-artifact
 ```
 
-### Artifacts
+---
 
-After each pipeline run (even if the build fails), two reports are uploaded and accessible from the GitHub Actions run page:
+### Job: `build-and-test` — Coverage Enforcement (US054)
 
-| Artifact | Path | Description |
+Compiles the project, runs all tests, and enforces coverage thresholds.
+
+**Steps:**
+1. Checkout code
+2. Install Java 17 (Temurin, Maven cache)
+3. `mvn clean verify` — compile, test, JaCoCo (≥ 85% line), PITest (≥ 95% mutation)
+4. Upload `jacoco-report` artifact (`target/site/jacoco/`)
+5. Upload `pitest-report` artifact (`target/pit-reports/`)
+
+> Reports are uploaded even if the build fails (`if: always()`).
+
+---
+
+### Job: `static-analysis-and-security` — SAST & Style (US048, US056)
+
+Runs static analysis and security scanning in parallel with the build job.
+
+**Steps:**
+1. Checkout code
+2. Install Java 17 (Temurin, Maven cache)
+3. **Checkstyle** — style violations reported, does not fail the build (`|| true`)
+4. **PMD** — code smell detection reported, does not fail the build (`|| true`)
+5. **Semgrep SAST scan** — scans with `p/java`, `p/owasp-top-ten`, `p/spring`; **fails the build** on `ERROR` severity findings
+6. Upload `checkstyle-report` artifact (`target/checkstyle-result.xml`)
+7. Upload `pmd-report` artifact (`target/pmd.xml`)
+8. **Post Semgrep findings to PR** (on pull requests) — publishes a comment with a severity breakdown table (ERROR / WARNING / INFO counts) and flags if the build is blocked
+
+> Requires `SEMGREP_APP_TOKEN` secret to be configured in the repository.
+
+---
+
+### Job: `secret-detection` — Secret & Credential Scanning (US049)
+
+Scans the full Git history for leaked secrets and credentials.
+
+**Steps:**
+1. Checkout code with **full history** (`fetch-depth: 0`) so all commits are scanned
+2. **Gitleaks** — scans the entire git history; **fails the build** if any secret is found
+
+> Requires `GITHUB_TOKEN` to be available (automatically provided by GitHub Actions).
+
+---
+
+### Job: `dependency-scan` — CVE & Dependency Audit (US053, US056)
+
+Generates a full dependency inventory and scans for known vulnerabilities.
+
+**Steps:**
+1. Checkout code
+2. Install Java 17 (Temurin, Maven cache)
+3. **`mvn dependency:tree`** — generates `target/dependency-tree.txt` with all direct and transitive dependencies
+4. **OWASP Dependency-Check** — CVE scan against the NVD database; **fails the build** on any finding with CVSS ≥ 7 (HIGH or CRITICAL)
+5. Upload `dependency-tree` artifact (`target/dependency-tree.txt`)
+6. Upload `dependency-check-report` artifact (`target/dependency-check-report.html`)
+7. **Post OWASP findings to PR** (on pull requests) — publishes a comment with a severity breakdown (CRITICAL / HIGH / MEDIUM / LOW counts) and flags if the build is blocked
+
+> Requires `NVD_API_KEY` secret to be configured in the repository for NVD API access.
+
+---
+
+### Job: `pr-validation` — Aggregated Gate (US051, US052, US057)
+
+Runs only after **all four** upstream jobs pass. Acts as the final integration gate.
+
+**Steps:**
+1. **Verify all gates passed** — prints a summary of all quality gates to the Actions log
+2. **Publish quality summary to PR** (on pull requests) — posts a consolidated CI Quality Report comment with a table of all jobs, tools, and thresholds
+
+A PR cannot be merged until this job succeeds, which requires every preceding job to have passed.
+
+---
+
+### Job: `publish-artifact` — Versioned Build (US050)
+
+Runs only after `pr-validation` passes, and **only on push events** (i.e. when a PR is merged into a protected branch — not on every PR open/sync).
+
+**Steps:**
+1. Checkout code
+2. Install Java 17 (Temurin, Maven cache)
+3. **Set version from commit SHA** — stamps the artifact version as `1.0-<short-sha>` for traceability
+4. **`mvn package -DskipTests`** — builds the JAR (tests already validated in `build-and-test`)
+5. Upload versioned JAR as `app-<full-sha>` artifact, retained for **90 days**
+
+---
+
+### Pipeline Gate Summary
+
+| Job | Gate Type | Tool | Threshold / Condition |
+|---|---|---|---|
+| `build-and-test` | **Hard gate** | JaCoCo | ≥ 85% line coverage |
+| `build-and-test` | **Hard gate** | PITest | ≥ 95% mutation coverage |
+| `static-analysis-and-security` | **Hard gate** | Semgrep | No ERROR severity findings |
+| `static-analysis-and-security` | **Report only** | Checkstyle | Style violations logged |
+| `static-analysis-and-security` | **Report only** | PMD | Code smells logged |
+| `secret-detection` | **Hard gate** | Gitleaks | No secrets in full git history |
+| `dependency-scan` | **Hard gate** | OWASP Dependency-Check | CVSS < 7 (no HIGH/CRITICAL CVEs) |
+
+### Artifacts Produced
+
+| Artifact Name | Source Job | Path | Retention |
+|---|---|---|---|
+| `jacoco-report` | `build-and-test` | `target/site/jacoco/` | Default |
+| `pitest-report` | `build-and-test` | `target/pit-reports/` | Default |
+| `checkstyle-report` | `static-analysis-and-security` | `target/checkstyle-result.xml` | Default |
+| `pmd-report` | `static-analysis-and-security` | `target/pmd.xml` | Default |
+| `dependency-tree` | `dependency-scan` | `target/dependency-tree.txt` | Default |
+| `dependency-check-report` | `dependency-scan` | `target/dependency-check-report.html` | Default |
+| `app-<sha>` | `publish-artifact` | `target/*.jar` | 90 days |
+
+All artifacts are accessible from the **Actions → [run] → Artifacts** section on GitHub.
+
+### Required Secrets
+
+| Secret | Used By | Purpose |
 |---|---|---|
-| `jacoco-report` | `target/site/jacoco/` | HTML line coverage report |
-| `pitest-report` | `target/pit-reports/` | HTML + XML mutation coverage report |
+| `SEMGREP_APP_TOKEN` | `static-analysis-and-security` | Authenticates the Semgrep SAST scan |
+| `NVD_API_KEY` | `dependency-scan` | Authenticates NVD API calls for CVE data |
+| `GITHUB_TOKEN` | `secret-detection`, PR comments | Provided automatically by GitHub Actions |
 
 ---
 
@@ -283,7 +391,7 @@ Example:
 feat: DevSecOps setup and Sprint 5 project structure (#644 #645 #646 #647)
 ```
 
-**CI must pass** before any PR can be merged.
+**CI must pass** before any PR can be merged. The `pr-validation` job acts as the final gate — it only succeeds when all four upstream jobs (`build-and-test`, `static-analysis-and-security`, `secret-detection`, `dependency-scan`) have passed.
 
 ---
 
@@ -296,8 +404,9 @@ The expected workflow for each team member is as follows:
 3. **Before committing**, run `./lint` locally to catch style violations early.
 4. **Before opening a PR**, run `./run` locally to verify the build and all coverage thresholds pass.
 5. **Open a Pull Request** targeting the appropriate base branch, following the PR template and title convention.
-6. **CI must pass** before the PR can be merged. A failing pipeline (build error, test failure, or coverage below threshold) blocks integration.
-7. **Review** the JaCoCo and PITest reports attached to the CI run if the build fails.
+6. **CI must pass** before the PR can be merged. A failing pipeline (build error, test failure, coverage below threshold, secrets detected, or HIGH/CRITICAL CVEs) blocks integration.
+7. **Review artifacts** — JaCoCo, PITest, Checkstyle, PMD, OWASP, and dependency-tree reports are all available from the Actions run page.
+8. **Check PR comments** — Semgrep and OWASP results are automatically posted as PR comments with severity breakdowns. A consolidated quality summary is posted once all gates pass.
 
 ---
 
@@ -313,6 +422,9 @@ The expected workflow for each team member is as follows:
 | PITest JUnit5 plugin | 1.1.2 |
 | Checkstyle plugin | 3.3.1 |
 | PMD plugin | 3.21.2 |
+| Semgrep | semgrep-action@v1 |
+| Gitleaks | gitleaks-action@v2 |
+| OWASP Dependency-Check | dependency-check-maven (latest) |
 | JUnit Jupiter | 5.10.2 |
 | Mockito | 5.10.0 |
 | GitHub Actions runner | ubuntu-latest |
