@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.AuthorLinkProvider;
 import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.author.AuthorMapper;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -35,32 +37,20 @@ public class AuthorRESTController {
 
     private final AuthorService service;
     private final AuthorLinkProvider provider;
-    private final AuthorMapper mapper;
 
     /**
      * Creates a new Author REST controller.
      *
      * @param service  service responsible for Author operations
      * @param provider provider responsible for generating HATEOAS links
-     * @param mapper   mapper responsible for converting domain objects to DTOs
      */
-    public AuthorRESTController(AuthorService service,
-                                AuthorLinkProvider provider,
-                                AuthorMapper mapper) {
+    public AuthorRESTController(AuthorService service, AuthorLinkProvider provider) {
         this.service = service;
         this.provider = provider;
-        this.mapper = mapper;
     }
 
     /**
      * Creates and stores a new Author.
-     *
-     * <p>The request DTO is converted before delegating the
-     * creation process to the application service.</p>
-     *
-     * <p>If the operation succeeds, a response DTO representing
-     * the created Author is returned with HTTP status
-     * {@code 201 CREATED}.</p>
      *
      * @param dto    request data used to create the Author
      * @param userId identifier of the user performing the operation
@@ -79,8 +69,9 @@ public class AuthorRESTController {
                     dto.biography(),
                     new UserId(userId)
             );
-            AuthorDTO result = mapper.toDTO(author);
-            List<Link> links = provider.getLinks(new UserId(userId));
+            Country country = service.resolveCountry(author.getCountryID());
+            AuthorDTO result = AuthorMapper.toDTO(author, country);
+            List<Link> links = new ArrayList<>(provider.getLinks(new UserId(userId)));
             links.add(linkTo(methodOn(AuthorRESTController.class)
                     .createAuthor(dto, userId)).withSelfRel());
             links.forEach(result::add);

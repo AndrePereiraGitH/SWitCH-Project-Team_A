@@ -4,6 +4,8 @@ import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AuthorAuthor
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CountryId;
@@ -24,15 +26,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link AuthorService}.
- *
- * <p>
- * Validates the main business rules of author creation,
- * including authorization checks and repository interaction.
- * </p>
- *
- * <p>
- * All dependencies are mocked using Mockito and tests follow the AAA pattern.
- * </p>
  */
 @ExtendWith(MockitoExtension.class)
 class AuthorServiceTest {
@@ -48,6 +41,9 @@ class AuthorServiceTest {
 
     @Mock
     private IUserRepository userRepository;
+
+    @Mock
+    private ICountryRepository countryRepository;
 
     @InjectMocks
     private AuthorService authorService;
@@ -69,25 +65,31 @@ class AuthorServiceTest {
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
         assertThrows(NullPointerException.class,
-                () -> new AuthorService(null, authorRepository, policy, userRepository));
+                () -> new AuthorService(null, authorRepository, policy, userRepository, countryRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
         assertThrows(NullPointerException.class,
-                () -> new AuthorService(authorFactory, null, policy, userRepository));
+                () -> new AuthorService(authorFactory, null, policy, userRepository, countryRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenPolicyIsNull() {
         assertThrows(NullPointerException.class,
-                () -> new AuthorService(authorFactory, authorRepository, null, userRepository));
+                () -> new AuthorService(authorFactory, authorRepository, null, userRepository, countryRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenUserRepositoryIsNull() {
         assertThrows(NullPointerException.class,
-                () -> new AuthorService(authorFactory, authorRepository, policy, null));
+                () -> new AuthorService(authorFactory, authorRepository, policy, null, countryRepository));
+    }
+
+    @Test
+    void constructor_shouldThrowNullPointerException_whenCountryRepositoryIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> new AuthorService(authorFactory, authorRepository, policy, userRepository, null));
     }
 
     // =========================================================================
@@ -96,6 +98,7 @@ class AuthorServiceTest {
 
     @Test
     void createAndSave_shouldReturnSavedAuthor() throws InstanceAlreadyExistsException, AccessDeniedException {
+
         // ARRANGE
         User user = user();
         Author author = author();
@@ -117,6 +120,7 @@ class AuthorServiceTest {
 
     @Test
     void createAndSave_shouldCallRepositorySave_whenUserIsAdmin() throws Exception {
+
         // ARRANGE
         User user = user();
         Author author = author();
@@ -141,6 +145,7 @@ class AuthorServiceTest {
 
     @Test
     void createAndSave_shouldThrowAccessDenied_whenUserIsNotAdmin() {
+
         // ARRANGE
         User user = user();
 
@@ -158,7 +163,8 @@ class AuthorServiceTest {
     // =========================================================================
 
     @Test
-    void createAndSave_shouldPropagateException_whenRepositoryThrowsOnSave() throws Exception{
+    void createAndSave_shouldPropagateException_whenRepositoryThrowsOnSave() throws Exception {
+
         // ARRANGE
         User user = user();
         Author author = author();
@@ -173,5 +179,34 @@ class AuthorServiceTest {
         assertThrows(RuntimeException.class,
                 () -> authorService.createAndSave(
                         "José Saramago", countryId(), dateOfBirth(), "Biography", userId()));
+    }
+
+    // =========================================================================
+    // resolveCountry
+    // =========================================================================
+
+    @Test
+    void resolveCountry_shouldReturnCountry_whenFound() {
+
+        // ARRANGE
+        Country countryDouble = mock(Country.class);
+        when(countryRepository.findByID(countryId())).thenReturn(Optional.of(countryDouble));
+
+        // ACT
+        Country result = authorService.resolveCountry(countryId());
+
+        // ASSERT
+        assertSame(countryDouble, result);
+    }
+
+    @Test
+    void resolveCountry_shouldThrowException_whenCountryNotFound() {
+
+        // ARRANGE
+        when(countryRepository.findByID(countryId())).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> authorService.resolveCountry(countryId()));
     }
 }

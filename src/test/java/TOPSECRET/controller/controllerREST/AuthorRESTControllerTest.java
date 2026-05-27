@@ -2,9 +2,10 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.AuthorLinkProvider;
 import TOPSECRET.domain.Author.Author;
+import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.author.AuthorMapper;
 import TOPSECRET.dto.author.request.CreateAuthorDTO;
 import TOPSECRET.dto.author.response.AuthorDTO;
 import TOPSECRET.services.AuthorService;
@@ -19,8 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,8 +30,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link AuthorRESTController}.
- *
- * <p>Validates HTTP responses, exception handling and DTO mapping.</p>
  */
 @ExtendWith(MockitoExtension.class)
 class AuthorRESTControllerTest {
@@ -41,13 +41,16 @@ class AuthorRESTControllerTest {
     private AuthorLinkProvider provider;
 
     @Mock
-    private AuthorMapper mapper;
-
-    @Mock
     private Author author;
 
     @Mock
     private AuthorId authorId;
+
+    @Mock
+    private Country country;
+
+    @Mock
+    private CountryId countryId;
 
     private UserId userId;
     private CreateAuthorDTO dto;
@@ -63,6 +66,16 @@ class AuthorRESTControllerTest {
         );
     }
 
+    private void setupAuthorMocks() {
+        when(authorId.getId()).thenReturn("some-uuid");
+        when(author.id()).thenReturn(authorId);
+        when(author.getName()).thenReturn("José Saramago");
+        when(author.getCountryID()).thenReturn(countryId);
+        when(author.getDateOfBirth()).thenReturn(LocalDate.of(1922, 11, 16));
+        when(author.getBiography()).thenReturn("Portuguese Nobel Prize-winning author.");
+        when(country.getCountryName()).thenReturn("Portugal");
+    }
+
     // =========================================================================
     // createAuthor — success
     // =========================================================================
@@ -71,12 +84,11 @@ class AuthorRESTControllerTest {
     void createAuthor_shouldReturnCreated_whenSuccess() throws Exception {
 
         // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, mapper);
+        AuthorRESTController sut = new AuthorRESTController(service, provider);
+        setupAuthorMocks();
 
         when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-        when(mapper.toDTO(author)).thenReturn(new AuthorDTO(
-                "some-uuid", "José Saramago", "Portugal", "1922-11-16",
-                "Portuguese Nobel Prize-winning author."));
+        when(service.resolveCountry(any())).thenReturn(country);
         when(provider.getLinks(any(UserId.class))).thenReturn(new ArrayList<>());
 
         // ACT
@@ -91,17 +103,15 @@ class AuthorRESTControllerTest {
     void createAuthor_shouldAddLinks_whenProviderReturnsLinks() throws Exception {
 
         // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, mapper);
+        AuthorRESTController sut = new AuthorRESTController(service, provider);
+        setupAuthorMocks();
 
         Link link = Link.of("/authors");
-
-        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-        when(mapper.toDTO(author)).thenReturn(new AuthorDTO(
-                "some-uuid", "José Saramago", "Portugal", "1922-11-16",
-                "Portuguese Nobel Prize-winning author."));
-
         List<Link> linkList = new ArrayList<>();
         linkList.add(link);
+
+        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
+        when(service.resolveCountry(any())).thenReturn(country);
         when(provider.getLinks(any(UserId.class))).thenReturn(linkList);
 
         // ACT
@@ -120,7 +130,7 @@ class AuthorRESTControllerTest {
     void createAuthor_shouldReturnForbidden_whenAccessDenied() throws Exception {
 
         // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, mapper);
+        AuthorRESTController sut = new AuthorRESTController(service, provider);
 
         when(service.createAndSave(any(), any(), any(), any(), any()))
                 .thenThrow(new AccessDeniedException("denied"));
@@ -137,7 +147,7 @@ class AuthorRESTControllerTest {
     void createAuthor_shouldReturnBadRequest_whenIllegalArgument() throws Exception {
 
         // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, mapper);
+        AuthorRESTController sut = new AuthorRESTController(service, provider);
 
         when(service.createAndSave(any(), any(), any(), any(), any()))
                 .thenThrow(new IllegalArgumentException());
@@ -154,7 +164,7 @@ class AuthorRESTControllerTest {
     void createAuthor_shouldReturnConflict_whenInstanceAlreadyExists() throws Exception {
 
         // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, mapper);
+        AuthorRESTController sut = new AuthorRESTController(service, provider);
 
         when(service.createAndSave(any(), any(), any(), any(), any()))
                 .thenThrow(new InstanceAlreadyExistsException());
@@ -168,11 +178,10 @@ class AuthorRESTControllerTest {
     }
 
     @Test
-    void createAuthor_shouldReturnInternalServerError_whenUnexpectedException()
-            throws Exception {
+    void createAuthor_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
 
         // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, mapper);
+        AuthorRESTController sut = new AuthorRESTController(service, provider);
 
         when(service.createAndSave(any(), any(), any(), any(), any()))
                 .thenThrow(new RuntimeException());
