@@ -73,12 +73,6 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
 
         Objects.requireNonNull(collection, "collection cannot be null");
 
-//        for (CollectionOfPublications collectionOfPublications : _collectionOfPublicationsList) {
-//            if (collectionOfPublications.id().equals(collection.id())) {
-//
-//            }
-//        }
-
         for (int i = 0; i < _collectionOfPublicationsList.size(); i++) {
 
             CollectionOfPublications existingCollection =
@@ -122,11 +116,6 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
             }
         }
         throw new InstanceNotFoundException("collection not found by Id: " + collectionId);
-    }
-
-    @Override
-    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
-        return List.of();
     }
 
     /**
