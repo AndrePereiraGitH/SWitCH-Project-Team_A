@@ -74,37 +74,38 @@ public class ToPubliclyShareCollectionOfPublicationsController {
      * @throws IllegalArgumentException if {@code selectedCollectionDTO} is null
      * @throws InstanceNotFoundException if no collection is found with the given identifier
      */
-    public boolean makeCollectionPublic(US019CollectionOfPublicationsDTO selectedCollectionDTO) throws InstanceNotFoundException {
-
-        if (selectedCollectionDTO == null) {
-            throw new IllegalArgumentException("CollectionId cannot be null");
-        }
-
-        return collectionOfPublicationsService.makeCollectionPublic(selectedCollectionDTO.id());
-    }
-
-    /**
-     * Shares a collection of publications publicly until the given date and time.
-     *
-     * <p>This method validates the selected collection identifier and the expiration
-     * date, then delegates the operation to the collection of publications service.</p>
-     *
-     * @param selectedCollectionDTO the identifier of the collection to be shared;
-     *                             must not be null
-     * @param publicUntil the date and time until which the collection will remain public;
-     *                    must not be null
-     * @return {@code true} if the collection was changed;
-     *         {@code false} if it was already public until the same date and time
-     * @throws NullPointerException if {@code selectedCollectionId} or {@code publicUntil} is null
-     * @throws InstanceNotFoundException if no collection is found with the given identifier
-     */
-    public boolean shareCollectionUntil(US019CollectionOfPublicationsDTO selectedCollectionDTO, LocalDateTime publicUntil) throws InstanceNotFoundException {
-
-        Objects.requireNonNull(selectedCollectionDTO, "selected collection Id cannot be null");
-        Objects.requireNonNull(publicUntil, "public until date time cannot be null");
-
-
-        return collectionOfPublicationsService.makeCollectionPublicUntil(selectedCollectionDTO.id(), publicUntil);
-    }
+//    public boolean makeCollectionPublic(US019CollectionOfPublicationsDTO selectedCollectionDTO)
+//            throws InstanceNotFoundException {
+//
+//        if (selectedCollectionDTO == null) {
+//            throw new IllegalArgumentException("CollectionId cannot be null");
+//        }
+//
+//        return collectionOfPublicationsService.makeCollectionPublic(selectedCollectionDTO.id());
+//    }
+//
+//    /**
+//     * Shares a collection of publications publicly until the given date and time.
+//     *
+//     * <p>This method validates the selected collection identifier and the expiration
+//     * date, then delegates the operation to the collection of publications service.</p>
+//     *
+//     * @param selectedCollectionDTO the identifier of the collection to be shared;
+//     *                             must not be null
+//     * @param publicUntil the date and time until which the collection will remain public;
+//     *                    must not be null
+//     * @return {@code true} if the collection was changed;
+//     *         {@code false} if it was already public until the same date and time
+//     * @throws NullPointerException if {@code selectedCollectionId} or {@code publicUntil} is null
+//     * @throws InstanceNotFoundException if no collection is found with the given identifier
+//     */
+//    public boolean shareCollectionUntil(US019CollectionOfPublicationsDTO selectedCollectionDTO, LocalDateTime publicUntil) throws InstanceNotFoundException {
+//
+//        Objects.requireNonNull(selectedCollectionDTO, "selected collection Id cannot be null");
+//        Objects.requireNonNull(publicUntil, "public until date time cannot be null");
+//
+//
+//        return collectionOfPublicationsService.makeCollectionPublicUntil(selectedCollectionDTO.id(), publicUntil);
+//    }
 }
 
