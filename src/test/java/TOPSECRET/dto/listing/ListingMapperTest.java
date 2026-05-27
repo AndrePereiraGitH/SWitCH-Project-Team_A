@@ -143,4 +143,16 @@ class ListingMapperTest {
                 () -> ListingMapper.toPrice(price));
     }
 
+    @Test
+    void toPicture_shouldReturnPicture() {
+        // Arrange
+        String pictureValue = "image-url.jpg";
+
+        // Act
+        Picture result = ListingMapper.toPicture(pictureValue);
+
+        // Assert
+        assertEquals(new Picture(pictureValue), result);
+    }
+
 }
