@@ -36,14 +36,17 @@ class ListingLinkProviderTest {
     void getLinksForListings_shouldReturnCreateListingLink_whenUserCanCreateListing()
             throws InstanceNotFoundException {
 
+        // arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(true);
 
+        // act
         List<Link> result = linkProvider.getLinksForListings(userId);
 
+        // assert
         assertEquals(1, result.size());
         assertEquals("create-listing", result.get(0).getRel().value());
 
@@ -53,24 +56,29 @@ class ListingLinkProviderTest {
     void getLinksForListings_shouldReturnEmptyList_whenUserCannotCreateListing()
             throws InstanceNotFoundException {
 
+        // arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(false);
 
+        // act
         List<Link> result = linkProvider.getLinksForListings(userId);
 
+        // assert
         assertTrue(result.isEmpty());
 
     }
 
     @Test
     void getLinksForListings_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
-        UserId userId = mock(UserId.class);
 
+        //arrange
+        UserId userId = mock(UserId.class);
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
+        // act + assert
         assertThrows(InstanceNotFoundException.class, () ->
                 linkProvider.getLinksForListings(userId)
         );

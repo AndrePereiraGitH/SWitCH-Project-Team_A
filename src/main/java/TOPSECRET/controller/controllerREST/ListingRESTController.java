@@ -35,7 +35,7 @@ public class ListingRESTController {
 
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<ListingResponseDTO> createListing(@RequestBody ListingRequestDTO listingRequestDTO, @RequestParam UserId userId) {
 
         List<PublicationSampleId> itemsId = listingRequestDTO.getPublicationIds().stream().map(ListingMapper::toPublicationId).toList();
@@ -65,7 +65,7 @@ public class ListingRESTController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (AccessDeniedException e) {
-           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+           return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {

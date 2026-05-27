@@ -152,7 +152,6 @@ class ListingMapperTest {
         Picture result = ListingMapper.toPicture(pictureValue);
 
         // Assert
-        assertNotNull(result);
         assertEquals(new Picture(pictureValue), result);
     }
 
