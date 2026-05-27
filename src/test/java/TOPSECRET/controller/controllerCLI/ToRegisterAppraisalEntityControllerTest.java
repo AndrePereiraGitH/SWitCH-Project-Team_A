@@ -58,6 +58,7 @@ class ToRegisterAppraisalEntityControllerTest {
     @InjectMocks
     private ToRegisterAppraisalEntityController controller;
 
+    @Mock
     private UserId userId;
 
     // CONSTRUCTOR tests

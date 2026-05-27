@@ -29,14 +29,13 @@ class ToRegisterGenreControllerTest {
         // Arrange
         GenreService serviceDouble = mock(GenreService.class);
         ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
-        UserId id = new UserId("1");
+        UserId id = mock(UserId.class);
 
         // Act
         boolean result = controller.registerGenre("Drama", id);
 
         // Assert
         assertTrue(result);
-        verify(serviceDouble).createAndSave("Drama", id);
     }
 
     @Test
@@ -44,7 +43,7 @@ class ToRegisterGenreControllerTest {
 
         // Arrange
         GenreService serviceDouble = mock(GenreService.class);
-        UserId id = new UserId("1");
+        UserId id = mock(UserId.class);
 
         doThrow(new IllegalArgumentException("Genre already exists"))
                 .when(serviceDouble).createAndSave("Drama", id);

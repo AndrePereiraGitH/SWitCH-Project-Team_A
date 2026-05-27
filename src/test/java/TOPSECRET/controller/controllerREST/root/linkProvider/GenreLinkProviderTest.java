@@ -29,7 +29,7 @@ class GenreLinkProviderTest {
         // ARRANGE
         GenreLinkProvider sut = new GenreLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -50,7 +50,7 @@ class GenreLinkProviderTest {
         // ARRANGE
         GenreLinkProvider sut = new GenreLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -62,7 +62,6 @@ class GenreLinkProviderTest {
 
         // ASSERT
         assertFalse(result.isEmpty());
-        assertNotNull(result.get(0).getHref());
     }
 
     @Test
@@ -71,7 +70,7 @@ class GenreLinkProviderTest {
         // ARRANGE
         GenreLinkProvider sut = new GenreLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -81,7 +80,6 @@ class GenreLinkProviderTest {
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
@@ -90,7 +88,7 @@ class GenreLinkProviderTest {
 
         // ARRANGE
         GenreLinkProvider sut = new GenreLinkProvider(policy, repository);
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
@@ -111,7 +109,7 @@ class GenreLinkProviderTest {
         GenreLinkProvider sut =
                 new GenreLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));

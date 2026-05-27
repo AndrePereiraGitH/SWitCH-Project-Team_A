@@ -56,7 +56,7 @@ class GenreServiceTest {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private UserId userId() { return new UserId("user-1"); }
+    private UserId userId() { return mock(UserId.class); }
     private User user() { return mock(User.class); }
     private Genre genre() { return mock(Genre.class); }
 
@@ -253,7 +253,7 @@ class GenreServiceTest {
     @Test
     void findById_shouldReturnGenre_whenFound() {
         // ARRANGE
-        GenreId genreId = new GenreId("genre-1");
+        GenreId genreId = mock(GenreId.class);
         Genre genre = genre();
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(genre));
 
@@ -268,7 +268,7 @@ class GenreServiceTest {
     @Test
     void findById_shouldReturnEmpty_whenNotFound() {
         // ARRANGE
-        GenreId genreId = new GenreId("genre-1");
+        GenreId genreId = mock(GenreId.class);
         when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
 
         // ACT

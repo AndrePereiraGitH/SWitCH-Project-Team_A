@@ -43,8 +43,8 @@ class AppraisalEntityServiceTest {
     private AppraisalEntityService sut;
 
     // Helpers
-    private UserId userId()              { return new UserId("user-1"); }
-    private AppraisalEntityId entityId() { return new AppraisalEntityId("entity-1"); }
+    private UserId userId()              { return mock(UserId.class); }
+    private AppraisalEntityId entityId() { return mock(AppraisalEntityId.class); }
     private Contact contact()            { return mock(Contact.class); }
     private List<PublicationTypeId> pubs()   { return List.of(mock(PublicationTypeId.class)); }
     private List<GenreId> genres()       { return List.of(mock(GenreId.class)); }

@@ -7,7 +7,6 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 import TOPSECRET.services.AppraisalEntityService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -53,19 +52,17 @@ class AppraisalEntityRESTControllerTest {
     }
 
     private UserId adminUserId() {
-        return new UserId("admin-user-id");
+        return mock(UserId.class);
     }
 
     private AppraisalEntity realEntity() {
-        Email email = new Email("test", "mail.com");
-        Address address = new Address("street", "10", "1234-000", new CityId("cityId"));
-        Contact contact = new Contact("999999999", "351", email, address);
+        Contact contact = mock(Contact.class);
 
         return new AppraisalEntityFactory().create(
                 "name",
                 contact,
-                List.of(new PublicationTypeId("pub1")),
-                List.of(new GenreId("genre1"))
+                List.of(mock(PublicationTypeId.class)),
+                List.of(mock(GenreId.class))
         );
     }
 

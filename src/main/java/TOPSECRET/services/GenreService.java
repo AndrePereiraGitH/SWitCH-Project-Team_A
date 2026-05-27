@@ -55,7 +55,8 @@ public class GenreService {
      */
     public Genre createAndSave(String genreType, UserId userId) throws InstanceAlreadyExistsException, AccessDeniedException {
 
-        User user = userRepository.findByID(userId).get();
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Genre not found with id: " + userId));
 
         if(!policy.canCreateGenre(user)) {
             throw new AccessDeniedException("You do not have permission to create Genre");

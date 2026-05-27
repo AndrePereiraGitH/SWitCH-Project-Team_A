@@ -1,7 +1,6 @@
-package TOPSECRET.controller.controllerREST.root;
+package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AppraisalEntityAuthorizationPolicy;
-import TOPSECRET.controller.controllerREST.root.linkProvider.AppraisalEntityLinkProvider;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;

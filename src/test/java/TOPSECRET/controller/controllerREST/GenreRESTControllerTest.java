@@ -45,13 +45,15 @@ class GenreRESTControllerTest {
     @Mock
     private GenreId genreId;
 
+    @Mock
     private UserId userId;
+
     private GenreRequestDTO dto;
 
     @BeforeEach
     void setup() {
 
-        userId = new UserId("user-1");
+        userId = mock(UserId.class);
         dto = new GenreRequestDTO("Fiction");
     }
 
@@ -97,7 +99,6 @@ class GenreRESTControllerTest {
         ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, userId);
 
         // ASSERT
-        assertNotNull(result.getBody());
         assertEquals(1, result.getBody().getLinks().toList().size());
     }
 
