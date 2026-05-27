@@ -6,6 +6,8 @@ import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.dto.author.response.AuthorDTO;
 
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +22,7 @@ import java.util.Objects;
  *
  * <p>It supports mapping both single {@link Author} objects and collections of authors.</p>
  */
+@Component
 public class AuthorMapper {
 
     private final ICountryRepository countryRepo;
