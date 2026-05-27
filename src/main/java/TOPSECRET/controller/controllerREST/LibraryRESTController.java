@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
-
 @RestController
 @Tag(name = "Libraries", description = "Library management endpoints")
 @RequestMapping(path = "/libraries")
@@ -42,8 +39,6 @@ public class LibraryRESTController {
 
             List<Link> links = libLinkProvider.getLinksForLibraries(userId);
             links.forEach(result::add);
-            result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .createLibrary(requestLibraryDTO, userId)).withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 

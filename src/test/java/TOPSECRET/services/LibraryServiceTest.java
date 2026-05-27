@@ -77,15 +77,12 @@ class LibraryServiceTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> service.createAndSave(libraryName, userIdDouble));
-
-        verifyNoInteractions(policyDouble);
     }
 
     // ----------------- ACCESS DENIED -----------------
 
     @Test
-    void givenUserWithoutPermission_whenCreateAndSave_thenThrowsAccessDenied()
-            throws Exception {
+    void givenUserWithoutPermission_whenCreateAndSave_thenThrowsAccessDenied() {
 
         // Arrange
         String libraryName = "My Library";

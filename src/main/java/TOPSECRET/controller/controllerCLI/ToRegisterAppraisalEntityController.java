@@ -8,12 +8,15 @@ import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US004GenreDTO;
 import TOPSECRET.dto.US004PublicationTypeDTO;
 import TOPSECRET.dto.US004GenreMapper;
 import TOPSECRET.dto.US004PublicationTypeMapper;
 import TOPSECRET.services.AppraisalEntityService;
 
+import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 
@@ -94,7 +97,8 @@ public class ToRegisterAppraisalEntityController {
             String name,
             Contact contact,
             List<GenreId> genresId,
-            List<PublicationTypeId> publicationTypesId) {
+            List<PublicationTypeId> publicationTypesId,
+            UserId userId) throws AccessDeniedException, InstanceAlreadyExistsException {
 
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be null.");
@@ -116,7 +120,8 @@ public class ToRegisterAppraisalEntityController {
                 name,
                 contact,
                 publicationTypesId,
-                genresId
+                genresId,
+                userId
         );
     }
 }

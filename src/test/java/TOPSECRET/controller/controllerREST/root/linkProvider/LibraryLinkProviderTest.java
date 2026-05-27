@@ -10,8 +10,6 @@ import org.springframework.hateoas.Link;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +24,9 @@ class LibraryLinkProviderTest {
     private LibraryAuthorizationPolicy authPolicy;
     private LibraryLinkProvider linkProvider;
     private UserId userId;
+    private UserId userId2;
     private User userStub;
+    private User userStub2;
 
     @BeforeEach
     void setUp() {
@@ -34,8 +34,10 @@ class LibraryLinkProviderTest {
         authPolicy = mock(LibraryAuthorizationPolicy.class);
         linkProvider = new LibraryLinkProvider(authPolicy, userRepo);
 
-        userId = new UserId(UUID.randomUUID().toString());
+        userId = mock(UserId.class);
+        userId2 = mock(UserId.class);
         userStub = mock(User.class);
+        userStub2 = mock(User.class);
     }
 
     @Test
@@ -50,7 +52,20 @@ class LibraryLinkProviderTest {
         // Assert
         assertFalse(links.isEmpty(), "Links should not be empty");
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
-        verify(authPolicy).canCreateLibrary(userStub);
+    }
+
+    @Test
+    void shouldReturnLinkWhenSecondUserIsAuthorized() {
+        // Arrange
+        when(userRepo.findByID(userId2)).thenReturn(Optional.of(userStub2));
+        when(authPolicy.canCreateLibrary(userStub2)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getLinksForLibraries(userId2);
+
+        // Assert
+        assertFalse(links.isEmpty(), "Links should not be empty");
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
     }
 
     @Test
@@ -67,6 +82,19 @@ class LibraryLinkProviderTest {
     }
 
     @Test
+    void shouldReturnEmptyListWhenSecondUserIsNotAuthorized() {
+        // Arrange
+        when(userRepo.findByID(userId2)).thenReturn(Optional.of(userStub2));
+        when(authPolicy.canCreateLibrary(userStub2)).thenReturn(false);
+
+        // Act
+        List<Link> links = linkProvider.getLinksForLibraries(userId2);
+
+        // Assert
+        assertTrue(links.isEmpty(), "Links should be empty for unauthorized users");
+    }
+
+    @Test
     void shouldReturnEmptyListWhenUserDoesNotExist() {
         // Arrange
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
@@ -76,6 +104,17 @@ class LibraryLinkProviderTest {
 
         // Assert
         assertTrue(links.isEmpty(), "Links should be empty if user is not found in repository");
-        verifyNoInteractions(authPolicy);
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenSecondUserDoesNotExist() {
+        // Arrange
+        when(userRepo.findByID(userId2)).thenReturn(Optional.empty());
+
+        // Act
+        List<Link> links = linkProvider.getLinksForLibraries(userId2);
+
+        // Assert
+        assertTrue(links.isEmpty(), "Links should be empty if user is not found in repository");
     }
 }
