@@ -328,7 +328,7 @@ jobs:
           echo "   PR cleared for merge review          "
           echo "════════════════════════════════════════"
 
-      # ── US052 ── Publish consolidated quality summary to PR ─────────────────
+  # ── US052 ── Publish consolidated quality summary to PR ─────────────────
       - name: Publish quality summary to PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -337,33 +337,31 @@ jobs:
             const body = [
               '##  CI Quality Report — All Gates Passed',
               '',
-              '| Job | Gate | Tool | Threshold |',
-              '|-----|------|------|-----------|',
-              '| build-and-test |  Passed | JaCoCo | ≥ 85% line coverage |',
-              '| build-and-test |  Passed | PITest | ≥ 95% mutation coverage |',
-              '| static-analysis-and-security |  Passed | Semgrep | No ERROR findings |',
-              '| static-analysis-and-security |  Reported | Checkstyle | Style violations |',
-              '| static-analysis-and-security |  Reported | PMD | Code smells |',
-              '| secret-detection |  Passed | Gitleaks | No secrets in history |',
-              '| dependency-scan |  Passed | OWASP | CVSS < 7 |',
+              '| Job | Gate | Tool |',
+              '|-----|------|------|',
+              '| build-and-test |  Passed | JaCoCo |',
+              '| build-and-test |  Passed | PITest |',
+              '| static-analysis-and-security |  Passed | Semgrep |',
+              '| static-analysis-and-security |  Reported | Checkstyle |',
+              '| static-analysis-and-security |  Reported | PMD |',
+              '| secret-detection |  Passed | Gitleaks |',
+              '| dependency-scan |  Passed | OWASP |',
               '',
               '>  All reports available under **Actions → this run → Artifacts**',
             ].join('\n');
-
+            
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body
             });
+        
 
   # ── US050 ── Versioned artifact generation ──────────────────────────────────
   publish-artifact:
     runs-on: ubuntu-latest
     needs: [pr-validation]
-    # Only generate versioned artifacts when changes land on protected branches,
-    # not on every PR open/sync
-    if: github.event_name == 'push'
     permissions:
       contents: read
       actions: write
