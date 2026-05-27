@@ -26,9 +26,11 @@ import static org.mockito.Mockito.*;
  *
  * <p>What's being tested:</p>
  * <ul>
+ *   <li>Private constructor: verifies that instantiation throws {@link UnsupportedOperationException}.</li>
  *   <li>{@link UserMapper#toDTO(User)}: takes a {@link User} and returns a {@link ResponseUserDTO}. I check each field separately.</li>
  *   <li>{@link UserMapper#toEmail(RequestUserDTO)}: splits the email string on "@" and builds an {@link Email} object.</li>
  *   <li>{@link UserMapper#toContact(RequestUserDTO)}: builds a {@link Contact} from the DTO fields.</li>
+ *   <li>{@link UserMapper#toProfile(RequestUserDTO)}: builds a {@link Profile} from the DTO fields.</li>
  *   <li>{@link UserMapper#toRole(String)}: converts a String like "ADMIN" into the {@link UserRole} enum.</li>
  * </ul>
  *
@@ -38,7 +40,6 @@ import static org.mockito.Mockito.*;
  * @see User
  */
 class UserMapperTest {
-
 
     // -------------------------------------------------------------------------
     // Private constructor
@@ -58,24 +59,24 @@ class UserMapperTest {
     @Test
     void toDTO_shouldMapIdCorrectly() {
         // Arrange
-        User user       = mock(User.class);
-        UserId userId   = mock(UserId.class);
-        Profile profile = mock(Profile.class);
-        Contact contact = mock(Contact.class);
-        Email email     = mock(Email.class);
+        User userDouble       = mock(User.class);
+        UserId userIdDouble   = mock(UserId.class);
+        Profile profileDouble = mock(Profile.class);
+        Contact contactDouble = mock(Contact.class);
+        Email emailDouble     = mock(Email.class);
 
-        when(user.id()).thenReturn(userId);
-        when(userId.getUserId()).thenReturn("bruno123");
-        when(user.getUserName()).thenReturn("bruno123");
-        when(user.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Bruno");
-        when(profile.getContact()).thenReturn(contact);
-        when(contact.getEmail()).thenReturn(email);
-        when(email.getEmail()).thenReturn("bruno@isep.ipp.pt");
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+        when(userDouble.id()).thenReturn(userIdDouble);
+        when(userIdDouble.getUserId()).thenReturn("bruno123");
+        when(userDouble.getUserName()).thenReturn("bruno123");
+        when(userDouble.getProfile()).thenReturn(profileDouble);
+        when(profileDouble.getName()).thenReturn("Bruno");
+        when(profileDouble.getContact()).thenReturn(contactDouble);
+        when(contactDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.getEmail()).thenReturn("bruno@isep.ipp.pt");
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
         // Act
-        ResponseUserDTO result = UserMapper.toDTO(user);
+        ResponseUserDTO result = UserMapper.toDTO(userDouble);
 
         // Assert
         assertEquals("bruno123", result.getId());
@@ -84,24 +85,24 @@ class UserMapperTest {
     @Test
     void toDTO_shouldMapUsernameCorrectly() {
         // Arrange
-        User user       = mock(User.class);
-        UserId userId   = mock(UserId.class);
-        Profile profile = mock(Profile.class);
-        Contact contact = mock(Contact.class);
-        Email email     = mock(Email.class);
+        User userDouble       = mock(User.class);
+        UserId userIdDouble   = mock(UserId.class);
+        Profile profileDouble = mock(Profile.class);
+        Contact contactDouble = mock(Contact.class);
+        Email emailDouble     = mock(Email.class);
 
-        when(user.id()).thenReturn(userId);
-        when(userId.getUserId()).thenReturn("bruno123");
-        when(user.getUserName()).thenReturn("bruno123");
-        when(user.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Bruno");
-        when(profile.getContact()).thenReturn(contact);
-        when(contact.getEmail()).thenReturn(email);
-        when(email.getEmail()).thenReturn("bruno@isep.ipp.pt");
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+        when(userDouble.id()).thenReturn(userIdDouble);
+        when(userIdDouble.getUserId()).thenReturn("bruno123");
+        when(userDouble.getUserName()).thenReturn("bruno123");
+        when(userDouble.getProfile()).thenReturn(profileDouble);
+        when(profileDouble.getName()).thenReturn("Bruno");
+        when(profileDouble.getContact()).thenReturn(contactDouble);
+        when(contactDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.getEmail()).thenReturn("bruno@isep.ipp.pt");
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
         // Act
-        ResponseUserDTO result = UserMapper.toDTO(user);
+        ResponseUserDTO result = UserMapper.toDTO(userDouble);
 
         // Assert
         assertEquals("bruno123", result.getUsername());
@@ -110,24 +111,24 @@ class UserMapperTest {
     @Test
     void toDTO_shouldMapNameCorrectly() {
         // Arrange
-        User user       = mock(User.class);
-        UserId userId   = mock(UserId.class);
-        Profile profile = mock(Profile.class);
-        Contact contact = mock(Contact.class);
-        Email email     = mock(Email.class);
+        User userDouble       = mock(User.class);
+        UserId userIdDouble   = mock(UserId.class);
+        Profile profileDouble = mock(Profile.class);
+        Contact contactDouble = mock(Contact.class);
+        Email emailDouble     = mock(Email.class);
 
-        when(user.id()).thenReturn(userId);
-        when(userId.getUserId()).thenReturn("bruno123");
-        when(user.getUserName()).thenReturn("bruno123");
-        when(user.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Bruno");
-        when(profile.getContact()).thenReturn(contact);
-        when(contact.getEmail()).thenReturn(email);
-        when(email.getEmail()).thenReturn("bruno@isep.ipp.pt");
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+        when(userDouble.id()).thenReturn(userIdDouble);
+        when(userIdDouble.getUserId()).thenReturn("bruno123");
+        when(userDouble.getUserName()).thenReturn("bruno123");
+        when(userDouble.getProfile()).thenReturn(profileDouble);
+        when(profileDouble.getName()).thenReturn("Bruno");
+        when(profileDouble.getContact()).thenReturn(contactDouble);
+        when(contactDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.getEmail()).thenReturn("bruno@isep.ipp.pt");
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
         // Act
-        ResponseUserDTO result = UserMapper.toDTO(user);
+        ResponseUserDTO result = UserMapper.toDTO(userDouble);
 
         // Assert
         assertEquals("Bruno", result.getName());
@@ -136,24 +137,24 @@ class UserMapperTest {
     @Test
     void toDTO_shouldMapEmailCorrectly() {
         // Arrange
-        User user       = mock(User.class);
-        UserId userId   = mock(UserId.class);
-        Profile profile = mock(Profile.class);
-        Contact contact = mock(Contact.class);
-        Email email     = mock(Email.class);
+        User userDouble       = mock(User.class);
+        UserId userIdDouble   = mock(UserId.class);
+        Profile profileDouble = mock(Profile.class);
+        Contact contactDouble = mock(Contact.class);
+        Email emailDouble     = mock(Email.class);
 
-        when(user.id()).thenReturn(userId);
-        when(userId.getUserId()).thenReturn("bruno123");
-        when(user.getUserName()).thenReturn("bruno123");
-        when(user.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Bruno");
-        when(profile.getContact()).thenReturn(contact);
-        when(contact.getEmail()).thenReturn(email);
-        when(email.getEmail()).thenReturn("bruno@isep.ipp.pt");
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+        when(userDouble.id()).thenReturn(userIdDouble);
+        when(userIdDouble.getUserId()).thenReturn("bruno123");
+        when(userDouble.getUserName()).thenReturn("bruno123");
+        when(userDouble.getProfile()).thenReturn(profileDouble);
+        when(profileDouble.getName()).thenReturn("Bruno");
+        when(profileDouble.getContact()).thenReturn(contactDouble);
+        when(contactDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.getEmail()).thenReturn("bruno@isep.ipp.pt");
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
         // Act
-        ResponseUserDTO result = UserMapper.toDTO(user);
+        ResponseUserDTO result = UserMapper.toDTO(userDouble);
 
         // Assert
         assertEquals("bruno@isep.ipp.pt", result.getEmail());
@@ -162,24 +163,24 @@ class UserMapperTest {
     @Test
     void toDTO_shouldMapRoleCorrectly() {
         // Arrange
-        User user       = mock(User.class);
-        UserId userId   = mock(UserId.class);
-        Profile profile = mock(Profile.class);
-        Contact contact = mock(Contact.class);
-        Email email     = mock(Email.class);
+        User userDouble       = mock(User.class);
+        UserId userIdDouble   = mock(UserId.class);
+        Profile profileDouble = mock(Profile.class);
+        Contact contactDouble = mock(Contact.class);
+        Email emailDouble     = mock(Email.class);
 
-        when(user.id()).thenReturn(userId);
-        when(userId.getUserId()).thenReturn("bruno123");
-        when(user.getUserName()).thenReturn("bruno123");
-        when(user.getProfile()).thenReturn(profile);
-        when(profile.getName()).thenReturn("Bruno");
-        when(profile.getContact()).thenReturn(contact);
-        when(contact.getEmail()).thenReturn(email);
-        when(email.getEmail()).thenReturn("bruno@isep.ipp.pt");
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+        when(userDouble.id()).thenReturn(userIdDouble);
+        when(userIdDouble.getUserId()).thenReturn("bruno123");
+        when(userDouble.getUserName()).thenReturn("bruno123");
+        when(userDouble.getProfile()).thenReturn(profileDouble);
+        when(profileDouble.getName()).thenReturn("Bruno");
+        when(profileDouble.getContact()).thenReturn(contactDouble);
+        when(contactDouble.getEmail()).thenReturn(emailDouble);
+        when(emailDouble.getEmail()).thenReturn("bruno@isep.ipp.pt");
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
         // Act
-        ResponseUserDTO result = UserMapper.toDTO(user);
+        ResponseUserDTO result = UserMapper.toDTO(userDouble);
 
         // Assert
         assertEquals("ADMIN", result.getRole());
@@ -270,7 +271,6 @@ class UserMapperTest {
         // Arrange + Act + Assert
         assertThrows(NullPointerException.class, () -> UserMapper.toContact(null));
     }
-
 
     // -------------------------------------------------------------------------
     // toProfile

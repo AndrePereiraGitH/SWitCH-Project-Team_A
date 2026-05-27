@@ -5,6 +5,8 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.LibraryService;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -16,7 +18,6 @@ import java.util.Optional;
  * {@link LibraryService}.
  * </p>
  */
-
 public class ToCreateLibraryController {
 
     private final IUserRepository _userRepository;
@@ -24,43 +25,30 @@ public class ToCreateLibraryController {
 
     /**
      * Creates a new controller instance.
-     * <p>
-     * Both dependencies are mandatory.
-     * </p>
      *
-     * @param userRepository the repository used to retrieve user information
-     * @param libraryService the service responsible for creating and saving libraries
+     * @param userRepository the repository used to retrieve user information; must not be null
+     * @param libraryService the service responsible for creating and saving libraries; must not be null
      * @throws NullPointerException if {@code userRepository} or {@code libraryService} is null
      */
-
     public ToCreateLibraryController(IUserRepository userRepository, LibraryService libraryService) {
-        if (userRepository == null) {
-            throw new NullPointerException("User repository can not be null");
-        }
-        if (libraryService == null) {
-            throw new NullPointerException("libraryService can not be null");
-        }
-
+        Objects.requireNonNull(userRepository, "UserRepository cannot be null");
+        Objects.requireNonNull(libraryService, "LibraryService cannot be null");
         _userRepository = userRepository;
         _libraryService = libraryService;
     }
 
     /**
      * Creates a new library associated with a given user.
-     * <p>
-     * The method first retrieves the {@link UserId} associated with the provided username.
-     * If the user does not exist, an exception is thrown. Otherwise, the request is
-     * delegated to the {@link LibraryService}.
-     * </p>
      *
      * @param libraryName the name of the library to create; must not be null or blank
      * @param username    the username of the library owner; must not be null or blank
      * @return {@code true} if the library is successfully created
      * @throws IllegalArgumentException       if no user exists with the given username
      * @throws InstanceAlreadyExistsException if a library already exists for the user
+     * @throws AccessDeniedException          if the user does not have permission to create a library
      */
-
-    public boolean createAndAddLibrary(String libraryName, String username) throws InstanceAlreadyExistsException {
+    public boolean createAndAddLibrary(String libraryName, String username)
+            throws InstanceAlreadyExistsException, AccessDeniedException {
 
         Optional<UserId> userId = _userRepository.findIdByUsername(username);
 
@@ -72,5 +60,4 @@ public class ToCreateLibraryController {
 
         return true;
     }
-
 }
