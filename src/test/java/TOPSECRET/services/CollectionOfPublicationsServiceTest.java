@@ -438,4 +438,102 @@ class CollectionOfPublicationsServiceTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    // ===============================================================
+// ------------------------- FIND BY ID --------------------------
+// ===============================================================
+
+    @Test
+    void findById_shouldReturnCollection_whenCollectionExists()
+            throws InstanceNotFoundException {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+
+        // Act
+        CollectionOfPublications result = service.findById(collectionId);
+
+        // Assert
+        assertEquals(collection, result);
+    }
+
+    @Test
+    void findById_shouldThrowInstanceNotFoundException_whenCollectionDoesNotExist()
+            throws InstanceNotFoundException {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        when(collectionOfPublicationsRepository.findById(collectionId))
+                .thenThrow(InstanceNotFoundException.class);
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> service.findById(collectionId));
+    }
+
+// ===============================================================
+// ------------------------- EXISTS BY ID ------------------------
+// ===============================================================
+
+    @Test
+    void existsById_shouldReturnTrue_whenCollectionExists() {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        when(collectionOfPublicationsRepository.existsById(collectionId)).thenReturn(true);
+
+        // Act
+        boolean result = service.existsById(collectionId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void existsById_shouldReturnFalse_whenCollectionDoesNotExist() {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        when(collectionOfPublicationsRepository.existsById(collectionId)).thenReturn(false);
+
+        // Act
+        boolean result = service.existsById(collectionId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+// ==========================================================================
+// ------------------- FIND PUBLIC COLLECTION BY GENRE ID -------------------
+// ==========================================================================
+
+    @Test
+    void findPublicCollectionsByGenreId_shouldReturnCollections_whenCollectionsExist() {
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(collectionOfPublicationsRepository.findPublicCollectionsByGenreId(genreIdDouble))
+                .thenReturn(List.of(collection));
+
+        // Act
+        List<CollectionOfPublications> result =
+                service.findPublicCollectionsByGenreId(genreIdDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(collection, result.get(0));
+    }
+
+    @Test
+    void findPublicCollectionsByGenreId_shouldReturnEmptyList_whenNoCollectionsExist() {
+        // Arrange
+        GenreId genreIdDouble = mock(GenreId.class);
+        when(collectionOfPublicationsRepository.findPublicCollectionsByGenreId(genreIdDouble))
+                .thenReturn(List.of());
+
+        // Act
+        List<CollectionOfPublications> result =
+                service.findPublicCollectionsByGenreId(genreIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 }

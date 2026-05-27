@@ -15,12 +15,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -383,5 +385,40 @@ class CollectionOfPublicationsRESTControllerTest {
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
         assertNull(response.getBody());
+    }
+
+    @Test
+    void createCollectionOfPublications_shouldAddLinksToResult_onSuccess()
+            throws Exception {
+
+        // ARRANGE
+        RequestCollectionOfPublicationsDTO requestDouble =
+                mock(RequestCollectionOfPublicationsDTO.class);
+        UserId userIdDouble = mock(UserId.class);
+        GenreId genreIdDouble = mock(GenreId.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+        ResponseCollectionOfPublicationsDTO responseDTO =
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
+
+        Link link = Link.of("http://localhost/collection-of-publications").withRel("create-collection-of-publications");
+
+        when(requestDouble.collectionName()).thenReturn("My Collection");
+        when(collectionService.createAndSave(any(), any(), any())).thenReturn(collectionDouble);
+        when(linkProvider.getLinksForCollectionOfPublications(any())).thenReturn(List.of(link));
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.createCollectionOfPublications(requestDouble, userIdDouble, genreIdDouble);
+
+            // ASSERT
+            assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
+            assertFalse(response.getBody().getLinks().isEmpty());
+        }
     }
 }

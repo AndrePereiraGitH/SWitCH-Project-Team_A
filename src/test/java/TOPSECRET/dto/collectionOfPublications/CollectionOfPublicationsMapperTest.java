@@ -7,6 +7,7 @@ import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPubli
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -133,5 +134,16 @@ class CollectionOfPublicationsMapperTest {
     void toGenreIdShouldThrowIllegalArgumentExceptionWhenStringIsBlank() {
         // ACT & ASSERT
         assertThrows(IllegalArgumentException.class, () -> CollectionOfPublicationsMapper.toGenreId("   "));
+    }
+
+    @Test
+    void constructor_ShouldThrowUnsupportedOperationException_WhenInstantiatedViaReflection() {
+        // ACT & ASSERT
+        assertThrows(InvocationTargetException.class, () -> {
+            java.lang.reflect.Constructor<CollectionOfPublicationsMapper> constructor =
+                    CollectionOfPublicationsMapper.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            constructor.newInstance();
+        });
     }
 }

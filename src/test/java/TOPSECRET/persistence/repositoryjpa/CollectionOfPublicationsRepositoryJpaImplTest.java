@@ -334,4 +334,25 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void findPublicCollectionsByGenreId_shouldReturnMappedCollections_whenCollectionsExist() {
+        // ARRANGE
+        GenreId genreIdDouble = mock(GenreId.class);
+        CollectionOfPublicationsDM collectionDMDouble = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+
+        when(jpa.findPublicCollectionsByGenreId(genreIdDouble))
+                .thenReturn(List.of(collectionDMDouble));
+        when(assembler.toDomain(collectionDMDouble))
+                .thenReturn(collectionDouble);
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repo.findPublicCollectionsByGenreId(genreIdDouble);
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertEquals(collectionDouble, result.get(0));
+    }
 }
