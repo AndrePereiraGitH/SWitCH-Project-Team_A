@@ -3,16 +3,16 @@ package TOPSECRET.dto.bibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
-import TOPSECRET.services.BibliographicalDataService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceNotFoundException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,35 +30,50 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BibliographicalDataMapperTest {
 
-    @Mock
-    private BibliographicalDataService service;
+    //
+    // Constructor tests
+    //
 
-    @InjectMocks
-    private BibliographicalDataMapper mapper;
+    @Test
+    void constructorShouldBePrivate() throws NoSuchMethodException {
+        // Act
+        Constructor<BibliographicalDataMapper> constructor =
+                BibliographicalDataMapper.class.getDeclaredConstructor();
 
-    @BeforeEach
-    void setUp() {
-        mapper = new BibliographicalDataMapper(service);
+        // Assert
+        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
     }
 
     @Test
-    void constructor_nullService_throwsNullPointerException() {
+    void constructorShouldThrowExceptionWhenInvoked() throws Exception {
         // Act
-        NullPointerException exception = assertThrows(
-                NullPointerException.class,
-                () -> new BibliographicalDataMapper(null)
+        Constructor<BibliographicalDataMapper> constructor =
+                BibliographicalDataMapper.class.getDeclaredConstructor();
+
+        constructor.setAccessible(true);
+
+        InvocationTargetException exception = assertThrows(
+                InvocationTargetException.class,
+                constructor::newInstance
         );
 
         // Assert
-        assertEquals("Service cannot be null", exception.getMessage());
+        assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
     }
+
+    //
+    // toDTO tests
+    //
 
     @Test
     void toDTO_nullBibliographicalData_throwsIllegalArgumentException() {
+        // Arrange
+        List<String> authorNames = List.of("Author 1", "Author 2", "Author 3");
+
         // Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> mapper.toDTO(null)
+                () -> BibliographicalDataMapper.toDTO(null, authorNames)
         );
 
         // Assert
@@ -66,8 +81,25 @@ class BibliographicalDataMapperTest {
     }
 
     @Test
-    void toDTO_validBibliographicalData_returnsDTO() throws InstanceNotFoundException {
+    void toDTO_nullAuthorNames_throwsIllegalArgumentException() {
         // Arrange
+        BibliographicalData bd = mock(BibliographicalData.class);
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> BibliographicalDataMapper.toDTO(bd, null)
+        );
+
+        // Assert
+        assertEquals("Author names cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void toDTO_validArguments_returnsDTO() throws InstanceNotFoundException {
+        // Arrange
+        List<String> authorNames = List.of("Author 1", "Author 2", "Author 3");
+
         BibliographicalData bd = mock(BibliographicalData.class);
 
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
@@ -76,84 +108,69 @@ class BibliographicalDataMapperTest {
         when(bdId.getID()).thenReturn("BD1");
         when(bd.getTitle()).thenReturn("Title example");
 
-        when(service.getAuthors(bd)).thenReturn(List.of("Author name"));
-
         // Act
-        responseBibliographicalDataDTO dto = mapper.toDTO(bd);
+        responseBibliographicalDataDTO dto = BibliographicalDataMapper.toDTO(bd, authorNames);
 
         // Assert
         assertEquals("BD1", dto.getBdId());
         assertEquals("Title example", dto.getPubTitle());
-        assertEquals(List.of("Author name"), dto.getAuthorName());
+        assertEquals(List.of("Author 1", "Author 2", "Author 3"), dto.getAuthorName());
     }
 
+    //
+    // toAuthorId Tests
+    //
+
     @Test
-    void toDTO_authorNotFound_throwsInstanceNotFoundException() throws InstanceNotFoundException {
+    void toAuthorIdShouldReturnListOfIdsWhenAuthorNamesIsValid() {
         // Arrange
-        BibliographicalData bd = mock(BibliographicalData.class);
-        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
-
-        when(bd.id()).thenReturn(bdId);
-        when(service.getAuthors(bd)).thenThrow(new InstanceNotFoundException("Author was not found:"));
+        List<String> authorNames = List.of("Author 1", "Author 2", "Author 3");
 
         // Act
-        InstanceNotFoundException exception = assertThrows(
-                InstanceNotFoundException.class,
-                () -> mapper.toDTO(bd)
-        );
+        List<AuthorId> result = BibliographicalDataMapper.toAuthorId(authorNames);
 
         // Assert
-        assertTrue(exception.getMessage().contains("Author was not found:"));
+        assertNotNull(result);
+        assertEquals(3, result.size());
     }
 
     @Test
-    void toDTOs_nullList_throwsIllegalArgumentException() {
-        // Act
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> mapper.toDTOs(null)
-        );
-
-        // Assert
-        assertEquals("Bibliographical data cannot be null", exception.getMessage());
-    }
-
-    @Test
-    void toDTOs_validList_returnsDTOList() throws InstanceNotFoundException {
+    void shouldReturnEmptyListWhenAuthorNamesListIsEmpty() {
         // Arrange
-        BibliographicalData bd1 = mock(BibliographicalData.class);
-        BibliographicalData bd2 = mock(BibliographicalData.class);
-
-        AuthorId authorId1 = mock(AuthorId.class);
-        AuthorId authorId2 = mock(AuthorId.class);
-
-        when(bd1.id()).thenReturn(new BibliographicalDataId("BD1"));
-        when(bd1.getTitle()).thenReturn("Book One");
-
-        when(bd2.id()).thenReturn(new BibliographicalDataId("BD2"));
-        when(bd2.getTitle()).thenReturn("Book Two");
-
-        when(service.getAuthors(bd1)).thenReturn(List.of("Author One"));
-        when(service.getAuthors(bd2)).thenReturn(List.of("Author Two"));
+        List<String> authorNames = List.of();
 
         // Act
-        List<responseBibliographicalDataDTO> result = mapper.toDTOs(List.of(bd1, bd2));
+        List<AuthorId> result = BibliographicalDataMapper.toAuthorId(authorNames);
 
         // Assert
-        assertEquals(2, result.size());
-        assertEquals("BD1", result.get(0).getBdId());
-        assertEquals("Book One", result.get(0).getPubTitle());
-        assertEquals(List.of("Author One"), result.get(0).getAuthorName());
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
 
-        assertEquals("BD2", result.get(1).getBdId());
-        assertEquals("Book Two", result.get(1).getPubTitle());
-        assertEquals(List.of("Author Two"), result.get(1).getAuthorName());
+    //
+    // toGenreId Tests
+    //
+
+    @Test
+    void toGenreIdShouldReturnListOfIdsWhenGenreNamesIsValid(){
+        // Arrange
+        List<String> genreNames = List.of("Fantasy", "Sci-fi", "Horror");
+
+        // Act
+        List<GenreId> result = BibliographicalDataMapper.toGenreId(genreNames);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(3, result.size());
     }
 
     @Test
-    void toDTOs_emptyList_returnsEmptyList() throws InstanceNotFoundException {
+    void shouldReturnEmptyListWhenGenreNamesListIsEmpty(){
+        // Arrange
+        List<String> genreNames = List.of();
+
         // Act
-        List<responseBibliographicalDataDTO> result = mapper.toDTOs(List.of());
+        List<GenreId> result = BibliographicalDataMapper.toGenreId(genreNames);
 
         // Assert
         assertNotNull(result);

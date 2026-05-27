@@ -1,80 +1,89 @@
 package TOPSECRET.dto.bibliographicalData;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
-import TOPSECRET.services.BibliographicalDataService;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mapper responsible for converting {@link BibliographicalData}
- * domain objects into DTO representations.
+ * Utility class responsible for mapping {@link BibliographicalData}
+ * domain entities into DTO objects.
  */
-public class BibliographicalDataMapper {
+public final class BibliographicalDataMapper {
 
-    private final BibliographicalDataService service;
-
-    /**
-     * Creates a new bibliographical data mapper.
-     *
-     * @param service used to retrieve authors
-     * @throws NullPointerException if the service is null
-     */
-    public BibliographicalDataMapper(BibliographicalDataService service) {
-        if(service == null){
-            throw new NullPointerException("Service cannot be null");
-        }
-        this.service = service;
+    private BibliographicalDataMapper() {
+        throw new UnsupportedOperationException("Utility class");
     }
 
-
     /**
-     * Converts a {@link BibliographicalData} domain object into
-     * a {@link responseBibliographicalDataDTO}.
+     * Converts a {@link BibliographicalData} entity into a
+     * {@link responseBibliographicalDataDTO}.
      *
-     * @param bd the bibliographical data domain object
-     * @return the corresponding response DTO
-     * @throws IllegalArgumentException if bibliographical data is null
-     * @throws InstanceNotFoundException if an author associated with the
-     *                                   bibliographical data cannot be found
+     * <p>The resulting DTO includes the bibliographical data identifier,
+     * title, and associated author names.</p>
+     *
+     * @param bd the bibliographical data entity to convert
+     * @param authorNames the list of author names associated with the entity
+     * @return a {@link responseBibliographicalDataDTO} containing the mapped data
+     * @throws IllegalArgumentException if the bibliographical data entity is null
+     * @throws InstanceNotFoundException if a required related instance
+     *         cannot be found during mapping
      */
-    public responseBibliographicalDataDTO toDTO(BibliographicalData bd) throws InstanceNotFoundException {
+    public static responseBibliographicalDataDTO toDTO(BibliographicalData bd, List<String> authorNames) throws InstanceNotFoundException {
 
         if (bd == null){
             throw new IllegalArgumentException("Bibliographical data cannot be null");
         }
 
+        if(authorNames == null){
+            throw new IllegalArgumentException("Author names cannot be null");
+        }
+
         return new responseBibliographicalDataDTO(
                 bd.id().getID(),
                 bd.getTitle(),
-                service.getAuthors(bd)
+                authorNames
         );
     }
 
     /**
-     * Converts a list of {@link BibliographicalData} domain objects
-     * into a list of {@link responseBibliographicalDataDTO}.
+     * Converts a list of author names into a list of {@link AuthorId} objects.
      *
-     * @param bds list of bibliographical data domain objects
-     * @return list of corresponding response DTOs
-     * @throws IllegalArgumentException if the list is null
-     * @throws InstanceNotFoundException if an author associated with any
-     *                                   bibliographical data cannot be found
+     * <p>Each author name in the provided list is used to create a corresponding
+     * {@link AuthorId} instance.</p>
+     *
+     * @param authorNames the list of author names to convert
+     * @return a list of {@link AuthorId} objects created from the provided names
      */
-    public List<responseBibliographicalDataDTO> toDTOs(List<BibliographicalData> bds) throws InstanceNotFoundException {
+    public static List<AuthorId> toAuthorId (List<String> authorNames){
+        List<AuthorId> authorIds = new ArrayList<>();
 
-        if (bds == null) {
-            throw new IllegalArgumentException("Bibliographical data cannot be null");
+        for(String authorName : authorNames){
+            authorIds.add(new AuthorId(authorName));
         }
-
-        List<responseBibliographicalDataDTO> result = new ArrayList<>();
-
-        for (BibliographicalData bd : bds) {
-            result.add(toDTO(bd));
-        }
-
-        return result;
+        return authorIds;
     }
+
+    /**
+     * Converts a list of genre names into a list of {@link GenreId} objects.
+     *
+     * <p>Each genre name in the provided list is used to create a corresponding
+     * {@link GenreId} instance.</p>
+     *
+     * @param genreNames the list of genre names to convert
+     * @return a list of {@link GenreId} objects created from the provided names
+     */
+    public static List<GenreId> toGenreId (List<String> genreNames){
+        List<GenreId> genreIds = new ArrayList<>();
+
+        for(String genreName : genreNames){
+            genreIds.add(new GenreId(genreName));
+        }
+        return genreIds;
+    }
+
 }
