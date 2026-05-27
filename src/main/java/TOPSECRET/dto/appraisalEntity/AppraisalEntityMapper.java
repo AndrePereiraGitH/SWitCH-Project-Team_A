@@ -1,34 +1,32 @@
 package TOPSECRET.dto.appraisalEntity;
 
 
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
 
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Utility mapper responsible for converting AppraisalEntity request DTOs
- * into domain Value Objects used during AppraisalEntity creation.
+ * Mapper utility class responsible for converting between
+ * AppraisalEntity domain objects and DTO representations.
  *
- * <p>
- * This class provides helper methods to construct domain objects such as
- * {@link Contact} and {@link Email} from request data.
- * </p>
+ * <p>This class also builds Value Objects from request DTOs,
+ * ensuring proper encapsulation of domain rules and validation.</p>
  *
- * <p>
- * This class cannot be instantiated.
- * </p>
+ * <p>It is a non-instantiable utility class.</p>
  */
-public class AppraisalEntityMapper {
+public final class AppraisalEntityMapper {
 
     /**
      * Prevents instantiation of this utility class.
      *
      * @throws UnsupportedOperationException always thrown because this is
-     *                                       a utility class
+     * a utility class
      */
-    AppraisalEntityMapper(){
+    private AppraisalEntityMapper() {
         throw new UnsupportedOperationException("Utility class");
     }
 
@@ -63,8 +61,13 @@ public class AppraisalEntityMapper {
     public static Email toEmail(RequestAppraisalEntityDTO dto) {
 
         Objects.requireNonNull(dto, "RequestAppraisalEntityDTO cannot be null");
+        Objects.requireNonNull(dto.email(), "Email cannot be null");
 
         String[] split = dto.email().split("@");
+
+        if (split.length != 2) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
 
         return new Email(split[0], split[1]);
     }
@@ -82,7 +85,7 @@ public class AppraisalEntityMapper {
      * @return the constructed Address object
      * @throws IllegalArgumentException if the provided data is invalid
      */
-    public static Address toAddress (RequestAppraisalEntityDTO dto){
+    public static Address toAddress(RequestAppraisalEntityDTO dto) {
 
         Objects.requireNonNull(dto, "RequestAppraisalEntityDTO cannot be null");
 
@@ -128,4 +131,28 @@ public class AppraisalEntityMapper {
                 .toList();
     }
 
+    /**
+     * Converts an AppraisalEntity domain object
+     * into its API response representation.
+     *
+     * @param entity domain entity
+     * @return response DTO
+     */
+    public static ResponseAppraisalEntityDTO toDTO(AppraisalEntity entity){
+
+        Objects.requireNonNull(entity, "AppraisalEntity can't be null");
+
+        return new ResponseAppraisalEntityDTO(entity.id().getId(), entity.getName(),
+
+                entity.getPublicationTypeIds()
+                        .stream()
+                        .map(PublicationTypeId::getId)
+                        .toList(),
+                entity.getGenreIds()
+                        .stream()
+                        .map(GenreId::getID)
+                        .toList()
+
+        );
+    }
 }

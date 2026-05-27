@@ -1,0 +1,140 @@
+@startuml
+
+hide footbox
+autonumber
+title Register Appraisal Entity - Main View
+
+actor Administrator
+participant ":UI" as UI
+
+participant ":AppraisalEntity\nRESTController" as Controller
+participant ":AppraisalEntityService" as ApEnService
+participant ":AppraisalEntityMapper" as AppraisalMapper
+participant "responseAppraisalEntityDTO\n:ResponseAppraisalEntityDTO" as ApResponse
+participant ":IAppraisalEntityRepository" as AppraisalRepo
+participant ":AppraisalAssembler" as AppraisalAssembler
+participant ":AppraisalEntityFactory" as FactoryAppraisalEntity
+participant "apEnDM\n:AppraisalEntityDM" as ApEnDM
+participant ":IAppraisalEntityRepositoryJPA" as ApRepoJPA
+participant "apEn\n:AppraisalEntity" as AppraisalEntity
+participant "apEnPersisted\n:AppraisalEntity" as AppraisalEntityPersisted
+
+database "DB" as DB
+
+' =========================
+' UI START
+' =========================
+Administrator -> UI : I want to register an Appraisal Entity
+activate UI
+
+UI --> Administrator : Provide name and contact
+deactivate UI
+
+Administrator -> UI : Sends name, contact, selections
+activate UI
+
+' =========================
+' REGISTER APPRAISAL ENTITY
+' =========================
+UI -> Controller : registerAppraisalEntity(requestDTO, userId)
+activate Controller
+
+Controller -> AppraisalMapper : toVO(requestDTO)
+activate AppraisalMapper
+
+AppraisalMapper --> Controller : value objects
+deactivate AppraisalMapper
+
+Controller -> ApEnService : createAndSave(name, contact, \ngenreIds, publicationTypeIds, userId)
+activate ApEnService
+
+
+ApEnService -> FactoryAppraisalEntity : create(name, contact, \ngenreIds, publicationTypeIds, userId)
+activate FactoryAppraisalEntity
+
+FactoryAppraisalEntity -->> AppraisalEntity ** : <<create>>
+FactoryAppraisalEntity --> ApEnService : apEn
+deactivate FactoryAppraisalEntity
+
+
+ApEnService -> AppraisalRepo : save(apEn)
+activate AppraisalRepo
+
+AppraisalRepo -> AppraisalAssembler : toDM(apEn)
+activate AppraisalAssembler
+
+AppraisalAssembler -->> ApEnDM ** : <<create>>
+AppraisalAssembler --> AppraisalRepo : apEnDM
+deactivate AppraisalAssembler
+
+
+AppraisalRepo -> ApRepoJPA : save(apEnDM)
+activate ApRepoJPA
+
+ApRepoJPA -> DB : POST apEnDM
+activate DB
+
+DB --> ApRepoJPA : data
+deactivate DB
+
+ApRepoJPA -->> AppraisalEntityPersisted ** : <<create>>
+ApRepoJPA --> AppraisalRepo : persistedApEnDM
+deactivate ApRepoJPA
+
+
+AppraisalRepo -> AppraisalAssembler : toDomain(persistedApEnDM)
+activate AppraisalAssembler
+
+AppraisalAssembler -> ApEnDM : getId()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : id
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getName()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : name
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getGenres()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : genreIds
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getPublicationTypes()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : pubTypeIds
+deactivate ApEnDM
+
+
+AppraisalAssembler -> FactoryAppraisalEntity : create(id, name, contact, \ngenreIds, pubTypeIds)
+activate FactoryAppraisalEntity
+
+FactoryAppraisalEntity -->> AppraisalEntityPersisted ** : <<create>>
+FactoryAppraisalEntity --> AppraisalAssembler : apEnPersisted
+deactivate FactoryAppraisalEntity
+
+
+AppraisalAssembler --> AppraisalRepo : apEnPersisted
+deactivate AppraisalAssembler
+
+AppraisalRepo --> ApEnService : apEnPersisted
+deactivate AppraisalRepo
+
+ApEnService -> AppraisalMapper : toDTO(apEnPersisted)
+activate AppraisalMapper
+
+AppraisalMapper --> ApResponse ** : <<create>>
+
+AppraisalMapper --> ApEnService : responseAppraisalEntityDTO
+deactivate AppraisalMapper
+
+ApEnService --> Controller : responseAppraisalEntityDTO
+deactivate ApEnService
+
+Controller --> UI : responseAppraisalEntityDTO
+deactivate Controller
+
+UI --> Administrator : Success
+deactivate UI
+
+@enduml
