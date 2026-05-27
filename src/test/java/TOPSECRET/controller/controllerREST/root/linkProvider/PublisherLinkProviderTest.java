@@ -33,34 +33,49 @@ class PublisherLinkProviderTest {
     @Test
     void shouldReturnCreatePublisherLink_whenUserHasPermission() {
 
+        // ARRANGE
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreatPublisher(user)).thenReturn(true);
 
-        assertEquals(1, provider.getLinksForPublisher(userId).size());
+        // ACT
+        int result = provider.getLinksForPublisher(userId).size();
+
+        // ASSERT
+        assertEquals(1, result);
     }
 
     @Test
     void shouldReturnEmptyList_whenUserHasNoPermission() {
 
+        // ARRANGE
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreatPublisher(user)).thenReturn(false);
 
-        assertEquals(0, provider.getLinksForPublisher(userId).size());
+        // ACT
+        int result = provider.getLinksForPublisher(userId).size();
+
+        // ASSERT
+        assertEquals(0, result);
     }
 
     @Test
     void shouldReturnEmptyList_whenUserDoesNotExist() {
 
+        // ARRANGE
         UserId userId = mock(UserId.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
-        assertEquals(0, provider.getLinksForPublisher(userId).size());
+        // ACT
+        int result = provider.getLinksForPublisher(userId).size();
+
+        // ASSERT
+        assertEquals(0, result);
     }
 }
