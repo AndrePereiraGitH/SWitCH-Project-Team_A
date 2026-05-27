@@ -16,10 +16,17 @@ on:
       - teamA_2
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   # ── US054 ── Enforce coverage thresholds ────────────────────────────────────
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
 
     steps:
       - name: Code checkout
@@ -38,7 +45,7 @@ jobs:
 
       # Upload JaCoCo line coverage report
       - name: Upload JaCoCo report
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
@@ -46,7 +53,7 @@ jobs:
 
       # Upload PITest mutation coverage report
       - name: Upload PITest report
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: pitest-report
@@ -56,6 +63,11 @@ jobs:
   static-analysis-and-security:
     runs-on: ubuntu-latest
     needs: []
+    permissions:
+      contents: read
+      actions: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Code checkout
@@ -90,14 +102,14 @@ jobs:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
       - name: Upload Checkstyle report
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: checkstyle-report
           path: target/checkstyle-result.xml
 
       - name: Upload PMD report
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: pmd-report
@@ -156,6 +168,8 @@ jobs:
   secret-detection:
     runs-on: ubuntu-latest
     needs: []
+    permissions:
+      contents: read
 
     steps:
       - name: Code checkout
@@ -174,6 +188,11 @@ jobs:
   dependency-scan:
     runs-on: ubuntu-latest
     needs: []
+    permissions:
+      contents: read
+      actions: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Code checkout
@@ -219,14 +238,14 @@ jobs:
           --no-transfer-progress
 
       - name: Upload dependency inventory
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: dependency-tree
           path: target/dependency-tree.txt
 
       - name: Upload OWASP report
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
@@ -278,6 +297,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-and-test, static-analysis-and-security, secret-detection, dependency-scan]
     if: success()
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Verify all gates passed
@@ -341,6 +364,9 @@ jobs:
     # Only generate versioned artifacts when changes land on protected branches,
     # not on every PR open/sync
     if: github.event_name == 'push'
+    permissions:
+      contents: read
+      actions: write
 
     steps:
       - name: Code checkout
