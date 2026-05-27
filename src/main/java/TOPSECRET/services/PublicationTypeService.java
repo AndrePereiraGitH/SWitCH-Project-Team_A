@@ -1,34 +1,44 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublicationTypeAuthorizationPolicy;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
-
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.stereotype.Service;
 
+import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.Optional;
+
 /**
- * Application service responsible for PublicationType use cases.
- *
- * <p>
- * Handles creation and validation logic before delegating persistence
- * to the repository layer.
- * </p>
+ * Service responsible for PublicationType operations.
  */
 @Service
 public class PublicationTypeService {
 
     private final IPublicationTypeRepository repository;
     private final PublicationTypeFactory factory;
+    private final IUserRepository userRepository;
+    private final PublicationTypeAuthorizationPolicy policy;
 
     /**
-     * Constructs the service with required dependencies.
+     * Creates the service with required dependencies.
      *
-     * @param repository the repository used for persistence
-     * @param factory the factory used to create domain objects
+     * @param repository PublicationType repository
+     * @param factory PublicationType factory
+     * @param userRepository User repository
+     * @param policy authorization policy
      */
     public PublicationTypeService(
             IPublicationTypeRepository repository,
-            PublicationTypeFactory factory
+            PublicationTypeFactory factory,
+            IUserRepository userRepository,
+            PublicationTypeAuthorizationPolicy policy
     ) {
 
         if (repository == null) {
@@ -41,28 +51,86 @@ public class PublicationTypeService {
 
         this.repository = repository;
         this.factory = factory;
+        this.userRepository = userRepository;
+        this.policy = policy;
     }
 
     /**
-     * Creates and persists a new PublicationType.
+     * Creates and saves a new PublicationType.
      *
-     * <p>
-     * Ensures that the media format is valid and not duplicated.
-     * </p>
+     * @param mediaFormat publication media format
+     * @param userId user performing the operation
      *
-     * @param mediaFormat the publication format
-     * @return the created and saved {@link PublicationType}
-     * @throws IllegalArgumentException if mediaFormat is invalid or already exists
+     * @return the created PublicationType
+     *
+     * @throws IllegalArgumentException if the user does not exist
+     * @throws AccessDeniedException if the user has no permission
+     * @throws InstanceAlreadyExistsException if the PublicationType already exists
      */
-    public PublicationType createAndSave(String mediaFormat) {
+    public PublicationType createAndSave(String mediaFormat, UserId userId)
+            throws InstanceAlreadyExistsException, AccessDeniedException {
 
-        repository.findByMediaFormat(mediaFormat)
-                .ifPresent(existing -> {
-                    throw new IllegalArgumentException("PublicationType already exists");
-                });
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("User not found"));
 
-        PublicationType entity = factory.create(mediaFormat);
+        if (!policy.canCreatePublicationType(user)) {
+            throw new AccessDeniedException("Access denied");
+        }
 
-        return repository.save(entity);
+        Optional<PublicationType> existing =
+                repository.findByMediaFormat(mediaFormat);
+
+        if (existing.isPresent()) {
+            throw new InstanceAlreadyExistsException(
+                    "PublicationType already exists"
+            );
+        }
+
+        PublicationType publicationType =
+                factory.create(mediaFormat);
+
+        return repository.save(publicationType);
+    }
+
+    /**
+     * Returns all PublicationTypes.
+     *
+     * @return list of PublicationTypes
+     */
+    public List<PublicationType> findAll() {
+        return repository.findAll();
+    }
+
+    /**
+     * Finds a PublicationType by id.
+     *
+     * @param id PublicationType id
+     * @return matching PublicationType if found
+     */
+    public Optional<PublicationType> findById(PublicationTypeId id) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("id cannot be null");
+        }
+
+        return repository.findById(id);
+    }
+
+    /**
+     * Finds a PublicationType by media format.
+     *
+     * @param mediaFormat publication media format
+     * @return matching PublicationType if found
+     */
+    public Optional<PublicationType> findByMediaFormat(String mediaFormat) {
+
+        if (mediaFormat == null) {
+            throw new IllegalArgumentException(
+                    "mediaFormat cannot be null"
+            );
+        }
+
+        return repository.findByMediaFormat(mediaFormat);
     }
 }
