@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 
 
 /**
@@ -155,7 +155,9 @@ public class CollectionOfPublicationsService {
     public boolean makeCollectionPublic(CollectionOfPublicationsId collectionId, UserId userId)
             throws InstanceNotFoundException, AccessDeniedException {
 
-        Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
+        Objects.requireNonNull(collectionId, "CollectionOfPublicationsId cannot be null");
+        Objects.requireNonNull(userId, "userId cannot be null");
+
 
         CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
 
@@ -198,6 +200,7 @@ public class CollectionOfPublicationsService {
 
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
         Objects.requireNonNull(publicUntil, "Public until date cannot be null");
+        Objects.requireNonNull(userId, "userId cannot be null");
 
         User user = userRepo.findByID(userId).orElseThrow(() ->
                 new IllegalArgumentException("User with id " + userId + " not found"));
@@ -242,7 +245,29 @@ public class CollectionOfPublicationsService {
      * @return a list of {@link CollectionOfPublications} owned by the given user;
      * may be empty if the user has no collections
      */
-    public List<CollectionOfPublications> findAll(UserId ownerId) {
+    public List<CollectionOfPublications> findAllByOwnerId(UserId ownerId) {
         return collectionOfPublicationsRepository.findAllByOwnerId(ownerId);
+    }
+
+    /**
+     * Checks whether a {@link CollectionOfPublications} with the given identifier exists.
+     *
+     * @param collectionOfPublicationsId the identifier to check; must not be {@code null}
+     * @return {@code true} if a collection with the given identifier exists;
+     * {@code false} otherwise
+     */
+    public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId) {
+        return collectionOfPublicationsRepository.existsById(collectionOfPublicationsId);
+    }
+
+    /**
+     * Retrieves all public {@link CollectionOfPublications} associated with the given genre.
+     *
+     * @param genreId the identifier of the genre to filter by; must not be {@code null}
+     * @return a list of public {@link CollectionOfPublications} belonging to the given genre;
+     * may be empty if none exist
+     */
+    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
+        return collectionOfPublicationsRepository.findPublicCollectionsByGenreId(genreId);
     }
 }

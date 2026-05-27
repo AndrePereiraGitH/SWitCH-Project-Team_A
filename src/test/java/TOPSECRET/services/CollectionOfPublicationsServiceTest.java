@@ -15,10 +15,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.springframework.security.access.AccessDeniedException;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -276,7 +277,7 @@ class CollectionOfPublicationsServiceTest {
         NullPointerException ex = assertThrows(NullPointerException.class, () -> service.makeCollectionPublic
                 (null, userIdDouble));
 
-        assertEquals("CollectionOfPublications Id cannot be null", ex.getMessage());
+        assertEquals("CollectionOfPublicationsId cannot be null", ex.getMessage());
     }
 
     // ===========================================================================
@@ -419,7 +420,7 @@ class CollectionOfPublicationsServiceTest {
                 .thenReturn(List.of(collection));
 
         // Act
-        List<CollectionOfPublications> result = service.findAll(userIdDouble);
+        List<CollectionOfPublications> result = service.findAllByOwnerId(userIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -432,7 +433,7 @@ class CollectionOfPublicationsServiceTest {
                 .thenReturn(List.of());
 
         // Act
-        List<CollectionOfPublications> result = service.findAll(userIdDouble);
+        List<CollectionOfPublications> result = service.findAllByOwnerId(userIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
