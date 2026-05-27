@@ -283,4 +283,25 @@ class PublicationTypeRestControllerTest {
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
+    @Test
+    void shouldReturnPublicationTypeLinks() {
+
+        // ARRANGE
+        PublicationTypeLinkProvider provider = new PublicationTypeLinkProvider();
+
+        UserId userId = mock(UserId.class);
+
+        // ACT
+        List<Link> links = provider.getLinksForPublicationType(userId);
+
+        // ASSERT
+        assertNotNull(links);
+        assertFalse(links.isEmpty());
+        assertEquals(1, links.size());
+        assertEquals("create-publication-type",
+                links.get(0).getRel().value()
+
+        );
+
+    }
 }
