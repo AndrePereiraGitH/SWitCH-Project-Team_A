@@ -32,7 +32,7 @@ public class US019CollectionOfPublicationsMapper {
                 collection.id(),
                 collection.getCollectionName(),
                 collection.getCollectionGenre().getID(),
-                collection.getOwnerId().getUsername()
+                collection.getOwnerId().getUserId()
         );
     }
 

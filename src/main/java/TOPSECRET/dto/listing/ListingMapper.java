@@ -37,7 +37,7 @@ public class ListingMapper {
                 listing.getSaleType().toString(),
                 listing.getPrice().toString(),
                 listing.getShortDescription(),
-                listing.getSellerId().getUsername(),
+                listing.getSellerId().getUserId(),
                 listing.getPictures().stream().map(Picture::getPicture).toList(),
                 listing.getPublicationDate()
         );
@@ -73,6 +73,16 @@ public class ListingMapper {
      */
     public static Price toPrice (String price) {
         return new Price(new BigDecimal(price));
+    }
+
+    /**
+     * Converts a string value into a {@link Picture}.
+     *
+     * @param picture the price value as a string
+     * @return a {@link Picture} value object
+     */
+    public static Picture toPicture(String picture) {
+        return new Picture(picture);
     }
 
 

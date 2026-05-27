@@ -91,7 +91,7 @@ class US016PublicationSampleMapperTest {
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSampleId.getID()).thenReturn("publicationId");
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
-        when(ownerId.getUsername()).thenReturn("ownerID");
+        when(ownerId.getUserId()).thenReturn("ownerID");
         when(publicationSample.getCondition()).thenReturn(condition);
 
         when(bd.getTitle()).thenReturn("The Hobbit");
@@ -115,7 +115,7 @@ class US016PublicationSampleMapperTest {
         assertEquals(List.of("Author 1", "Author 2"), dto.authorName());
         assertEquals(language, dto.language());
         assertEquals(List.of("Fantasy", "Adventure"), dto.genreType());
-        assertEquals(ownerId.getUsername(), dto.ownerName());
+        assertEquals(ownerId.getUserId(), dto.ownerName());
         assertEquals("USED", dto.condition());
     }
 
@@ -128,7 +128,7 @@ class US016PublicationSampleMapperTest {
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSampleId.getID()).thenReturn("publicationId");
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
-        when(ownerId.getUsername()).thenReturn("ownerID");
+        when(ownerId.getUserId()).thenReturn("ownerID");
         when(publicationSample.getCondition()).thenReturn(condition);
 
         when(bd.getTitle()).thenReturn("Dune");
@@ -149,7 +149,7 @@ class US016PublicationSampleMapperTest {
         assertEquals(List.of("Frank Herbert"), dto.authorName());
         assertEquals(language, dto.language());
         assertEquals(List.of("Sci-Fi"), dto.genreType());
-        assertEquals(ownerId.getUsername(), dto.ownerName());
+        assertEquals(ownerId.getUserId(), dto.ownerName());
         assertEquals("NEW", dto.condition());
     }
 
@@ -167,7 +167,7 @@ class US016PublicationSampleMapperTest {
         when(publicationSampleId.getID()).thenReturn("publicationId");
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
         when(publicationSample.getOwnerID()).thenReturn(ownerId);
-        when(ownerId.getUsername()).thenReturn("ownerID");
+        when(ownerId.getUserId()).thenReturn("ownerID");
         when(publicationSample.getCondition()).thenReturn(condition);
 
         when(bdRepository.findById(bibliographicalDataId))
@@ -196,7 +196,7 @@ class US016PublicationSampleMapperTest {
         assertEquals(List.of("Tolkien"), dto.authorName());
         assertEquals(language, dto.language());
         assertEquals(List.of("Fantasy"), dto.genreType());
-        assertEquals(ownerId.getUsername(), dto.ownerName());
+        assertEquals(ownerId.getUserId(), dto.ownerName());
         assertEquals("USED", dto.condition());
     }
 

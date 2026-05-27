@@ -83,7 +83,7 @@ class LibraryRepositoryMemTest {
 
         // Arrange
         UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn("user-123");
+        when(userDouble.getUserId()).thenReturn("user-123");
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.toString()).thenReturn("user-123");
@@ -106,7 +106,7 @@ class LibraryRepositoryMemTest {
     void givenUserWithoutLibrary_whenExistsByUserId_thenReturnsFalse() {
         // Arrange
         UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn("user-123");
+        when(userDouble.getUserId()).thenReturn("user-123");
 
         ILibraryRepository repo = new LibraryRepositoryMem();
 
@@ -135,10 +135,10 @@ class LibraryRepositoryMemTest {
 
         // Arrange
         UserId userDouble1 = mock(UserId.class);
-        when(userDouble1.getUsername()).thenReturn("user-123");
+        when(userDouble1.getUserId()).thenReturn("user-123");
 
         UserId userDouble2 = mock(UserId.class);
-        when(userDouble2.getUsername()).thenReturn("user-456");
+        when(userDouble2.getUserId()).thenReturn("user-456");
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.toString()).thenReturn("user-123");
@@ -167,7 +167,7 @@ class LibraryRepositoryMemTest {
 
         // Arrange
         UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn("user-123");
+        when(userDouble.getUserId()).thenReturn("user-123");
 
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryIdDouble.toString()).thenReturn("user-123");
@@ -202,7 +202,7 @@ class LibraryRepositoryMemTest {
     void givenNonExistingUser_whenGetLibraryOfUser_thenThrowsInstanceNotFoundException() {
         // Arrange
         UserId userDouble = mock(UserId.class);
-        when(userDouble.getUsername()).thenReturn("user-999");
+        when(userDouble.getUserId()).thenReturn("user-999");
 
         ILibraryRepository repo = new LibraryRepositoryMem();
 
@@ -219,10 +219,10 @@ class LibraryRepositoryMemTest {
 
         // Arrange
         UserId userDouble1 = mock(UserId.class);
-        when(userDouble1.getUsername()).thenReturn("user-123");
+        when(userDouble1.getUserId()).thenReturn("user-123");
 
         UserId userDouble2 = mock(UserId.class);
-        when(userDouble2.getUsername()).thenReturn("user-456");
+        when(userDouble2.getUserId()).thenReturn("user-456");
 
         LibraryId libraryIdDouble1 = mock(LibraryId.class);
         when(libraryIdDouble1.toString()).thenReturn("user-123");

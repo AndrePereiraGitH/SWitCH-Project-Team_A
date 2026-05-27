@@ -216,7 +216,7 @@ class US019CollectionOfPublicationsMapperTest {
 
         // UserId
         UserId userIdDouble = mock(UserId.class);
-        when(userIdDouble.getUsername()).thenReturn(username);
+        when(userIdDouble.getUserId()).thenReturn(username);
 
         // CollectionOfPublications
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
