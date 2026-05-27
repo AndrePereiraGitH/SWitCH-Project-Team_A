@@ -63,8 +63,7 @@ public class AppraisalEntityService {
     public AppraisalEntity createAndSave(String name, Contact contact, List<PublicationTypeId> publicationTypes, List<GenreId> genres, UserId userId)
                         throws InstanceAlreadyExistsException, AccessDeniedException {
 
-        User user = userRepository.findByID(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + userId));
+        User user = getUser(userId);
 
         if(!policy.canRegisterAppraisalEntity(user)) {
             throw new AccessDeniedException ("You do not have permission to register an Appraisal Entity");
@@ -96,8 +95,7 @@ public class AppraisalEntityService {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        User user = userRepository.findByID(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + userId));
+        User user = getUser(userId);
 
         if(!policy.canRegisterAppraisalEntity(user)) {
             throw new AccessDeniedException ("You do not have permission to update an Appraisal Entity");
@@ -140,5 +138,15 @@ public class AppraisalEntityService {
         }
 
         return repository.existsById(id);
+    }
+
+    // HELPER
+    /**
+     * Retrieves a {@link User} by their identifier.
+     */
+    private User getUser(UserId id){
+
+        return userRepository.findByID(id)
+                .orElseThrow(() -> new NoSuchElementException("User not found with ID: " + id));
     }
 }

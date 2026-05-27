@@ -11,6 +11,7 @@ import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -38,12 +39,8 @@ class AppraisalEntityServiceTest {
     @Mock private AppraisalEntityAuthorizationPolicy policy;
     @Mock private IUserRepository userRepo;
 
+    @InjectMocks
     private AppraisalEntityService sut;
-
-    @BeforeEach
-    void setUp() {
-        sut = new AppraisalEntityService(repository, factory, policy, userRepo);
-    }
 
     // Helpers
     private UserId userId()              { return new UserId("user-1"); }
