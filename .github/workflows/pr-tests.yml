@@ -25,11 +25,9 @@ jobs:
           java-version: '17'
           cache: maven
 
-      # Compiles, runs tests, checks 85% line coverage + 95% mutation coverage
       - name: Build, test & enforce coverage (Maven verify)
         run: mvn clean verify
 
-      # Upload JaCoCo line coverage report
       - name: Upload JaCoCo report
         if: always()
         uses: actions/upload-artifact@v4
@@ -37,10 +35,90 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco/
 
-      # Upload PITest mutation coverage report
       - name: Upload PITest report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pitest-report
           path: target/pit-reports/
+
+  # ── US048 ── Static analysis + security checks ──────────────────────────────
+  static-analysis-and-security:
+    runs-on: ubuntu-latest
+    # Runs in parallel with build-and-test; both must pass for merge
+    needs: []
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+
+      - name: Install Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      # Compile first so SpotBugs has bytecode to analyse
+      - name: Compile (no tests)
+        run: mvn compile --no-transfer-progress
+
+      # ── Static analysis ──────────────────────────────────────────────────────
+      # Checkstyle: style violations → report only (failOnViolation=false in pom)
+      # PMD:        code smells      → report only (failOnViolation=false in pom)
+      # SpotBugs:   bug patterns     → FAILS build on any finding (failOnError
+      #             overridden to true here via -Dspotbugs.failOnError=true)
+      - name: Checkstyle (report)
+        if: always()
+        run: mvn checkstyle:check --no-transfer-progress || true
+
+      - name: PMD (report)
+        if: always()
+        run: mvn pmd:check --no-transfer-progress || true
+
+      - name: SpotBugs + Find Security Bugs (gate)
+        run: |
+          mvn spotbugs:check \
+              -Dspotbugs.failOnError=true \
+              --no-transfer-progress
+
+      # ── Security: dependency CVE scan ────────────────────────────────────────
+      # Overrides pom's CVSS threshold: fail on HIGH or CRITICAL (score >= 7).
+      # NVD_API_KEY avoids rate-limit delays (add as a GitHub Actions secret).
+      - name: OWASP Dependency-Check (CVE gate)
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          mvn org.owasp:dependency-check-maven:check \
+              -DfailBuildOnCVSS=7 \
+              -DnvdApiKey=${NVD_API_KEY} \
+              --no-transfer-progress
+
+      # ── Upload all reports ───────────────────────────────────────────────────
+      - name: Upload Checkstyle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-report
+          path: target/checkstyle-result.xml
+
+      - name: Upload PMD report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmd-report
+          path: target/pmd.xml
+
+      - name: Upload SpotBugs report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotbugs-report
+          path: target/spotbugsXml.xml
+
+      - name: Upload OWASP Dependency-Check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
