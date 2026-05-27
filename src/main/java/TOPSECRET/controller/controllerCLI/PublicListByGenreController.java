@@ -8,53 +8,52 @@ import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.US013GenreDTO;
 import TOPSECRET.dto.US013GenreMapper;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTO;
-import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.dto.US020CollectionOfPublicationsDTOMapper;
-import TOPSECRET.persistence.mem.GenreRepositoryMem;
+import TOPSECRET.services.CollectionOfPublicationsService;
 
 import java.util.List;
 
 /**
- * Controller responsible for the use case of retrieving
- * public publication lists filtered by genre.
- * <p>
- * This controller coordinates access to:
- * <ul>
- *     <li>{@link GenreRepositoryMem} – to retrieve available genres</li>
- *     <li>{@link ICollectionOfPublicationsRepository} – to retrieve public collections by genre</li>
- *     <li>{@link IUserRepository} – to retrieve usernames of collections</li>
- * </ul>
+ * Controller for US020: Browse public collections of publications filtered by genre.
+ *
+ * <p>This controller orchestrates the retrieval of available genres and public
+ * collections of publications filtered by a selected genre. It delegates persistence
+ * concerns to the relevant repositories and service, and converts domain objects
+ * into DTOs for presentation.</p>
+ *
+ * <p>Does not contain business rules — those live in the domain layer.</p>
  */
-
 public class PublicListByGenreController {
 
     private final IGenreRepository _genreRepository;
-    private final ICollectionOfPublicationsRepository _collectionRepo;
+    private final CollectionOfPublicationsService _collectionService;
     private final IUserRepository _userRepo;
 
-
     /**
-     * Constructs the controller with the required repositories.
+     * Constructs a new {@code PublicListByGenreController} with the required dependencies.
      *
-     * @param genreRepository repository used to retrieve genres
-     * @param collectionRepo  repository used to retrieve collections filtered by genre
-     * @param userRepo repository used to retrieve usernames
+     * @param genreRepository   repository used to retrieve available genres;
+     *                          must not be {@code null}
+     * @param collectionService service used to retrieve public collections filtered by genre;
+     *                          must not be {@code null}
+     * @param userRepo          repository used to retrieve user information;
+     *                          must not be {@code null}
      */
     public PublicListByGenreController(
             IGenreRepository genreRepository,
-            ICollectionOfPublicationsRepository collectionRepo,
+            CollectionOfPublicationsService collectionService,
             IUserRepository userRepo
-            ) {
+    ) {
         this._genreRepository = genreRepository;
-        this._collectionRepo = collectionRepo;
+        this._collectionService = collectionService;
         this._userRepo = userRepo;
     }
 
-
     /**
-     * Retrieves all available genres.
+     * Retrieves all available genres as DTOs.
      *
-     * @return a list containing all {@link Genre} instances
+     * @return a list of {@link US013GenreDTO} representing all genres in the system;
+     * may be empty if no genres exist
      */
     public List<US013GenreDTO> getGenres() {
         List<Genre> genreList = _genreRepository.findAll();
@@ -63,13 +62,14 @@ public class PublicListByGenreController {
         return genreMapper.toDTOList(genreList);
     }
 
-
     /**
-     * Retrieves all public publication lists associated with a given genre.
+     * Retrieves all public collections of publications associated with the given genre.
      *
-     * @param genreId the genre used to filter public publication lists
-     * @return a list of {@link US020CollectionOfPublicationsDTO} matching the specified genre
-     * @throws IllegalArgumentException if the provided genre is {@code null}
+     * @param genreId the identifier of the genre used to filter public collections;
+     *                must not be {@code null}
+     * @return a list of {@link US020CollectionOfPublicationsDTO} matching the specified genre;
+     * may be empty if no public collections exist for the given genre
+     * @throws IllegalArgumentException if {@code genreId} is {@code null}
      */
     public List<US020CollectionOfPublicationsDTO> getPublicListsByGenre(GenreId genreId) throws IllegalArgumentException {
 
@@ -77,7 +77,7 @@ public class PublicListByGenreController {
             throw new IllegalArgumentException("Genre can't be null.");
         }
 
-        List<CollectionOfPublications> collections = _collectionRepo.findPublicCollectionsByGenreId(genreId);
+        List<CollectionOfPublications> collections = _collectionService.findPublicCollectionsByGenreId(genreId);
 
         US020CollectionOfPublicationsDTOMapper mapper = new US020CollectionOfPublicationsDTOMapper(_userRepo);
 
