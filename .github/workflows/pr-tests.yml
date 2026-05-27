@@ -43,7 +43,7 @@ jobs:
           name: pitest-report
           path: target/pit-reports/
 
-  # ── US048 ── Static analysis + security checks ──────────────────────────────
+  # ── US048 ── SAST with Semgrep + style analysis ─────────────────────────────
   static-analysis-and-security:
     runs-on: ubuntu-latest
     needs: []
@@ -59,9 +59,6 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Compile (no tests)
-        run: mvn compile --no-transfer-progress
-
       - name: Checkstyle (report)
         if: always()
         run: mvn checkstyle:check --no-transfer-progress || true
@@ -70,14 +67,15 @@ jobs:
         if: always()
         run: mvn pmd:check --no-transfer-progress || true
 
-      - name: OWASP Dependency-Check (CVE gate)
+      - name: Semgrep SAST scan (gate)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >
+            p/java
+            p/owasp-top-ten
+            p/spring
         env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          mvn org.owasp:dependency-check-maven:check \
-              -DfailBuildOnCVSS=7 \
-              -DnvdApiKey=${NVD_API_KEY} \
-              --no-transfer-progress
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
       - name: Upload Checkstyle report
         if: always()
@@ -93,14 +91,7 @@ jobs:
           name: pmd-report
           path: target/pmd.xml
 
-      - name: Upload OWASP Dependency-Check report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependency-check-report
-          path: target/dependency-check-report.html
-
-  # ──── Secret & insecure-configuration detection ──────────────────────
+  # ── US049 ── Secret & insecure-configuration detection ──────────────────────
   secret-detection:
     runs-on: ubuntu-latest
     needs: []
@@ -111,25 +102,67 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Gitleaks
       - name: Gitleaks secret scan (gate)
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # ── US051 ── Protected integration rules ────────────────────────────────────
+  pr-validation:
+    runs-on: ubuntu-latest
+    needs: [build-and-test, static-analysis-and-security, secret-detection]
+    if: success()
 
-    # ──── Protected integration rules ────────────────────────────────────
+    steps:
+      - name: All quality gates passed
+        run: |
+          echo "build-and-test passed"
+          echo "static-analysis-and-security passed"
+          echo "secret-detection passed"
+          echo "PR is cleared for merge"
 
-    pr-validation:
-      runs-on: ubuntu-latest
-      needs: [ build-and-test, static-analysis-and-security, secret-detection ]
-      # Only passes if ALL required jobs passed
-      if: success()
+  # ── US053 ── Dependency inventory + vulnerability scan ──────────────────────
+  dependency-scan:
+    runs-on: ubuntu-latest
+    needs: []
 
-      steps:
-        - name: All quality gates passed
-          run: |
-            echo "build-and-test passed"
-            echo "static-analysis-and-security passed"
-            echo "secret-detection passed"
-            echo "PR is cleared for merge"
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+
+      - name: Install Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Generate dependency inventory
+        run: |
+          mvn dependency:tree \
+              --no-transfer-progress \
+              -DoutputFile=target/dependency-tree.txt
+
+      - name: OWASP Dependency-Check (CVE gate)
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          mvn org.owasp:dependency-check-maven:check \
+              -DfailBuildOnCVSS=7 \
+              -DnvdApiKey=${NVD_API_KEY} \
+              --no-transfer-progress
+
+      - name: Upload dependency inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-tree
+          path: target/dependency-tree.txt
+
+      - name: Upload OWASP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: target/dependency-check-report.html
+
