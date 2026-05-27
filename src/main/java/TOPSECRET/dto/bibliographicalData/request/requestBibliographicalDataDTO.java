@@ -3,7 +3,9 @@ package TOPSECRET.dto.bibliographicalData.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Request DTO used to create or update bibliographical data.
@@ -20,7 +22,13 @@ public record requestBibliographicalDataDTO(
         @NotEmpty(message = "Authors must not be blank")
         List<String> authorName,
 
+        Locale originalLanguage,
+
+        LocalDate publicationDate,
+
         @NotEmpty(message = "Genres must not be blank")
-        List<String> genreName
+        List<String> genreName,
+
+        String chunksOfText
 ) {
 }
