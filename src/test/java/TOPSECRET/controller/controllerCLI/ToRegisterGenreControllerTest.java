@@ -1,7 +1,11 @@
 package TOPSECRET.controller.controllerCLI;
 
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.GenreService;
 import org.junit.jupiter.api.Test;
+
+import javax.management.InstanceAlreadyExistsException;
+import org.springframework.security.access.AccessDeniedException;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,32 +24,35 @@ class ToRegisterGenreControllerTest {
     }
 
     @Test
-    void shouldReturnTrueWhenGenreIsRegisteredSuccessfully() {
+    void shouldReturnTrueWhenGenreIsRegisteredSuccessfully() throws AccessDeniedException, InstanceAlreadyExistsException {
 
         // Arrange
         GenreService serviceDouble = mock(GenreService.class);
         ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
+        UserId id = new UserId("1");
 
         // Act
-        boolean result = controller.registerGenre("Drama");
+        boolean result = controller.registerGenre("Drama", id);
 
         // Assert
         assertTrue(result);
-        verify(serviceDouble).createAndSave("Drama");
+        verify(serviceDouble).createAndSave("Drama", id);
     }
 
     @Test
-    void shouldPropagateExceptionWhenGenreAlreadyExists() {
+    void shouldPropagateExceptionWhenGenreAlreadyExists() throws AccessDeniedException, InstanceAlreadyExistsException {
 
         // Arrange
         GenreService serviceDouble = mock(GenreService.class);
+        UserId id = new UserId("1");
+
         doThrow(new IllegalArgumentException("Genre already exists"))
-                .when(serviceDouble).createAndSave("Drama");
+                .when(serviceDouble).createAndSave("Drama", id);
 
         ToRegisterGenreController controller = new ToRegisterGenreController(serviceDouble);
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.registerGenre("Drama"));
+                () -> controller.registerGenre("Drama", id));
     }
 }
