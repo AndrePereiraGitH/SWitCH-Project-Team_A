@@ -61,8 +61,6 @@ public interface ICollectionOfPublicationsRepository {
      */
     CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException;
 
-    List<CollectionOfPublications> getUserCollections(UserId ownerId);
-
     /**
      * Returns all collections owned by a given user.
      *
@@ -80,5 +78,4 @@ public interface ICollectionOfPublicationsRepository {
      * @throws IllegalArgumentException if genreId is null
      */
     List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId);
-
 }
