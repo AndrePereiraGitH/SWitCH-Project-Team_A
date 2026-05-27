@@ -6,6 +6,7 @@ import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import org.junit.jupiter.api.Test;
@@ -254,6 +255,60 @@ class PublicationTypeServiceTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.findByMediaFormat(null)
+        );
+    }
+
+    @Test
+    void shouldFindPublicationTypeById() {
+
+        // ARRANGE
+        PublicationTypeId id =
+                mock(PublicationTypeId.class);
+
+        PublicationType publicationType =
+                mock(PublicationType.class);
+
+        when(repository.findById(id))
+                .thenReturn(Optional.of(publicationType));
+
+        // ACT
+        Optional<PublicationType> result =
+                service.findById(id);
+
+        // ASSERT
+        assertTrue(result.isPresent());
+
+        assertEquals(
+                publicationType,
+                result.get()
+        );
+    }
+
+    @Test
+    void shouldReturnEmptyWhenIdDoesNotExist() {
+
+        // ARRANGE
+        PublicationTypeId id =
+                mock(PublicationTypeId.class);
+
+        when(repository.findById(id))
+                .thenReturn(Optional.empty());
+
+        // ACT
+        Optional<PublicationType> result =
+                service.findById(id);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldThrowWhenIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.findById(null)
         );
     }
 }
