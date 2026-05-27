@@ -1,16 +1,26 @@
 package TOPSECRET.dto.appraisalEntity;
 
-import TOPSECRET.domain.ValueObjects.Contact;
-import TOPSECRET.domain.ValueObjects.Email;
-import TOPSECRET.domain.ValueObjects.GenreId;
-import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
+import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link AppraisalEntityMapper}.
+ *
+ * <p>Verifies correct mapping between {@link RequestAppraisalEntityDTO}
+ * and domain objects, including validation of inputs and conversions
+ * of value objects and entity-to-DTO transformation.</p>
+ */
 class AppraisalEntityMapperTest {
 
     @Test
@@ -164,14 +174,26 @@ class AppraisalEntityMapperTest {
     }
 
     @Test
-    void ConstructorShouldThrowException() {
+    void shouldThrowExceptionWhenUtilityClassConstructorIsCalled()
+            throws Exception {
 
         // ARRANGE
+        Constructor<AppraisalEntityMapper> constructor =
+                AppraisalEntityMapper.class
+                        .getDeclaredConstructor();
+
+        constructor.setAccessible(true);
 
         // ACT + ASSERT
-        assertThrows(
+        InvocationTargetException result =
+                assertThrows(
+                        InvocationTargetException.class,
+                        constructor::newInstance
+                );
+
+        assertInstanceOf(
                 UnsupportedOperationException.class,
-                AppraisalEntityMapper::new
+                result.getCause()
         );
     }
 
@@ -287,6 +309,45 @@ class AppraisalEntityMapperTest {
         assertThrows(
                 NullPointerException.class,
                 () -> AppraisalEntityMapper.toGenreIds(dto)
+        );
+    }
+
+    @Test
+    void ToDTOShouldMapAllFieldsCorrectly() {
+
+        // ARRANGE
+        AppraisalEntity entity = mock(AppraisalEntity.class);
+        AppraisalEntityId id = mock(AppraisalEntityId.class);
+
+        PublicationTypeId pub1 = mock(PublicationTypeId.class);
+        GenreId genre1 = mock(GenreId.class);
+
+        when(entity.id()).thenReturn(id);
+        when(id.getId()).thenReturn("1");
+
+        when(entity.getName()).thenReturn("name");
+
+        when(pub1.getId()).thenReturn("PUB1");
+        when(genre1.getID()).thenReturn("GEN1");
+
+        when(entity.getPublicationTypeIds()).thenReturn(List.of(pub1));
+        when(entity.getGenreIds()).thenReturn(List.of(genre1));
+
+        // ACT
+        ResponseAppraisalEntityDTO result = AppraisalEntityMapper.toDTO(entity);
+
+        // ASSERT
+        assertEquals("1", result.getId());
+        assertEquals("name", result.getName());
+    }
+
+    @Test
+    void ToDTOShouldThrowExceptionWhenEntityIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> AppraisalEntityMapper.toDTO(null)
         );
     }
 }

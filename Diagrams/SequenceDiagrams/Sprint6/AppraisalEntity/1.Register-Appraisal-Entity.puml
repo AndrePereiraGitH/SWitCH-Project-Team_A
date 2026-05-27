@@ -1,0 +1,167 @@
+@startuml
+
+hide footbox
+autonumber
+title Register Appraisal Entity - Main View
+
+actor Administrator
+participant ":UI" as UI
+
+participant ":GenreREST\nController" as GenreController
+participant ":PublicationType\nRESTController" as PubController
+participant ":AppraisalEntity\nRESTController" as Controller
+participant ":AppraisalEntityService" as ApEnService
+participant ":IAppraisalEntityRepository" as AppraisalRepo
+participant ":AppraisalAssembler" as AppraisalAssembler
+participant ":AppraisalEntityFactory" as FactoryAppraisalEntity
+participant "apEnDM\n:AppraisalEntityDM" as ApEnDM
+participant ":IAppraisalEntityRepositoryJPA" as ApRepoJPA
+participant "apEn\n:AppraisalEntity" as AppraisalEntity
+participant "apEnPersisted\n:AppraisalEntity" as AppraisalEntityPersisted
+
+database "DB" as DB
+
+' =========================
+' UI START
+' =========================
+Administrator -> UI : I want to register an Appraisal Entity
+activate UI
+
+UI --> Administrator : Provide name and contact
+deactivate UI
+
+Administrator -> UI : Sends name, contact, selections
+activate UI
+
+
+' =========================
+' GET GENRES (REFERENCE)
+' =========================
+UI -> GenreController : getAllGenres()
+activate GenreController
+
+ref over GenreController
+  [[2.Get-Genre.puml Get Genres]]
+end ref
+
+GenreController --> UI : listOfGenreDTO
+deactivate GenreController
+
+UI --> Administrator : Display available Genres
+deactivate UI
+
+Administrator -> UI : Select Genres
+activate UI
+
+
+' =========================
+' GET PUBLICATION TYPES (REFERENCE)
+' =========================
+UI -> PubController : getAllPublicationTypes()
+activate PubController
+
+ref over PubController
+  [[3.Get-Publication-Type.puml Get Publication Types]]
+end ref
+
+PubController --> UI : listOfPublicationTypeDTO
+deactivate PubController
+
+UI --> Administrator : Display available Publication Types
+deactivate UI
+
+Administrator -> UI : Select Publication Types
+activate UI
+
+
+' =========================
+' REGISTER APPRAISAL ENTITY
+' =========================
+UI -> Controller : registerAppraisalEntity(name, \ncontact, genreIds, publicationTypeIds)
+activate Controller
+
+Controller -> ApEnService : createAndSave(name, \ncontact, genreIds, publicationTypeIds)
+activate ApEnService
+
+
+ApEnService -> FactoryAppraisalEntity : create(name, contact, \ngenreIds, publicationTypeIds)
+activate FactoryAppraisalEntity
+
+FactoryAppraisalEntity -->> AppraisalEntity ** : <<create>>
+FactoryAppraisalEntity --> ApEnService : apEn
+deactivate FactoryAppraisalEntity
+
+
+ApEnService -> AppraisalRepo : save(apEn)
+activate AppraisalRepo
+
+AppraisalRepo -> AppraisalAssembler : toDM(apEn)
+activate AppraisalAssembler
+
+AppraisalAssembler -->> ApEnDM ** : <<create>>
+AppraisalAssembler --> AppraisalRepo : apEnDM
+deactivate AppraisalAssembler
+
+
+AppraisalRepo -> ApRepoJPA : save(apEnDM)
+activate ApRepoJPA
+
+ApRepoJPA -> DB : insert apEnDM
+activate DB
+
+DB --> ApRepoJPA : persisted data
+deactivate DB
+
+ApRepoJPA -->> AppraisalEntityPersisted ** : <<create>>
+ApRepoJPA --> AppraisalRepo : persistedApEnDM
+deactivate ApRepoJPA
+
+
+AppraisalRepo -> AppraisalAssembler : toDomain(persistedApEnDM)
+activate AppraisalAssembler
+
+AppraisalAssembler -> ApEnDM : getId()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : id
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getName()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : name
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getGenres()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : genreIds
+deactivate ApEnDM
+
+AppraisalAssembler -> ApEnDM : getPublicationTypes()
+activate ApEnDM
+ApEnDM --> AppraisalAssembler : pubTypeIds
+deactivate ApEnDM
+
+
+AppraisalAssembler -> FactoryAppraisalEntity : create(id, name, contact, \ngenreIds, pubTypeIds)
+activate FactoryAppraisalEntity
+
+FactoryAppraisalEntity -->> AppraisalEntityPersisted ** : <<create>>
+FactoryAppraisalEntity --> AppraisalAssembler : apEnPersisted
+deactivate FactoryAppraisalEntity
+
+
+AppraisalAssembler --> AppraisalRepo : apEnPersisted
+deactivate AppraisalAssembler
+
+AppraisalRepo --> ApEnService : apEnPersisted
+deactivate AppraisalRepo
+
+ApEnService --> Controller : ResponseAppraisalEntityDTO
+deactivate ApEnService
+
+Controller --> UI : ResponseAppraisalEntityDTO
+deactivate Controller
+
+UI --> Administrator : Success
+deactivate UI
+
+@enduml
