@@ -53,7 +53,7 @@ public class US016PublicationSampleMapper {
                 bd.getAuthors().stream().map(AuthorId::getId).toList(),
                 bd.getOriginalLanguage(),
                 bd.getGenres().stream().map(GenreId::getID).toList(),
-                publicationSample.getOwnerID().getUsername(),
+                publicationSample.getOwnerID().getUserId(),
                 publicationSample.getCondition().toString()
         );
     }

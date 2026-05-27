@@ -144,8 +144,8 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
         when(collection1.getCollectionName()).thenReturn("Collection1");
         when(collection2.getCollectionName()).thenReturn("Collection2");
 
-        when(collection1.getOwnerId().getUsername()).thenReturn("owner name1");
-        when(collection2.getOwnerId().getUsername()).thenReturn("ner name2");
+        when(collection1.getOwnerId().getUserId()).thenReturn("owner name1");
+        when(collection2.getOwnerId().getUserId()).thenReturn("ner name2");
 
 
         when(repositoryDouble.findAllByOwnerId(userId))

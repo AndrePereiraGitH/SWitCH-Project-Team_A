@@ -61,7 +61,7 @@ public class AppraisalEntityService {
      * Creates and persists a new AppraisalEntity.
      */
     public AppraisalEntity createAndSave(String name, Contact contact, List<PublicationTypeId> publicationTypes, List<GenreId> genres, UserId userId)
-                        throws InstanceAlreadyExistsException, AccessDeniedException {
+                        throws AccessDeniedException {
 
         User user = getUser(userId);
 

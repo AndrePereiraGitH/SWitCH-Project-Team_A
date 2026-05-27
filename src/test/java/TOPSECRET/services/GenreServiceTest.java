@@ -49,14 +49,15 @@ class GenreServiceTest {
     @Mock
     private IUserRepository userRepository;
 
+    @Mock
+    private UserId userId;
+
     @InjectMocks
     private GenreService genreService;
 
     // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
-
-    private UserId userId() { return new UserId("user-1"); }
     private User user() { return mock(User.class); }
     private Genre genre() { return mock(Genre.class); }
 
@@ -99,14 +100,14 @@ class GenreServiceTest {
         Genre genre = genre();
         Genre savedGenre = genre();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateGenre(user)).thenReturn(true);
         when(genreRepository.findByTitle("Fiction")).thenReturn(Optional.empty());
         when(genreFactory.create("Fiction")).thenReturn(genre);
         when(genreRepository.save(genre)).thenReturn(savedGenre);
 
         // ACT
-        Genre result = genreService.createAndSave("Fiction", userId());
+        Genre result = genreService.createAndSave("Fiction", userId);
 
         // ASSERT
         assertSame(savedGenre, result);
@@ -118,14 +119,14 @@ class GenreServiceTest {
         User user = user();
         Genre genre = genre();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateGenre(user)).thenReturn(true);
         when(genreRepository.findByTitle("Fiction")).thenReturn(Optional.empty());
         when(genreFactory.create("Fiction")).thenReturn(genre);
         when(genreRepository.save(genre)).thenReturn(genre);
 
         // ACT
-        Genre result = genreService.createAndSave("Fiction", userId());
+        Genre result = genreService.createAndSave("Fiction", userId);
 
         // ASSERT
         assertSame(genre, result);
@@ -140,12 +141,12 @@ class GenreServiceTest {
         // ARRANGE
         User user = user();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateGenre(user)).thenReturn(false);
 
         // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
-                () -> genreService.createAndSave("Fiction", userId()));
+                () -> genreService.createAndSave("Fiction", userId));
     }
 
 
@@ -158,13 +159,13 @@ class GenreServiceTest {
         // ARRANGE
         User user = user();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateGenre(user)).thenReturn(true);
         when(genreRepository.findByTitle("Fiction")).thenReturn(Optional.of(genre()));
 
         // ACT + ASSERT
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> genreService.createAndSave("Fiction", userId()));
+                () -> genreService.createAndSave("Fiction", userId));
 
         assertEquals("Genre with type 'Fiction' already exists", ex.getMessage());
     }
@@ -175,7 +176,7 @@ class GenreServiceTest {
         User user = user();
         Genre genre = genre();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateGenre(user)).thenReturn(true);
         when(genreRepository.findByTitle("Fiction")).thenReturn(Optional.empty());
         when(genreFactory.create("Fiction")).thenReturn(genre);
@@ -183,7 +184,7 @@ class GenreServiceTest {
 
         // ACT + ASSERT
         assertThrows(RuntimeException.class,
-                () -> genreService.createAndSave("Fiction", userId()));
+                () -> genreService.createAndSave("Fiction", userId));
     }
 
     // =========================================================================
@@ -253,7 +254,7 @@ class GenreServiceTest {
     @Test
     void findById_shouldReturnGenre_whenFound() {
         // ARRANGE
-        GenreId genreId = new GenreId("genre-1");
+        GenreId genreId = mock(GenreId.class);
         Genre genre = genre();
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(genre));
 
@@ -268,7 +269,7 @@ class GenreServiceTest {
     @Test
     void findById_shouldReturnEmpty_whenNotFound() {
         // ARRANGE
-        GenreId genreId = new GenreId("genre-1");
+        GenreId genreId = mock(GenreId.class);
         when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
 
         // ACT

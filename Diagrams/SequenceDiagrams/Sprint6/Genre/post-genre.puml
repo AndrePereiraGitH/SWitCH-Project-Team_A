@@ -49,12 +49,10 @@ activate UI
 UI -> Controller : createGenre(requestDTO, userId)
 activate Controller
 
-Controller -> Controller : dto.genreName()
-
 ' =========================
 ' SERVICE ENTRY
 ' =========================
-Controller -> Service : createAndSave(genreName, userId)
+Controller -> Service : createAndSave(dot.genreName(), userId)
 activate Service
 
 ' =========================

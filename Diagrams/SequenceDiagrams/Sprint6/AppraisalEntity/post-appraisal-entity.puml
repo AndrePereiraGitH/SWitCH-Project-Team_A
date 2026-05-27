@@ -7,10 +7,10 @@ title Register Appraisal Entity - Main View
 actor Administrator
 participant ":UI" as UI
 
-participant ":GenreREST\nController" as GenreController
-participant ":PublicationType\nRESTController" as PubController
 participant ":AppraisalEntity\nRESTController" as Controller
 participant ":AppraisalEntityService" as ApEnService
+participant ":AppraisalEntityMapper" as AppraisalMapper
+participant "responseAppraisalEntityDTO\n:ResponseAppraisalEntityDTO" as ApResponse
 participant ":IAppraisalEntityRepository" as AppraisalRepo
 participant ":AppraisalAssembler" as AppraisalAssembler
 participant ":AppraisalEntityFactory" as FactoryAppraisalEntity
@@ -33,58 +33,23 @@ deactivate UI
 Administrator -> UI : Sends name, contact, selections
 activate UI
 
-
-' =========================
-' GET GENRES (REFERENCE)
-' =========================
-UI -> GenreController : getAllGenres()
-activate GenreController
-
-ref over GenreController
-  [[2.Get-Genre.puml Get Genres]]
-end ref
-
-GenreController --> UI : listOfGenreDTO
-deactivate GenreController
-
-UI --> Administrator : Display available Genres
-deactivate UI
-
-Administrator -> UI : Select Genres
-activate UI
-
-
-' =========================
-' GET PUBLICATION TYPES (REFERENCE)
-' =========================
-UI -> PubController : getAllPublicationTypes()
-activate PubController
-
-ref over PubController
-  [[3.Get-Publication-Type.puml Get Publication Types]]
-end ref
-
-PubController --> UI : listOfPublicationTypeDTO
-deactivate PubController
-
-UI --> Administrator : Display available Publication Types
-deactivate UI
-
-Administrator -> UI : Select Publication Types
-activate UI
-
-
 ' =========================
 ' REGISTER APPRAISAL ENTITY
 ' =========================
-UI -> Controller : registerAppraisalEntity(name, \ncontact, genreIds, publicationTypeIds)
+UI -> Controller : registerAppraisalEntity(requestDTO, userId)
 activate Controller
 
-Controller -> ApEnService : createAndSave(name, \ncontact, genreIds, publicationTypeIds)
+Controller -> AppraisalMapper : toVO(requestDTO)
+activate AppraisalMapper
+
+AppraisalMapper --> Controller : value objects
+deactivate AppraisalMapper
+
+Controller -> ApEnService : createAndSave(name, contact, \ngenreIds, publicationTypeIds, userId)
 activate ApEnService
 
 
-ApEnService -> FactoryAppraisalEntity : create(name, contact, \ngenreIds, publicationTypeIds)
+ApEnService -> FactoryAppraisalEntity : create(name, contact, \ngenreIds, publicationTypeIds, userId)
 activate FactoryAppraisalEntity
 
 FactoryAppraisalEntity -->> AppraisalEntity ** : <<create>>
@@ -106,10 +71,10 @@ deactivate AppraisalAssembler
 AppraisalRepo -> ApRepoJPA : save(apEnDM)
 activate ApRepoJPA
 
-ApRepoJPA -> DB : insert apEnDM
+ApRepoJPA -> DB : POST apEnDM
 activate DB
 
-DB --> ApRepoJPA : persisted data
+DB --> ApRepoJPA : data
 deactivate DB
 
 ApRepoJPA -->> AppraisalEntityPersisted ** : <<create>>
@@ -155,10 +120,18 @@ deactivate AppraisalAssembler
 AppraisalRepo --> ApEnService : apEnPersisted
 deactivate AppraisalRepo
 
-ApEnService --> Controller : ResponseAppraisalEntityDTO
+ApEnService -> AppraisalMapper : toDTO(apEnPersisted)
+activate AppraisalMapper
+
+AppraisalMapper --> ApResponse ** : <<create>>
+
+AppraisalMapper --> ApEnService : responseAppraisalEntityDTO
+deactivate AppraisalMapper
+
+ApEnService --> Controller : responseAppraisalEntityDTO
 deactivate ApEnService
 
-Controller --> UI : ResponseAppraisalEntityDTO
+Controller --> UI : responseAppraisalEntityDTO
 deactivate Controller
 
 UI --> Administrator : Success

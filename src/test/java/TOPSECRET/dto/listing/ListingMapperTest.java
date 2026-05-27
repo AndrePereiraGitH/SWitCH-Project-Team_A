@@ -57,7 +57,7 @@ class ListingMapperTest {
         when(listing.getShortDescription()).thenReturn("short description");
 
         when(listing.getSellerId()).thenReturn(sellerId);
-        when(sellerId.getUsername()).thenReturn("joao");
+        when(sellerId.getUserId()).thenReturn("joao");
 
         when(picture1.getPicture()).thenReturn("pic1.jpg");
         when(picture2.getPicture()).thenReturn("pic2.jpg");
@@ -141,6 +141,18 @@ class ListingMapperTest {
         // Act & Assert
         assertThrows(NumberFormatException.class,
                 () -> ListingMapper.toPrice(price));
+    }
+
+    @Test
+    void toPicture_shouldReturnPicture() {
+        // Arrange
+        String pictureValue = "image-url.jpg";
+
+        // Act
+        Picture result = ListingMapper.toPicture(pictureValue);
+
+        // Assert
+        assertEquals(new Picture(pictureValue), result);
     }
 
 }
