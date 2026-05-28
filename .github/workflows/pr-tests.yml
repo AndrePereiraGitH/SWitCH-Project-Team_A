@@ -92,12 +92,12 @@ jobs:
 
       # Semgrep: SAST scan — fails build on ERROR severity findings
       - name: Semgrep SAST scan (gate)
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: >
-            p/java
-            p/owasp-top-ten
-            p/spring
+        run: |
+          pip install semgrep
+          semgrep --config p/java --config p/owasp-top-ten \
+                  --error \
+                  --severity ERROR \
+                  --quiet
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
