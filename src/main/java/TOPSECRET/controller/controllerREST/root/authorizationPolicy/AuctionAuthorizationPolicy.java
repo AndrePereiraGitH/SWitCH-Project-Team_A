@@ -26,8 +26,7 @@ public class AuctionAuthorizationPolicy {
      *         {@code false} otherwise
      */
     public boolean canCreateAuction(User user) {
-        return user.getUserRoles().contains(UserRole.NORMAL_USER) ||
-                user.getUserRoles().contains(UserRole.ADMIN);
+        return user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
 
     /**

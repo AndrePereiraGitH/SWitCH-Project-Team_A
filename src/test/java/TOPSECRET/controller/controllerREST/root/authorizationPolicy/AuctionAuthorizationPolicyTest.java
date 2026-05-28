@@ -49,12 +49,12 @@ class AuctionAuthorizationPolicyTest { ;
     }
 
     @Test
-    void canCreateAuction_shouldReturnTrue_whenUserIsAdmin() {
+    void canCreateAuction_shouldReturnFalse_whenUserIsAdmin() {
         // Arrange
         when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
         // Act + Assert
-        assertTrue(policy.canCreateAuction(userDouble));
+        assertFalse(policy.canCreateAuction(userDouble));
     }
 
     @Test
