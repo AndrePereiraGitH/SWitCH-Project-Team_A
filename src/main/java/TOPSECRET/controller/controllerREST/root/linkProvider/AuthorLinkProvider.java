@@ -53,7 +53,7 @@ public class AuthorLinkProvider {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (policy.canCreateAuthor(user)) {
             links.add(linkTo(methodOn(AuthorRESTController.class)
-                    .createAuthor(null, id.getUserId()))
+                    .createAuthor(null, id))
                     .withRel("create-author"));
         }
         return links;

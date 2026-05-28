@@ -71,7 +71,8 @@ public class AuthorService {
                                 String biography, UserId userId)
             throws InstanceAlreadyExistsException, AccessDeniedException {
 
-        User user = userRepository.findByID(userId).get();
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (!policy.canCreateAuthor(user)) {
             throw new AccessDeniedException(

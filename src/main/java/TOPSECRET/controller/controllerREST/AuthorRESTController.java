@@ -60,18 +60,18 @@ public class AuthorRESTController {
     @PostMapping("")
     public ResponseEntity<AuthorDTO> createAuthor(
             @RequestBody CreateAuthorDTO dto,
-            @RequestParam String userId) {
+            @RequestParam UserId userId) {
         try {
             Author author = service.createAndSave(
                     dto.name(),
-                    new CountryId(dto.countryId()),
-                    LocalDate.parse(dto.dateOfBirth()),
+                    AuthorMapper.toCountryId(dto),
+                    AuthorMapper.toDateOfBirth(dto),
                     dto.biography(),
-                    new UserId(userId)
+                    userId
             );
             Country country = service.resolveCountry(author.getCountryID());
             AuthorDTO result = AuthorMapper.toDTO(author, country);
-            List<Link> links = new ArrayList<>(provider.getLinks(new UserId(userId)));
+            List<Link> links = new ArrayList<>(provider.getLinks(userId));
             links.add(linkTo(methodOn(AuthorRESTController.class)
                     .createAuthor(dto, userId)).withSelfRel());
             links.forEach(result::add);

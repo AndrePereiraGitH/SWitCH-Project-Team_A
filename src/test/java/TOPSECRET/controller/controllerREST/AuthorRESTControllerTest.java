@@ -92,7 +92,7 @@ class AuthorRESTControllerTest {
         when(provider.getLinks(any(UserId.class))).thenReturn(new ArrayList<>());
 
         // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId.getUserId());
+        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
 
         // ASSERT
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
@@ -115,7 +115,7 @@ class AuthorRESTControllerTest {
         when(provider.getLinks(any(UserId.class))).thenReturn(linkList);
 
         // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId.getUserId());
+        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
 
         // ASSERT
         assertNotNull(result.getBody());
@@ -136,7 +136,7 @@ class AuthorRESTControllerTest {
                 .thenThrow(new AccessDeniedException("denied"));
 
         // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId.getUserId());
+        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
 
         // ASSERT
         assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
@@ -153,7 +153,7 @@ class AuthorRESTControllerTest {
                 .thenThrow(new IllegalArgumentException());
 
         // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId.getUserId());
+        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
 
         // ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
@@ -170,7 +170,7 @@ class AuthorRESTControllerTest {
                 .thenThrow(new InstanceAlreadyExistsException());
 
         // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId.getUserId());
+        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
 
         // ASSERT
         assertEquals(HttpStatus.CONFLICT, result.getStatusCode());
@@ -187,7 +187,7 @@ class AuthorRESTControllerTest {
                 .thenThrow(new RuntimeException());
 
         // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId.getUserId());
+        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
 
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());

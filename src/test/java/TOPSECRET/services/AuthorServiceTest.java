@@ -209,4 +209,16 @@ class AuthorServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> authorService.resolveCountry(countryId()));
     }
+
+    @Test
+    void createAndSave_shouldThrowIllegalArgument_whenUserNotFound() {
+
+        // ARRANGE
+        when(userRepository.findByID(userId())).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> authorService.createAndSave(
+                        "José Saramago", countryId(), dateOfBirth(), "Biography", userId()));
+    }
 }
