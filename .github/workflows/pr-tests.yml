@@ -90,13 +90,12 @@ jobs:
         if: always()
         run: mvn pmd:check --no-transfer-progress || true
 
-      # Semgrep: SAST scan — fails build on ERROR severity findings
       - name: Semgrep SAST scan (gate)
-        uses: semgrep/semgrep-action@v2
-        with:
-          config: >
-            p/java
-            p/owasp-top-ten
+        run: |
+          python3 -m pip install semgrep --quiet
+          semgrep --config p/java --config p/owasp-top-ten \
+                  --error \
+                  --severity ERROR
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
