@@ -55,7 +55,7 @@ public class CollectionOfPublicationsLinkProvider {
      *
      * @param userId the identifier of the authenticated user; must not be {@code null}
      * @return a list of {@link Link} objects representing the permitted operations;
-     *         may be empty if the user has no authorized operations
+     * may be empty if the user has no authorized operations
      * @throws IllegalArgumentException if no user is found for the given {@code userId}
      *
      */
@@ -68,7 +68,7 @@ public class CollectionOfPublicationsLinkProvider {
 
         if (collectionPolicy.canCreateCollectionOfPublications(user)) {
             links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
-                    .createCollectionOfPublications(null, null, null))
+                    .createCollectionOfPublications(null, null))
                     .withRel("create-collection-of-publications"));
         }
 

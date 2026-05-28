@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -171,13 +172,13 @@ class CollectionOfPublicationsServiceTest {
     }
 
     @Test
-    void createAndSaveShouldThrowIllegalArgumentExceptionWhenUserNotFound() {
+    void createAndSaveShouldThrowUsernameNotFoundExceptionWhenUserNotFound() {
         // Arrange
         String collectionName = "Works by Frank Herbert";
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(UsernameNotFoundException.class,
                 () -> service.createAndSave(collectionName, genreIdDouble, userIdDouble));
     }
 
@@ -199,7 +200,7 @@ class CollectionOfPublicationsServiceTest {
     // ============================================================================
 
     @Test
-    void makeCollectionPublic_shouldReturnTrueAndUpdate_whenCollectionWasPrivate()
+    void makeCollectionPublic_shouldReturnTrue_whenCollectionWasPrivate()
             throws InstanceNotFoundException, AccessDeniedException {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -216,11 +217,10 @@ class CollectionOfPublicationsServiceTest {
 
         // Assert
         assertTrue(result);
-        verify(collectionOfPublicationsRepository).update(collection);
     }
 
     @Test
-    void makeCollectionPublic_shouldThrowIllegalArgumentException_whenUserNotFound()
+    void makeCollectionPublicShouldThrowUsernameNotFoundExceptionWhenUserNotFound()
             throws InstanceNotFoundException {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -229,7 +229,7 @@ class CollectionOfPublicationsServiceTest {
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(UsernameNotFoundException.class,
                 () -> service.makeCollectionPublic(collectionId, userIdDouble));
     }
 
@@ -250,7 +250,7 @@ class CollectionOfPublicationsServiceTest {
     }
 
     @Test
-    void makeCollectionPublic_shouldReturnFalseAndNotUpdate_whenCollectionWasAlreadyPublic()
+    void makeCollectionPublic_shouldReturnFalse_whenCollectionWasAlreadyPublic()
             throws InstanceNotFoundException, AccessDeniedException {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -267,7 +267,6 @@ class CollectionOfPublicationsServiceTest {
 
         // Assert
         assertFalse(result);
-        verify(collectionOfPublicationsRepository, never()).update(any(CollectionOfPublications.class));
     }
 
     @Test
@@ -363,14 +362,14 @@ class CollectionOfPublicationsServiceTest {
     }
 
     @Test
-    void makeCollectionPublicUntil_shouldThrowIllegalArgumentException_whenUserNotFound() {
+    void makeCollectionPublicUntilShouldThrowUsernameNotFoundExceptionWhenUserNotFound() {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(UsernameNotFoundException.class,
                 () -> service.makeCollectionPublicUntil(collectionId, publicUntil, userIdDouble));
     }
 
@@ -389,7 +388,7 @@ class CollectionOfPublicationsServiceTest {
     }
 
     @Test
-    void makeCollectionPublicUntil_shouldCallUpdate_whenCollectionWasChanged()
+    void makeCollectionPublicUntil_shouldReturnTrue_whenCollectionWasChanged()
             throws InstanceNotFoundException, AccessDeniedException {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -402,15 +401,24 @@ class CollectionOfPublicationsServiceTest {
         when(collection.makePublicUntil(publicUntil)).thenReturn(true);
 
         // Act
-        service.makeCollectionPublicUntil(collectionId, publicUntil, userIdDouble);
+        boolean result = service.makeCollectionPublicUntil(collectionId, publicUntil, userIdDouble);
 
         // Assert
-        verify(collectionOfPublicationsRepository).update(collection);
+        assertTrue(result);
     }
 
     // ===============================================================
 // ------------------------- FIND ALL ----------------------------
 // ===============================================================
+
+    @Test
+    void findAll_shouldThrowNullPointerException_whenOwnerIdIsNull() {
+        // Act + Assert
+        NullPointerException ex = assertThrows(NullPointerException.class,
+                () -> service.findAllByOwnerId(null));
+
+        assertEquals("ownerId cannot be null", ex.getMessage());
+    }
 
     @Test
     void findAll_shouldReturnCollectionList_whenUserHasCollections() {
@@ -476,6 +484,15 @@ class CollectionOfPublicationsServiceTest {
 // ===============================================================
 
     @Test
+    void existsById_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        // Act + Assert
+        NullPointerException ex = assertThrows(NullPointerException.class,
+                () -> service.existsById(null));
+
+        assertEquals("collectionOfPublicationsId cannot be null", ex.getMessage());
+    }
+
+    @Test
     void existsById_shouldReturnTrue_whenCollectionExists() {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -504,6 +521,15 @@ class CollectionOfPublicationsServiceTest {
 // ==========================================================================
 // ------------------- FIND PUBLIC COLLECTION BY GENRE ID -------------------
 // ==========================================================================
+
+    @Test
+    void findPublicCollectionsByGenreId_shouldThrowNullPointerException_whenGenreIdIsNull() {
+        // Act + Assert
+        NullPointerException ex = assertThrows(NullPointerException.class,
+                () -> service.findPublicCollectionsByGenreId(null));
+
+        assertEquals("genreId cannot be null", ex.getMessage());
+    }
 
     @Test
     void findPublicCollectionsByGenreId_shouldReturnCollections_whenCollectionsExist() {

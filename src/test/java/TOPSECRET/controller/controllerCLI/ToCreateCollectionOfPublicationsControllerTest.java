@@ -15,14 +15,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link ToCreateCollectionOfPublicationsController} — US017.
+ * Unit tests for {@link ToCreateCollectionOfPublicationsController} feature.
  *
  * <p>All dependencies are replaced by mocks so only the controller logic is tested.
  * Each test follows the Arrange / Act / Assert structure.

@@ -64,7 +64,6 @@ public class CollectionOfPublicationsRESTController {
      *                             must not be {@code null}
      * @param userId               the identifier of the user creating the collection;
      *                             must not be {@code null}
-     * @param genreId              the identifier of the genre associated with the collection;
      *                             must not be {@code null}
      * @return a {@link ResponseEntity} containing the created {@link ResponseCollectionOfPublicationsDTO}
      * with HTTP status {@code 201 Created} on success,
@@ -72,10 +71,12 @@ public class CollectionOfPublicationsRESTController {
      * {@code 403 Forbidden} if the user lacks permission, or
      * {@code 500 Internal Server Error} if an unexpected error occurs
      */
-    @PostMapping("/collection-of-publications")
+    @PostMapping("collection-of-publications")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> createCollectionOfPublications(
             @RequestBody @Valid RequestCollectionOfPublicationsDTO requestCollectionDTO,
-            @RequestParam UserId userId, GenreId genreId) {
+            @RequestParam UserId userId) {
+
+        GenreId genreId = CollectionOfPublicationsMapper.toGenreId(requestCollectionDTO.genreId());
 
         try {
             CollectionOfPublications collection = collectionService.createAndSave(
@@ -133,8 +134,6 @@ public class CollectionOfPublicationsRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
-        //links provider?
     }
 
     /**

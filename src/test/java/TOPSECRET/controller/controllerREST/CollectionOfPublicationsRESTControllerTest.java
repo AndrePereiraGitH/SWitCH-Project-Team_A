@@ -73,7 +73,7 @@ class CollectionOfPublicationsRESTControllerTest {
 
             // ACT
             ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
-                    controller.createCollectionOfPublications(requestDouble, userIdDouble, genreIdDouble);
+                    controller.createCollectionOfPublications(requestDouble, userIdDouble);
 
             // ASSERT
             assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
@@ -104,7 +104,7 @@ class CollectionOfPublicationsRESTControllerTest {
 
             // ACT
             ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
-                    controller.createCollectionOfPublications(requestDouble, userIdDouble, genreIdDouble);
+                    controller.createCollectionOfPublications(requestDouble, userIdDouble);
 
             // ASSERT
             assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode().value());
@@ -135,7 +135,7 @@ class CollectionOfPublicationsRESTControllerTest {
 
             // ACT
             ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
-                    controller.createCollectionOfPublications(requestDouble, userIdDouble, genreIdDouble);
+                    controller.createCollectionOfPublications(requestDouble, userIdDouble);
 
             // ASSERT
             assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatusCode().value());
@@ -166,7 +166,7 @@ class CollectionOfPublicationsRESTControllerTest {
 
             // ACT
             ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
-                    controller.createCollectionOfPublications(requestDouble, userIdDouble, genreIdDouble);
+                    controller.createCollectionOfPublications(requestDouble, userIdDouble);
 
             // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatusCode().value());
@@ -414,7 +414,7 @@ class CollectionOfPublicationsRESTControllerTest {
 
             // ACT
             ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
-                    controller.createCollectionOfPublications(requestDouble, userIdDouble, genreIdDouble);
+                    controller.createCollectionOfPublications(requestDouble, userIdDouble);
 
             // ASSERT
             assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());

@@ -9,6 +9,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -41,28 +42,9 @@ import org.springframework.security.access.AccessDeniedException;
 @Service
 public class CollectionOfPublicationsService {
 
-
-    /**
-     * Repository responsible for persisting
-     * {@link CollectionOfPublications} aggregates.
-     */
     private final ICollectionOfPublicationsRepository collectionOfPublicationsRepository;
-
-    /**
-     * Factory responsible for creating new
-     * {@link CollectionOfPublications} domain objects.
-     */
     private final CollectionOfPublicationsFactory factory;
-
-    /**
-     * Authorization policy used to determine whether a user is permitted
-     * to perform collection of publications-related operations.
-     */
     private final CollectionOfPublicationsAuthorizationPolicy policy;
-
-    /**
-     * Repository used to retrieve {@link User} aggregates by their identifier.
-     */
     private final IUserRepository userRepo;
 
     /**
@@ -103,6 +85,21 @@ public class CollectionOfPublicationsService {
     }
 
     /**
+     * Retrieves a {@link User} by their identifier.
+     *
+     * <p>This is a private helper method used internally to avoid repeating
+     * the user lookup and exception handling logic across service methods.</p>
+     *
+     * @param userId the identifier of the user to retrieve; must not be {@code null}
+     * @return the {@link User} matching the given identifier
+     * @throws UsernameNotFoundException if no user is found with the given {@code userId}
+     */
+    private User getUser(UserId userId) {
+        return userRepo.findByID(userId).orElseThrow(() ->
+                new UsernameNotFoundException("User with id " + userId + " not found"));
+    }
+
+    /**
      * Creates and persists a new {@link CollectionOfPublications}.
      *
      * <p>This method retrieves the user, verifies they are authorized to create
@@ -114,7 +111,7 @@ public class CollectionOfPublicationsService {
      * @param collectionGenreId the genre associated with the collection; must not be {@code null}
      * @param userId            the owner of the collection; must not be {@code null}
      * @return the persisted {@link CollectionOfPublications} instance
-     * @throws IllegalArgumentException       if no user is found with the given {@code userId}
+     * @throws UsernameNotFoundException      if no user is found with the given {@code userId}
      * @throws AccessDeniedException          if the user does not have permission to create a collection
      * @throws InstanceAlreadyExistsException if a collection with the same identity already exists
      */
@@ -122,8 +119,7 @@ public class CollectionOfPublicationsService {
             String collectionName, GenreId collectionGenreId, UserId userId)
             throws InstanceAlreadyExistsException, AccessDeniedException {
 
-        User user = userRepo.findByID(userId).orElseThrow(() ->
-                new IllegalArgumentException("User with id " + userId + " not found"));
+        User user = getUser(userId);
 
         if (!policy.canCreateCollectionOfPublications(user)) {
             throw new AccessDeniedException("You do not have permission to create a Collection");
@@ -148,7 +144,7 @@ public class CollectionOfPublicationsService {
      * @param userId       the identifier of the user requesting the operation; must not be {@code null}
      * @return {@code true} if the collection was changed to public,
      * {@code false} if it was already public
-     * @throws IllegalArgumentException  if no user is found with the given {@code userId}
+     * @throws UsernameNotFoundException if no user is found with the given {@code userId}
      * @throws AccessDeniedException     if the user does not have permission to share a collection
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
      */
@@ -161,8 +157,7 @@ public class CollectionOfPublicationsService {
 
         CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
 
-        User user = userRepo.findByID(userId).orElseThrow(() ->
-                new IllegalArgumentException("User with id " + userId + " not found"));
+        User user = getUser(userId);
 
         if (!policy.canShareCollectionOfPublications(user)) {
             throw new AccessDeniedException("You do not have permission to share a Collection");
@@ -189,7 +184,7 @@ public class CollectionOfPublicationsService {
      *                     must not be {@code null} and must be in the future
      * @param userId       the identifier of the user requesting the operation; must not be {@code null}
      * @return {@code true} if the collection was changed and updated; {@code false} otherwise
-     * @throws IllegalArgumentException  if no user is found with the given {@code userId}
+     * @throws UsernameNotFoundException if no user is found with the given {@code userId}
      * @throws AccessDeniedException     if the user does not have permission to perform this operation
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
      * @throws NullPointerException      if {@code collectionId} or {@code publicUntil} is {@code null}
@@ -202,8 +197,7 @@ public class CollectionOfPublicationsService {
         Objects.requireNonNull(publicUntil, "Public until date cannot be null");
         Objects.requireNonNull(userId, "userId cannot be null");
 
-        User user = userRepo.findByID(userId).orElseThrow(() ->
-                new IllegalArgumentException("User with id " + userId + " not found"));
+        User user = getUser(userId);
 
         if (!policy.canMakeCollectionPublicUntil(user)) {
             throw new AccessDeniedException
@@ -244,8 +238,12 @@ public class CollectionOfPublicationsService {
      *                must not be {@code null}
      * @return a list of {@link CollectionOfPublications} owned by the given user;
      * may be empty if the user has no collections
+     * @throws NullPointerException if {@code ownerId} is {@code null}
      */
     public List<CollectionOfPublications> findAllByOwnerId(UserId ownerId) {
+
+        Objects.requireNonNull(ownerId, "ownerId cannot be null");
+
         return collectionOfPublicationsRepository.findAllByOwnerId(ownerId);
     }
 
@@ -254,9 +252,13 @@ public class CollectionOfPublicationsService {
      *
      * @param collectionOfPublicationsId the identifier to check; must not be {@code null}
      * @return {@code true} if a collection with the given identifier exists;
-     * {@code false} otherwise
+     *         {@code false} otherwise
+     * @throws NullPointerException if {@code collectionOfPublicationsId} is {@code null}
      */
     public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId) {
+
+        Objects.requireNonNull(collectionOfPublicationsId, "collectionOfPublicationsId cannot be null");
+
         return collectionOfPublicationsRepository.existsById(collectionOfPublicationsId);
     }
 
@@ -265,9 +267,13 @@ public class CollectionOfPublicationsService {
      *
      * @param genreId the identifier of the genre to filter by; must not be {@code null}
      * @return a list of public {@link CollectionOfPublications} belonging to the given genre;
-     * may be empty if none exist
+     *         may be empty if none exist
+     * @throws NullPointerException if {@code genreId} is {@code null}
      */
     public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
+
+        Objects.requireNonNull(genreId, "genreId cannot be null");
+
         return collectionOfPublicationsRepository.findPublicCollectionsByGenreId(genreId);
     }
 }

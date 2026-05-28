@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * to perform collection of publications-related operations.
  *
  * <p>This policy encapsulates the business rule that only users with the
- * {@link TOPSECRET.domain.Enum.UserRole#NORMAL_USER} role are permitted to
+ * {@link UserRole#NORMAL_USER} role are permitted to
  * manage collections of publications.</p>
  */
 @Component

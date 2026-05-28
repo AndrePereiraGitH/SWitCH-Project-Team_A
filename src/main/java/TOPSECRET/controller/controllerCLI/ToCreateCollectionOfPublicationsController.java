@@ -9,7 +9,9 @@ import TOPSECRET.dto.US017GenreMapper;
 import TOPSECRET.services.CollectionOfPublicationsService;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+
+import org.springframework.security.access.AccessDeniedException;
+
 import java.util.List;
 
 /**

@@ -20,6 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
+/**
+ * Unit tests for {@link PublicListByGenreController}.
+ *
+ * <p>Verifies correct retrieval of genres and public collections of publications
+ * filtered by genre, including null handling and delegation to the service layer.</p>
+ */
 class PublicListByGenreControllerTest {
 
 
@@ -60,7 +66,6 @@ class PublicListByGenreControllerTest {
         List<US013GenreDTO> result = controller.getGenres();
 
         // Assert
-        assertNotNull(result);
         assertEquals(2, result.size());
     }
 
@@ -102,7 +107,6 @@ class PublicListByGenreControllerTest {
         List<US020CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(genreId);
 
         // Assert
-        assertNotNull(result);
         assertEquals(2, result.size());
     }
 
@@ -118,7 +122,6 @@ class PublicListByGenreControllerTest {
         List<US020CollectionOfPublicationsDTO> result = controller.getPublicListsByGenre(desiredGenre);
 
         // Assert
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 }
