@@ -7,6 +7,8 @@ import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublicationSampleService;
 
+import javax.management.InstanceAlreadyExistsException;
+
 
 /**
  * Application controller responsible for handling the use case of registering
@@ -52,7 +54,7 @@ public class ToRegisterNewPublicationCtrl {
             BibliographicalDataId bibliographicalDataId,
             UserId user, EditionId edition, Condition condition
 
-    ) {
+    ) throws InstanceAlreadyExistsException {
 
         if (bibliographicalDataId == null) {
             throw new IllegalArgumentException("BibliographicalData cannot be left null");

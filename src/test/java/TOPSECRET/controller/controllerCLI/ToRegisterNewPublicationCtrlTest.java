@@ -8,6 +8,8 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublicationSampleService;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceAlreadyExistsException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -109,7 +111,7 @@ class ToRegisterNewPublicationCtrlTest {
     }
 
     @Test
-    void shouldRegisterPublicationSuccessfully() {
+    void shouldRegisterPublicationSuccessfully() throws InstanceAlreadyExistsException {
 
         // Arrange
         when(publicationSampleService.createAndSave(
@@ -133,7 +135,7 @@ class ToRegisterNewPublicationCtrlTest {
     }
 
     @Test
-    void shouldThrowWhenPublicationAlreadyExists() {
+    void shouldThrowWhenPublicationAlreadyExists() throws InstanceAlreadyExistsException {
 
         // Arrange
         when(publicationSampleService.createAndSave(
