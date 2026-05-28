@@ -1,41 +1,53 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublisherAuthorizationPolicy;
 import TOPSECRET.domain.Publisher.IPublisherRepository;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.Publisher.PublisherFactory;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.UserId;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
  * Application service responsible for orchestrating the creation and persistence
  * of {@link Publisher} aggregates.
  *
- * <p>Acts as the intermediary between the controller layer and the domain/persistence layers,
- * delegating creation to {@link PublisherFactory} and persistence to
- * {@link IPublisherRepository}.</p>
- *
- * <p>This service does not enforce domain invariants directly — those are the
- * responsibility of the factory and the domain object. It is responsible for
- * null-guarding its own inputs and coordinating the creation and save flow.</p>
+ * <p>Coordinates between the domain layer, authorization policies, and persistence
+ * to ensure that publishers are created only by authorized users.</p>
  */
 @Service
 public class PublisherService {
 
-    private final PublisherFactory _factory;
-    private final IPublisherRepository _repository;
+    private final PublisherFactory factory;
+    private final IPublisherRepository repository;
+    private final IUserRepository userRepository;
+    private final PublisherAuthorizationPolicy authPolicy;
 
     /**
      * Constructs a {@code PublisherService} with the required dependencies.
      *
-     * @param factory    the factory used to create {@link Publisher} domain objects; must not be {@code null}
-     * @param repository the repository used to persist and retrieve publishers; must not be {@code null}
+     * @param factory        the factory used to create publisher instances
+     * @param repository     the repository for publisher persistence
+     * @param userRepository the repository to validate user existence
+     * @param authPolicy     the policy to validate creation permissions
      */
-    public PublisherService(PublisherFactory factory, IPublisherRepository repository) {
-        _factory = Objects.requireNonNull(factory, "PublisherFactory cannot be null");
-        _repository = Objects.requireNonNull(repository, "IPublisherRepository cannot be null");
+    @Autowired
+    public PublisherService(PublisherFactory factory,
+                            IPublisherRepository repository,
+                            IUserRepository userRepository,
+                            PublisherAuthorizationPolicy authPolicy) {
+        this.factory = Objects.requireNonNull(factory, "PublisherFactory cannot be null");
+        this.repository = Objects.requireNonNull(repository, "IPublisherRepository cannot be null");
+        this.userRepository = Objects.requireNonNull(userRepository, "IUserRepository cannot be null");
+        this.authPolicy = Objects.requireNonNull(authPolicy, "PublisherAuthorizationPolicy cannot be null");
     }
 
     /**
@@ -54,12 +66,34 @@ public class PublisherService {
      * @throws IllegalArgumentException if a publisher with the same identity already exists
      */
     @Transactional
-    public Publisher createAndSave(String name, String vatNumber, Contact contact) {
-        Objects.requireNonNull(name, "Name cannot be null");
-        Objects.requireNonNull(vatNumber, "VatNumber cannot be null");
-        Objects.requireNonNull(contact, "Contact cannot be null");
+    public Publisher createAndSave(String name, String vatNumber, Contact contact, UserId userId)
+            throws AccessDeniedException {
 
-        Publisher publisher = _factory.create(name, vatNumber, contact);
-        return _repository.save(publisher);
+        Objects.requireNonNull(name, "Name cannot be null");
+        Objects.requireNonNull(vatNumber, "VAT number cannot be null");
+        Objects.requireNonNull(contact, "Contact cannot be null");
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        if (!authPolicy.canCreatPublisher(user)) {
+            throw new AccessDeniedException("User does not have permission to create a publisher");
+        }
+
+        Publisher publisher = factory.create(name, vatNumber, contact);
+        return repository.save(publisher);
+    }
+
+    /**
+     * Retrieves all registered {@link Publisher} entities.
+     *
+     * <p>This method delegates directly to the repository and returns all
+     * persisted publishers without applying business filters.</p>
+     *
+     * @return a list of all publishers in the system
+     */
+    public List<Publisher> findAll() {
+        return repository.findAll();
     }
 }
