@@ -1,4 +1,4 @@
-package TOPSECRET.controller.controllerREST.root.AuthorizationPolicy;
+package TOPSECRET.controller.controllerREST.root.authorizationPolicy;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AppraisalEntityAuthorizationPolicy;
 import TOPSECRET.domain.Enum.UserRole;
