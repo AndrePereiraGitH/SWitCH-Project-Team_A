@@ -7,6 +7,8 @@ import TOPSECRET.dto.city.request.RequestCityDTO;
 import TOPSECRET.dto.city.response.ResponseCityDTO;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,7 +70,6 @@ class CityMapperTest {
         assertThrows(NullPointerException.class, () -> CityMapper.toDTO(null, "Portugal"));
     }
 
-
     // -----------
     // toCountryId
     // -----------
@@ -76,7 +77,7 @@ class CityMapperTest {
     @Test
     void toCountryId_ShouldReturnCountryId_WhenDTOIsValid() {
         // ARRANGE
-        RequestCityDTO dto = new RequestCityDTO("Porto", "PT");
+        RequestCityDTO dto = new RequestCityDTO("Porto", "PT","Portugal");
 
         // ACT
         CountryId result = CityMapper.toCountryId(dto);
@@ -89,5 +90,46 @@ class CityMapperTest {
     void toCountryId_ShouldThrowNullPointerException_WhenDTOIsNull() {
         // ACT & ASSERT
         assertThrows(NullPointerException.class, () -> CityMapper.toCountryId(null));
+    }
+
+    // -------
+    // toDTOs
+    // -------
+
+    @Test
+    void toDTOs_ShouldReturnListOfResponseCityDTO_WhenCitiesAreValid() {
+        // ARRANGE
+        CityId cityIdDouble = mock(CityId.class);
+        when(cityIdDouble.getCityID()).thenReturn("1");
+
+        City cityDouble = mock(City.class);
+        when(cityDouble.id()).thenReturn(cityIdDouble);
+        when(cityDouble.getCityName()).thenReturn("Porto");
+
+        CountryId countryIdDouble = mock(CountryId.class);
+        when(countryIdDouble.toString()).thenReturn("PT-001");
+        when(cityDouble.getCityCountryID()).thenReturn(countryIdDouble);
+
+        // ACT
+        List<ResponseCityDTO> result = CityMapper.toDTOs(List.of(cityDouble));
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertEquals("Porto", result.get(0).getCityName());
+    }
+
+    @Test
+    void toDTOs_ShouldReturnEmptyList_WhenCitiesListIsEmpty() {
+        // ACT
+        List<ResponseCityDTO> result = CityMapper.toDTOs(List.of());
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void toDTOs_ShouldThrowNullPointerException_WhenCitiesIsNull() {
+        // ACT & ASSERT
+        assertThrows(NullPointerException.class, () -> CityMapper.toDTOs(null));
     }
 }

@@ -5,6 +5,9 @@ import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.dto.city.request.RequestCityDTO;
 import TOPSECRET.dto.city.response.ResponseCityDTO;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -46,6 +49,26 @@ public final class CityMapper {
                 city.id().getCityID(),
                 city.getCityName(),
                 countryName);
+    }
+
+    /**
+     * Converts a list of {@link City} domain objects into a list of {@link ResponseCityDTO}.
+     *
+     * <p>The country name field is not resolved in this method;
+     * the {@link CountryId} string representation is used instead.</p>
+     *
+     * @param cities the list of domain objects to convert; must not be {@code null}
+     * @return a list of {@link ResponseCityDTO}
+     * @throws NullPointerException if {@code cities} is {@code null}
+     */
+    public static List<ResponseCityDTO> toDTOs(List<City> cities) {
+        Objects.requireNonNull(cities, "Cities cannot be null");
+
+        List<ResponseCityDTO> result = new ArrayList<>();
+        for (City city : cities) {
+            result.add(toDTO(city, city.getCityCountryID().toString()));
+        }
+        return result;
     }
 
     /**
