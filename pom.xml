@@ -199,6 +199,17 @@
                 <configuration>
                     <excludes>
                         <exclude>**/ui/**/*</exclude>
+                        <param>TOPSECRET.domain.Enum.*</param>
+                        <param>TOPSECRET.ListingDataInitializer</param>
+                        <param>TOPSECRET.EditionDataInitializer</param>
+                        <param>TOPSECRET.GenreDataInitializer</param>
+                        <param>TOPSECRET.LibraryDataInitializer</param>
+                        <param>TOPSECRET.PublicationSampleDataInitializer</param>
+                        <param>TOPSECRET.PublicationTypeDataInitializer</param>
+                        <param>TOPSECRET.PublisherDataInitializer</param>
+                        <param>TOPSECRET.UserDataInitializer</param>
+                        <param>TOPSECRET.dto.*.request.*</param>
+                        <param>TOPSECRET.dto.*.response.*</param>
                     </excludes>
                 </configuration>
                 <executions>
@@ -259,6 +270,13 @@
                     <excludedClasses>
                         <param>TOPSECRET.domain.Enum.*</param>
                         <param>TOPSECRET.ListingDataInitializer</param>
+                        <param>TOPSECRET.EditionDataInitializer</param>
+                        <param>TOPSECRET.GenreDataInitializer</param>
+                        <param>TOPSECRET.LibraryDataInitializer</param>
+                        <param>TOPSECRET.PublicationSampleDataInitializer</param>
+                        <param>TOPSECRET.PublicationTypeDataInitializer</param>
+                        <param>TOPSECRET.PublisherDataInitializer</param>
+                        <param>TOPSECRET.UserDataInitializer</param>
                         <param>TOPSECRET.dto.*.request.*</param>
                         <param>TOPSECRET.dto.*.response.*</param>
                     </excludedClasses>
