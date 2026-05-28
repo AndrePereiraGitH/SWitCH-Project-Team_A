@@ -1,12 +1,18 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.BibliographicalDataAuthorizationPolicy;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.BibliographicalDataFactory;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
+import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -50,10 +57,19 @@ class BibliographicalDataServiceTest {
     private IAuthorRepository authorRepo;
 
     @Mock
+    private IUserRepository userRepo;
+
+    @Mock
     private BibliographicalData createdBd;
 
     @Mock
     private BibliographicalData savedBd;
+
+    @Mock
+    private UserId userId;
+
+    @Mock
+    private BibliographicalDataAuthorizationPolicy authPolicy;
 
     @InjectMocks
     private BibliographicalDataService service;
@@ -66,16 +82,24 @@ class BibliographicalDataServiceTest {
         genres = List.of(genreId);
     }
 
+    //
+    // createAndSave Tests
+    //
 
     @Test
-    void createAndAdd_shouldCreateSaveAndReturnSavedBibliographicalData() throws InstanceAlreadyExistsException {
+    void createAndAdd_shouldCreateSaveAndReturnSavedBibliographicalData() throws InstanceAlreadyExistsException, AccessDeniedException {
         // Arrange
+        User user = mock(User.class);
+
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(factory.create(title, authors, language, date, genres, chunks)).thenReturn(createdBd);
         when(bibliographicalDataRepo.save(createdBd)).thenReturn(savedBd);
 
+        when(authPolicy.canCreateBibliographicalData(user)).thenReturn(true);
+
         // Act
-        BibliographicalData result = service.createAndAdd(
-                title, authors, language, date, genres, chunks
+        BibliographicalData result = service.createAndSave(
+                title, authors, language, date, genres, chunks, userId
         );
 
         // Assert
@@ -86,7 +110,7 @@ class BibliographicalDataServiceTest {
     void createShouldThrowWhenTitleIsNull() {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                service.createAndAdd(null, authors, language, date, genres, chunks)
+                service.createAndSave(null, authors, language, date, genres, chunks, userId)
         );
     }
 
@@ -94,7 +118,7 @@ class BibliographicalDataServiceTest {
     void createShouldThrowWhenAuthorsIsNull() {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                service.createAndAdd(title, null, language, date, genres, chunks)
+                service.createAndSave(title, null, language, date, genres, chunks, userId)
         );
     }
 
@@ -102,19 +126,43 @@ class BibliographicalDataServiceTest {
     void createShouldThrowWhenGenresIsNull() {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                service.createAndAdd(title, authors, language, date, null, chunks)
+                service.createAndSave(title, authors, language, date, null, chunks, userId)
         );
     }
 
     @Test
-    void createAndAddShouldAllowOptionalFieldsToBeNull() throws InstanceAlreadyExistsException {
+    void createShouldThrowWhenUserIdIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class, () ->
+                service.createAndSave(title, authors, language, date, genres, chunks, null)
+        );
+    }
+
+    @Test
+    void createShouldThrowWhenUserIsNotFound() {
         // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> service.createAndSave(
+                title, authors, language, date, genres, chunks, userId
+        ));
+    }
+
+    @Test
+    void createAndSaveShouldAllowOptionalFieldsToBeNull() throws InstanceAlreadyExistsException, AccessDeniedException {
+        // Arrange
+        User user = mock(User.class);
+
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(factory.create(title, authors, null, null, genres, null)).thenReturn(createdBd);
         when(bibliographicalDataRepo.save(createdBd)).thenReturn(savedBd);
 
+        when(authPolicy.canCreateBibliographicalData(user)).thenReturn(true);
+
         // Act
-        BibliographicalData result = service.createAndAdd(
-                title, authors, null, null, genres, null
+        BibliographicalData result = service.createAndSave(
+                title, authors, null, null, genres, null, userId
         );
 
         // Assert
@@ -122,17 +170,25 @@ class BibliographicalDataServiceTest {
     }
 
     @Test
-    void createAndAddShouldThrowInstanceAlreadyExistsException() throws InstanceAlreadyExistsException {
+    void createAndSaveShouldThrowInstanceAlreadyExistsException() throws InstanceAlreadyExistsException {
         // Arrange
-        when(factory.create(title, authors, language, date, genres, chunks)).thenReturn(createdBd);
+        User user = mock(User.class);
 
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(factory.create(title, authors, language, date, genres, chunks)).thenReturn(createdBd);
         when(bibliographicalDataRepo.save(createdBd)).thenThrow(new InstanceAlreadyExistsException("Bibliographical Data already exists"));
+
+        when(authPolicy.canCreateBibliographicalData(user)).thenReturn(true);
 
         // Act + Assert
         assertThrows(InstanceAlreadyExistsException.class, () ->
-                service.createAndAdd(title, authors, language, date, genres, chunks)
+                service.createAndSave(title, authors, language, date, genres, chunks, userId)
         );
     }
+
+    //
+    // getAuthors Tests
+    //
 
     @Test
     void getAuthorsShouldReturnAuthorNamesWhenAuthorsAreValid() throws InstanceNotFoundException {
@@ -192,5 +248,81 @@ class BibliographicalDataServiceTest {
 
         // Arrange
         assertTrue(result.isEmpty());
+    }
+
+    //
+    // findAll Tests
+    //
+
+    @Test
+    void findAllShouldReturnList() {
+        // Arrange
+        BibliographicalData bd1 = mock(BibliographicalData.class);
+        BibliographicalData bd2 = mock(BibliographicalData.class);
+
+        // Act
+        when(bibliographicalDataRepo.findAll()).thenReturn(List.of(bd1, bd2));
+
+        List<BibliographicalData> result = service.findAll();
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void findAllShouldReturnEmptyListWhenNoBibliographicalDataExists(){
+        // Act
+        when(bibliographicalDataRepo.findAll()).thenReturn(List.of());
+
+        List<BibliographicalData> result = service.findAll();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    //
+    // createAllDTOs Tests
+    //
+
+    @Test
+    void createAllDTOs_whenRepositoryIsEmpty_returnsEmptyList() throws InstanceNotFoundException {
+        // Arrange
+        when(bibliographicalDataRepo.findAll()).thenReturn(List.of());
+
+        // Act
+        List<responseBibliographicalDataDTO> result =
+                service.createDTOlist(service.findAll());
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(bibliographicalDataRepo).findAll();
+    }
+
+    @Test
+    void createAllDTOs_whenBibliographicalDataExists_returnsDTOList() throws InstanceNotFoundException {
+        // Arrange
+        BibliographicalData bd1 = mock(BibliographicalData.class);
+        BibliographicalData bd2 = mock(BibliographicalData.class);
+
+        BibliographicalDataId bdId1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
+
+        when(bd1.id()).thenReturn(bdId1);
+        when(bd2.id()).thenReturn(bdId2);
+
+        when(bibliographicalDataRepo.findAll())
+                .thenReturn(List.of(bd1, bd2));
+
+        // Act
+        List<responseBibliographicalDataDTO> result =
+                service.createDTOlist(service.findAll());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        verify(bibliographicalDataRepo).findAll();
     }
 }
