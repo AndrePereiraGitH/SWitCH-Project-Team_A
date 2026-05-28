@@ -36,6 +36,9 @@ import static org.mockito.Mockito.*;
  * <ul>
  *     <li>constructor validation enforces non-null dependencies</li>
  *     <li>{@code save} correctly handles creation, conversion and error cases</li>
+ *     <li>{@code update} correctly handles updates, conversion and error cases,
+ *         including throwing {@link IllegalArgumentException} when the auction
+ *         does not exist</li>
  *     <li>{@code findById} returns the expected Optional semantics</li>
  *     <li>{@code findAll} maps all persistence models to domain objects</li>
  *     <li>{@code findByListingId} validates input and converts results</li>
@@ -141,6 +144,47 @@ class AuctionRepositoryJPAImplTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> repository.save(auctionDouble)
         );
+    }
+
+    // =========================================================
+    // ================== update ===============================
+    // =========================================================
+
+    @Test
+    void update_shouldConvertAndReturnUpdatedDomainAuction() {
+        // Arrange
+        Auction auctionInputDouble = mock(Auction.class);
+        AuctionDM dmToUpdateDouble = mock(AuctionDM.class);
+        AuctionDM dmUpdatedDouble = mock(AuctionDM.class);
+        Auction auctionOutputDouble = mock(Auction.class);
+
+        when(auctionInputDouble.id()).thenReturn(auctionIdDouble);
+        when(auctionRepoJPA.existsById(auctionIdDouble)).thenReturn(true);
+        when(auctionAssembler.toDM(auctionInputDouble)).thenReturn(dmToUpdateDouble);
+        when(auctionRepoJPA.save(dmToUpdateDouble)).thenReturn(dmUpdatedDouble);
+        when(auctionAssembler.toDomain(dmUpdatedDouble)).thenReturn(auctionOutputDouble);
+
+        // Act
+        Auction result = repository.update(auctionInputDouble);
+
+        // Assert
+        assertEquals(auctionOutputDouble, result);
+    }
+
+    @Test
+    void update_shouldThrowErrorWhenAuctionIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> repository.update(null));
+    }
+
+    @Test
+    void update_shouldThrowErrorWhenAuctionDoesNotExist() {
+        // Arrange
+        when(auctionDouble.id()).thenReturn(auctionIdDouble);
+        when(auctionRepoJPA.existsById(auctionIdDouble)).thenReturn(false);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repository.update(auctionDouble));
     }
 
     // =========================================================
