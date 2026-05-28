@@ -93,9 +93,7 @@ jobs:
       - name: Semgrep SAST scan (gate)
         run: |
           python3 -m pip install semgrep --quiet
-          semgrep --config p/java --config p/owasp-top-ten \
-                  --error \
-                  --severity ERROR
+          semgrep ci
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
 
