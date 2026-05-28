@@ -45,12 +45,13 @@ class ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenUsernameIsNull() {
+        // Arrange
         UserService userServiceDouble = mock(UserService.class);
         Profile profileDouble = mock(Profile.class);
         UserId requesterIdDouble = mock(UserId.class);
-
         ToRegisterUserController sut = new ToRegisterUserController(userServiceDouble);
 
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser(null, profileDouble, Set.of(UserRole.ADMIN), requesterIdDouble)
@@ -59,11 +60,12 @@ class ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenProfileIsNull() {
+        // Arrange
         UserService userServiceDouble = mock(UserService.class);
         UserId requesterIdDouble = mock(UserId.class);
-
         ToRegisterUserController sut = new ToRegisterUserController(userServiceDouble);
 
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("User", null, Set.of(UserRole.ADMIN), requesterIdDouble)
@@ -72,12 +74,13 @@ class ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenRolesIsNull() {
+        // Arrange
         UserService userServiceDouble = mock(UserService.class);
         Profile profileDouble = mock(Profile.class);
         UserId requesterIdDouble = mock(UserId.class);
-
         ToRegisterUserController sut = new ToRegisterUserController(userServiceDouble);
 
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("User", profileDouble, null, requesterIdDouble)
@@ -86,11 +89,12 @@ class ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenRequesterIdIsNull() {
+        // Arrange
         UserService userServiceDouble = mock(UserService.class);
         Profile profileDouble = mock(Profile.class);
-
         ToRegisterUserController sut = new ToRegisterUserController(userServiceDouble);
 
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("User", profileDouble, Set.of(UserRole.ADMIN), null)
@@ -99,6 +103,7 @@ class ToRegisterUserControllerTest {
 
     @Test
     void shouldThrowExceptionWhenUsernameAlreadyExists() throws InstanceAlreadyExistsException, AccessDeniedException {
+        // Arrange
         UserService userServiceDouble = mock(UserService.class);
         Profile profileDouble = mock(Profile.class);
         UserId requesterIdDouble = mock(UserId.class);
@@ -109,6 +114,7 @@ class ToRegisterUserControllerTest {
 
         ToRegisterUserController sut = new ToRegisterUserController(userServiceDouble);
 
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.registerUser("TestUser1", profileDouble, roles, requesterIdDouble)
@@ -117,6 +123,7 @@ class ToRegisterUserControllerTest {
 
     @Test
     void constructor_shouldThrowException_whenUserServiceIsNull() {
+        // Act + Assert
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new ToRegisterUserController(null)

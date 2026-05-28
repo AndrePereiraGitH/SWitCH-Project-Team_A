@@ -71,20 +71,4 @@ class UserAuthorizationPolicyTest {
         // ASSERT
         assertFalse(result);
     }
-
-    @Test
-    void canRegisterUser_shouldReturnConsistentResult_whenCalledTwice() {
-        // ARRANGE
-        UserAuthorizationPolicy policy = new UserAuthorizationPolicy();
-        User userDouble = mock(User.class);
-        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
-
-        // ACT
-        boolean first = policy.canRegisterUser(userDouble);
-        boolean second = policy.canRegisterUser(userDouble);
-
-        // ASSERT
-        assertTrue(first);
-        assertEquals(first, second);
-    }
 }

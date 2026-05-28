@@ -5,6 +5,10 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 
 import java.util.List;
@@ -18,15 +22,21 @@ import static org.mockito.Mockito.*;
  *
  * <p>Validates link generation based on user authorization rules.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class UserLinkProviderTest {
 
-    private final UserAuthorizationPolicy authPolicy = mock(UserAuthorizationPolicy.class);
-    private final IUserRepository userRepository = mock(IUserRepository.class);
+    @Mock
+    private UserAuthorizationPolicy authPolicy;
+
+    @Mock
+    private IUserRepository userRepository;
+
+    @InjectMocks
+    private UserLinkProvider sut;
 
     @Test
     void getLinksForUsers_shouldReturnLink_whenUserIsAuthorized() {
         // Arrange
-        UserLinkProvider sut = new UserLinkProvider(authPolicy, userRepository);
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
 
@@ -44,7 +54,6 @@ class UserLinkProviderTest {
     @Test
     void getLinksForUsers_shouldReturnEmptyList_whenUserIsNotAuthorized() {
         // Arrange
-        UserLinkProvider sut = new UserLinkProvider(authPolicy, userRepository);
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
 
@@ -61,7 +70,6 @@ class UserLinkProviderTest {
     @Test
     void getLinksForUsers_shouldReturnEmptyList_whenUserDoesNotExist() {
         // Arrange
-        UserLinkProvider sut = new UserLinkProvider(authPolicy, userRepository);
         UserId userIdDouble = mock(UserId.class);
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
