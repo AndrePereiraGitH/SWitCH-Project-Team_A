@@ -118,22 +118,6 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
      * {@inheritDoc}
      */
     @Override
-    public List<CollectionOfPublications> getUserCollections(UserId ownerId) {
-
-        if (ownerId == null) {
-            throw new IllegalArgumentException("OwnerId cannot be null");
-        }
-
-        List<CollectionOfPublicationsDM> collectionDMList =
-                collectionRepositoryJpa.findByOwnerId(ownerId);
-
-        return collectionOfPublicationsAssembler.toDomainList(collectionDMList);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public List<CollectionOfPublications> findAllByOwnerId(UserId ownerId) {
         Objects.requireNonNull(ownerId, "ownerId cannot be null");
         List<CollectionOfPublicationsDM> ownerCollections = collectionRepositoryJpa.findAllByOwnerId(ownerId);
@@ -150,6 +134,15 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
      */
     @Override
     public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
-        return List.of();
+
+        Objects.requireNonNull(genreId, "genreId cannot be null");
+        List<CollectionOfPublicationsDM> genreCollections = collectionRepositoryJpa.findPublicCollectionsByGenreId(genreId);
+
+        List<CollectionOfPublications> listOfGenreCollections = genreCollections.stream()
+                .map(collectionOfPublicationsAssembler::toDomain)
+                .filter(collection -> !collection.getIsPrivate())
+                .toList();
+
+        return listOfGenreCollections;
     }
 }
