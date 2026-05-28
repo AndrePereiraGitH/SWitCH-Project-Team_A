@@ -6,6 +6,7 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.auction.response.AuctionDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +33,9 @@ import static org.mockito.Mockito.when;
  *   <li>Extraction of {@link BigDecimal} values from {@code Price} Value Objects</li>
  *   <li>Conversion of {@link AuctionStatus} enum to its {@link String} representation</li>
  *   <li>Correct resolution of denormalized Listing fields ({@code listingTitle}, {@code listingDescription})</li>
- *   <li>Correct conversion of primitive identifiers to Value Objects</li>
+ *   <li>Correct conversion of primitive identifiers to Value Objects ({@link AuctionId},
+ *       {@link ListingId}, {@link UserId}, {@link Price}), including rejection of
+ *       invalid decimal values for {@link Price}</li>
  * </ul>
  */
 
@@ -312,5 +315,29 @@ class AuctionMapperTest {
 
         // Assert
         assertEquals(new ListingId("l123"), result);
+    }
+
+    @Test
+    void shouldConvertStringToUserId() {
+        // Act
+        UserId result = AuctionMapper.toUserId("u123");
+
+        // Assert
+        assertEquals(new UserId("u123"), result);
+    }
+
+    @Test
+    void shouldConvertStringToPrice() {
+        // Act
+        Price result = AuctionMapper.toPrice("100.00");
+
+        // Assert
+        assertEquals(new Price(new BigDecimal("100.00")), result);
+    }
+
+    @Test
+    void shouldThrow_whenPriceIsNotValidDecimal() {
+        // Act + Assert
+        assertThrows(NumberFormatException.class, () -> AuctionMapper.toPrice("invalid"));
     }
 }
