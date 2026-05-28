@@ -75,5 +75,15 @@ public class ListingMapper {
         return new Price(new BigDecimal(price));
     }
 
+    /**
+     * Converts a string value into a {@link Picture}.
+     *
+     * @param picture the price value as a string
+     * @return a {@link Picture} value object
+     */
+    public static Picture toPicture(String picture) {
+        return new Picture(picture);
+    }
+
 
 }

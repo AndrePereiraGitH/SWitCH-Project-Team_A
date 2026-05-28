@@ -3,7 +3,6 @@ package TOPSECRET.controller.controllerCLI;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
-import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
@@ -11,6 +10,7 @@ import TOPSECRET.dto.US018CollectionOfPublicationsDTO;
 import TOPSECRET.dto.US018CollectionOfPublicationsMapper;
 import TOPSECRET.dto.US018PublicationSampleDTO;
 import TOPSECRET.dto.US018PublicationSampleMapper;
+import TOPSECRET.services.PublicationSampleService;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
 public class ToAddPublicationToAListOfMineController {
 
     private final ICollectionOfPublicationsRepository _collectionRepo;
-    private final IPublicationSampleRepository _publicationSampleRepo;
+    private final PublicationSampleService _publicationSampleService;
     private final US018PublicationSampleMapper _publicationSampleMapper;
     private final UserId _userId;
 
@@ -41,7 +41,7 @@ public class ToAddPublicationToAListOfMineController {
      *
      * @param userId identifier of the current user
      * @param collectionRepo repository for collections
-     * @param publicationRepo repository for publication samples
+     * @param publicationSampleService repository for publication samples
      * @param publicationSampleMapper mapper for publication samples
      *
      * @throws IllegalArgumentException if any argument is null
@@ -49,18 +49,18 @@ public class ToAddPublicationToAListOfMineController {
     public ToAddPublicationToAListOfMineController(
             UserId userId,
             ICollectionOfPublicationsRepository collectionRepo,
-            IPublicationSampleRepository publicationRepo,
+            PublicationSampleService publicationSampleService,
             US018PublicationSampleMapper publicationSampleMapper) {
 
         if (userId == null || collectionRepo == null ||
-                publicationRepo == null || publicationSampleMapper == null) {
+                publicationSampleService == null || publicationSampleMapper == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
 
 
         this._userId = userId;
         this._collectionRepo = collectionRepo;
-        this._publicationSampleRepo = publicationRepo;
+        this._publicationSampleService = publicationSampleService;
         this._publicationSampleMapper = publicationSampleMapper;
     }
 
@@ -106,7 +106,7 @@ public class ToAddPublicationToAListOfMineController {
         }
 
         List<PublicationSample> available =
-                _publicationSampleRepo.findAvailableForCollection(_userId, collectionId);
+                _publicationSampleService.findAvailableForCollection(_userId, collectionId);
 
         return _publicationSampleMapper.toDTOs(available);
     }
@@ -134,16 +134,19 @@ public class ToAddPublicationToAListOfMineController {
      *
      * @throws IllegalArgumentException if input is invalid
      */
-    public boolean addPublicationToCollection(
+    public PublicationSample addPublicationToCollection(
             CollectionOfPublicationsId collectionId,
-            List<PublicationSampleId> selectedPublicationId) {
+            PublicationSampleId selectedPublicationId,
+            UserId userId) {
 
         if (collectionId == null ||
                 selectedPublicationId == null ||
-                selectedPublicationId.isEmpty()) {
+                userId == null) {
             throw new IllegalArgumentException("Invalid arguments");
         }
 
-        return _publicationSampleRepo.assignPublicationsToCollection(collectionId, selectedPublicationId);
+
+
+        return _publicationSampleService.assignPublicationToCollection(collectionId, selectedPublicationId,userId);
     }
 }
