@@ -100,6 +100,8 @@ lint  →  mvn clean verify
 4. Measures mutation coverage via PITest
 5. Fails the build if thresholds are not met
 
+> PITest spawns a child JVM and requires sufficient available memory. If running locally in WSL, ensure at least 8 GB is allocated in `~/.wslconfig`. To skip PITest locally and only verify JaCoCo coverage, run `mvn clean verify -DskipPitest` (requires `<skip>${skipPitest}</skip>` in the PITest configuration).
+
 ---
 
 ## Quality Gates
@@ -109,7 +111,9 @@ The following thresholds are enforced both locally (via `run`) and in CI (via th
 | Tool | Metric | Threshold | Scope |
 |---|---|---|---|
 | JaCoCo | Line coverage | ≥ 85% | All code except `**/ui/**` |
-| PITest | Mutation coverage | ≥ 95% | All code except `domain.Enum.*` |
+| PITest | Mutation coverage | ≥ 95% | All code except `domain.Enum.*`, `ListingDataInitializer`, `dto.*.request.*`, `dto.*.response.*` |
+
+Thresholds are enforced at **bundle level** — the project as a whole must meet the threshold, not each individual class.
 
 If either threshold is not met, `mvn clean verify` exits with a non-zero code and the build fails.
 
@@ -127,19 +131,30 @@ The pipeline runs automatically on:
 - **Pushes** to `main`, `teamA_1`, or `teamA_2`
 - **Manual dispatch** (`workflow_dispatch`)
 
+### Permissions
+
+The workflow declares explicit permissions at both the workflow level and per-job level following the principle of least privilege:
+
+| Permission | Scope |
+|---|---|
+| `contents: read` | All jobs |
+| `actions: write` | Jobs that upload artifacts |
+| `issues: write` | Jobs that post PR comments |
+| `pull-requests: write` | Jobs that post PR comments |
+
+Artifact upload steps are guarded with `github.event.pull_request.head.repo.full_name == github.repository` to prevent 403 failures when running on fork PRs.
+
 ### Pipeline Overview
 
-The pipeline is composed of five parallel and sequential jobs:
-
 ```
-┌─────────────────────────────────────────────────────────┐
-│                  Parallel (no dependencies)             │
-│  build-and-test   static-analysis   secret-detection   dependency-scan  │
-└────────────────────────┬────────────────────────────────┘
-                         ↓ (all must pass)
-                    pr-validation
-                         ↓ (push events only)
-                   publish-artifact
+┌──────────────────────────────────────────────────────────────────┐
+│                    Parallel (no dependencies)                    │
+│  build-and-test  static-analysis-and-security  secret-detection  dependency-scan  │
+└────────────────────────────┬─────────────────────────────────────┘
+                             ↓ (all must pass)
+                        pr-validation
+                             ↓ (push events only)
+                       publish-artifact
 ```
 
 ---
@@ -155,7 +170,7 @@ Compiles the project, runs all tests, and enforces coverage thresholds.
 4. Upload `jacoco-report` artifact (`target/site/jacoco/`)
 5. Upload `pitest-report` artifact (`target/pit-reports/`)
 
-> Reports are uploaded even if the build fails (`if: always()`).
+> Reports are uploaded even if the build fails (`if: always()`). Uploads are skipped on fork PRs.
 
 ---
 
@@ -168,12 +183,14 @@ Runs static analysis and security scanning in parallel with the build job.
 2. Install Java 17 (Temurin, Maven cache)
 3. **Checkstyle** — style violations reported, does not fail the build (`|| true`)
 4. **PMD** — code smell detection reported, does not fail the build (`|| true`)
-5. **Semgrep SAST scan** — scans with `p/java`, `p/owasp-top-ten`, `p/spring`; **fails the build** on `ERROR` severity findings
+5. **Semgrep SAST scan** — installs Semgrep via pip, scans with `p/java` and `p/owasp-top-ten`; **fails the build** on any finding (`--error` flag)
 6. Upload `checkstyle-report` artifact (`target/checkstyle-result.xml`)
 7. Upload `pmd-report` artifact (`target/pmd.xml`)
-8. **Post Semgrep findings to PR** (on pull requests) — publishes a comment with a severity breakdown table (ERROR / WARNING / INFO counts) and flags if the build is blocked
+8. **Post Semgrep findings to PR** (on pull requests) — publishes a comment with a severity breakdown table (ERROR / WARNING / INFO counts)
 
-> Requires `SEMGREP_APP_TOKEN` secret to be configured in the repository.
+> Requires `SEMGREP_APP_TOKEN` secret to be configured in the repository. The token authenticates against semgrep.dev to download rulesets.
+
+> **Note:** The `p/spring` ruleset was removed as it is no longer available on the Semgrep registry (HTTP 404).
 
 ---
 
@@ -186,6 +203,8 @@ Scans the full Git history for leaked secrets and credentials.
 2. **Gitleaks** — scans the entire git history; **fails the build** if any secret is found
 
 > Requires `GITHUB_TOKEN` to be available (automatically provided by GitHub Actions).
+
+> To verify Gitleaks locally before pushing: `gitleaks detect --source . --no-git --verbose`
 
 ---
 
@@ -200,9 +219,9 @@ Generates a full dependency inventory and scans for known vulnerabilities.
 4. **OWASP Dependency-Check** — CVE scan against the NVD database; **fails the build** on any finding with CVSS ≥ 7 (HIGH or CRITICAL)
 5. Upload `dependency-tree` artifact (`target/dependency-tree.txt`)
 6. Upload `dependency-check-report` artifact (`target/dependency-check-report.html`)
-7. **Post OWASP findings to PR** (on pull requests) — publishes a comment with a severity breakdown (CRITICAL / HIGH / MEDIUM / LOW counts) and flags if the build is blocked
+7. **Post OWASP findings to PR** (on pull requests) — publishes a comment with a severity breakdown (CRITICAL / HIGH / MEDIUM / LOW counts)
 
-> Requires `NVD_API_KEY` secret to be configured in the repository for NVD API access.
+> Requires `NVD_API_KEY` secret to be configured in the repository for NVD API access. The NVD database is cached across runs using `actions/cache@v4`.
 
 ---
 
@@ -212,7 +231,7 @@ Runs only after **all four** upstream jobs pass. Acts as the final integration g
 
 **Steps:**
 1. **Verify all gates passed** — prints a summary of all quality gates to the Actions log
-2. **Publish quality summary to PR** (on pull requests) — posts a consolidated CI Quality Report comment with a table of all jobs, tools, and thresholds
+2. **Publish quality summary to PR** (on pull requests) — posts a consolidated CI Quality Report comment with a table of all jobs, gates, and tools
 
 A PR cannot be merged until this job succeeds, which requires every preceding job to have passed.
 
@@ -235,9 +254,9 @@ Runs only after `pr-validation` passes, and **only on push events** (i.e. when a
 
 | Job | Gate Type | Tool | Threshold / Condition |
 |---|---|---|---|
-| `build-and-test` | **Hard gate** | JaCoCo | ≥ 85% line coverage |
-| `build-and-test` | **Hard gate** | PITest | ≥ 95% mutation coverage |
-| `static-analysis-and-security` | **Hard gate** | Semgrep | No ERROR severity findings |
+| `build-and-test` | **Hard gate** | JaCoCo | ≥ 85% line coverage (bundle) |
+| `build-and-test` | **Hard gate** | PITest | ≥ 95% mutation coverage (bundle) |
+| `static-analysis-and-security` | **Hard gate** | Semgrep | No findings (`--error` flag; rulesets: `p/java`, `p/owasp-top-ten`) |
 | `static-analysis-and-security` | **Report only** | Checkstyle | Style violations logged |
 | `static-analysis-and-security` | **Report only** | PMD | Code smells logged |
 | `secret-detection` | **Hard gate** | Gitleaks | No secrets in full git history |
@@ -261,7 +280,7 @@ All artifacts are accessible from the **Actions → [run] → Artifacts** sectio
 
 | Secret | Used By | Purpose |
 |---|---|---|
-| `SEMGREP_APP_TOKEN` | `static-analysis-and-security` | Authenticates the Semgrep SAST scan |
+| `SEMGREP_APP_TOKEN` | `static-analysis-and-security` | Authenticates Semgrep against semgrep.dev to download rulesets |
 | `NVD_API_KEY` | `dependency-scan` | Authenticates NVD API calls for CVE data |
 | `GITHUB_TOKEN` | `secret-detection`, PR comments | Provided automatically by GitHub Actions |
 
@@ -364,8 +383,8 @@ Commits must follow the format:
 feat: add CI pipeline with test coverage enforcement #645 #646
 feat: add command-line build, lint scripts and checkstyle config #644
 docs: devSecOps documentation #647
-refactor: updated pom.xml to include spring boot dependencies
-perf: delete commented or duplicated methods
+fix(ci): add actions:write permissions and fork guards to workflow
+fix(ci): remove deprecated p/spring ruleset from Semgrep config
 ```
 
 > All commits must reference at least one issue number. Multiple issues can be referenced by chaining them: `#644 #645 #646`.
@@ -402,11 +421,13 @@ The expected workflow for each team member is as follows:
 1. **Pick up an issue** from the sprint backlog. All commits must reference at least one issue number.
 2. **Work on your feature branch** (`teamA_1` or `teamA_2`).
 3. **Before committing**, run `./lint` locally to catch style violations early.
-4. **Before opening a PR**, run `./run` locally to verify the build and all coverage thresholds pass.
-5. **Open a Pull Request** targeting the appropriate base branch, following the PR template and title convention.
-6. **CI must pass** before the PR can be merged. A failing pipeline (build error, test failure, coverage below threshold, secrets detected, or HIGH/CRITICAL CVEs) blocks integration.
-7. **Review artifacts** — JaCoCo, PITest, Checkstyle, PMD, OWASP, and dependency-tree reports are all available from the Actions run page.
-8. **Check PR comments** — Semgrep and OWASP results are automatically posted as PR comments with severity breakdowns. A consolidated quality summary is posted once all gates pass.
+4. **Before committing**, run `gitleaks detect --source . --no-git --verbose` to catch any accidentally committed secrets.
+5. **Before opening a PR**, run `./run` locally to verify the build and all coverage thresholds pass.
+6. **Open a Pull Request** targeting the appropriate base branch, following the PR template and title convention.
+7. **CI must pass** before the PR can be merged. A failing pipeline (build error, test failure, coverage below threshold, secrets detected, Semgrep findings, or HIGH/CRITICAL CVEs) blocks integration.
+8. **Review artifacts** — JaCoCo, PITest, Checkstyle, PMD, OWASP, and dependency-tree reports are all available from the Actions run page.
+9. **Check PR comments** — Semgrep and OWASP results are automatically posted as PR comments with severity breakdowns. A consolidated quality summary is posted once all gates pass.
+
 
 ---
 
@@ -422,9 +443,9 @@ The expected workflow for each team member is as follows:
 | PITest JUnit5 plugin | 1.1.2 |
 | Checkstyle plugin | 3.3.1 |
 | PMD plugin | 3.21.2 |
-| Semgrep | semgrep-action@v1 |
-| Gitleaks | gitleaks-action@v2 |
-| OWASP Dependency-Check | dependency-check-maven (latest) |
+| Semgrep | 1.164.0 (installed via pip in CI) |
+| Gitleaks | gitleaks-action@v1 |
+| OWASP Dependency-Check | 12.1.1 |
 | JUnit Jupiter | 5.10.2 |
 | Mockito | 5.10.0 |
 | GitHub Actions runner | ubuntu-latest |
