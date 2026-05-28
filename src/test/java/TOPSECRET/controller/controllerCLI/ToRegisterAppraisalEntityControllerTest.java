@@ -10,6 +10,7 @@ import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.US004GenreDTO;
 import TOPSECRET.dto.US004PublicationTypeDTO;
 import TOPSECRET.services.AppraisalEntityService;
@@ -19,6 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,6 +57,9 @@ class ToRegisterAppraisalEntityControllerTest {
 
     @InjectMocks
     private ToRegisterAppraisalEntityController controller;
+
+    @Mock
+    private UserId userId;
 
     // CONSTRUCTOR tests
     @Test
@@ -167,7 +173,8 @@ class ToRegisterAppraisalEntityControllerTest {
                         null,
                         contact,
                         List.of(mock(GenreId.class)),
-                        List.of(mock(PublicationTypeId.class))));
+                        List.of(mock(PublicationTypeId.class)),
+                        userId));
     }
 
     @Test
@@ -182,7 +189,8 @@ class ToRegisterAppraisalEntityControllerTest {
                         "",
                         contact,
                         List.of(mock(GenreId.class)),
-                        List.of(mock(PublicationTypeId.class))));
+                        List.of(mock(PublicationTypeId.class)),
+                        userId));
     }
 
     @Test
@@ -194,7 +202,8 @@ class ToRegisterAppraisalEntityControllerTest {
                         "Name",
                         null,
                         List.of(mock(GenreId.class)),
-                        List.of(mock(PublicationTypeId.class))));
+                        List.of(mock(PublicationTypeId.class)),
+                        userId));
     }
 
     @Test
@@ -208,7 +217,8 @@ class ToRegisterAppraisalEntityControllerTest {
                         "Name",
                         contact,
                         null,
-                        List.of(mock(PublicationTypeId.class))));
+                        List.of(mock(PublicationTypeId.class)),
+                        userId));
     }
 
     @Test
@@ -223,7 +233,8 @@ class ToRegisterAppraisalEntityControllerTest {
                         "Name",
                         contact,
                         List.of(),
-                        List.of(mock(PublicationTypeId.class))));
+                        List.of(mock(PublicationTypeId.class)),
+                        userId));
     }
 
     @Test
@@ -237,7 +248,8 @@ class ToRegisterAppraisalEntityControllerTest {
                         "Name",
                         contact,
                         List.of(mock(GenreId.class)),
-                        null));
+                        null,
+                        userId));
     }
 
     @Test
@@ -251,11 +263,12 @@ class ToRegisterAppraisalEntityControllerTest {
                         "Name",
                         contact,
                         List.of(mock(GenreId.class)),
-                        List.of()));
+                        List.of(),
+                        userId));
     }
 
     @Test
-    void shouldReturnCreatedAppraisalEntity() {
+    void shouldReturnCreatedAppraisalEntity() throws AccessDeniedException, InstanceAlreadyExistsException {
         // ARRANGE
         Contact contact = mock(Contact.class);
         GenreId genreId = mock(GenreId.class);
@@ -266,7 +279,8 @@ class ToRegisterAppraisalEntityControllerTest {
                 "Name",
                 contact,
                 List.of(ptId),
-                List.of(genreId)
+                List.of(genreId),
+                userId
         )).thenReturn(entity);
 
         // ACT
@@ -274,7 +288,8 @@ class ToRegisterAppraisalEntityControllerTest {
                 "Name",
                 contact,
                 List.of(genreId),
-                List.of(ptId)
+                List.of(ptId),
+                userId
         );
 
         // ASSERT

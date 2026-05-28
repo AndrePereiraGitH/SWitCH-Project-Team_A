@@ -17,11 +17,11 @@ import java.util.Optional;
 @Repository
 public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRepository {
 
-
     private final IPublicationSampleRepositoryJpa publicationSampleRepositoryJpa;
     private final PublicationSampleAssembler publicationSampleAssembler;
 
-    public PublicationSampleRepositoryJpaImpl(IPublicationSampleRepositoryJpa publicationSampleRepositoryJpa, PublicationSampleAssembler publicationSampleAssembler) {
+    public PublicationSampleRepositoryJpaImpl(IPublicationSampleRepositoryJpa publicationSampleRepositoryJpa,
+                                              PublicationSampleAssembler publicationSampleAssembler) {
         this.publicationSampleRepositoryJpa = publicationSampleRepositoryJpa;
         this.publicationSampleAssembler = publicationSampleAssembler;
     }
@@ -30,295 +30,184 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
     // Persistence
     // =========================================================================
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     @Transactional
     public PublicationSample save(PublicationSample publicationSample) {
-
         Objects.requireNonNull(publicationSample, "PublicationSample cannot be null");
 
-        if(publicationSampleRepositoryJpa.existsById(publicationSample.id())){
-            throw new IllegalArgumentException("PublicationSample already exists in the repository");
-        }
-        PublicationSampleDM pbSampleDM = publicationSampleAssembler.toDM(publicationSample);
-
-        PublicationSampleDM pbSampleDMSaved = publicationSampleRepositoryJpa.save(pbSampleDM);
-
-        PublicationSample pbSampleSaved = publicationSampleAssembler.toDomain(pbSampleDMSaved);
-
-        return pbSampleSaved;
+        PublicationSampleDM dm = publicationSampleAssembler.toDM(publicationSample);
+        PublicationSampleDM saved = publicationSampleRepositoryJpa.save(dm);
+        return publicationSampleAssembler.toDomain(saved);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean existsById(PublicationSampleId publicationSampleId) {
-
-        Objects.requireNonNull(publicationSampleId, "PublicationSampleId cannot be null");
-
-        if(publicationSampleRepositoryJpa.existsById(publicationSampleId)){
-            return true;
-        }
-        return false;
-    }
 
     // =========================================================================
     // Lookup — by identity
     // =========================================================================
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
+    @Override
+    public boolean existsById(PublicationSampleId publicationSampleId) {
+        Objects.requireNonNull(publicationSampleId, "PublicationSampleId cannot be null");
+        boolean isExistent = publicationSampleRepositoryJpa.existsById(publicationSampleId);
+        return isExistent;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSample> findAll() {
-
-        List<PublicationSample> allPublications;
-
-        allPublications = publicationSampleRepositoryJpa.findAll().stream()
+        List<PublicationSample> allPublications =
+                publicationSampleRepositoryJpa.findAll()
+                .stream()
                 .map(publicationSampleAssembler::toDomain)
                 .toList();
 
         return allPublications;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public Optional<PublicationSample> findById(PublicationSampleId publicationSampleId) {
 
         Objects.requireNonNull(publicationSampleId, "PublicationSampleId cannot be null");
 
-        Optional<PublicationSample> pbSample = publicationSampleRepositoryJpa.findById(publicationSampleId)
+        Optional<PublicationSample> publicationSample =
+                publicationSampleRepositoryJpa.findById(publicationSampleId)
                 .map(publicationSampleAssembler::toDomain);
 
-        return pbSample;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional
-    public PublicationSample update(PublicationSample publicationSample) {
-
-        Objects.requireNonNull(publicationSample,
-                "PublicationSample must not be null");
-
-        if (!publicationSampleRepositoryJpa.existsById(publicationSample.id())) {
-            throw new IllegalArgumentException("PublicationSample does not exist in repository");
-        }
-
-        PublicationSampleDM dm = publicationSampleAssembler.toDM(publicationSample);
-
-        PublicationSampleDM updated = publicationSampleRepositoryJpa.save(dm);
-
-        return publicationSampleAssembler.toDomain(updated);
+        return publicationSample;
     }
 
     // =========================================================================
     // Lookup — by associated identifiers
     // =========================================================================
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataId bdId) {
 
-        Objects.requireNonNull(bdId, "BibliographicalDataID cannot be null");
+        Objects.requireNonNull(bdId, "BibliographicalDataId cannot be null");
 
-        List<PublicationSampleId> listOfPubSampleId = publicationSampleRepositoryJpa.findAllByBdId(bdId)
+        List<PublicationSampleId> allPublicationsWithSpecificBD =
+                publicationSampleRepositoryJpa.findAllByBdId(bdId)
                 .stream()
-                .map(PublicationSampleDM::getPubSampleId)
-                .toList();
+                .map(PublicationSampleDM::getPubSampleId).toList();
 
-        return listOfPubSampleId;
+        return allPublicationsWithSpecificBD;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
 
+        Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
 
-        Objects.requireNonNull(bdIds, "BibliographicalData Ids cannot be null");
-
-        return publicationSampleRepositoryJpa
-                .findAllByBdIdIn(bdIds)
+        List<PublicationSampleId> allPublicationsWithSpecificBDs =
+                publicationSampleRepositoryJpa.findAllByBdIdIn(bdIds)
                 .stream()
                 .map(PublicationSampleDM::getPubSampleId)
                 .toList();
 
+        return allPublicationsWithSpecificBDs;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
 
-        if (listOfEditionIds == null) {
-            throw new IllegalArgumentException("listOfEditionIds cannot be null");
-        }
+        Objects.requireNonNull(listOfEditionIds, "EditionIds cannot be null");
 
-        if (listOfEditionIds.isEmpty()) {
-            return List.of();
-        }
-
-        List<PublicationSampleDM> publicationSamples =
-                publicationSampleRepositoryJpa.findAllByEditionIdIn(listOfEditionIds);
-
-        return publicationSamples.stream()
+        List<PublicationSampleId> allPublicationsWithSpecificEditions =
+                publicationSampleRepositoryJpa.findAllByEditionIdIn(listOfEditionIds)
+                .stream()
                 .map(PublicationSampleDM::getPubSampleId)
                 .toList();
+
+        return allPublicationsWithSpecificEditions;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSample> findByLibraryId(LibraryId libraryId) {
 
         Objects.requireNonNull(libraryId, "LibraryId cannot be null");
 
-        List<PublicationSampleDM> samplesDMList = publicationSampleRepositoryJpa.findByLibraryId(libraryId);
-
-        return samplesDMList.stream().map(publicationSampleAssembler::toDomain).toList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionID) {
-
-        Objects.requireNonNull(collectionID, "Collection ID cannot be null");
-
-        return publicationSampleRepositoryJpa
-                .findAllByCollectionOfPublicationsId(collectionID)
+        List<PublicationSample> allPublicationsInLibrary =
+                publicationSampleRepositoryJpa.findByLibraryId(libraryId)
                 .stream()
                 .map(publicationSampleAssembler::toDomain)
                 .toList();
 
+        return allPublicationsInLibrary;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId) {
+
+        Objects.requireNonNull(collectionId, "CollectionId cannot be null");
+
+        List<PublicationSample> allPublicationsInCollection =
+                publicationSampleRepositoryJpa.findAllByCollectionOfPublicationsId(collectionId)
+                .stream()
+                .map(publicationSampleAssembler::toDomain)
+                .toList();
+
+        return allPublicationsInCollection;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId) {
 
-        Objects.requireNonNull(userId,"UserId cannot be null");
+        Objects.requireNonNull(userId, "UserId cannot be null");
 
-        List<PublicationSample> listOfPublications = publicationSampleRepositoryJpa.findAllByOwnerId(userId)
-                .stream().map(publicationSampleAssembler::toDomain)
-                .filter(PublicationSample::isInUserLibrary).toList();
+        List<PublicationSample> allPublicationsInUserLibrary =
+                publicationSampleRepositoryJpa.findAllByOwnerId(userId)
+                .stream()
+                .map(publicationSampleAssembler::toDomain)
+                .filter(PublicationSample::isInUserLibrary)
+                .toList();
 
-        return listOfPublications;
+        return allPublicationsInUserLibrary;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
 
         Objects.requireNonNull(userId, "UserId cannot be null");
 
-        List<PublicationSample> publicationSampleDMs = publicationSampleRepositoryJpa.findAllByOwnerId(userId)
-                .stream().map(publicationSampleAssembler::toDomain)
-                .filter(publicationSample -> !publicationSample.isInUserLibrary()).toList();
+        List<PublicationSample> allPublicationsOwnedByUserAndNotInLibrary =
+                publicationSampleRepositoryJpa.findAllByOwnerId(userId)
+                .stream()
+                .map(publicationSampleAssembler::toDomain)
+                .filter(p -> !p.isInUserLibrary())
+                .toList();
 
-
-        return publicationSampleDMs;
+        return allPublicationsOwnedByUserAndNotInLibrary;
     }
 
     // =========================================================================
     // Domain Operations
     // =========================================================================
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId) {
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<PublicationSample> findAvailableForSaleByLibraryId(LibraryId libraryId) {
+    public List<PublicationSample> findByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId, List<PublicationStatus> excludedStatuses) {
 
         Objects.requireNonNull(libraryId, "LibraryId cannot be null");
+        Objects.requireNonNull(excludedStatuses, "ExcludedStatuses cannot be null");
 
-        List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
 
-        return publicationSampleRepositoryJpa
-                .findAllByLibraryIdAndPublicationStatusNotIn(libraryId, excluded)
+        List<PublicationSample> allPublicationsInLibraryAvailableForSale =
+                publicationSampleRepositoryJpa
+                .findAllByLibraryIdAndPublicationStatusNotIn(libraryId, excludedStatuses)
                 .stream()
                 .map(publicationSampleAssembler::toDomain)
                 .toList();
-    }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional
-    public boolean assignPublicationsToCollection(
-            CollectionOfPublicationsId collectionId,
-            List<PublicationSampleId> publicationSampleIds) {
-
-        Objects.requireNonNull(collectionId, "Collection ID cannot be null.");
-
-        Objects.requireNonNull(publicationSampleIds, "Publication IDs cannot be null or empty.");
-
-        for (PublicationSampleId publicationSampleId : publicationSampleIds) {
-
-            Optional<PublicationSample> publicationOptional =
-                    findById(publicationSampleId);
-
-            if (publicationOptional.isEmpty()) {
-                throw new IllegalArgumentException("Publication not found.");
-            }
-
-            PublicationSample publication =
-                    publicationOptional.get();
-
-            publication.addPublicationToCollection(collectionId);
-
-            update(publication);
-        }
-
-        return true;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<PublicationSample> findAvailableForCollection(
-            UserId userId,
-            CollectionOfPublicationsId collectionId) {
-
-        Objects.requireNonNull(userId ,"Arguments cannot be null");
-
-        List<PublicationSample> allUserPublications =
-                findByUserIdAndLibraryIdIsNotNull(userId);
-
-        List<PublicationSample> publicationsInCollection =
-                findByCollectionOfPublicationsId(collectionId);
-
-        return allUserPublications.stream()
-                .filter(publication ->
-                        !publicationsInCollection.contains(publication))
-                .toList();
+        return allPublicationsInLibraryAvailableForSale;
     }
 }
