@@ -15,7 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.security.access.AccessDeniedException;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller responsible for dealing with City resources.
@@ -70,7 +75,9 @@ public class CityRESTController {
 
             ResponseCityDTO result = CityMapper.toDTO(city, city.getCityName());
 
-            List<Link> links = provider.getLinks(userId);
+            List<Link> links = new ArrayList<>(provider.getLinks(userId));
+            links.add(linkTo(methodOn(CityRESTController.class)
+                    .createCity(dto, userId)).withSelfRel());
             links.forEach(result::add);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);

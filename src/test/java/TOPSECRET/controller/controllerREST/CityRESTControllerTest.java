@@ -70,6 +70,7 @@ class CityRESTControllerTest {
 
         // ASSERT
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
+        assertTrue(result.getBody().hasLink("self"));
         assertNotNull(result.getBody());
     }
 
@@ -93,7 +94,7 @@ class CityRESTControllerTest {
         ResponseEntity<ResponseCityDTO> result = sut.createCity(dto, userId);
 
         // ASSERT
-        assertEquals(1, result.getBody().getLinks().toList().size());
+        assertEquals(2, result.getBody().getLinks().toList().size());
     }
 
     @Test
