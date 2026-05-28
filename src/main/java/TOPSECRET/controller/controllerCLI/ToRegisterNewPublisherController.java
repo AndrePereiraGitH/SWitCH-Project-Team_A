@@ -1,14 +1,18 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublisherService;
+
+import java.nio.file.AccessDeniedException;
+import java.util.Objects;
 
 /**
  * Controller responsible for handling the use case
- * of registering a new publisher (US006).
+ * of registering a new publisher (US006) via the CLI.
  *
- * <p>This class acts as an intermediary between the UI layer
- * and the service layer.</p>
+ * <p>This class acts as an intermediary between the CLI UI layer
+ * and the application service layer.</p>
  */
 public class ToRegisterNewPublisherController {
 
@@ -32,11 +36,16 @@ public class ToRegisterNewPublisherController {
      *
      * @param name      the publisher's name; must not be blank
      * @param vatNumber the publisher's VAT number; must not be blank
-     * @param contact   the publisher's contact information
-     * @return {@code true} if the publisher was successfully created and registered
-     * @throws IllegalArgumentException if a publisher with the same identity already exists
+     * @param contact   the publisher's contact information; must not be null
+     * @param userId    the identifier of the user performing the registration; must not be null
+     * @throws IllegalArgumentException if any business validation fails or the user is not found
+     * @throws AccessDeniedException    if the user does not have permission to register a publisher
      */
-    public void registerPublisher(String name, String vatNumber, Contact contact) {
-        _publisherService.createAndSave(name, vatNumber, contact);
+    public void registerPublisher(String name, String vatNumber, Contact contact, UserId userId)
+            throws AccessDeniedException {
+        Objects.requireNonNull(contact, "Contact information is required");
+        Objects.requireNonNull(userId, "A valid User ID must be provided");
+
+        _publisherService.createAndSave(name, vatNumber, contact, userId);
     }
 }

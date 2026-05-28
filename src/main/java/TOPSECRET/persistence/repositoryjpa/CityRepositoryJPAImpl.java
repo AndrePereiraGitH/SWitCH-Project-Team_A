@@ -2,12 +2,17 @@ package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.ICityRepository;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.persistence.repositoryjpa.assembler.CityAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.CityDM;
 import TOPSECRET.persistence.repositoryjpa.jpa.ICityRepositoryJPA;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * JPA implementation of {@link ICityRepository}.
@@ -36,6 +41,26 @@ public class CityRepositoryJPAImpl implements ICityRepository {
         CityDM cityDM = assembler.toDM(newcity);
         CityDM saved = jpaRepository.save(cityDM);
         return assembler.toDomain(saved);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<City> findAll() {
+        return jpaRepository.findAll()
+                .stream()
+                .map(assembler::toDomain)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<City> findById(CityId cityId) {
+        return jpaRepository.findById(cityId)
+                .map(assembler::toDomain);
     }
 
     /**
