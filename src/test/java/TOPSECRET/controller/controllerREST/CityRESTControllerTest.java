@@ -71,7 +71,6 @@ class CityRESTControllerTest {
         // ASSERT
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
         assertTrue(result.getBody().hasLink("self"));
-        assertNotNull(result.getBody());
     }
 
     @Test
