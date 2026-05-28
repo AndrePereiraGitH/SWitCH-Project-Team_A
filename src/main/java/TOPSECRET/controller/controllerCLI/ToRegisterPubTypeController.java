@@ -3,9 +3,9 @@ package TOPSECRET.controller.controllerCLI;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublicationTypeService;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
 
 /**
  * Controller responsible for handling the registration of new PublicationType entities.

@@ -21,9 +21,9 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -336,5 +336,60 @@ class PublicationTypeRestControllerTest {
 
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void shouldAddLinksForEachToResponseDTO()
+            throws Exception {
+
+        // ARRANGE
+        String format = "Book";
+
+        PublicationType publicationType = mock(PublicationType.class);
+
+        PublicationTypeResponseDTO responseDTO = new PublicationTypeResponseDTO("1", "Book");
+
+        Link link = Link.of(
+                "/publication-types",
+                "create-publication-type"
+        );
+
+        when(createDTO.mediaFormat()).thenReturn(format);
+        when(service.createAndSave(format, userId)).thenReturn(publicationType);
+        when(linkProvider.getLinksForPublicationType(userId)).thenReturn(List.of(link));
+
+        try (MockedStatic<PublicationTypeMapper> mapper =
+                     mockStatic(PublicationTypeMapper.class)) {
+
+            mapper.when(() ->
+                            PublicationTypeMapper.toDTO(publicationType))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.createPublicationType(
+                            createDTO,
+                            userId
+                    );
+
+            // ASSERT
+            assertNotNull(response.getBody());
+            assertEquals(
+                    1,
+                    response.getBody()
+                            .getLinks()
+                            .toList()
+                            .size()
+            );
+            assertEquals(
+                    "create-publication-type",
+                    response.getBody()
+                            .getLinks()
+                            .toList()
+                            .get(0)
+                            .getRel()
+                            .value()
+            );
+        }
     }
 }

@@ -8,11 +8,12 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -41,18 +42,10 @@ public class PublicationTypeService {
             PublicationTypeAuthorizationPolicy policy
     ) {
 
-        if (repository == null) {
-            throw new IllegalArgumentException("Repository cannot be null");
-        }
-
-        if (factory == null) {
-            throw new IllegalArgumentException("Factory cannot be null");
-        }
-
-        this.repository = repository;
-        this.factory = factory;
-        this.userRepository = userRepository;
-        this.policy = policy;
+        this.repository = Objects.requireNonNull(repository, "Repository cannot be null");
+        this.factory = Objects.requireNonNull(factory, "Factory cannot be null");
+        this.userRepository = Objects.requireNonNull(userRepository, "User repository cannot be null");
+        this.policy = Objects.requireNonNull(policy, "Policy cannot be null");
     }
 
     /**

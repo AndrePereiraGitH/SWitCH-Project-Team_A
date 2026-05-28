@@ -1,6 +1,9 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.PublicationTypeRestController;
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublicationTypeAuthorizationPolicy;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
@@ -17,6 +20,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class PublicationTypeLinkProvider {
 
+    private final PublicationTypeAuthorizationPolicy policy;
+    private final IUserRepository userRepository;
+
+    public PublicationTypeLinkProvider(PublicationTypeAuthorizationPolicy policy, IUserRepository userRepository){
+        this.policy = policy;
+        this.userRepository = userRepository;
+    }
+
     /**
      * Returns the available links for PublicationType operations.
      *
@@ -27,9 +38,15 @@ public class PublicationTypeLinkProvider {
 
         List<Link> links = new ArrayList<>();
 
-        links.add(linkTo(methodOn(PublicationTypeRestController.class)
-                .createPublicationType(null, userId))
-                .withRel("create-publication-type"));
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("User not found"));
+
+        if(policy.canCreatePublicationType(user)){
+            links.add(linkTo(methodOn(PublicationTypeRestController.class)
+                    .createPublicationType(null, userId))
+                    .withRel("create-publication-type"));
+        }
 
         return links;
     }

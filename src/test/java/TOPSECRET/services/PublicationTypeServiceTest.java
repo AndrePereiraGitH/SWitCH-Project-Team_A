@@ -15,10 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +85,7 @@ class PublicationTypeServiceTest {
 
         // ACT + ASSERT
         assertThrows(
-                IllegalArgumentException.class,
+                NullPointerException.class,
                 () -> new PublicationTypeService(
                         null,
                         factory,
@@ -105,12 +105,52 @@ class PublicationTypeServiceTest {
 
         // ACT + ASSERT
         assertThrows(
-                IllegalArgumentException.class,
+                NullPointerException.class,
                 () -> new PublicationTypeService(
                         repo,
                         null,
                         userRepository,
                         policy
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowWhenUserRepositoryIsNull() {
+
+        // ARRANGE
+        IPublicationTypeRepository repo = mock(IPublicationTypeRepository.class);
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PublicationTypeAuthorizationPolicy policy = mock(PublicationTypeAuthorizationPolicy.class);
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> new PublicationTypeService(
+                        repo,
+                        factory,
+                        null,
+                        policy
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowWhenPolicyIsNull() {
+
+        // ARRANGE
+        IPublicationTypeRepository repo = mock(IPublicationTypeRepository.class);
+        IUserRepository userRepository = mock(IUserRepository.class);
+        PublicationTypeAuthorizationPolicy policy = mock(PublicationTypeAuthorizationPolicy.class);
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> new PublicationTypeService(
+                        repo,
+                        factory,
+                        userRepository,
+                        null
                 )
         );
     }
