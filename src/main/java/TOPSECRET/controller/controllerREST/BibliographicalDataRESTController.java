@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 /**
  * REST controller responsible for managing bibliographical data resources.
  */
@@ -97,12 +100,12 @@ public class BibliographicalDataRESTController {
     public ResponseEntity<responseBibliographicalDataDTO> createBibliographicalData(
             @RequestBody requestBibliographicalDataDTO requestBibliographicalDataDTO,
             @RequestParam UserId userId) {
-
-        List<AuthorId> authorIds = BibliographicalDataMapper.toAuthorId(requestBibliographicalDataDTO.authorName());
-
-        List<GenreId> genreIds = BibliographicalDataMapper.toGenreId(requestBibliographicalDataDTO.genreName());
-
         try {
+
+            List<AuthorId> authorIds = BibliographicalDataMapper.toAuthorId(requestBibliographicalDataDTO.authorName());
+
+            List<GenreId> genreIds = BibliographicalDataMapper.toGenreId(requestBibliographicalDataDTO.genreName());
+
             BibliographicalData bibliographicalData = service.createAndSave(
                     requestBibliographicalDataDTO.title(),
                     authorIds,
@@ -119,6 +122,8 @@ public class BibliographicalDataRESTController {
 
             List<Link> links = provider.getLinksForBibliographicalData(userId);
             links.forEach(result::add);
+            result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                    .createBibliographicalData(requestBibliographicalDataDTO, userId)).withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
