@@ -82,9 +82,9 @@ class BibliographicalDataServiceTest {
         genres = List.of(genreId);
     }
 
-    //
-    // createAndSave Tests
-    //
+    // =============================================================
+    // ================== createAndSave Tests ======================
+    // =============================================================
 
     @Test
     void createAndAdd_shouldCreateSaveAndReturnSavedBibliographicalData() throws InstanceAlreadyExistsException, AccessDeniedException {
@@ -186,9 +186,9 @@ class BibliographicalDataServiceTest {
         );
     }
 
-    //
-    // getAuthors Tests
-    //
+    // =============================================================
+    // ==================== getAuthors Tests =======================
+    // =============================================================
 
     @Test
     void getAuthorsShouldReturnAuthorNamesWhenAuthorsAreValid() throws InstanceNotFoundException {
@@ -250,9 +250,9 @@ class BibliographicalDataServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    //
-    // findAll Tests
-    //
+    // =============================================================
+    // ===================== findAll Tests =========================
+    // =============================================================
 
     @Test
     void findAllShouldReturnList() {
@@ -280,9 +280,9 @@ class BibliographicalDataServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    //
-    // createAllDTOs Tests
-    //
+    // =============================================================
+    // ================== createAllDTOs Tests ======================
+    // =============================================================
 
     @Test
     void createAllDTOs_whenRepositoryIsEmpty_returnsEmptyList() throws InstanceNotFoundException {
@@ -324,5 +324,142 @@ class BibliographicalDataServiceTest {
         assertEquals(2, result.size());
 
         verify(bibliographicalDataRepo).findAll();
+    }
+
+    // =============================================================
+    // ===================== findById Tests ========================
+    // =============================================================
+
+    @Test
+    void findById_shouldReturnBibliographicalDataWhenExists() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+
+        when(bibliographicalDataRepo.findById(bdId))
+                .thenReturn(Optional.of(bibliographicalData));
+
+        // Act
+        Optional<BibliographicalData> result = service.findById(bdId);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(bibliographicalData, result.get());
+    }
+
+    @Test
+    void findById_shouldReturnEmptyWhenNotFound() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+
+        when(bibliographicalDataRepo.findById(bdId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        Optional<BibliographicalData> result = service.findById(bdId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // =============================================================
+    // ================== findAllByGenreId Tests ===================
+    // =============================================================
+
+    @Test
+    void findAllByGenreId_shouldReturnBibliographicalDataIds() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        List<BibliographicalDataId> ids = List.of(
+                mock(BibliographicalDataId.class),
+                mock(BibliographicalDataId.class)
+        );
+
+        when(bibliographicalDataRepo.findAllByGenreId(genreId))
+                .thenReturn(ids);
+
+        // Act
+        List<BibliographicalDataId> result = service.findAllByGenreId(genreId);
+
+        // Assert
+        assertEquals(ids, result);
+    }
+
+    // =============================================================
+    // ================== findIdByTitle Tests ======================
+    // =============================================================
+
+    @Test
+    void findIdByTitle_shouldReturnIdWhenTitleExists() {
+        // Arrange
+        String title = "Title test";
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+
+        when(bibliographicalDataRepo.findIdByTitle(title))
+                .thenReturn(Optional.of(bdId));
+
+        // Act
+        Optional<BibliographicalDataId> result = service.findIdByTitle(title);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(bdId, result.get());
+    }
+
+    @Test
+    void findIdByTitle_shouldReturnEmptyWhenTitleDoesNotExist() {
+        // Arrange
+        String title = "Unknown Title";
+
+        when(bibliographicalDataRepo.findIdByTitle(title))
+                .thenReturn(Optional.empty());
+
+        // Act
+        Optional<BibliographicalDataId> result = service.findIdByTitle(title);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // =============================================================
+    // ================== findIdByAuthorId Tests ===================
+    // =============================================================
+
+    @Test
+    void findIdByAuthorId_shouldReturnBibliographicalDataIds() {
+        // Arrange
+        AuthorId authorId = mock(AuthorId.class);
+        List<BibliographicalDataId> ids = List.of(
+                mock(BibliographicalDataId.class),
+                mock(BibliographicalDataId.class)
+        );
+
+        when(bibliographicalDataRepo.findIdByAuthorId(authorId))
+                .thenReturn(ids);
+
+        // Act
+        List<BibliographicalDataId> result = service.findIdByAuthorId(authorId);
+
+        // Assert
+        assertEquals(ids, result);
+    }
+
+    // =============================================================
+    // =================== getAllTitles Tests ======================
+    // =============================================================
+
+    @Test
+    void getAllTitles_shouldReturnAllTitles() {
+        // Arrange
+        List<String> titles = List.of("title 1", "title 2");
+
+        when(bibliographicalDataRepo.getAllTitles())
+                .thenReturn(titles);
+
+        // Act
+        List<String> result = service.getAllTitles();
+
+        // Assert
+        assertEquals(titles, result);
     }
 }
