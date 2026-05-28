@@ -7,6 +7,7 @@ import TOPSECRET.domain.Publisher.PublisherFactory;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,7 +60,7 @@ class PublisherServiceTest {
         Publisher savedPublisherDouble = mock(Publisher.class);
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canCreatPublisher(userDouble)).thenReturn(true);
+        when(authPolicy.canCreatePublisher(userDouble)).thenReturn(true);
         when(factory.create(name, vat, contactDouble)).thenReturn(publisherDouble);
         when(repository.save(publisherDouble)).thenReturn(savedPublisherDouble);
 
@@ -91,7 +92,7 @@ class PublisherServiceTest {
         Contact contactDouble = mock(Contact.class);
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canCreatPublisher(userDouble)).thenReturn(false);
+        when(authPolicy.canCreatePublisher(userDouble)).thenReturn(false);
 
         // Act + Assert
         assertThrows(AccessDeniedException.class,
@@ -136,5 +137,42 @@ class PublisherServiceTest {
 
         // Assert
         assertEquals(2, result.size());
+    }
+
+    // ========== Tests for findById =========================
+
+    @Test
+    void findById_shouldReturnPublisher_whenPublisherExists() {
+        // Arrange
+        PublisherID idDouble = mock(PublisherID.class);
+        Publisher publisherDouble = mock(Publisher.class);
+
+        when(repository.findById(idDouble)).thenReturn(Optional.of(publisherDouble));
+
+        // Act
+        Optional<Publisher> result = service.findById(idDouble);
+
+        // Assert
+        assertSame(publisherDouble, result.get());
+    }
+
+    @Test
+    void findById_shouldReturnEmpty_whenPublisherDoesNotExist() {
+        // Arrange
+        PublisherID idDouble = mock(PublisherID.class);
+
+        when(repository.findById(idDouble)).thenReturn(Optional.empty());
+
+        // Act
+        Optional<Publisher> result = service.findById(idDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findById_shouldThrowNullPointerException_whenIdIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> service.findById(null));
     }
 }

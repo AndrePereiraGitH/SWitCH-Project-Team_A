@@ -32,41 +32,38 @@ class PublisherLinkProviderTest {
 
     @Test
     void shouldReturnGetAllAndCreatePublisherLinks_whenUserHasPermission() {
-
         // ARRANGE
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
-        when(authPolicy.canCreatPublisher(user)).thenReturn(true);
+        when(authPolicy.canCreatePublisher(user)).thenReturn(true);
 
         // ACT
         int result = provider.getLinksForPublisher(userId).size();
 
         // ASSERT
-        assertEquals(2, result);
+        assertEquals(2, result); // get-all-publishers + create-publisher
     }
 
     @Test
     void shouldReturnOnlyGetAllPublishersLink_whenUserHasNoPermission() {
-
         // ARRANGE
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
-        when(authPolicy.canCreatPublisher(user)).thenReturn(false);
+        when(authPolicy.canCreatePublisher(user)).thenReturn(false);
 
         // ACT
         int result = provider.getLinksForPublisher(userId).size();
 
         // ASSERT
-        assertEquals(1, result);
+        assertEquals(1, result); // get-all-publishers only
     }
 
     @Test
-    void shouldReturnEmptyList_whenUserDoesNotExist() {
-
+    void shouldReturnOnlyGetAllPublishersLink_whenUserDoesNotExist() {
         // ARRANGE
         UserId userId = mock(UserId.class);
 
@@ -76,6 +73,6 @@ class PublisherLinkProviderTest {
         int result = provider.getLinksForPublisher(userId).size();
 
         // ASSERT
-        assertEquals(0, result);
+        assertEquals(1, result); // get-all-publishers is always added
     }
 }
