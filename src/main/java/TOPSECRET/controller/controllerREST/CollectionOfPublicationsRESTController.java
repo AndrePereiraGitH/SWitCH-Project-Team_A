@@ -71,7 +71,7 @@ public class CollectionOfPublicationsRESTController {
      * {@code 403 Forbidden} if the user lacks permission, or
      * {@code 500 Internal Server Error} if an unexpected error occurs
      */
-    @PostMapping("collection-of-publications")
+    @PostMapping("/")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> createCollectionOfPublications(
             @RequestBody @Valid RequestCollectionOfPublicationsDTO requestCollectionDTO,
             @RequestParam UserId userId) {

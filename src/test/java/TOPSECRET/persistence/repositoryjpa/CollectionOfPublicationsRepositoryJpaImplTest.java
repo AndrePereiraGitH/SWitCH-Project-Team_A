@@ -336,23 +336,42 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     }
 
     @Test
-    void findPublicCollectionsByGenreId_shouldReturnMappedCollections_whenCollectionsExist() {
+    void findPublicCollectionsByGenreId_shouldReturnOnlyPublicCollections_WhenBothTypesExist() {
+
         // ARRANGE
         GenreId genreIdDouble = mock(GenreId.class);
-        CollectionOfPublicationsDM collectionDMDouble = mock(CollectionOfPublicationsDM.class);
-        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+
+        CollectionOfPublicationsDM publicDM = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublicationsDM privateDM = mock(CollectionOfPublicationsDM.class);
+
+        CollectionOfPublications publicCollection = mock(CollectionOfPublications.class);
+        CollectionOfPublications privateCollection = mock(CollectionOfPublications.class);
+
+        when(publicCollection.getIsPrivate()).thenReturn(false);
+        when(privateCollection.getIsPrivate()).thenReturn(true);
 
         when(jpa.findPublicCollectionsByGenreId(genreIdDouble))
-                .thenReturn(List.of(collectionDMDouble));
-        when(assembler.toDomain(collectionDMDouble))
-                .thenReturn(collectionDouble);
+                .thenReturn(List.of(publicDM, privateDM));
+
+        when(assembler.toDomain(publicDM)).thenReturn(publicCollection);
+        when(assembler.toDomain(privateDM)).thenReturn(privateCollection);
 
         // ACT
-        List<CollectionOfPublications> result =
-                repo.findPublicCollectionsByGenreId(genreIdDouble);
+        List<CollectionOfPublications> result = repo.findPublicCollectionsByGenreId(genreIdDouble);
 
         // ASSERT
-        assertEquals(1, result.size());
-        assertEquals(collectionDouble, result.get(0));
+        assertEquals(1, result.size(), "One public collection found matching this genre");
+        assertEquals(publicCollection, result.get(0), "No public collections matching this genre found");
+        assertFalse(result.contains(privateCollection), "All filtered collections should be public");
+    }
+
+    @Test
+    void findPublicCollectionsByGenreId_shouldThrowNullPointerException_whenGenreIdIsNull() {
+        // ACT & ASSERT
+        NullPointerException exception = assertThrows(NullPointerException.class, () -> {
+            repo.findPublicCollectionsByGenreId(null);
+        });
+
+        assertEquals("genreId cannot be null", exception.getMessage());
     }
 }

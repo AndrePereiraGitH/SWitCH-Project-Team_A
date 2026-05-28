@@ -140,6 +140,7 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
 
         List<CollectionOfPublications> listOfGenreCollections = genreCollections.stream()
                 .map(collectionOfPublicationsAssembler::toDomain)
+                .filter(collection -> !collection.getIsPrivate())
                 .toList();
 
         return listOfGenreCollections;
