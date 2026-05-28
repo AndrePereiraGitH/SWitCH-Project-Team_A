@@ -1,18 +1,10 @@
 package TOPSECRET.persistence.mem;
 
-
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.domain.ValueObjects.*;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
-import TOPSECRET.domain.ValueObjects.EditionId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.LibraryId;
-import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.persistence.repositoryjpa.datamodel.PublicationSampleDM;
-import jakarta.transaction.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +36,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     /**
      * Constructs a new {@code PublicationSampleRepositoryMem}
      * Initializes an empty internal list of publication samples.
-     *
      */
     public PublicationSampleRepositoryMem() {
         allPublicationsInSystem = new ArrayList<>();
@@ -54,9 +45,8 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // Persistence
     // -------------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
+    @Override
     public PublicationSample save(PublicationSample publicationSample) {
         if (existsById(publicationSample.id())) {
             throw new IllegalArgumentException("PublicationSample already exists in the repository");
@@ -65,72 +55,53 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return publicationSample;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean existsById(PublicationSampleId publicationSampleId) {
-        if (publicationSampleId == null) {
+    /** {@inheritDoc} */
+    @Override
+    public boolean existsById(PublicationSampleId id) {
+        if (id == null) {
             throw new IllegalArgumentException("PublicationSample cannot be null");
         }
 
         for (PublicationSample pbSample : allPublicationsInSystem) {
-            if (pbSample.id().equals(publicationSampleId)) {
+            if (pbSample.id().equals(id)) {
                 return true;
             }
         }
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public PublicationSample update(PublicationSample publicationSample) {
-
-        if (publicationSample == null) {
-            throw new IllegalArgumentException(
-                    "PublicationSample cannot be null");
-        }
-
-        PublicationSample existingPublication =
-                allPublicationsInSystem.stream()
-                        .filter(p -> p.id().equals(publicationSample.id()))
-                        .findFirst()
-                        .orElseThrow(() ->
-                                new IllegalArgumentException(
-                                        "PublicationSample does not exist in repository"));
-
-        allPublicationsInSystem.remove(existingPublication);
-
-        allPublicationsInSystem.add(publicationSample);
-
-        return publicationSample;
-    }
 
     // -------------------------------------------------------------------------
     // Identity Lookup
     // -------------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     */
-    public Optional<PublicationSample> findById(PublicationSampleId pbSampleId) {
-        if (pbSampleId == null) {
+    /** {@inheritDoc} */
+    @Override
+    public Optional<PublicationSample> findById(PublicationSampleId id) {
+        if (id == null) {
             throw new NullPointerException("PublicationSampleID cannot be null");
         }
 
         for (PublicationSample pbSample : allPublicationsInSystem) {
-            if (pbSample.id().equals(pbSampleId)) {
+            if (pbSample.id().equals(id)) {
                 return Optional.of(pbSample);
             }
         }
         return Optional.empty();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findAll() {
+        return List.copyOf(allPublicationsInSystem);
+    }
 
-    /**
-     * {@inheritDoc}
-     */
+    // -------------------------------------------------------------------------
+    // Lookup - by associated identifiers
+    // -------------------------------------------------------------------------
+
+    /** {@inheritDoc} */
+    @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataId bdId) {
         if (bdId == null) {
             throw new NullPointerException("PublicationSampleID cannot be null");
@@ -144,12 +115,10 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             }
         }
         return listOfPubSampleId;
-
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
+    @Override
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
         if (listOfEditionIds == null) {
             throw new NullPointerException("listOfEditionIds cannot be null");
@@ -167,10 +136,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return listOfPubSampleIds;
     }
 
-    // -------------------------------------------------------------------------
-    // Specific Queries
-    // -------------------------------------------------------------------------
-
+    /** {@inheritDoc} */
     @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
         if (bdIds == null) {
@@ -180,7 +146,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         List<PublicationSampleId> publicationSampleIds = new ArrayList<>();
 
         for (PublicationSample pbSample : allPublicationsInSystem) {
-
             BibliographicalDataId bdId = pbSample.getBibliographicalDataID();
 
             for (BibliographicalDataId bdId2 : bdIds) {
@@ -194,19 +159,9 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return publicationSampleIds;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public List<PublicationSample> findAll() {
-        return List.copyOf(allPublicationsInSystem);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
+    @Override
     public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId) {
-
         if (userId == null) {
             throw new NullPointerException("UserId must not be null");
         }
@@ -222,11 +177,9 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return listOfPublications;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
+    @Override
     public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
-
         if (userId == null) {
             throw new NullPointerException("UserId must not be null");
         }
@@ -242,146 +195,45 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return listOfPublicationsNotInLibrary;
     }
 
-    /**
-     * Retrieves all publication sample IDs whose bibliographical data ID is in the given list.
-     *
-     * @param bds the list of bibliographical data IDs; must not be {@code null}
-     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
-     */
-    public List<PublicationSampleId> findPublicationSamplesIdsByBiblioDataIds(List<BibliographicalDataId> bds) {
-
-        if (bds == null) {
-            throw new IllegalArgumentException("List of BibliographicalDataId cannot be null.");
-        }
-
-        List<PublicationSampleId> samplesOfAuthor = allPublicationsInSystem.stream()
-                .filter(pub -> bds.contains(pub.getBibliographicalDataID()))
-                .map(PublicationSample::id)
-                .toList();
-
-        return samplesOfAuthor;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<PublicationSample> findByLibraryId(LibraryId libraryID) {
-
-        List<PublicationSample> allPublications = allPublicationsInSystem.stream()
-                .filter(p -> Objects.equals(p.getLibraryID(), libraryID))
-                .toList();
-
-        return allPublications;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId) {
-
-        if (publicationSample == null) {
-            throw new IllegalArgumentException("PublicationSample cannot be null");
-        }
-
-        if (libraryId == null) {
-            throw new IllegalArgumentException("LibraryId cannot be null");
-        }
-
-        publicationSample.addPublicationToLibrary(libraryId);
-
-        save(publicationSample);
-
-        return true;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<PublicationSample> findAvailableForSaleByLibraryId(LibraryId libraryId) {
-
-        List<PublicationSample> allPublications = findByLibraryId(libraryId);
-
-        List<PublicationSample> listOfAvailablePublications = new ArrayList<>();
-
-        for (PublicationSample pbSample : allPublications) {
-            if (pbSample.isAvailableForSale()) {
-                listOfAvailablePublications.add(pbSample);
-            }
-        }
-        return listOfAvailablePublications;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionID) {
-
-        List<PublicationSample> allPublications = allPublicationsInSystem.stream()
-                .filter(p -> Objects.equals(p.getCollecOfPubID(), collectionID))
-                .toList();
-
-        return allPublications;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public boolean assignPublicationsToCollection(
-            CollectionOfPublicationsId collectionId,
-            List<PublicationSampleId> publicationSampleIds) {
-
-        if (collectionId == null) {
-            throw new IllegalArgumentException("Collection ID cannot be null.");
-        }
-
-        if (publicationSampleIds == null || publicationSampleIds.isEmpty()) {
-            throw new IllegalArgumentException("Publication IDs cannot be null or empty.");
-        }
-
-        for (PublicationSampleId id : publicationSampleIds) {
-
-            Optional<PublicationSample> publicationOptional =
-                    findById(id);
-
-            if (publicationOptional.isEmpty()) {
-                throw new IllegalArgumentException("Publication not found.");
-            }
-
-            PublicationSample publication = publicationOptional.get();
-            publication.addPublicationToCollection(collectionId);
-        }
-        return true;
+    public List<PublicationSample> findByLibraryId(LibraryId libraryId) {
+        return allPublicationsInSystem.stream()
+                .filter(p -> Objects.equals(p.getLibraryID(), libraryId))
+                .toList();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public List<PublicationSample> findAvailableForCollection(
-            UserId userId,
-            CollectionOfPublicationsId collectionId) {
+    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId) {
 
-        if (userId == null || collectionId == null) {
+        List<PublicationSample> listOfPublications = allPublicationsInSystem.stream()
+                .filter(p -> Objects.equals(p.getCollecOfPubID(), collectionId))
+                .toList();
+
+        return listOfPublications;
+    }
+
+    // -------------------------------------------------------------------------
+    // Domain Operations
+    // -------------------------------------------------------------------------
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId, List<PublicationStatus> excludedStatuses) {
+
+        if (libraryId == null || excludedStatuses == null) {
             throw new IllegalArgumentException("Arguments cannot be null");
         }
 
-        List<PublicationSample> allUserPublications =
-                findByUserIdAndLibraryIdIsNotNull(userId);
+        List<PublicationSample> listOfPublications =
+                allPublicationsInSystem.stream()
+                .filter(p -> Objects.equals(p.getLibraryID(), libraryId))
+                .filter(p -> !excludedStatuses.contains(p.getPublicationStatus()))
+                .toList();
 
-        List<PublicationSample> publicationsInCollection =
-                findByCollectionOfPublicationsId(collectionId);
-
-        List<PublicationSample> result = new ArrayList<>();
-
-        for (PublicationSample p : allUserPublications) {
-            if (!publicationsInCollection.contains(p)) {
-                result.add(p);
-            }
-        }
-
-        return result;
+        return listOfPublications;
     }
+
 
 }
