@@ -45,16 +45,14 @@ public class PublisherLinkProvider {
         List<Link> links = new ArrayList<>();
 
         userRepo.findByID(userId).ifPresent(user -> {
-            if (authPolicy.canGetAllPublishers(user)) {
-                links.add(linkTo(methodOn(PublisherRESTController.class)
+            links.add(linkTo(methodOn(PublisherRESTController.class)
                         .getAllPublishers(userId))
                         .withRel("get-all-publishers"));
-            }
 
             if (authPolicy.canCreatPublisher(user)) {
-                links.add(linkTo(methodOn(PublisherRESTController.class)
-                        .createPublisher(null, userId))
-                        .withRel("create-publisher"));
+                    links.add(linkTo(methodOn(PublisherRESTController.class)
+                            .createPublisher(null, userId))
+                            .withRel("create-publisher"));
             }
         });
 

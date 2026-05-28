@@ -31,7 +31,7 @@ class PublisherLinkProviderTest {
     private PublisherLinkProvider provider;
 
     @Test
-    void shouldReturnCreatePublisherLink_whenUserHasPermission() {
+    void shouldReturnGetAllAndCreatePublisherLinks_whenUserHasPermission() {
 
         // ARRANGE
         UserId userId = mock(UserId.class);
@@ -44,11 +44,11 @@ class PublisherLinkProviderTest {
         int result = provider.getLinksForPublisher(userId).size();
 
         // ASSERT
-        assertEquals(1, result);
+        assertEquals(2, result);
     }
 
     @Test
-    void shouldReturnEmptyList_whenUserHasNoPermission() {
+    void shouldReturnOnlyGetAllPublishersLink_whenUserHasNoPermission() {
 
         // ARRANGE
         UserId userId = mock(UserId.class);
@@ -61,7 +61,7 @@ class PublisherLinkProviderTest {
         int result = provider.getLinksForPublisher(userId).size();
 
         // ASSERT
-        assertEquals(0, result);
+        assertEquals(1, result);
     }
 
     @Test
