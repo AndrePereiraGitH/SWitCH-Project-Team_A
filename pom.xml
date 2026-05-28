@@ -199,24 +199,10 @@
                 <configuration>
                     <excludes>
                         <exclude>**/ui/**/*</exclude>
-                        <param>TOPSECRET.domain.Enum.*</param>
-                        <param>TOPSECRET.dataInitializers.ListingDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.EditionDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.GenreDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.LibraryDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.PublicationSampleDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.PublicationTypeDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.PublisherDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.UserDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.AppraisalEntityDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.AuctionDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.AuthorDataInitializer</param>
-                        <param>TOPSECRET.BibliographicalDataDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.CityDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.CollectionOfPublicationsDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.CountryDataInitializer</param>
-                        <param>TOPSECRET.dto.*.request.*</param>
-                        <param>TOPSECRET.dto.*.response.*</param>
+                        <exclude>TOPSECRET/domain/Enum/**</exclude>
+                        <exclude>TOPSECRET/dataInitializers/**</exclude>
+                        <exclude>TOPSECRET/dto/**/request/**</exclude>
+                        <exclude>TOPSECRET/dto/**/response/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -275,23 +261,8 @@
                         <outputFormat>HTML</outputFormat>
                     </outputFormats>
                     <excludedClasses>
-                        <exclude>**/ui/**/*</exclude>
                         <param>TOPSECRET.domain.Enum.*</param>
-                        <param>TOPSECRET.dataInitializers.ListingDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.EditionDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.GenreDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.LibraryDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.PublicationSampleDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.PublicationTypeDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.PublisherDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.UserDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.AppraisalEntityDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.AuctionDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.AuthorDataInitializer</param>
-                        <param>TOPSECRET.BibliographicalDataDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.CityDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.CollectionOfPublicationsDataInitializer</param>
-                        <param>TOPSECRET.dataInitializers.CountryDataInitializer</param>
+                        <param>TOPSECRET.dataInitializers.*</param>
                         <param>TOPSECRET.dto.*.request.*</param>
                         <param>TOPSECRET.dto.*.response.*</param>
                     </excludedClasses>
