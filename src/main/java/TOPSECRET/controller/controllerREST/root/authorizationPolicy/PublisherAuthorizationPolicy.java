@@ -25,6 +25,6 @@ public class PublisherAuthorizationPolicy {
      * @throws NullPointerException if {@code user} is {@code null}
      */
     public boolean canCreatPublisher(User user) {
-        return user.getUserRoles().contains(UserRole.NORMAL_USER);
+        return user.getUserRoles().contains(UserRole.ADMIN);
     }
 }

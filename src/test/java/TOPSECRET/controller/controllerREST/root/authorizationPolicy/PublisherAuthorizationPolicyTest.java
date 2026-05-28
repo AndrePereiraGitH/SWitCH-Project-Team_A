@@ -22,13 +22,13 @@ class PublisherAuthorizationPolicyTest {
     private PublisherAuthorizationPolicy policy;
 
     @Test
-    void canCreatePublisher_shouldReturnTrue_whenUserHasNormalUserRole() {
+    void canCreatePublisher_shouldReturnTrue_whenUserHasAdminRole() {
 
         // ARRANGE
         User user = mock(User.class);
 
         when(user.getUserRoles())
-                .thenReturn(Set.of(UserRole.NORMAL_USER));
+                .thenReturn(Set.of(UserRole.ADMIN));
 
         // ACT
         boolean result = policy.canCreatPublisher(user);
@@ -38,13 +38,13 @@ class PublisherAuthorizationPolicyTest {
     }
 
     @Test
-    void canCreatePublisher_shouldReturnFalse_whenUserDoesNotHaveNormalUserRole() {
+    void canCreatePublisher_shouldReturnFalse_whenUserDoesNotHaveAdminrRole() {
 
         // ARRANGE
         User user = mock(User.class);
 
         when(user.getUserRoles())
-                .thenReturn(Set.of(UserRole.ADMIN));
+                .thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // ACT
         boolean result = policy.canCreatPublisher(user);
