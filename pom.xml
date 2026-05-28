@@ -277,6 +277,13 @@
                         <param>TOPSECRET.PublicationTypeDataInitializer</param>
                         <param>TOPSECRET.PublisherDataInitializer</param>
                         <param>TOPSECRET.UserDataInitializer</param>
+                        <param>TOPSECRET.AppraisalEntityDataInitializer</param>
+                        <param>TOPSECRET.AuctionDataInitializer</param>
+                        <param>TOPSECRET.AuthorDataInitializer</param>
+                        <param>TOPSECRET.BibliographicalDataDataInitializer</param>
+                        <param>TOPSECRET.CityDataInitializer</param>
+                        <param>TOPSECRET.CollectionOfPublicationsDataInitializer</param>
+                        <param>TOPSECRET.CountryDataInitializer</param>
                         <param>TOPSECRET.dto.*.request.*</param>
                         <param>TOPSECRET.dto.*.response.*</param>
                     </excludedClasses>
