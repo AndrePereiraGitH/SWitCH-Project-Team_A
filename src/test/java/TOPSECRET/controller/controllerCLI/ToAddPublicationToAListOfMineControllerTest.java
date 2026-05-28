@@ -134,7 +134,6 @@ class ToAddPublicationToAListOfMineControllerTest {
         PublicationSample result = controller.addPublicationToCollection(collectionId, publicationId, userId);
 
         // Assert
-        assertNotNull(result);
         assertEquals(expectedSample, result);
     }
 

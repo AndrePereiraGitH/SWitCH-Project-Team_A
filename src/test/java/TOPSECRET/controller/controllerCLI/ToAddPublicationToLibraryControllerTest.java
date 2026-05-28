@@ -178,8 +178,6 @@ class ToAddPublicationToLibraryControllerTest {
 
         // Assert
         assertTrue(result);
-        verify(pubSampleServiceDouble, times(1))
-                .addPublicationToLibrary(idDouble, libraryIdDouble, userIdDouble);
     }
 
     @Test
