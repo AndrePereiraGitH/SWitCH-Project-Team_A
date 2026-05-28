@@ -14,7 +14,7 @@ import TOPSECRET.dto.US022AuctionDTO;
 import TOPSECRET.dto.US022AuctionMapper;
 import TOPSECRET.dto.US022GenreDTO;
 import TOPSECRET.dto.US022GenreMapper;
-import TOPSECRET.domain.Auction.IAuctionRepository;
+import TOPSECRET.services.AuctionService;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ import java.util.List;
 public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
     private final IGenreRepository genreRepository;
-    private final IAuctionRepository auctionRepository;
+    private final AuctionService auctionService;
     private final IListingRepository listingRepository;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
@@ -46,7 +46,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
     /**
      * Constructs the controller with all required dependencies.
      *
-     * @param auctionRepository repository of auctions
+     * @param auctionService repository of auctions
      * @param genreRepository repository of genres
      * @param listingRepository repository of listings
      * @param bibliographicalDataRepository repository of bibliographical data
@@ -55,12 +55,12 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
      * @param auctionMapper mapper for auction DTO conversion
      */
     public ToGetListOfItemsOnAuctionOfGivenGenreController(
-            IAuctionRepository auctionRepository, IGenreRepository genreRepository,
+            AuctionService auctionService, IGenreRepository genreRepository,
             IListingRepository listingRepository, IBibliographicalDataRepository bibliographicalDataRepository,
             IPublicationSampleRepository publicationSampleRepository, US022GenreMapper genreMapper, US022AuctionMapper auctionMapper) {
 
-        if (auctionRepository == null) {
-            throw new IllegalArgumentException("AuctionRepository cannot be null");
+        if (auctionService == null) {
+            throw new IllegalArgumentException("AuctionService cannot be null");
         }
         if (genreRepository == null) {
             throw new IllegalArgumentException("GenreRepository cannot be null");
@@ -81,7 +81,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
             throw new IllegalArgumentException("AuctionMapper cannot be null");
         }
 
-        this.auctionRepository = auctionRepository;
+        this.auctionService = auctionService;
         this.genreRepository = genreRepository;
         this.listingRepository = listingRepository;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
@@ -126,7 +126,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
 
-        List<Auction> auctions = auctionRepository.findByListingIdIn(listingId);
+        List<Auction> auctions = auctionService.findByListingIdIn(listingId);
 
         return auctionMapper.toDTOList(auctions);
     }
@@ -155,7 +155,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
 
-        List<Auction> auctions = auctionRepository.findByListingIdInOrderByAuctionDeadlineAsc(listingId);
+        List<Auction> auctions = auctionService.findByListingIdInOrderByAuctionDeadlineAsc(listingId);
 
         return auctionMapper.toDTOList(auctions);
 
