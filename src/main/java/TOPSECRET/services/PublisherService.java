@@ -93,8 +93,7 @@ public class PublisherService {
      *
      * @return a list of all publishers in the system
      */
-    public List<Publisher> findAll()
-            throws AccessDeniedException {
+    public List<Publisher> findAll() {
         return repository.findAll();
     }
 }
