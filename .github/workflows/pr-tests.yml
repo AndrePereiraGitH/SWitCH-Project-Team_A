@@ -92,7 +92,7 @@ jobs:
 
       # Semgrep: SAST scan — fails build on ERROR severity findings
       - name: Semgrep SAST scan (gate)
-        uses: semgrep/semgrep-action@v1
+        uses: semgrep/semgrep-action@v2
         with:
           config: >
             p/java
