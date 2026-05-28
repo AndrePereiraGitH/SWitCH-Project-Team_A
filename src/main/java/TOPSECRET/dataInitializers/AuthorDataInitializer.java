@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;

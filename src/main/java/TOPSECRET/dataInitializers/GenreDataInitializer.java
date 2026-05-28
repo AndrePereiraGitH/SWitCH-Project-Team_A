@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;

@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Auction.AuctionFactory;

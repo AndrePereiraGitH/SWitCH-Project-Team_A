@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.CityFactory;

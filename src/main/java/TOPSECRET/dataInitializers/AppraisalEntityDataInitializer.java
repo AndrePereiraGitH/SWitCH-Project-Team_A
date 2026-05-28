@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntity;
 import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;

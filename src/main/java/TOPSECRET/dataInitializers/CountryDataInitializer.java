@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.Country.CountryFactory;

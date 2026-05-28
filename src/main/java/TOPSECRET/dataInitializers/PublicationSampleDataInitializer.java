@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.PublicationSample.PublicationSample;

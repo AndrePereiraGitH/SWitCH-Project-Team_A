@@ -1,4 +1,4 @@
-package TOPSECRET;
+package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.Publisher.PublisherFactory;
