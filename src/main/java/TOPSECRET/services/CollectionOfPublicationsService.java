@@ -1,90 +1,129 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.CollectionOfPublicationsAuthorizationPolicy;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+
+import org.springframework.security.access.AccessDeniedException;
 
 
 /**
  * Application service responsible for creating and persisting
  * {@link CollectionOfPublications} aggregates.
  *
- * <p>This service coordinates the interaction between the domain factory
- * and the repository, ensuring that new collections are created according
- * to domain rules and then persisted correctly.</p>
+ * <p>This service coordinates the interaction between the domain factory,
+ * the repository, the authorization policy, and the user repository,
+ * ensuring that new collections are created according to domain rules,
+ * authorized correctly, and then persisted.</p>
  *
  * <p>The creation logic itself is delegated to
  * {@link CollectionOfPublicationsFactory}, while persistence is handled by
- * {@link ICollectionOfPublicationsRepository}. This keeps the service focused
- * on orchestration rather than domain construction or infrastructure concerns.</p>
+ * {@link ICollectionOfPublicationsRepository}. Authorization is enforced via
+ * {@link CollectionOfPublicationsAuthorizationPolicy}. This keeps the service
+ * focused on orchestration rather than domain construction or infrastructure
+ * concerns.</p>
  *
  * <p>All mandatory input parameters are validated before delegation.</p>
  */
 @Service
 public class CollectionOfPublicationsService {
 
-
-    /**
-     * Repository responsible for persisting
-     * {@link CollectionOfPublications} aggregates.
-     */
     private final ICollectionOfPublicationsRepository collectionOfPublicationsRepository;
-
-    /**
-     * Factory responsible for creating new
-     * {@link CollectionOfPublications} domain objects.
-     */
     private final CollectionOfPublicationsFactory factory;
+    private final CollectionOfPublicationsAuthorizationPolicy policy;
+    private final IUserRepository userRepo;
 
     /**
      * Creates a new service with the required dependencies.
      *
-     * @param collectionOfPublicationsRepository repository used to persist collections
-     * @param factory                            factory used to create new domain objects
+     * @param collectionOfPublicationsRepository repository used to persist collections;
+     *                                           must not be {@code null}
+     * @param factory                            factory used to create new domain objects;
+     *                                           must not be {@code null}
+     * @param policy                             authorization policy used to verify user permissions;
+     *                                           must not be {@code null}
+     * @param userRepo                           repository used to retrieve users by identifier;
+     *                                           must not be {@code null}
+     * @throws NullPointerException if any argument is {@code null}
      */
     public CollectionOfPublicationsService(
             ICollectionOfPublicationsRepository collectionOfPublicationsRepository,
-            CollectionOfPublicationsFactory factory) {
+            CollectionOfPublicationsFactory factory,
+            CollectionOfPublicationsAuthorizationPolicy policy,
+            IUserRepository userRepo) {
 
-        if (collectionOfPublicationsRepository == null) {
-            throw new IllegalArgumentException("collectionOfPublicationsRepository cannot be null");
-        }
+        Objects.requireNonNull(collectionOfPublicationsRepository,
+                "collectionOfPublicationsRepository cannot be null");
 
-        if (factory == null) {
-            throw new IllegalArgumentException("factory cannot be null");
-        }
+        Objects.requireNonNull(factory,
+                "CollectionOfPublicationsFactory cannot be null");
+
+        Objects.requireNonNull(policy,
+                "CollectionOfPublicationsAuthorizationPolicy cannot be null");
+
+        Objects.requireNonNull(userRepo,
+                "IUserRepository cannot be null");
 
         this.collectionOfPublicationsRepository = collectionOfPublicationsRepository;
         this.factory = factory;
+        this.policy = policy;
+        this.userRepo = userRepo;
+    }
+
+    /**
+     * Retrieves a {@link User} by their identifier.
+     *
+     * <p>This is a private helper method used internally to avoid repeating
+     * the user lookup and exception handling logic across service methods.</p>
+     *
+     * @param userId the identifier of the user to retrieve; must not be {@code null}
+     * @return the {@link User} matching the given identifier
+     * @throws UsernameNotFoundException if no user is found with the given {@code userId}
+     */
+    private User getUser(UserId userId) {
+        return userRepo.findByID(userId).orElseThrow(() ->
+                new UsernameNotFoundException("User with id " + userId + " not found"));
     }
 
     /**
      * Creates and persists a new {@link CollectionOfPublications}.
      *
-     * <p>This method validates the input parameters, delegates the domain
-     * object creation to the {@link CollectionOfPublicationsFactory}, and
-     * then saves the created aggregate using the
+     * <p>This method retrieves the user, verifies they are authorized to create
+     * a collection, delegates domain object creation to the
+     * {@link CollectionOfPublicationsFactory}, and persists the result via the
      * {@link ICollectionOfPublicationsRepository}.</p>
      *
-     * @param collectionName    the name of the collection; must not be null
-     * @param collectionGenreId the genre associated with the collection;
-     *                          must not be null
-     * @param userId            the owner of the collection; must not be null
+     * @param collectionName    the name of the collection; must not be {@code null}
+     * @param collectionGenreId the genre associated with the collection; must not be {@code null}
+     * @param userId            the owner of the collection; must not be {@code null}
      * @return the persisted {@link CollectionOfPublications} instance
-     * @throws NullPointerException if any argument is null
+     * @throws UsernameNotFoundException      if no user is found with the given {@code userId}
+     * @throws AccessDeniedException          if the user does not have permission to create a collection
+     * @throws InstanceAlreadyExistsException if a collection with the same identity already exists
      */
     public CollectionOfPublications createAndSave(
-            String collectionName, GenreId collectionGenreId, UserId userId) {
+            String collectionName, GenreId collectionGenreId, UserId userId)
+            throws InstanceAlreadyExistsException, AccessDeniedException {
+
+        User user = getUser(userId);
+
+        if (!policy.canCreateCollectionOfPublications(user)) {
+            throw new AccessDeniedException("You do not have permission to create a Collection");
+        }
 
         CollectionOfPublications createdCollection = factory.create(
                 collectionName, collectionGenreId, userId);
@@ -98,17 +137,31 @@ public class CollectionOfPublicationsService {
     /**
      * Makes the collection of publications with the given identifier public.
      *
-     * @param collectionId the identifier of the collection to make public; must not be null
+     * <p>The user must be authorized to share collections. If the collection
+     * is already public, no update is performed and {@code false} is returned.</p>
+     *
+     * @param collectionId the identifier of the collection to make public; must not be {@code null}
+     * @param userId       the identifier of the user requesting the operation; must not be {@code null}
      * @return {@code true} if the collection was changed to public,
-     *         {@code false} if it was already public
-     * @throws NullPointerException if {@code collectionId} is null
-     * @throws IllegalArgumentException if no collection is found with the given identifier
+     * {@code false} if it was already public
+     * @throws UsernameNotFoundException if no user is found with the given {@code userId}
+     * @throws AccessDeniedException     if the user does not have permission to share a collection
+     * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
      */
-    public boolean makeCollectionPublic(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
+    public boolean makeCollectionPublic(CollectionOfPublicationsId collectionId, UserId userId)
+            throws InstanceNotFoundException, AccessDeniedException {
 
-        Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
+        Objects.requireNonNull(collectionId, "CollectionOfPublicationsId cannot be null");
+        Objects.requireNonNull(userId, "userId cannot be null");
+
 
         CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
+
+        User user = getUser(userId);
+
+        if (!policy.canShareCollectionOfPublications(user)) {
+            throw new AccessDeniedException("You do not have permission to share a Collection");
+        }
 
         boolean changed = collection.makePublic();
 
@@ -122,16 +175,34 @@ public class CollectionOfPublicationsService {
     /**
      * Makes a collection of publications public until the specified date and time.
      *
-     * @param collectionId the identifier of the collection of publications to make public
-     * @param publicUntil the date and time until which the collection should remain public
+     * <p>The user must be authorized to perform this operation. If the collection
+     * is already public until the same date and time, no update is performed and
+     * {@code false} is returned.</p>
+     *
+     * @param collectionId the identifier of the collection to update; must not be {@code null}
+     * @param publicUntil  the date and time until which the collection should remain public;
+     *                     must not be {@code null} and must be in the future
+     * @param userId       the identifier of the user requesting the operation; must not be {@code null}
      * @return {@code true} if the collection was changed and updated; {@code false} otherwise
-     * @throws InstanceNotFoundException if no collection of publications exists with the given identifier
-     * @throws NullPointerException if {@code collectionId} or {@code publicUntil} is {@code null}
+     * @throws UsernameNotFoundException if no user is found with the given {@code userId}
+     * @throws AccessDeniedException     if the user does not have permission to perform this operation
+     * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
+     * @throws NullPointerException      if {@code collectionId} or {@code publicUntil} is {@code null}
      */
-    public boolean makeCollectionPublicUntil(CollectionOfPublicationsId collectionId, LocalDateTime publicUntil) throws InstanceNotFoundException {
+    public boolean makeCollectionPublicUntil(
+            CollectionOfPublicationsId collectionId, LocalDateTime publicUntil, UserId userId)
+            throws InstanceNotFoundException, AccessDeniedException {
 
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
         Objects.requireNonNull(publicUntil, "Public until date cannot be null");
+        Objects.requireNonNull(userId, "userId cannot be null");
+
+        User user = getUser(userId);
+
+        if (!policy.canMakeCollectionPublicUntil(user)) {
+            throw new AccessDeniedException
+                    ("You do not have permission to make this collection public until a given date");
+        }
 
         CollectionOfPublications collection =
                 collectionOfPublicationsRepository.findById(collectionId);
@@ -143,6 +214,66 @@ public class CollectionOfPublicationsService {
         }
 
         return changed;
+    }
 
+    /**
+     * Retrieves a {@link CollectionOfPublications} by its unique identifier.
+     *
+     * <p>This method delegates directly to the repository and returns the
+     * persisted collection without applying any business filters.</p>
+     *
+     * @param collectionId the identifier of the collection to retrieve; must not be {@code null}
+     * @return the {@link CollectionOfPublications} matching the given identifier
+     * @throws InstanceNotFoundException if no collection is found with the given identifier
+     */
+    public CollectionOfPublications findById(CollectionOfPublicationsId collectionId)
+            throws InstanceNotFoundException {
+        return collectionOfPublicationsRepository.findById(collectionId);
+    }
+
+    /**
+     * Retrieves all {@link CollectionOfPublications} instances that belong to a given user.
+     *
+     * @param ownerId the identifier of the user whose collections are to be retrieved;
+     *                must not be {@code null}
+     * @return a list of {@link CollectionOfPublications} owned by the given user;
+     * may be empty if the user has no collections
+     * @throws NullPointerException if {@code ownerId} is {@code null}
+     */
+    public List<CollectionOfPublications> findAllByOwnerId(UserId ownerId) {
+
+        Objects.requireNonNull(ownerId, "ownerId cannot be null");
+
+        return collectionOfPublicationsRepository.findAllByOwnerId(ownerId);
+    }
+
+    /**
+     * Checks whether a {@link CollectionOfPublications} with the given identifier exists.
+     *
+     * @param collectionOfPublicationsId the identifier to check; must not be {@code null}
+     * @return {@code true} if a collection with the given identifier exists;
+     *         {@code false} otherwise
+     * @throws NullPointerException if {@code collectionOfPublicationsId} is {@code null}
+     */
+    public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId) {
+
+        Objects.requireNonNull(collectionOfPublicationsId, "collectionOfPublicationsId cannot be null");
+
+        return collectionOfPublicationsRepository.existsById(collectionOfPublicationsId);
+    }
+
+    /**
+     * Retrieves all public {@link CollectionOfPublications} associated with the given genre.
+     *
+     * @param genreId the identifier of the genre to filter by; must not be {@code null}
+     * @return a list of public {@link CollectionOfPublications} belonging to the given genre;
+     *         may be empty if none exist
+     * @throws NullPointerException if {@code genreId} is {@code null}
+     */
+    public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
+
+        Objects.requireNonNull(genreId, "genreId cannot be null");
+
+        return collectionOfPublicationsRepository.findPublicCollectionsByGenreId(genreId);
     }
 }

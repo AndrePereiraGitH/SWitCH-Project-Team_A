@@ -10,6 +10,7 @@ import TOPSECRET.dto.US019CollectionOfPublicationsDTO;
 import TOPSECRET.services.CollectionOfPublicationsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
@@ -168,11 +169,12 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
     void makeCollectionPublic_ShouldThrowException_WhenDTOIsNull() {
         // Arrange
         US019CollectionOfPublicationsDTO selectedCollectionDTO = null;
+        UserId userIdDouble = mock(UserId.class);
 
         // Act
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> controller.makeCollectionPublic(selectedCollectionDTO)
+                () -> controller.makeCollectionPublic(selectedCollectionDTO, userIdDouble)
         );
 
         // Assert
@@ -181,18 +183,19 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void makeCollectionPublic_ShouldReturnTrue_WhenServiceReturnsTrue()
-            throws InstanceNotFoundException {
+            throws InstanceNotFoundException, AccessDeniedException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         US019CollectionOfPublicationsDTO selectedCollectionDTO =
                 mock(US019CollectionOfPublicationsDTO.class);
+        UserId userIdDouble = mock(UserId.class);
 
         when(selectedCollectionDTO.id()).thenReturn(collectionId);
-        when(collectionService.makeCollectionPublic(collectionId)).thenReturn(true);
+        when(collectionService.makeCollectionPublic(collectionId, userIdDouble)).thenReturn(true);
 
         // Act
-        boolean result = controller.makeCollectionPublic(selectedCollectionDTO);
+        boolean result = controller.makeCollectionPublic(selectedCollectionDTO, userIdDouble);
 
         // Assert
         assertTrue(result);
@@ -200,18 +203,20 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void makeCollectionPublic_ShouldReturnFalse_WhenServiceReturnsFalse()
-            throws InstanceNotFoundException {
+            throws InstanceNotFoundException, AccessDeniedException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         US019CollectionOfPublicationsDTO selectedCollectionDTO =
                 mock(US019CollectionOfPublicationsDTO.class);
+        UserId userIdDouble = mock(UserId.class);
 
         when(selectedCollectionDTO.id()).thenReturn(collectionId);
-        when(collectionService.makeCollectionPublic(collectionId)).thenReturn(false);
+        when(collectionService.makeCollectionPublic(collectionId, userIdDouble)).thenReturn(false);
+        when(collectionService.makeCollectionPublic(collectionId, userIdDouble)).thenReturn(false);
 
         // Act
-        boolean result = controller.makeCollectionPublic(selectedCollectionDTO);
+        boolean result = controller.makeCollectionPublic(selectedCollectionDTO, userIdDouble);
 
         // Assert
         assertFalse(result);
@@ -219,25 +224,26 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void makeCollectionPublic_ShouldThrowException_WhenServiceThrowsInstanceNotFoundException()
-            throws InstanceNotFoundException {
+            throws InstanceNotFoundException, AccessDeniedException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         US019CollectionOfPublicationsDTO selectedCollectionDTO =
                 mock(US019CollectionOfPublicationsDTO.class);
+        UserId userIdDouble = mock(UserId.class);
 
         when(selectedCollectionDTO.id()).thenReturn(collectionId);
 
         InstanceNotFoundException expectedException =
                 new InstanceNotFoundException("Collection not found");
 
-        when(collectionService.makeCollectionPublic(collectionId))
+        when(collectionService.makeCollectionPublic(collectionId, userIdDouble))
                 .thenThrow(expectedException);
 
         // Act
         InstanceNotFoundException exception = assertThrows(
                 InstanceNotFoundException.class,
-                () -> controller.makeCollectionPublic(selectedCollectionDTO)
+                () -> controller.makeCollectionPublic(selectedCollectionDTO, userIdDouble)
         );
 
         // Assert
@@ -250,29 +256,24 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void shareCollectionUntil_ShouldReturnTrue_WhenServiceReturnsTrue()
-            throws InstanceNotFoundException {
+            throws InstanceNotFoundException, AccessDeniedException {
 
         // Arrange
         US019CollectionOfPublicationsDTO selectedCollectionDto =
                 mock(US019CollectionOfPublicationsDTO.class);
-
         CollectionOfPublicationsId selectedCollectionId =
                 mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
 
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
-
         when(collectionService.makeCollectionPublicUntil(
-                selectedCollectionId,
-                publicUntil
-        )).thenReturn(true);
+                selectedCollectionId, publicUntil, userIdDouble)).thenReturn(true);
 
         // Act
         boolean result = controller.shareCollectionUntil(
-                selectedCollectionDto,
-                publicUntil
-        );
+                selectedCollectionDto, publicUntil, userIdDouble);
 
         // Assert
         assertTrue(result);
@@ -280,29 +281,24 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void shareCollectionUntil_ShouldReturnFalse_WhenServiceReturnsFalse()
-            throws InstanceNotFoundException {
+            throws InstanceNotFoundException, AccessDeniedException {
 
         // Arrange
         US019CollectionOfPublicationsDTO selectedCollectionDto =
                 mock(US019CollectionOfPublicationsDTO.class);
-
         CollectionOfPublicationsId selectedCollectionId =
                 mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
 
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
-
         when(collectionService.makeCollectionPublicUntil(
-                selectedCollectionId,
-                publicUntil
-        )).thenReturn(false);
+                selectedCollectionId, publicUntil, userIdDouble)).thenReturn(false);
 
         // Act
         boolean result = controller.shareCollectionUntil(
-                selectedCollectionDto,
-                publicUntil
-        );
+                selectedCollectionDto, publicUntil, userIdDouble);
 
         // Assert
         assertFalse(result);
@@ -310,15 +306,15 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void shareCollectionUntil_ShouldThrowException_WhenSelectedCollectionDtoIsNull() {
-
         // Arrange
         US019CollectionOfPublicationsDTO selectedCollectionDto = null;
+        UserId userIdDouble = mock(UserId.class);
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         // Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
-                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
+                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil, userIdDouble)
         );
 
         // Assert
@@ -327,16 +323,15 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void shareCollectionUntil_ShouldThrowException_WhenPublicUntilIsNull() {
-
         // Arrange
         US019CollectionOfPublicationsDTO selectedCollectionDto =
                 mock(US019CollectionOfPublicationsDTO.class);
-
+        UserId userIdDouble = mock(UserId.class);
 
         // Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
-                () -> controller.shareCollectionUntil(selectedCollectionDto, null)
+                () -> controller.shareCollectionUntil(selectedCollectionDto, null, userIdDouble)
         );
 
         // Assert
@@ -345,34 +340,28 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
 
     @Test
     void shareCollectionUntil_ShouldThrowInstanceNotFoundException_WhenServiceThrows()
-            throws InstanceNotFoundException {
-
+            throws InstanceNotFoundException, AccessDeniedException {
         // Arrange
         US019CollectionOfPublicationsDTO selectedCollectionDto =
                 mock(US019CollectionOfPublicationsDTO.class);
-
         CollectionOfPublicationsId selectedCollectionId =
                 mock(CollectionOfPublicationsId.class);
+        UserId userIdDouble = mock(UserId.class);
 
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
 
         when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
-
         when(collectionService.makeCollectionPublicUntil(
-                selectedCollectionId,
-                publicUntil
-        )).thenThrow(new InstanceNotFoundException("Collection not found"));
+                selectedCollectionId, publicUntil, userIdDouble))
+                .thenThrow(new InstanceNotFoundException("Collection not found"));
 
         // Act
         InstanceNotFoundException exception = assertThrows(
                 InstanceNotFoundException.class,
-                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil)
+                () -> controller.shareCollectionUntil(selectedCollectionDto, publicUntil, userIdDouble)
         );
 
         // Assert
         assertEquals("Collection not found", exception.getMessage());
     }
-
-
-
 }

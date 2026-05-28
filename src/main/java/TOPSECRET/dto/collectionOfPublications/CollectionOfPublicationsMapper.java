@@ -1,7 +1,6 @@
 package TOPSECRET.dto.collectionOfPublications;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
-import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
 

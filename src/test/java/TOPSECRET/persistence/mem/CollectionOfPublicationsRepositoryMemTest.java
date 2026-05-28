@@ -28,7 +28,6 @@ class CollectionOfPublicationsRepositoryMemTest {
 
 
     ICollectionOfPublicationsRepository sut;
-    CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
 
     @Test
     void ensureRepositoryIsCreatedSuccessfully() {
@@ -310,6 +309,67 @@ class CollectionOfPublicationsRepositoryMemTest {
         assertEquals(0, result.size());
     }
 
+    @Test
+    void findPublicCollectionsByGenreIdShouldReturnPublicCollectionsWhenMatchingCollectionsExist() {
+        // ARRANGE
+        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem();
+        CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
+        GenreId genreIdDouble = mock(GenreId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        CollectionOfPublications collection = factory.create("My Collection", genreIdDouble, userIdDouble);
+        collection.makePublic();
+        repository.save(collection);
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repository.findPublicCollectionsByGenreId(genreIdDouble);
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertEquals(collection, result.get(0));
+    }
+
+    @Test
+    void findPublicCollectionsByGenreIdShouldNotReturnPrivateCollections() {
+        // ARRANGE
+        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem();
+        CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
+        GenreId genreIdDouble = mock(GenreId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        CollectionOfPublications collection = factory.create("My Collection", genreIdDouble, userIdDouble);
+        // collection is private by default — no makePublic() call
+        repository.save(collection);
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repository.findPublicCollectionsByGenreId(genreIdDouble);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findPublicCollectionsByGenreIdShouldNotReturnCollectionsWithDifferentGenre() {
+        // ARRANGE
+        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem();
+        CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
+        GenreId genreIdDouble = mock(GenreId.class);
+        GenreId otherGenreIdDouble = mock(GenreId.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        CollectionOfPublications collection = factory.create("My Collection", otherGenreIdDouble, userIdDouble);
+        collection.makePublic();
+        repository.save(collection);
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repository.findPublicCollectionsByGenreId(genreIdDouble);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
 }
 
 
