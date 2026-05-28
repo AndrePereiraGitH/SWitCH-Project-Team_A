@@ -10,9 +10,9 @@ import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.UserId;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Objects;
 

@@ -17,9 +17,9 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.services.PublisherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

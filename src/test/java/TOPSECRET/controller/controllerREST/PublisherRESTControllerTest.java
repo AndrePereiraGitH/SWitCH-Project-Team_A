@@ -16,8 +16,8 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +39,7 @@ class PublisherRESTControllerTest {
     private PublisherRESTController controller;
 
     @Test
-    void createPublisher_shouldReturnCreated_onSuccess() throws Exception {
+    void createPublisher_shouldReturnCreated_onSuccess() {
 
         // ARRANGE
         RequestPublisherDTO requestDouble = mock(RequestPublisherDTO.class);
@@ -82,7 +82,7 @@ class PublisherRESTControllerTest {
     }
 
     @Test
-    void createPublisher_shouldReturnBadRequest_onIllegalArgument() throws Exception {
+    void createPublisher_shouldReturnBadRequest_onIllegalArgument() {
 
         // ARRANGE
         RequestPublisherDTO requestDouble = mock(RequestPublisherDTO.class);
@@ -115,7 +115,7 @@ class PublisherRESTControllerTest {
     }
 
     @Test
-    void createPublisher_shouldReturnForbidden_onAccessDenied() throws Exception {
+    void createPublisher_shouldReturnForbidden_onAccessDenied() {
 
         // ARRANGE
         RequestPublisherDTO requestDouble = mock(RequestPublisherDTO.class);
@@ -148,7 +148,7 @@ class PublisherRESTControllerTest {
     }
 
     @Test
-    void createPublisher_shouldReturnInternalError_onException() throws Exception {
+    void createPublisher_shouldReturnInternalError_onException()  {
 
         // ARRANGE
         RequestPublisherDTO requestDouble = mock(RequestPublisherDTO.class);
