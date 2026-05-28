@@ -2,10 +2,12 @@ package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.City.ICityRepository;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link ICityRepository}.
@@ -53,6 +55,27 @@ public class CityRepositoryMem implements ICityRepository {
 
         _cities.add(city);
         return city;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<City> findAll() {
+        return new ArrayList<>(_cities);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<City> findById(CityId cityId) {
+        for (City city : _cities) {
+            if (city.id().equals(cityId)) {
+                return Optional.of(city);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
