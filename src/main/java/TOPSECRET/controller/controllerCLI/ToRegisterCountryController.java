@@ -1,7 +1,11 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.CountryService;
+
+import javax.management.InstanceAlreadyExistsException;
+import org.springframework.security.access.AccessDeniedException;
 
 /**
  * Controller responsible for handling the registration of new {@link Country} entities.
@@ -17,41 +21,18 @@ import TOPSECRET.services.CountryService;
  * </p>
  */
 public class ToRegisterCountryController {
-
     private final CountryService countryService;
 
-    /**
-     * Constructs a new {@code ToRegisterCountryController}.
-     *
-     * @param countryService the service responsible for country operations;
-     *                       must not be {@code null}
-     * @throws IllegalArgumentException if {@code countryService} is {@code null}
-     */
     public ToRegisterCountryController(CountryService countryService) {
-        if (countryService == null) {
+
+        if (countryService == null)
             throw new IllegalArgumentException("CountryService cannot be null");
-        }
+
         this.countryService = countryService;
     }
+    public Country register(String countryName, UserId userId)
+            throws InstanceAlreadyExistsException, AccessDeniedException {
 
-    /**
-     * Registers a new {@link Country}.
-     *
-     * <p>
-     * Validates the provided country name and delegates the creation and
-     * persistence of the country to the {@link CountryService}.
-     * </p>
-     *
-     * @param countryName the name of the country to register;
-     *                    must not be {@code null} or blank
-     * @return the newly created and persisted {@link Country}
-     * @throws IllegalArgumentException if {@code countryName} is {@code null}
-     *                                  or blank
-     */
-    public Country register(String countryName) {
-        if( countryName == null || countryName.isBlank()) {
-            throw new IllegalArgumentException("Country name must not be null or blank");
-        }
-        return countryService.createAndSave(countryName);
+        return countryService.createAndSave(countryName, userId);
     }
 }
