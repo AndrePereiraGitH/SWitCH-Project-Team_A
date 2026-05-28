@@ -2,14 +2,16 @@ package TOPSECRET.controller.controllerREST.root.authorizationPolicy;
 
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -21,30 +23,29 @@ import static org.mockito.Mockito.when;
  * specific actions, such as creating, retrieving, and assigning publication samples.
  * </p>
  * <p>
- * The tests utilize Mockito to simulate both authorized and unauthorized
- * users by mocking the collection of roles returned by the
- * {@link User#getUserRoles()} method. To ensure strict test isolation, the
- * System Under Test (SUT) is explicitly instantiated within each test method.
+ * The tests utilize Mockito to simulate both authorized and unauthorized users
+ * by stubbing {@link User#getUserRoles()} directly inside each test's Arrange
+ * block. This keeps stubs local to the tests that need them, satisfying
+ * {@link MockitoExtension}'s strict stubbing rules and avoiding
+ * {@code UnnecessaryStubbingException}.
  * </p>
  */
+@ExtendWith(MockitoExtension.class)
 class PublicationSampleAuthorizationPolicyTest {
 
+    @Mock
     private User authorizedUser;
+
+    @Mock
     private User unauthorizedUser;
 
-    @BeforeEach
-    void setUp() {
-        authorizedUser = mock(User.class);
-        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
-
-        unauthorizedUser = mock(User.class);
-        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
-    }
+    @InjectMocks
+    private PublicationSampleAuthorizationPolicy policy;
 
     @Test
     void canCreatePublicationSample_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canCreatePublicationSample(authorizedUser);
@@ -56,7 +57,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canCreatePublicationSample_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canCreatePublicationSample(unauthorizedUser);
@@ -68,7 +69,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByLibraryId_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canFindByLibraryId(authorizedUser);
@@ -80,7 +81,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByLibraryId_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canFindByLibraryId(unauthorizedUser);
@@ -92,7 +93,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByCollectionOfPublicationsId_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canFindByCollectionOfPublicationsId(authorizedUser);
@@ -104,7 +105,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByCollectionOfPublicationsId_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canFindByCollectionOfPublicationsId(unauthorizedUser);
@@ -116,7 +117,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByUserIdAndLibraryIdIsNotNull_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canFindByUserIdAndLibraryIdIsNotNull(authorizedUser);
@@ -128,7 +129,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByUserIdAndLibraryIdIsNotNull_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canFindByUserIdAndLibraryIdIsNotNull(unauthorizedUser);
@@ -140,7 +141,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByUserIdAndLibraryIdIsNull_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canFindByUserIdAndLibraryIdIsNull(authorizedUser);
@@ -152,7 +153,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByUserIdAndLibraryIdIsNull_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canFindByUserIdAndLibraryIdIsNull(unauthorizedUser);
@@ -164,7 +165,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByLibraryIdAndPublicationStatusNotIn_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canFindByLibraryIdAndPublicationStatusNotIn(authorizedUser);
@@ -176,7 +177,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindByLibraryIdAndPublicationStatusNotIn_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canFindByLibraryIdAndPublicationStatusNotIn(unauthorizedUser);
@@ -188,7 +189,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindAvailableForCollection_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canFindAvailableForCollection(authorizedUser);
@@ -200,7 +201,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canFindAvailableForCollection_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canFindAvailableForCollection(unauthorizedUser);
@@ -212,7 +213,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canAddPublicationToLibrary_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canAddPublicationToLibrary(authorizedUser);
@@ -224,7 +225,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canAddPublicationToLibrary_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canAddPublicationToLibrary(unauthorizedUser);
@@ -236,7 +237,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canAssignPublicationToCollection_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
         boolean result = policy.canAssignPublicationToCollection(authorizedUser);
@@ -248,7 +249,7 @@ class PublicationSampleAuthorizationPolicyTest {
     @Test
     void canAssignPublicationToCollection_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
-        PublicationSampleAuthorizationPolicy policy = new PublicationSampleAuthorizationPolicy();
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
         boolean result = policy.canAssignPublicationToCollection(unauthorizedUser);
