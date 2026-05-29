@@ -65,7 +65,7 @@ class ToAddPublicationToAListOfMineControllerTest {
 
         List<CollectionOfPublications> collections = new ArrayList<>();
 
-        when(collectionRepo.getUserCollections(userId)).thenReturn(collections);
+        when(collectionRepo.findAllByOwnerId(userId)).thenReturn(collections);
 
         // ACT
         List<US018CollectionOfPublicationsDTO> result =
@@ -228,7 +228,7 @@ class ToAddPublicationToAListOfMineControllerTest {
         when(collection.id()).thenReturn(mock(CollectionOfPublicationsId.class));
         when(collection.getCollectionName()).thenReturn("C1");
 
-        when(collectionRepo.getUserCollections(userId))
+        when(collectionRepo.findAllByOwnerId(userId))
                 .thenReturn(List.of(collection));
 
         // ACT
