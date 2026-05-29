@@ -163,7 +163,7 @@ class AuctionRepositoryMemTest {
         // Arrange
         IAuctionRepository repo = instantiateAuctionRepository();
         Auction nonExistingAuction = mock(Auction.class);
-        AuctionId nonExistingId = new AuctionId("nonExisting");
+        AuctionId nonExistingId = mock(AuctionId.class);
         when(nonExistingAuction.id()).thenReturn(nonExistingId);
 
         // Act + Assert
