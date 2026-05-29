@@ -118,6 +118,9 @@ class EditionServiceTest {
     @Test
     void createAndSave_shouldReturnSavedEdition() throws AccessDeniedException {
 
+        // Arrange
+        Edition editionCreatedDouble = mock(Edition.class);
+        Edition editionSavedDouble = mock(Edition.class);
         // ARRANGE
         User user = user();
         Edition created = edition();

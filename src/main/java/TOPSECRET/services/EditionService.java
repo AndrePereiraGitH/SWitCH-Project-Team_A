@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -103,4 +104,67 @@ public class EditionService {
 
         return editionRepository.save(editionCreated);
     }
+
+    /**
+     * Retrieves an {@link Edition} by its unique identifier.
+     *
+     * @param editionId the identifier of the edition to retrieve; must not be {@code null}
+     * @return the {@link Edition} associated with the given identifier
+     * @throws NullPointerException if {@code editionId} is {@code null}
+     */
+    public Edition findById(EditionId editionId) {
+        Objects.requireNonNull(editionId, "EditionId cannot be null");
+
+        return editionRepository.findById(editionId).get();
+    }
+
+    /**
+     * Retrieves all editions stored in the repository.
+     *
+     * @return a list containing all {@link Edition} instances
+     */
+    public List<Edition> findAll() {
+        return editionRepository.findAll();
+    }
+
+    /**
+     * Retrieves the identifiers of editions associated with a given publisher.
+     *
+     * @param publisherId the identifier of the publisher; must not be {@code null}
+     * @return a list of {@link EditionId} associated with the given publisher
+     * @throws NullPointerException if {@code publisherId} is {@code null}
+     */
+    public List<EditionId> findIdsByPublisherId(PublisherID publisherId) {
+
+        Objects.requireNonNull(publisherId, "Publisher Id cannot be null");
+
+        return editionRepository.findIdsByPublisherId(publisherId);
+    }
+
+    /**
+     * Retrieves all editions associated with a given publication type.
+     *
+     * @param publicationTypeId the identifier of the publication type; must not be {@code null}
+     * @return a list of {@link Edition} instances associated with the given publication type
+     * @throws NullPointerException if {@code publicationTypeId} is {@code null}
+     */
+    public List<Edition> findByPublicationTypeId(PublicationTypeId publicationTypeId) {
+        Objects.requireNonNull(publicationTypeId, "PublicationSampleID cannot be null");
+
+        return editionRepository.findByPublicationTypeId(publicationTypeId);
+    }
+
+    /**
+     * Retrieves all editions associated with a given publisher.
+     *
+     * @param publisherID the identifier of the publisher; must not be {@code null}
+     * @return a list of {@link Edition} instances associated with the given publisher
+     * @throws NullPointerException if {@code publisherID} is {@code null}
+     */
+    public List<Edition> findByPublisherId(PublisherID publisherID) {
+        Objects.requireNonNull(publisherID, "PublisherId cannot be null");
+        return editionRepository.findByPublisherId(publisherID);
+    }
+
+
 }
