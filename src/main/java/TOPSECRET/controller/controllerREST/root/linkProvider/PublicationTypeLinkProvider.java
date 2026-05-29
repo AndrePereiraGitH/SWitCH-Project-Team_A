@@ -44,7 +44,7 @@ public class PublicationTypeLinkProvider {
 
         if(policy.canCreatePublicationType(user)){
             links.add(linkTo(methodOn(PublicationTypeRestController.class)
-                    .createPublicationType(null, userId))
+                    .createPublicationType(null, null))
                     .withRel("create-publication-type"));
         }
 
