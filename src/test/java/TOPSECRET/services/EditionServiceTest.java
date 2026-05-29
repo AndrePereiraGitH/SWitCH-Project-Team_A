@@ -16,20 +16,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link EditionService}.
- *
- * <p>Validates the main business rules of edition creation,
- * including authorization checks and repository interaction.</p>
- *
- * <p>All dependencies are mocked using Mockito and tests follow the AAA pattern.</p>
- */
 @ExtendWith(MockitoExtension.class)
 class EditionServiceTest {
 
@@ -48,10 +41,6 @@ class EditionServiceTest {
     @InjectMocks
     private EditionService service;
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
     private UserId userId() { return new UserId("user-1"); }
     private User user() { return mock(User.class); }
     private Edition edition() { return mock(Edition.class); }
@@ -59,6 +48,7 @@ class EditionServiceTest {
     private PhysicalAttributes physicalAttributes() { return mock(PhysicalAttributes.class); }
     private PublicationTypeId publicationTypeId() { return mock(PublicationTypeId.class); }
     private PublisherID publisherId() { return mock(PublisherID.class); }
+    private EditionId editionId() { return mock(EditionId.class); }
     private Locale language() { return Locale.ENGLISH; }
     private LocalDate date() { return LocalDate.of(2020, 1, 1); }
     private TypeOfBinding binding() { return TypeOfBinding.HARDBACK; }
@@ -69,59 +59,41 @@ class EditionServiceTest {
 
     @Test
     void constructor_shouldThrowWhenRepositoryIsNull() {
-
-        // Act
-        Exception ex = assertThrows(NullPointerException.class,
+        // act + assert
+        assertThrows(NullPointerException.class,
                 () -> new EditionService(null, factory, policy, userRepository));
-
-        // Assert
-        assertNotNull(ex);
     }
 
     @Test
     void constructor_shouldThrowWhenFactoryIsNull() {
-
-        // Act
-        Exception ex = assertThrows(NullPointerException.class,
+        // act + assert
+        assertThrows(NullPointerException.class,
                 () -> new EditionService(editionRepository, null, policy, userRepository));
-
-        // Assert
-        assertNotNull(ex);
     }
 
     @Test
     void constructor_shouldThrowWhenPolicyIsNull() {
-
-        // Act
-        Exception ex = assertThrows(NullPointerException.class,
+        // act + assert
+        assertThrows(NullPointerException.class,
                 () -> new EditionService(editionRepository, factory, null, userRepository));
-
-        // Assert
-        assertNotNull(ex);
     }
 
     @Test
     void constructor_shouldThrowWhenUserRepositoryIsNull() {
 
-        // Act
-        Exception ex = assertThrows(NullPointerException.class,
+        // act + assert
+        assertThrows(NullPointerException.class,
                 () -> new EditionService(editionRepository, factory, policy, null));
-
-        // Assert
-        assertNotNull(ex);
     }
 
     // =========================================================================
-    // createAndSave — success
+    // createAndSave
     // =========================================================================
 
     @Test
     void createAndSave_shouldReturnSavedEdition() throws AccessDeniedException {
-
         // Arrange
-        Edition editionCreatedDouble = mock(Edition.class);
-        Edition editionSavedDouble = mock(Edition.class);
-        // ARRANGE
+        UserId userId = userId();
         User user = user();
         Edition created = edition();
         Edition saved = edition();
@@ -131,91 +103,270 @@ class EditionServiceTest {
         PublicationTypeId publicationTypeId = publicationTypeId();
         PublisherID publisherId = publisherId();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateEdition(user)).thenReturn(true);
-        when(factory.create("1st", code, physicalAttributes, publicationTypeId,
-                publisherId, "Book", language(), date(), binding()))
-                .thenReturn(created);
+        when(factory.create(
+                "1st",
+                code,
+                physicalAttributes,
+                publicationTypeId,
+                publisherId,
+                "Book",
+                language(),
+                date(),
+                binding()
+        )).thenReturn(created);
         when(editionRepository.save(created)).thenReturn(saved);
 
-        // ACT
+        // Act
         Edition result = service.createAndSave(
-                "1st", code, physicalAttributes, publicationTypeId,
-                publisherId, "Book", language(), date(), binding(), userId());
+                "1st",
+                code,
+                physicalAttributes,
+                publicationTypeId,
+                publisherId,
+                "Book",
+                language(),
+                date(),
+                binding(),
+                userId
+        );
 
-        // ASSERT
+        // Assert
         assertSame(saved, result);
     }
 
-    // =========================================================================
-    // createAndSave — access denied
-    // =========================================================================
-
     @Test
     void createAndSave_shouldThrowAccessDenied_whenUserIsNotAuthorized() {
-
-        // ARRANGE
+        // Arrange
+        UserId userId = userId();
         User user = user();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateEdition(user)).thenReturn(false);
 
-        // ACT
-        Exception ex = assertThrows(AccessDeniedException.class,
+        // Act + Assert
+        assertThrows(AccessDeniedException.class,
                 () -> service.createAndSave(
-                        "1st", code(), physicalAttributes(), publicationTypeId(),
-                        publisherId(), "Book", language(), date(), binding(), userId()));
+                        "1st",
+                        code(),
+                        physicalAttributes(),
+                        publicationTypeId(),
+                        publisherId(),
+                        "Book",
+                        language(),
+                        date(),
+                        binding(),
+                        userId
+                ));
 
-        // ASSERT
-        assertNotNull(ex);
     }
-
-    // =========================================================================
-    // createAndSave — user not found
-    // =========================================================================
 
     @Test
     void createAndSave_shouldThrowIllegalArgument_whenUserNotFound() {
+        // Arrange
+        UserId userId = userId();
 
-        // ARRANGE
-        when(userRepository.findByID(userId())).thenReturn(Optional.empty());
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
 
-        // ACT
-        Exception ex = assertThrows(IllegalArgumentException.class,
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
                 () -> service.createAndSave(
-                        "1st", code(), physicalAttributes(), publicationTypeId(),
-                        publisherId(), "Book", language(), date(), binding(), userId()));
+                        "1st",
+                        code(),
+                        physicalAttributes(),
+                        publicationTypeId(),
+                        publisherId(),
+                        "Book",
+                        language(),
+                        date(),
+                        binding(),
+                        userId
+                ));
 
-        // ASSERT
-        assertNotNull(ex);
     }
 
-    // =========================================================================
-    // createAndSave — repository error
-    // =========================================================================
-
     @Test
-    void createAndSave_shouldPropagateException_whenRepositoryThrowsOnSave()
-            throws AccessDeniedException {
-
-        // ARRANGE
+    void createAndSave_shouldPropagateException_whenRepositoryThrowsOnSave() throws AccessDeniedException {
+        // Arrange
+        UserId userId = userId();
         User user = user();
         Edition created = edition();
 
-        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        Code code = code();
+        PhysicalAttributes physicalAttributes = physicalAttributes();
+        PublicationTypeId publicationTypeId = publicationTypeId();
+        PublisherID publisherId = publisherId();
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateEdition(user)).thenReturn(true);
-        when(factory.create("1st", code(), physicalAttributes(), publicationTypeId(),
-                publisherId(), "Book", language(), date(), binding()))
-                .thenReturn(created);
+        when(factory.create(
+                "1st",
+                code,
+                physicalAttributes,
+                publicationTypeId,
+                publisherId,
+                "Book",
+                language(),
+                date(),
+                binding()
+        )).thenReturn(created);
         when(editionRepository.save(created)).thenThrow(new RuntimeException("DB error"));
 
-        // ACT
-        Exception ex = assertThrows(RuntimeException.class,
+        // Act + Assert
+        RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> service.createAndSave(
-                        "1st", code(), physicalAttributes(), publicationTypeId(),
-                        publisherId(), "Book", language(), date(), binding(), userId()));
+                        "1st",
+                        code,
+                        physicalAttributes,
+                        publicationTypeId,
+                        publisherId,
+                        "Book",
+                        language(),
+                        date(),
+                        binding(),
+                        userId
+                ));
 
-        // ASSERT
-        assertNotNull(ex);
+        assertEquals("DB error", ex.getMessage());
+    }
+
+    // =========================================================================
+    // findById
+    // =========================================================================
+
+    @Test
+    void findById_shouldReturnEdition_whenEditionExists() {
+        // Arrange
+        EditionId editionId = editionId();
+        Edition edition = edition();
+
+        when(editionRepository.findById(editionId)).thenReturn(Optional.of(edition));
+
+        // Act
+        Edition result = service.findById(editionId);
+
+        // Assert
+        assertSame(edition, result);
+    }
+
+    @Test
+    void findById_shouldThrowNullPointerException_whenEditionIdIsNull() {
+        // act + assert
+        assertThrows(NullPointerException.class,
+                () -> service.findById(null));
+
+    }
+
+    // =========================================================================
+    // findAll
+    // =========================================================================
+
+    @Test
+    void findAll_shouldReturnAllEditions() {
+        // Arrange
+        Edition edition1 = edition();
+        Edition edition2 = edition();
+        List<Edition> editions = List.of(edition1, edition2);
+
+        when(editionRepository.findAll()).thenReturn(editions);
+
+        // Act
+        List<Edition> result = service.findAll();
+
+        // Assert
+        assertSame(editions, result);
+        assertEquals(2, result.size());
+    }
+
+    // =========================================================================
+    // findIdsByPublisherId
+    // =========================================================================
+
+    @Test
+    void findIdsByPublisherId_shouldReturnEditionIds() {
+        // Arrange
+        PublisherID publisherId = publisherId();
+        EditionId editionId1 = editionId();
+        EditionId editionId2 = editionId();
+        List<EditionId> ids = List.of(editionId1, editionId2);
+
+        when(editionRepository.findIdsByPublisherId(publisherId)).thenReturn(ids);
+
+        // Act
+        List<EditionId> result = service.findIdsByPublisherId(publisherId);
+
+        // Assert
+        assertSame(ids, result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void findIdsByPublisherId_shouldThrowNullPointerException_whenPublisherIdIsNull() {
+        // act + assert
+        assertThrows(NullPointerException.class,
+                () -> service.findIdsByPublisherId(null));
+
+    }
+
+    // =========================================================================
+    // findByPublicationTypeId
+    // =========================================================================
+
+    @Test
+    void findByPublicationTypeId_shouldReturnEditions() {
+        // Arrange
+        PublicationTypeId publicationTypeId = publicationTypeId();
+        Edition edition1 = edition();
+        Edition edition2 = edition();
+        List<Edition> editions = List.of(edition1, edition2);
+
+        when(editionRepository.findByPublicationTypeId(publicationTypeId)).thenReturn(editions);
+
+        // Act
+        List<Edition> result = service.findByPublicationTypeId(publicationTypeId);
+
+        // Assert
+        assertSame(editions, result);
+        assertEquals(2, result.size());
+        verify(editionRepository).findByPublicationTypeId(publicationTypeId);
+    }
+
+    @Test
+    void findByPublicationTypeId_shouldThrowNullPointerException_whenPublicationTypeIdIsNull() {
+        // act + assert
+        assertThrows(NullPointerException.class,
+                () -> service.findByPublicationTypeId(null));
+
+    }
+
+    // =========================================================================
+    // findByPublisherId
+    // =========================================================================
+
+    @Test
+    void findByPublisherId_shouldReturnEditions() {
+        // Arrange
+        PublisherID publisherId = publisherId();
+        Edition edition1 = edition();
+        Edition edition2 = edition();
+        List<Edition> editions = List.of(edition1, edition2);
+
+        when(editionRepository.findByPublisherId(publisherId)).thenReturn(editions);
+
+        // Act
+        List<Edition> result = service.findByPublisherId(publisherId);
+
+        // Assert
+        assertSame(editions, result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void findByPublisherId_shouldThrowNullPointerException_whenPublisherIdIsNull() {
+        // act + assert
+        assertThrows(NullPointerException.class,
+                () -> service.findByPublisherId(null));
+
     }
 }
