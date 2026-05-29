@@ -79,7 +79,7 @@ public class PublicationTypeRestController {
      *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
      *         </ul>
      */
-    @PostMapping("/")
+    @PostMapping("")
     public ResponseEntity<PublicationTypeResponseDTO> createPublicationType(
             @RequestBody CreatePublicationTypeDTO createPublicationTypeDTO,
             @RequestParam UserId userId){
@@ -124,7 +124,7 @@ public class PublicationTypeRestController {
      *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
      *         </ul>
      */
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<List<PublicationTypeResponseDTO>> getAllPublicationTypes(){
 
         try {
