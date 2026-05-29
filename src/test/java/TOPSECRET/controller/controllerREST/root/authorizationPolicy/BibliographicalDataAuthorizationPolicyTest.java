@@ -1,6 +1,5 @@
-package TOPSECRET.controller.controllerREST.root.AuthorizationPolicy;
+package TOPSECRET.controller.controllerREST.root.authorizationPolicy;
 
-import TOPSECRET.controller.controllerREST.root.authorizationPolicy.BibliographicalDataAuthorizationPolicy;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.User;
 import org.junit.jupiter.api.Test;

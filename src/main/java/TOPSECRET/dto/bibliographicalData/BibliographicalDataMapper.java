@@ -2,12 +2,15 @@ package TOPSECRET.dto.bibliographicalData;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Utility class responsible for mapping {@link BibliographicalData}
@@ -48,6 +51,44 @@ public final class BibliographicalDataMapper {
                 bd.getTitle(),
                 authorNames
         );
+    }
+
+    /**
+     * Converts a list of {@link BibliographicalData} entities into a list of
+     * {@code responseBibliographicalDataDTO} objects using the provided author names map.
+     *
+     * <p>For each bibliographical data entry, this method retrieves the associated
+     * author names from the given map and delegates the conversion to
+     * {@code toDTO(BibliographicalData, List<String>)}.</p>
+     *
+     * @param bibliographicalDataList the list of bibliographical data entities to convert
+     * @param authorNamesMap a map containing the author names associated with each
+     *                       {@link BibliographicalDataId}
+     * @return an unmodifiable list of converted DTOs
+     * @throws IllegalArgumentException if author names are not found for a bibliographical
+     *                                  data entry
+     * @throws InstanceNotFoundException if an error occurs while converting an entry
+     */
+    public static List<responseBibliographicalDataDTO> toDTOs(
+            List<BibliographicalData> bibliographicalDataList,
+            Map<BibliographicalDataId, List<String>> authorNamesMap) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(bibliographicalDataList, "Bibliographical data list can't be null");
+        Objects.requireNonNull(authorNamesMap, "Author names map can't be null");
+
+        List<responseBibliographicalDataDTO> result = new ArrayList<>();
+
+        for (BibliographicalData bd : bibliographicalDataList) {
+            List<String> authorNames = authorNamesMap.get(bd.id());
+
+            if (authorNames == null) {
+                throw new IllegalArgumentException(
+                        "Author names not found for bibliographical data " + bd.id()
+                );
+            }
+            result.add(toDTO(bd, authorNames));
+        }
+        return result;
     }
 
     /**

@@ -1,7 +1,11 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.CityService;
+import org.springframework.security.access.AccessDeniedException;
+
+import javax.management.InstanceAlreadyExistsException;
 
 /**
  * Controller responsible for handling the use case of creating and
@@ -32,19 +36,17 @@ public class ToRegisterNewCityController {
     /**
      * Registers a new city in the system.
      *
+     *<p>Delegates to the service layer which is responsible for creating the
+     * City object and ensuring no duplicates exist.</p>
+     *
      * @param countryName the name of the country; must not be null or blank
      * @param cityName the name of the city; must not be null or blank
-     * @return the created and persisted {@link City}
-     * @throws IllegalArgumentException if countryName or cityName are null or blank,
-     *                                  or if the city cannot be created or persisted
+     * @return {@code true} if the city was successfully created and persisted
+     * @throws IllegalArgumentException if the city cannot be created or persisted
      */
-    public City register(String countryName, String cityName) {
-        if (countryName == null || countryName.isBlank())
-            throw new IllegalArgumentException("Country name cannot be null or blank");
+    public boolean registerCity(String countryName, String cityName, UserId userId) throws AccessDeniedException, InstanceAlreadyExistsException {
 
-        if (cityName == null || cityName.isBlank())
-            throw new IllegalArgumentException("City name cannot be null or blank");
-
-        return cityService.createAndSave(countryName, cityName);
+        cityService.createAndSave(countryName, cityName, userId);
+        return true;
     }
 }

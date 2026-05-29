@@ -5,6 +5,7 @@ import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Library.LibraryFactory;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.User.IUserRepository;
 
@@ -12,7 +13,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Service responsible for managing {@link Library} operations.
@@ -77,5 +80,38 @@ public class LibraryService {
 
         Library library = _libraryFactory.create(libraryName, userId);
         return _libraryRepository.save(library);
+    }
+    /**
+     * Retrieves all registered {@link Library} entities.
+     *
+     * @return a list of all libraries in the system
+     */
+    public List<Library> findAll() {
+        return _libraryRepository.findAll();
+    }
+
+    /**
+     * Retrieves a {@link Library} by its unique identifier.
+     *
+     * @param id the {@link LibraryId} to search for; must not be {@code null}
+     * @return an {@link Optional} containing the Library if found; empty otherwise
+     */
+    public Optional<Library> findById(LibraryId id) {
+        Objects.requireNonNull(id, "LibraryID cannot be null");
+        return _libraryRepository.findById(id);
+    }
+
+    /**
+     * Finds and returns the {@link Library} associated with the given user ID.
+     *
+     * @param userId the {@link UserId} to search for
+     * @return an {@link Optional} containing the Library if found; empty otherwise
+     */
+    public Optional<Library> findByUserId(UserId userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId cannot be null");
+        }
+
+        return _libraryRepository.findByUserId(userId);
     }
 }

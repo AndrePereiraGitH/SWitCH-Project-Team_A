@@ -2,6 +2,7 @@ package TOPSECRET.dto.publisher;
 
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import org.junit.jupiter.api.Test;
 
@@ -163,6 +164,84 @@ class PublisherMapperTest {
         assertThrows(
                 NullPointerException.class,
                 () -> PublisherMapper.toContact(null)
+        );
+    }
+
+    @Test
+    void shouldConvertDTOToContact() {
+
+        // ARRANGE
+        RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
+
+        when(pubDTO.street()).thenReturn("Main St");
+        when(pubDTO.number()).thenReturn("42");
+        when(pubDTO.zipCode()).thenReturn("12345");
+        when(pubDTO.cityId()).thenReturn("CITY-1");
+        when(pubDTO.phoneNumber()).thenReturn("912345678");
+        when(pubDTO.extension()).thenReturn("101");
+        when(pubDTO.email()).thenReturn("test@example.com");
+
+        // ACT
+        Contact result = PublisherMapper.toContact(pubDTO);
+
+        // ASSERT
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldThrowWhenCityIdIsNull() {
+
+        // ARRANGE
+        RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
+
+        when(pubDTO.cityId()).thenReturn(null);
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> PublisherMapper.toContact(pubDTO)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenEmailIsNull() {
+
+        // ARRANGE
+        RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
+
+        when(pubDTO.street()).thenReturn("Main St");
+        when(pubDTO.number()).thenReturn("42");
+        when(pubDTO.zipCode()).thenReturn("12345");
+        when(pubDTO.cityId()).thenReturn("CITY-1");
+        when(pubDTO.phoneNumber()).thenReturn("912345678");
+        when(pubDTO.extension()).thenReturn("101");
+        when(pubDTO.email()).thenReturn(null);
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> PublisherMapper.toContact(pubDTO)
+        );
+    }
+
+    @Test
+    void shouldThrowWhenEmailHasNoAtSign() {
+
+        // ARRANGE
+        RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
+
+        when(pubDTO.street()).thenReturn("Main St");
+        when(pubDTO.number()).thenReturn("42");
+        when(pubDTO.zipCode()).thenReturn("12345");
+        when(pubDTO.cityId()).thenReturn("CITY-1");
+        when(pubDTO.phoneNumber()).thenReturn("912345678");
+        when(pubDTO.extension()).thenReturn("101");
+        when(pubDTO.email()).thenReturn("invalidemail");
+
+        // ACT + ASSERT
+        assertThrows(
+                ArrayIndexOutOfBoundsException.class,
+                () -> PublisherMapper.toContact(pubDTO)
         );
     }
 }

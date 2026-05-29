@@ -1,6 +1,7 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.CityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +14,12 @@ import static org.mockito.Mockito.*;
  *
  * <p>This test suite verifies the behavior of the controller responsible for
  * coordinating the creation and persistence of a new {@link City}.
- * The controller depends on {@link CityService}, which is mocked to isolate
+ * The controller depends on {@link CityService}, which is doubled to isolate
  * the controller logic.</p>
  */
 class ToRegisterNewCityControllerTest {
 
     private CityService doubleCityService;
-    private ToRegisterNewCityController controller;
 
     @BeforeEach
     void setUp() {
@@ -27,51 +27,39 @@ class ToRegisterNewCityControllerTest {
     }
 
     @Test
-    void shouldRegister() {
-
+    void shouldReturnTrueWhenCityIsRegistered() throws Exception {
         // Arrange
-        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
+        ToRegisterNewCityController sut = new ToRegisterNewCityController(doubleCityService);
+        UserId doubleUserId = mock(UserId.class);
         City doubleCity = mock(City.class);
-        when(doubleCityService.createAndSave(eq("PORTUGAL_ID"), eq("Porto")))
+        when(doubleCityService.createAndSave(eq("Portugal"), eq("Porto"), eq(doubleUserId)))
                 .thenReturn(doubleCity);
 
         // Act
-        City result = controller.register("PORTUGAL_ID", "Porto");
+        boolean result = sut.registerCity("Portugal", "Porto", doubleUserId);
 
         // Assert
-        assertEquals(doubleCity, result);
+        assertTrue(result);
     }
 
     @Test
-    void shouldPropagateExceptionWhenServiceThrows() {
+    void shouldPropagateExceptionWhenServiceThrows() throws Exception {
         // Arrange
-        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
-        when(doubleCityService.createAndSave(eq("PORTUGAL_ID"), eq("Porto")))
+        ToRegisterNewCityController sut = new ToRegisterNewCityController(doubleCityService);
+        UserId doubleUserId = mock(UserId.class);
+        when(doubleCityService.createAndSave(eq("Portugal"), eq("Porto"), eq(doubleUserId)))
                 .thenThrow(new IllegalArgumentException("City already exists"));
 
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> controller.register("PORTUGAL_ID", "Porto"));
+                () -> sut.registerCity("Portugal", "Porto", doubleUserId));
         assertEquals("City already exists", ex.getMessage());
     }
 
     @Test
-    void shouldThrowWhenCountryIDIsBlank() {
-        // Arrange
-        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
-
+    void shouldThrowWhenServiceIsNull() {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> controller.register("", "Porto"));
-    }
-
-    @Test
-    void shouldThrowWhenCountryIDIsNull() {
-        // Arrange
-        ToRegisterNewCityController controller = new ToRegisterNewCityController(doubleCityService);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> controller.register(null, "Porto"));
+                () -> new ToRegisterNewCityController(null));
     }
 }

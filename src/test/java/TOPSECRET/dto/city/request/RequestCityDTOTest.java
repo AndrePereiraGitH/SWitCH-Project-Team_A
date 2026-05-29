@@ -31,7 +31,7 @@ class RequestCityDTOTest {
     @Test
     void cityName_ShouldFailValidation_WhenBlank() {
         // ARRANGE
-        RequestCityDTO dto = new RequestCityDTO("", "PT");
+        RequestCityDTO dto = new RequestCityDTO("", "PT", "Portugal");
 
         // ACT
         Set<ConstraintViolation<RequestCityDTO>> violations = validator.validate(dto);
@@ -45,7 +45,7 @@ class RequestCityDTOTest {
     @Test
     void countryId_ShouldFailValidation_WhenBlank() {
         // ARRANGE
-        RequestCityDTO dto = new RequestCityDTO("Porto", "");
+        RequestCityDTO dto = new RequestCityDTO("Porto", "", "Portugal");
 
         // ACT
         Set<ConstraintViolation<RequestCityDTO>> violations = validator.validate(dto);
@@ -57,9 +57,23 @@ class RequestCityDTOTest {
     }
 
     @Test
+    void countryName_ShouldFailValidation_WhenBlank() {
+        // ARRANGE
+        RequestCityDTO dto = new RequestCityDTO("Porto", "PT", "");
+
+        // ACT
+        Set<ConstraintViolation<RequestCityDTO>> violations = validator.validate(dto);
+
+        // ASSERT
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("countryName")));
+    }
+
+    @Test
     void dto_ShouldPassValidation_WhenAllFieldsAreValid() {
         // ARRANGE
-        RequestCityDTO dto = new RequestCityDTO("Porto", "PT");
+        RequestCityDTO dto = new RequestCityDTO("Porto", "PT", "Portugal");
 
         // ACT
         Set<ConstraintViolation<RequestCityDTO>> violations = validator.validate(dto);
