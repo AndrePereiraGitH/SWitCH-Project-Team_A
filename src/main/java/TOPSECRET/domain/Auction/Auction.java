@@ -86,8 +86,6 @@ public class Auction implements AggregateRoot<AuctionId> {
 
         if (listingId == null)
             throw new IllegalArgumentException("Listing ID cannot be null.");
-//        if (!listingId.getSaleType().equals(SaleType.AUCTION))                    // TODO this validation should be on the application layer
-//            throw new IllegalArgumentException("This listing is not an auction. SaleType must be AUCTION.");
         if (auctionStartDateTime == null || auctionStartDateTime.isBefore(now))
             throw new IllegalArgumentException("Initial date must not be before the current date.");
         if (auctionEndDateTime == null || auctionEndDateTime.isBefore(auctionStartDateTime) || auctionEndDateTime.isEqual(auctionStartDateTime))
@@ -99,8 +97,7 @@ public class Auction implements AggregateRoot<AuctionId> {
         this._listingId = listingId;
         this._auctionStartDateTime = auctionStartDateTime;
         this._auctionEndDateTime = auctionEndDateTime;
-//        this._initialPrice = listing.getPrice();
-        this._initialPrice = initialPrice;
+        this._initialPrice = initialPrice; // we are allow the auction initial price to be different from the listing price
         this._buyoutPrice = buyOutPrice;
         this._bidHistory = new ArrayList<>(); // starts empty history
 
@@ -235,11 +232,6 @@ public class Auction implements AggregateRoot<AuctionId> {
                 throw new IllegalArgumentException("Bid must be higher than last bid");
         }
 
-
-//        if (bidderId.equals(_listing.getSeller()))                        // TODO this validation should be on application layer
-//            throw new IllegalArgumentException("Seller cannot bid on their own auction");
-
-        // creates Bid
         Bid bid = new Bid(bidderId, value);
 
         _bidHistory.add(bid);
@@ -404,7 +396,6 @@ public class Auction implements AggregateRoot<AuctionId> {
             _finalPrice = null;
 
         } else {
-//            _winningBid = _bidHistory.get(_bidHistory.size() - 1);
             _winningBid = getCurrentHighestBid();
             _finalPrice = _winningBid.getValue();
             _auctionStatus = AuctionStatus.ENDED_WITH_WINNER;
