@@ -85,7 +85,7 @@ public class CountryRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(CountryRESTController.class)
-                    .registerCountry(null, null))
+                    .registerCountry(dto, userId))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -118,13 +118,19 @@ public class CountryRESTController {
      *         or an error status when the operation fails
      */
     @GetMapping("")
-    public ResponseEntity<List<CountryResponseDTO>> getCountries() {
+    public ResponseEntity<List<CountryResponseDTO>> getCountries(
+            @RequestParam UserId userId
+    ){
 
         try {
 
             List<Country> countries = service.findAll();
 
             List<CountryResponseDTO> result = CountryMapper.toDTOs(countries);
+
+            List<Link> links = provider.getLinks(userId);
+
+            result.forEach(dto -> links.forEach(dto::add));
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
@@ -155,7 +161,7 @@ public class CountryRESTController {
                     .withSelfRel());
 
             result.add(linkTo(methodOn(CountryRESTController.class)
-                    .getCountries())
+                    .getCountries(null))
                     .withRel("get-countries"));
 
             return ResponseEntity.ok(result);

@@ -205,7 +205,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.getCountries(userId);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -222,7 +222,7 @@ class CountryRESTControllerTest {
 
         //Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.getCountries(userId);
 
         //Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -237,7 +237,7 @@ class CountryRESTControllerTest {
 
         //Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.getCountries(userId);
 
         //Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
