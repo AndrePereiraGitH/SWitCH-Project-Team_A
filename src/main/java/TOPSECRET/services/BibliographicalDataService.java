@@ -174,8 +174,12 @@ public class BibliographicalDataService {
      * Retrieves a bibliographical data entity stored in the repository.
      *
      * @return an Optional containing the {@link BibliographicalData} entity;
+     * @throws IllegalArgumentException if {@link BibliographicalDataId} is null
      */
     public Optional<BibliographicalData> findById(BibliographicalDataId bdId) {
+        if(bdId == null){
+            throw new IllegalArgumentException("Bibliographical Data Id cannot be null");
+        }
         return bibliographicalDataRepository.findById(bdId);
     }
 
@@ -183,8 +187,12 @@ public class BibliographicalDataService {
      * Retrieves all bibliographical data records stored in the repository of a given genre.
      *
      * @return a list containing all {@link BibliographicalDataId} ids of a given genre;
+     * @throws IllegalArgumentException if {@link GenreId} is null
      */
     public List<BibliographicalDataId> findAllByGenreId(GenreId genreId) {
+        if (genreId == null){
+            throw new IllegalArgumentException("Genre Id cannot be null");
+        }
         return bibliographicalDataRepository.findAllByGenreId(genreId);
     }
 
@@ -192,8 +200,12 @@ public class BibliographicalDataService {
      * Retrieves a bibliographical data Id stored in the repository by its title.
      *
      * @return an Optional containing the {@link BibliographicalDataId} id;
+     * @throws IllegalArgumentException if title is null
      */
     public Optional<BibliographicalDataId> findIdByTitle(String bdTitle) {
+        if (bdTitle == null){
+            throw new IllegalArgumentException("Title cannot be null");
+        }
         return bibliographicalDataRepository.findIdByTitle(bdTitle);
     }
 
@@ -201,8 +213,12 @@ public class BibliographicalDataService {
      * Retrieves a bibliographical data Id stored in the repository by its author.
      *
      * @return a List containing all the {@link BibliographicalDataId} ids of the given author;
+     * @throws IllegalArgumentException if {@link AuthorId} is null
      */
     public List<BibliographicalDataId> findIdByAuthorId(AuthorId authorId) {
+        if (authorId == null){
+            throw new IllegalArgumentException("Author Id cannot be null");
+        }
         return bibliographicalDataRepository.findIdByAuthorId(authorId);
     }
 
