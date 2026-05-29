@@ -16,5 +16,8 @@ public record RequestCityDTO (
     String cityName,
 
     @NotBlank(message = "Country ID must not be blank")
-    String countryId)
+    String countryId,
+
+    @NotBlank(message = "Country name must not be blank")
+    String countryName)
 {}
