@@ -4,6 +4,7 @@ import TOPSECRET.controller.controllerREST.root.linkProvider.BibliographicalData
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.bibliographicalData.BibliographicalDataMapper;
 import TOPSECRET.dto.bibliographicalData.request.requestBibliographicalDataDTO;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 import TOPSECRET.services.BibliographicalDataService;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -45,20 +48,35 @@ class BibliographicalDataRESTControllerTest {
     void getAllBibliographicalDataShouldReturnOkWithDTOList() throws InstanceNotFoundException {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
-        List<BibliographicalData> bibliographicalData = List.of(mock(BibliographicalData.class));
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+        BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
+
+        List<BibliographicalData> bibliographicalDataList = List.of(bdDouble);
 
         List<responseBibliographicalDataDTO> responseList = List.of(mock(responseBibliographicalDataDTO.class));
 
-        when(service.findAll()).thenReturn(bibliographicalData);
-        when(service.createDTOlist(bibliographicalData)).thenReturn(responseList);
+        Map<BibliographicalDataId, List<String>> authorNamesMap =
+                Map.of(bdIdDouble, List.of("Author 1", "Author 2"));
 
-        // Act
-        ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData(userIdDouble);
+        try (MockedStatic<BibliographicalDataMapper> mockedMapper =
+                     mockStatic(BibliographicalDataMapper.class)) {
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(responseList, response.getBody().getContent().stream().toList());
+            mockedMapper.when(() ->
+                    BibliographicalDataMapper.toDTOs(bibliographicalDataList, authorNamesMap)
+            ).thenReturn(responseList);
+
+            when(service.findAll()).thenReturn(bibliographicalDataList);
+            when(service.buildAuthorNamesMap(bibliographicalDataList)).thenReturn(authorNamesMap);
+            when(BibliographicalDataMapper.toDTOs(bibliographicalDataList, authorNamesMap)).thenReturn(responseList);
+
+            // Act
+            ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData(userIdDouble);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertEquals(responseList, response.getBody().getContent().stream().toList());
+        }
     }
 
     @Test

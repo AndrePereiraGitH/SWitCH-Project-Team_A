@@ -109,26 +109,30 @@ public class BibliographicalDataService {
     }
 
     /**
-     * Retrieves all bibliographical data records and converts them into DTO objects.
+     * Builds a map associating each bibliographical data entry with its list of author names.
      *
-     * <p>Each {@link BibliographicalData} entity is mapped to a
-     * {@link responseBibliographicalDataDTO}, including the list of author names
-     * associated with the bibliographical record.</p>
+     * <p>For every {@link BibliographicalData} in the provided list, this method retrieves
+     * the corresponding authors using {@code getAuthors(BibliographicalData)} and stores
+     * them in a map keyed by the bibliographical data identifier.</p>
      *
-     * @return a list of {@link responseBibliographicalDataDTO} containing all
-     *         bibliographical data records
-     * @throws InstanceNotFoundException if an expected related instance
-     *         (such as an author) cannot be found during processing
+     * @param bibliographicalDataList the list of bibliographical data entries to process
+     * @return a map where the key is the {@link BibliographicalDataId} and the value is
+     *         the list of author names associated with that entry
+     * @throws InstanceNotFoundException if the authors for a bibliographical data entry
+     *         cannot be found
      */
-    public List<responseBibliographicalDataDTO> createDTOlist(List<BibliographicalData> bibliographicalData) throws InstanceNotFoundException {
+    public Map<BibliographicalDataId, List<String>> buildAuthorNamesMap(
+            List<BibliographicalData> bibliographicalDataList)
+            throws InstanceNotFoundException {
 
-        List<responseBibliographicalDataDTO> result = new ArrayList<>();
+        Map<BibliographicalDataId, List<String>> result = new HashMap<>();
 
-        for (BibliographicalData bd : bibliographicalData) {
+        for (BibliographicalData bd : bibliographicalDataList) {
+
             List<String> authorNames = getAuthors(bd);
-            result.add(BibliographicalDataMapper.toDTO(bd, authorNames));
-        }
 
+            result.put(bd.id(), authorNames);
+        }
         return result;
     }
 

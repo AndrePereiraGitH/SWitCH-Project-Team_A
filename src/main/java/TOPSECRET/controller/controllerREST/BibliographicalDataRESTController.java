@@ -3,6 +3,7 @@ package TOPSECRET.controller.controllerREST;
 import TOPSECRET.controller.controllerREST.root.linkProvider.BibliographicalDataLinkProvider;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.bibliographicalData.BibliographicalDataMapper;
@@ -18,8 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -50,44 +51,30 @@ public class BibliographicalDataRESTController {
     }
 
     /**
-     * Retrieves all bibliographical data resources.
+     * Retrieves all bibliographical data entries and returns them as a HATEOAS-enabled
+     * collection of {@code responseBibliographicalDataDTO}.
      *
-     * <p>
-     * This endpoint fetches all {@link BibliographicalData} entities from the
-     * service layer, converts them into
-     * {@link responseBibliographicalDataDTO} objects, and wraps them inside a
-     * {@link CollectionModel} enriched with HATEOAS links.
-     * </p>
+     * <p>This endpoint fetches all bibliographical data records, builds a mapping of
+     * associated author names, converts the entities into DTOs, and enriches the
+     * response with relevant HATEOAS links.</p>
      *
-     * <p>
-     * The returned collection includes:
-     * </p>
-     * <ul>
-     *     <li>A self-reference link for this endpoint</li>
-     *     <li>Additional navigational links provided by the link provider</li>
-     * </ul>
-     *
-     * @param userId the identifier of the authenticated user used to generate
-     *               contextual HATEOAS links
-     *
-     * @return a {@link ResponseEntity} containing a
-     * {@link CollectionModel} of
-     * {@link responseBibliographicalDataDTO} objects and related HATEOAS links
-     *
-     * <ul>
-     *     <li>{@code 200 OK} if the bibliographical data is successfully retrieved</li>
-     *     <li>{@code 400 BAD_REQUEST} if the provided user identifier is invalid</li>
-     *     <li>{@code 500 INTERNAL_SERVER_ERROR} if an unexpected error occurs</li>
-     * </ul>
+     * @param userId the identifier of the user requesting the bibliographical data
+     * @return a {@link ResponseEntity} containing a {@link CollectionModel} of
+     *         {@code responseBibliographicalDataDTO} objects with HATEOAS links,
+     *         or an appropriate HTTP error status if the request fails
      */
     @GetMapping
     public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData(
             @RequestParam UserId userId) {
         try {
 
-            List<BibliographicalData> list = service.findAll();
+            List<BibliographicalData> bibliographicalDataList = service.findAll();
 
-            List<responseBibliographicalDataDTO> responseList = service.createDTOlist(list);
+            Map<BibliographicalDataId, List<String>> authorNamesMap = service.buildAuthorNamesMap(bibliographicalDataList);
+
+            List<responseBibliographicalDataDTO> responseList = BibliographicalDataMapper.toDTOs(
+                    bibliographicalDataList,
+                    authorNamesMap);
 
             CollectionModel<responseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
 

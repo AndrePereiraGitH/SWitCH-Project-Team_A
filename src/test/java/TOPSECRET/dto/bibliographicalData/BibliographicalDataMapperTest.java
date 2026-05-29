@@ -14,6 +14,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,10 +31,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class BibliographicalDataMapperTest {
 
-    //
-    // Constructor tests
-    //
-
+    // =============================================================
+    // ==================== Constructor Tests ======================
+    // =============================================================
     @Test
     void constructorShouldBePrivate() throws NoSuchMethodException {
         // Act
@@ -61,9 +61,9 @@ class BibliographicalDataMapperTest {
         assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
     }
 
-    //
-    // toDTO tests
-    //
+    // =============================================================
+    // ======================== toDTO Tests ========================
+    // =============================================================
 
     @Test
     void toDTO_nullBibliographicalData_throwsIllegalArgumentException() {
@@ -117,9 +117,103 @@ class BibliographicalDataMapperTest {
         assertEquals(List.of("Author 1", "Author 2", "Author 3"), dto.getAuthorName());
     }
 
-    //
-    // toAuthorId Tests
-    //
+    // =============================================================
+    // ======================= toDTOs Tests ========================
+    // =============================================================
+
+    @Test
+    void toDTOsShouldThrowNullPointerExceptionWhenBibliographicalDataListIsNull() {
+        // Arrange
+        Map<BibliographicalDataId, List<String>> authorNamesMap = Map.of();
+
+        // Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> BibliographicalDataMapper.toDTOs(null, authorNamesMap)
+        );
+
+        // Assert
+        assertEquals("Bibliographical data list can't be null", exception.getMessage());
+    }
+
+    @Test
+    void toDTOsShouldThrowNullPointerExceptionWhenAuthorNamesMapIsNull() {
+        // Arrange
+        List<BibliographicalData> bibliographicalDataList = List.of(mock(BibliographicalData.class));
+
+        // Act
+        NullPointerException exception = assertThrows(
+                NullPointerException.class,
+                () -> BibliographicalDataMapper.toDTOs(bibliographicalDataList, null)
+        );
+
+        // Assert
+        assertEquals("Author names map can't be null", exception.getMessage());
+    }
+
+    @Test
+    void toDTOs_shouldThrowIllegalArgumentException_whenAuthorNamesMissingForBibliographicalData() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        BibliographicalData bd = mock(BibliographicalData.class);
+
+        when(bd.id()).thenReturn(bdId);
+
+        List<BibliographicalData> bibliographicalDataList = List.of(bd);
+        Map<BibliographicalDataId, List<String>> authorNamesMap = Map.of();
+
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> BibliographicalDataMapper.toDTOs(bibliographicalDataList, authorNamesMap)
+        );
+
+        // Assert
+        assertTrue(exception.getMessage().contains("Author names not found for bibliographical data"));
+    }
+
+    @Test
+    void toDTOsShouldReturnEmptyListWhenBibliographicalDataListIsEmpty() throws InstanceNotFoundException {
+        // Act
+        List<responseBibliographicalDataDTO> result =
+                BibliographicalDataMapper.toDTOs(List.of(), Map.of());
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void toDTOsShouldReturnDTOListWhenValidInput() throws InstanceNotFoundException {
+        // Arrange
+        BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+
+        List<String> authorNames = List.of("Author 1", "Author 2");
+
+        when(bdDouble.id()).thenReturn(bdIdDouble);
+        when(bdDouble.getTitle()).thenReturn("Some title");
+
+        // Act
+        List<responseBibliographicalDataDTO> result =
+                BibliographicalDataMapper.toDTOs(
+                        List.of(bdDouble),
+                        Map.of(bdIdDouble, authorNames)
+                );
+
+        responseBibliographicalDataDTO dto = result.get(0);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertNotNull(dto);
+        assertEquals("Some title", dto.getPubTitle());
+        assertEquals(authorNames, dto.getAuthorName());
+    }
+
+
+    // =============================================================
+    // ===================== toAuthorId Tests ======================
+    // =============================================================
 
     @Test
     void toAuthorIdShouldReturnListOfIdsWhenAuthorNamesIsValid() {
@@ -147,9 +241,9 @@ class BibliographicalDataMapperTest {
         assertTrue(result.isEmpty());
     }
 
-    //
-    // toGenreId Tests
-    //
+    // =============================================================
+    // ===================== toGenreId Tests =======================
+    // =============================================================
 
     @Test
     void toGenreIdShouldReturnListOfIdsWhenGenreNamesIsValid(){

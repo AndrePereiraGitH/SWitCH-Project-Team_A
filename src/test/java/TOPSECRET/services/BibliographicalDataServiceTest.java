@@ -12,7 +12,6 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +25,7 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -281,49 +281,63 @@ class BibliographicalDataServiceTest {
     }
 
     // =============================================================
-    // ================== createAllDTOs Tests ======================
+    // =============== buildAuthorNamesMap Tests ===================
     // =============================================================
 
     @Test
-    void createAllDTOs_whenRepositoryIsEmpty_returnsEmptyList() throws InstanceNotFoundException {
+    void shouldBuildAuthorNamesMap() throws Exception {
         // Arrange
-        when(bibliographicalDataRepo.findAll()).thenReturn(List.of());
+        BibliographicalData bd1Double = mock(BibliographicalData.class);
+        BibliographicalData bd2Double = mock(BibliographicalData.class);
+
+        BibliographicalDataId id1Double = mock(BibliographicalDataId.class);
+        BibliographicalDataId id2Double = mock(BibliographicalDataId.class);
+
+        when(bd1Double.id()).thenReturn(id1Double);
+        when(bd2Double.id()).thenReturn(id2Double);
+
+        List<BibliographicalData> bibliographicalDataList = List.of(bd1Double, bd2Double);
+
+        List<String> authors1 = List.of("Author A", "Author B");
+        List<String> authors2 = List.of("Author C");
+
+        doReturn(authors1).when(service).getAuthors(bd1Double);
+        doReturn(authors2).when(service).getAuthors(bd2Double);
 
         // Act
-        List<responseBibliographicalDataDTO> result =
-                service.createDTOlist(service.findAll());
+        Map<BibliographicalDataId, List<String>> result = service.buildAuthorNamesMap(bibliographicalDataList);
 
         // Assert
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-
-        verify(bibliographicalDataRepo).findAll();
+        assertEquals(2, result.size());
+        assertEquals(authors1, result.get(id1Double));
+        assertEquals(authors2, result.get(id2Double));
     }
 
     @Test
-    void createAllDTOs_whenBibliographicalDataExists_returnsDTOList() throws InstanceNotFoundException {
+    void shouldReturnEmptyMapWhenInputListIsEmpty() throws Exception {
         // Arrange
-        BibliographicalData bd1 = mock(BibliographicalData.class);
-        BibliographicalData bd2 = mock(BibliographicalData.class);
-
-        BibliographicalDataId bdId1 = mock(BibliographicalDataId.class);
-        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
-
-        when(bd1.id()).thenReturn(bdId1);
-        when(bd2.id()).thenReturn(bdId2);
-
-        when(bibliographicalDataRepo.findAll())
-                .thenReturn(List.of(bd1, bd2));
+        List<BibliographicalData> bibliographicalDataList = List.of();
 
         // Act
-        List<responseBibliographicalDataDTO> result =
-                service.createDTOlist(service.findAll());
+        Map<BibliographicalDataId, List<String>> result = service.buildAuthorNamesMap(bibliographicalDataList);
 
         // Assert
-        assertNotNull(result);
-        assertEquals(2, result.size());
+        assertTrue(result.isEmpty());
+    }
 
-        verify(bibliographicalDataRepo).findAll();
+    @Test
+    void shouldThrowExceptionWhenGetAuthorsFails() throws Exception {
+        // Arrange
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
+
+        List<BibliographicalData> bibliographicalDataList = List.of(bdDouble);
+
+        doThrow(new InstanceNotFoundException())
+                .when(service)
+                .getAuthors(bdDouble);
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class, () -> service.buildAuthorNamesMap(bibliographicalDataList));
     }
 
     // =============================================================
