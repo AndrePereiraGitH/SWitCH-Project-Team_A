@@ -55,6 +55,39 @@ class EditionMapperTest {
         );
     }
 
+    private Edition mockEdition() {
+        Edition editionDouble = mock(Edition.class);
+        EditionId editionIdDouble = mock(EditionId.class);
+        Code codeDouble = mock(Code.class);
+        PhysicalAttributes physicalAttributesDouble = mock(PhysicalAttributes.class);
+        Dimensions dimensionsDouble = mock(Dimensions.class);
+        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
+        PublisherID publisherIDDouble = mock(PublisherID.class);
+
+        when(editionIdDouble.getID()).thenReturn("edition-uuid");
+        when(editionDouble.id()).thenReturn(editionIdDouble);
+        when(editionDouble.getEditionNumber()).thenReturn("1st Edition");
+        when(codeDouble.toString()).thenReturn("9780306406157");
+        when(editionDouble.getCode()).thenReturn(codeDouble);
+        when(publicationTypeIdDouble.getId()).thenReturn("pub-type-1");
+        when(editionDouble.getPublicationTypeID()).thenReturn(publicationTypeIdDouble);
+        when(publisherIDDouble.getId()).thenReturn("publisher-1");
+        when(editionDouble.getPublisherID()).thenReturn(publisherIDDouble);
+        when(editionDouble.getMediaFormat()).thenReturn("Book");
+        when(editionDouble.getEditionLanguage()).thenReturn(Locale.forLanguageTag("en"));
+        when(editionDouble.getEditionDate()).thenReturn(LocalDate.of(2010, 1, 1));
+        when(editionDouble.getTypeOfBinding()).thenReturn(TypeOfBinding.HARDBACK);
+        when(dimensionsDouble.getHeight()).thenReturn(20.0);
+        when(dimensionsDouble.getWidth()).thenReturn(15.0);
+        when(dimensionsDouble.getDepth()).thenReturn(3.0);
+        when(physicalAttributesDouble.getDimensions()).thenReturn(dimensionsDouble);
+        when(physicalAttributesDouble.getWeight()).thenReturn(500.0);
+        when(physicalAttributesDouble.getNumberOfPages()).thenReturn(300);
+        when(editionDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);
+
+        return editionDouble;
+    }
+
     // -------------------------------------------------------------------------
     // toCode()
     // -------------------------------------------------------------------------
@@ -69,7 +102,6 @@ class EditionMapperTest {
         Code result = EditionMapper.toCode(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals("9780306406157", result.getIsbn13());
     }
 
@@ -90,7 +122,6 @@ class EditionMapperTest {
         Code result = EditionMapper.toCode(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals("0306406152", result.getIsbn10());
     }
 
@@ -111,7 +142,6 @@ class EditionMapperTest {
         Code result = EditionMapper.toCode(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals("03178471", result.getIssn());
     }
 
@@ -140,7 +170,7 @@ class EditionMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toPhysicalAttributes_shouldReturnPhysicalAttributes_whenDTOIsValid() {
+    void toPhysicalAttributes_shouldReturnCorrectDimensions_whenDTOIsValid() {
 
         // Arrange
         CreateEditionDTO dto = validDto();
@@ -149,10 +179,21 @@ class EditionMapperTest {
         PhysicalAttributes result = EditionMapper.toPhysicalAttributes(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals(20.0, result.getDimensions().getHeight());
         assertEquals(15.0, result.getDimensions().getWidth());
         assertEquals(3.0, result.getDimensions().getDepth());
+    }
+
+    @Test
+    void toPhysicalAttributes_shouldReturnCorrectWeightAndPages_whenDTOIsValid() {
+
+        // Arrange
+        CreateEditionDTO dto = validDto();
+
+        // Act
+        PhysicalAttributes result = EditionMapper.toPhysicalAttributes(dto);
+
+        // Assert
         assertEquals(500.0, result.getWeight());
         assertEquals(300, result.getNumberOfPages());
     }
@@ -162,7 +203,7 @@ class EditionMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toPublicationTypeId_shouldReturnPublicationTypeId_whenDTOIsValid() {
+    void toPublicationTypeId_shouldReturnCorrectId_whenDTOIsValid() {
 
         // Arrange
         CreateEditionDTO dto = validDto();
@@ -171,7 +212,6 @@ class EditionMapperTest {
         PublicationTypeId result = EditionMapper.toPublicationTypeId(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals("pub-type-1", result.getId());
     }
 
@@ -180,7 +220,7 @@ class EditionMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toPublisherId_shouldReturnPublisherId_whenDTOIsValid() {
+    void toPublisherId_shouldReturnCorrectId_whenDTOIsValid() {
 
         // Arrange
         CreateEditionDTO dto = validDto();
@@ -189,7 +229,6 @@ class EditionMapperTest {
         PublisherID result = EditionMapper.toPublisherId(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals("publisher-1", result.getId());
     }
 
@@ -198,7 +237,7 @@ class EditionMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toEditionLanguage_shouldReturnLocale_whenDTOIsValid() {
+    void toEditionLanguage_shouldReturnCorrectLocale_whenDTOIsValid() {
 
         // Arrange
         CreateEditionDTO dto = validDto();
@@ -207,7 +246,6 @@ class EditionMapperTest {
         Locale result = EditionMapper.toEditionLanguage(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals(Locale.forLanguageTag("en"), result);
     }
 
@@ -216,7 +254,7 @@ class EditionMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toEditionDate_shouldReturnLocalDate_whenDTOIsValid() {
+    void toEditionDate_shouldReturnCorrectDate_whenDTOIsValid() {
 
         // Arrange
         CreateEditionDTO dto = validDto();
@@ -225,7 +263,6 @@ class EditionMapperTest {
         LocalDate result = EditionMapper.toEditionDate(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals(LocalDate.of(2010, 1, 1), result);
     }
 
@@ -234,7 +271,7 @@ class EditionMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toTypeOfBinding_shouldReturnTypeOfBinding_whenDTOIsValid() {
+    void toTypeOfBinding_shouldReturnCorrectBinding_whenDTOIsValid() {
 
         // Arrange
         CreateEditionDTO dto = validDto();
@@ -243,7 +280,6 @@ class EditionMapperTest {
         TypeOfBinding result = EditionMapper.toTypeOfBinding(dto);
 
         // Assert
-        assertNotNull(result);
         assertEquals(TypeOfBinding.HARDBACK, result);
     }
 
@@ -263,44 +299,18 @@ class EditionMapperTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> EditionMapper.toTypeOfBinding(dto));
+
     }
 
     // -------------------------------------------------------------------------
-    // toDTO()
+    // toDTO() — identity fields
     // -------------------------------------------------------------------------
 
     @Test
-    void toDTO_shouldReturnEditionDTO_whenEditionIsValid() {
+    void toDTO_shouldReturnCorrectIdentityFields_whenEditionIsValid() {
 
         // Arrange
-        Edition editionDouble = mock(Edition.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        Code codeDouble = mock(Code.class);
-        PhysicalAttributes physicalAttributesDouble = mock(PhysicalAttributes.class);
-        Dimensions dimensionsDouble = mock(Dimensions.class);
-        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
-        PublisherID publisherIDDouble = mock(PublisherID.class);
-
-        when(editionIdDouble.getID()).thenReturn("edition-uuid");
-        when(editionDouble.id()).thenReturn(editionIdDouble);
-        when(editionDouble.getEditionNumber()).thenReturn("1st Edition");
-        when(codeDouble.toString()).thenReturn("9780306406157");
-        when(editionDouble.getCode()).thenReturn(codeDouble);
-        when(publicationTypeIdDouble.getId()).thenReturn("pub-type-1");
-        when(editionDouble.getPublicationTypeID()).thenReturn(publicationTypeIdDouble);
-        when(publisherIDDouble.getId()).thenReturn("publisher-1");
-        when(editionDouble.getPublisherID()).thenReturn(publisherIDDouble);
-        when(editionDouble.getMediaFormat()).thenReturn("Book");
-        when(editionDouble.getEditionLanguage()).thenReturn(Locale.forLanguageTag("en"));
-        when(editionDouble.getEditionDate()).thenReturn(LocalDate.of(2010, 1, 1));
-        when(editionDouble.getTypeOfBinding()).thenReturn(TypeOfBinding.HARDBACK);
-        when(dimensionsDouble.getHeight()).thenReturn(20.0);
-        when(dimensionsDouble.getWidth()).thenReturn(15.0);
-        when(dimensionsDouble.getDepth()).thenReturn(3.0);
-        when(physicalAttributesDouble.getDimensions()).thenReturn(dimensionsDouble);
-        when(physicalAttributesDouble.getWeight()).thenReturn(500.0);
-        when(physicalAttributesDouble.getNumberOfPages()).thenReturn(300);
-        when(editionDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);
+        Edition editionDouble = mockEdition();
 
         // Act
         EditionDTO result = EditionMapper.toDTO(editionDouble);
@@ -309,15 +319,59 @@ class EditionMapperTest {
         assertEquals("edition-uuid", result.getEditionId());
         assertEquals("1st Edition", result.getEditionNumber());
         assertEquals("9780306406157", result.getCode());
+    }
+
+    // -------------------------------------------------------------------------
+    // toDTO() — publication info
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toDTO_shouldReturnCorrectPublicationInfo_whenEditionIsValid() {
+
+        // Arrange
+        Edition editionDouble = mockEdition();
+
+        // Act
+        EditionDTO result = EditionMapper.toDTO(editionDouble);
+
+        // Assert
         assertEquals("pub-type-1", result.getPublicationTypeId());
         assertEquals("publisher-1", result.getPublisherId());
         assertEquals("Book", result.getMediaFormat());
         assertEquals("en", result.getEditionLanguage());
         assertEquals("2010-01-01", result.getEditionDate());
         assertEquals("Hardback", result.getTypeOfBinding());
+    }
+
+    // -------------------------------------------------------------------------
+    // toDTO() — physical attributes
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toDTO_shouldReturnCorrectDimensions_whenEditionIsValid() {
+
+        // Arrange
+        Edition editionDouble = mockEdition();
+
+        // Act
+        EditionDTO result = EditionMapper.toDTO(editionDouble);
+
+        // Assert
         assertEquals(20.0, result.getHeight());
         assertEquals(15.0, result.getWidth());
         assertEquals(3.0, result.getDepth());
+    }
+
+    @Test
+    void toDTO_shouldReturnCorrectWeightAndPages_whenEditionIsValid() {
+
+        // Arrange
+        Edition editionDouble = mockEdition();
+
+        // Act
+        EditionDTO result = EditionMapper.toDTO(editionDouble);
+
+        // Assert
         assertEquals(500.0, result.getWeight());
         assertEquals(300, result.getNumberOfPages());
     }
@@ -338,34 +392,7 @@ class EditionMapperTest {
     void toDTOs_shouldConvertListOfEditionsToListOfDTOs() {
 
         // Arrange
-        Edition editionDouble = mock(Edition.class);
-        EditionId editionIdDouble = mock(EditionId.class);
-        Code codeDouble = mock(Code.class);
-        PhysicalAttributes physicalAttributesDouble = mock(PhysicalAttributes.class);
-        Dimensions dimensionsDouble = mock(Dimensions.class);
-        PublicationTypeId publicationTypeIdDouble = mock(PublicationTypeId.class);
-        PublisherID publisherIDDouble = mock(PublisherID.class);
-
-        when(editionIdDouble.getID()).thenReturn("edition-uuid");
-        when(editionDouble.id()).thenReturn(editionIdDouble);
-        when(editionDouble.getEditionNumber()).thenReturn("1st Edition");
-        when(codeDouble.toString()).thenReturn("9780306406157");
-        when(editionDouble.getCode()).thenReturn(codeDouble);
-        when(publicationTypeIdDouble.getId()).thenReturn("pub-type-1");
-        when(editionDouble.getPublicationTypeID()).thenReturn(publicationTypeIdDouble);
-        when(publisherIDDouble.getId()).thenReturn("publisher-1");
-        when(editionDouble.getPublisherID()).thenReturn(publisherIDDouble);
-        when(editionDouble.getMediaFormat()).thenReturn("Book");
-        when(editionDouble.getEditionLanguage()).thenReturn(Locale.forLanguageTag("en"));
-        when(editionDouble.getEditionDate()).thenReturn(LocalDate.of(2010, 1, 1));
-        when(editionDouble.getTypeOfBinding()).thenReturn(TypeOfBinding.HARDBACK);
-        when(dimensionsDouble.getHeight()).thenReturn(20.0);
-        when(dimensionsDouble.getWidth()).thenReturn(15.0);
-        when(dimensionsDouble.getDepth()).thenReturn(3.0);
-        when(physicalAttributesDouble.getDimensions()).thenReturn(dimensionsDouble);
-        when(physicalAttributesDouble.getWeight()).thenReturn(500.0);
-        when(physicalAttributesDouble.getNumberOfPages()).thenReturn(300);
-        when(editionDouble.getPhysicalAttributes()).thenReturn(physicalAttributesDouble);
+        Edition editionDouble = mockEdition();
 
         // Act
         List<EditionDTO> result = EditionMapper.toDTOs(List.of(editionDouble));
