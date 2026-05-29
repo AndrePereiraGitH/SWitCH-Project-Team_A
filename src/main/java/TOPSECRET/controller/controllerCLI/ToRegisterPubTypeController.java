@@ -1,7 +1,11 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublicationTypeService;
+import org.springframework.security.access.AccessDeniedException;
+
+import javax.management.InstanceAlreadyExistsException;
 
 /**
  * Controller responsible for handling the registration of new PublicationType entities.
@@ -33,8 +37,7 @@ public class ToRegisterPubTypeController {
      * @param mediaFormat the format of the publication (e.g., digital, print)
      * @return the created and saved PublicationType instance
      */
-    public PublicationType registerPubType(String mediaFormat)
-    {
-        return service.createAndSave(mediaFormat);
+    public PublicationType registerPubType(String mediaFormat, UserId userId) throws AccessDeniedException, InstanceAlreadyExistsException {
+        return service.createAndSave(mediaFormat, userId);
     }
 }
