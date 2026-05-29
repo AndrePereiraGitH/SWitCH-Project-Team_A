@@ -286,31 +286,40 @@ class BibliographicalDataServiceTest {
 
     @Test
     void shouldBuildAuthorNamesMap() throws Exception {
-        // Arrange
-        BibliographicalData bd1Double = mock(BibliographicalData.class);
-        BibliographicalData bd2Double = mock(BibliographicalData.class);
+        BibliographicalData bd1 = mock(BibliographicalData.class);
+        BibliographicalData bd2 = mock(BibliographicalData.class);
 
-        BibliographicalDataId id1Double = mock(BibliographicalDataId.class);
-        BibliographicalDataId id2Double = mock(BibliographicalDataId.class);
+        BibliographicalDataId id1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId id2 = mock(BibliographicalDataId.class);
 
-        when(bd1Double.id()).thenReturn(id1Double);
-        when(bd2Double.id()).thenReturn(id2Double);
+        AuthorId authorId1 = mock(AuthorId.class);
+        AuthorId authorId2 = mock(AuthorId.class);
+        AuthorId authorId3 = mock(AuthorId.class);
 
-        List<BibliographicalData> bibliographicalDataList = List.of(bd1Double, bd2Double);
+        Author author1 = mock(Author.class);
+        Author author2 = mock(Author.class);
+        Author author3 = mock(Author.class);
 
-        List<String> authors1 = List.of("Author A", "Author B");
-        List<String> authors2 = List.of("Author C");
+        when(bd1.id()).thenReturn(id1);
+        when(bd2.id()).thenReturn(id2);
 
-        doReturn(authors1).when(service).getAuthors(bd1Double);
-        doReturn(authors2).when(service).getAuthors(bd2Double);
+        when(bd1.getAuthors()).thenReturn(List.of(authorId1, authorId2));
+        when(bd2.getAuthors()).thenReturn(List.of(authorId3));
 
-        // Act
-        Map<BibliographicalDataId, List<String>> result = service.buildAuthorNamesMap(bibliographicalDataList);
+        when(author1.getName()).thenReturn("Author A");
+        when(author2.getName()).thenReturn("Author B");
+        when(author3.getName()).thenReturn("Author C");
 
-        // Assert
+        when(authorRepo.findById(authorId1)).thenReturn(Optional.of(author1));
+        when(authorRepo.findById(authorId2)).thenReturn(Optional.of(author2));
+        when(authorRepo.findById(authorId3)).thenReturn(Optional.of(author3));
+
+        Map<BibliographicalDataId, List<String>> result =
+                service.buildAuthorNamesMap(List.of(bd1, bd2));
+
         assertEquals(2, result.size());
-        assertEquals(authors1, result.get(id1Double));
-        assertEquals(authors2, result.get(id2Double));
+        assertEquals(List.of("Author A", "Author B"), result.get(id1));
+        assertEquals(List.of("Author C"), result.get(id2));
     }
 
     @Test
@@ -326,20 +335,20 @@ class BibliographicalDataServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenGetAuthorsFails() throws Exception {
-        // Arrange
-        BibliographicalData bdDouble = mock(BibliographicalData.class);
+    void shouldThrowExceptionWhenGetAuthorsFails() {
+        BibliographicalData bd = mock(BibliographicalData.class);
+        AuthorId authorId = mock(AuthorId.class);
 
-        List<BibliographicalData> bibliographicalDataList = List.of(bdDouble);
+        when(bd.getAuthors()).thenReturn(List.of(authorId));
+        when(authorRepo.findById(authorId)).thenReturn(Optional.empty());
 
-        doThrow(new InstanceNotFoundException())
-                .when(service)
-                .getAuthors(bdDouble);
+        List<BibliographicalData> bibliographicalDataList = List.of(bd);
 
-        // Act + Assert
-        assertThrows(InstanceNotFoundException.class, () -> service.buildAuthorNamesMap(bibliographicalDataList));
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.buildAuthorNamesMap(bibliographicalDataList)
+        );
     }
-
     // =============================================================
     // ===================== findById Tests ========================
     // =============================================================
