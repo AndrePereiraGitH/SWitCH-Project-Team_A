@@ -17,8 +17,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,12 +61,11 @@ class EditionRESTControllerTest {
     @Mock
     private PublisherID publisherId;
 
-    private UserId userId;
+    private final UserId userId = new UserId("user-1");
     private CreateEditionDTO dto;
 
     @BeforeEach
     void setup() {
-        userId = new UserId("user-1");
         dto = new CreateEditionDTO(
                 "1st Edition",
                 null,
@@ -92,8 +93,8 @@ class EditionRESTControllerTest {
         when(publisherId.getId()).thenReturn("publisher-1");
         when(edition.getPublisherID()).thenReturn(publisherId);
         when(edition.getMediaFormat()).thenReturn("Book");
-        when(edition.getEditionLanguage()).thenReturn(java.util.Locale.forLanguageTag("en"));
-        when(edition.getEditionDate()).thenReturn(java.time.LocalDate.of(2010, 1, 1));
+        when(edition.getEditionLanguage()).thenReturn(Locale.forLanguageTag("en"));
+        when(edition.getEditionDate()).thenReturn(LocalDate.of(2010, 1, 1));
         when(edition.getTypeOfBinding()).thenReturn(TypeOfBinding.HARDBACK);
         when(dimensions.getHeight()).thenReturn(20.0);
         when(dimensions.getWidth()).thenReturn(15.0);

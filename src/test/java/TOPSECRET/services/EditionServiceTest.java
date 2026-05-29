@@ -123,17 +123,22 @@ class EditionServiceTest {
         Edition created = edition();
         Edition saved = edition();
 
+        Code code = code();
+        PhysicalAttributes physicalAttributes = physicalAttributes();
+        PublicationTypeId publicationTypeId = publicationTypeId();
+        PublisherID publisherId = publisherId();
+
         when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
         when(policy.canCreateEdition(user)).thenReturn(true);
-        when(factory.create("1st", code(), physicalAttributes(), publicationTypeId(),
-                publisherId(), "Book", language(), date(), binding()))
+        when(factory.create("1st", code, physicalAttributes, publicationTypeId,
+                publisherId, "Book", language(), date(), binding()))
                 .thenReturn(created);
         when(editionRepository.save(created)).thenReturn(saved);
 
         // ACT
         Edition result = service.createAndSave(
-                "1st", code(), physicalAttributes(), publicationTypeId(),
-                publisherId(), "Book", language(), date(), binding(), userId());
+                "1st", code, physicalAttributes, publicationTypeId,
+                publisherId, "Book", language(), date(), binding(), userId());
 
         // ASSERT
         assertSame(saved, result);

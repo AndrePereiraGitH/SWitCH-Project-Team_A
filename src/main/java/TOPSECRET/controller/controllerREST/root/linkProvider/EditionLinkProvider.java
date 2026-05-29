@@ -53,7 +53,7 @@ public class EditionLinkProvider {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (policy.canCreateEdition(user)) {
             links.add(linkTo(methodOn(EditionRESTController.class)
-                    .createEdition(null, id))
+                    .createEdition(null, null))
                     .withRel("create-edition"));
         }
         return links;

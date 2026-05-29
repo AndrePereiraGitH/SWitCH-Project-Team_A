@@ -22,14 +22,13 @@ class EditionLinkProviderTest {
 
     private final EditionAuthorizationPolicy policy = mock(EditionAuthorizationPolicy.class);
     private final IUserRepository repository = mock(IUserRepository.class);
+    private final UserId userId = new UserId("user-1");
 
     @Test
     void getLinks_shouldReturnLink_whenUserCanCreateEdition() {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-
-        UserId userId = new UserId("user-1");
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -48,8 +47,6 @@ class EditionLinkProviderTest {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-
-        UserId userId = new UserId("user-1");
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -68,8 +65,6 @@ class EditionLinkProviderTest {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-
-        UserId userId = new UserId("user-1");
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -88,7 +83,6 @@ class EditionLinkProviderTest {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-        UserId userId = new UserId("user-1");
 
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
@@ -107,8 +101,6 @@ class EditionLinkProviderTest {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-
-        UserId userId = new UserId("user-1");
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
