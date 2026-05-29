@@ -111,6 +111,8 @@ public class CollectionOfPublicationsService {
      * @param collectionGenreId the genre associated with the collection; must not be {@code null}
      * @param userId            the owner of the collection; must not be {@code null}
      * @return the persisted {@link CollectionOfPublications} instance
+     * @throws NullPointerException           if {@code collectionName}, {@code collectionGenreId}
+     *                                        or {@code userId} is {@code null}
      * @throws UsernameNotFoundException      if no user is found with the given {@code userId}
      * @throws AccessDeniedException          if the user does not have permission to create a collection
      * @throws InstanceAlreadyExistsException if a collection with the same identity already exists
@@ -118,6 +120,10 @@ public class CollectionOfPublicationsService {
     public CollectionOfPublications createAndSave(
             String collectionName, GenreId collectionGenreId, UserId userId)
             throws InstanceAlreadyExistsException, AccessDeniedException {
+
+        Objects.requireNonNull(collectionName, "collectionName cannot be null");
+        Objects.requireNonNull(collectionGenreId, "collectionGenreId cannot be null");
+        Objects.requireNonNull(userId, "userId cannot be null");
 
         User user = getUser(userId);
 
@@ -137,8 +143,9 @@ public class CollectionOfPublicationsService {
     /**
      * Makes the collection of publications with the given identifier public.
      *
-     * <p>The user must be authorized to share collections. If the collection
-     * is already public, no update is performed and {@code false} is returned.</p>
+     * <p>The user must be authorized to share collections and must own the collection.
+     * If the collection is already public, no update is performed and {@code false}
+     * is returned.</p>
      *
      * @param collectionId the identifier of the collection to make public; must not be {@code null}
      * @param userId       the identifier of the user requesting the operation; must not be {@code null}
@@ -146,7 +153,9 @@ public class CollectionOfPublicationsService {
      * {@code false} if it was already public
      * @throws UsernameNotFoundException if no user is found with the given {@code userId}
      * @throws AccessDeniedException     if the user does not have permission to share a collection
+     *                                   or does not own the collection
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
+     * @throws NullPointerException      if {@code collectionId} or {@code userId} is {@code null}
      */
     public boolean makeCollectionPublic(CollectionOfPublicationsId collectionId, UserId userId)
             throws InstanceNotFoundException, AccessDeniedException {
@@ -154,15 +163,18 @@ public class CollectionOfPublicationsService {
         Objects.requireNonNull(collectionId, "CollectionOfPublicationsId cannot be null");
         Objects.requireNonNull(userId, "userId cannot be null");
 
-
-        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
-
         User user = getUser(userId);
 
         if (!policy.canShareCollectionOfPublications(user)) {
             throw new AccessDeniedException("You do not have permission to share a Collection");
         }
 
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
+
+        if (!collection.getOwnerId().equals(userId)) {
+            throw new AccessDeniedException(
+                    "You do not have permission to modify a collection you do not own");
+        }
         boolean changed = collection.makePublic();
 
         if (changed) {
@@ -175,19 +187,22 @@ public class CollectionOfPublicationsService {
     /**
      * Makes a collection of publications public until the specified date and time.
      *
-     * <p>The user must be authorized to perform this operation. If the collection
-     * is already public until the same date and time, no update is performed and
-     * {@code false} is returned.</p>
+     * <p>The user must be authorized to perform this operation and must own the collection.
+     * If the collection is already public until the same date and time, no update is
+     * performed and {@code false} is returned.</p>
      *
      * @param collectionId the identifier of the collection to update; must not be {@code null}
      * @param publicUntil  the date and time until which the collection should remain public;
      *                     must not be {@code null} and must be in the future
      * @param userId       the identifier of the user requesting the operation; must not be {@code null}
      * @return {@code true} if the collection was changed and updated; {@code false} otherwise
+     * @throws NullPointerException      if {@code collectionId}, {@code publicUntil} or
+     *                                   {@code userId} is {@code null}
+     * @throws IllegalArgumentException  if {@code publicUntil} is not in the future
      * @throws UsernameNotFoundException if no user is found with the given {@code userId}
      * @throws AccessDeniedException     if the user does not have permission to perform this operation
+     *                                   or does not own the collection
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
-     * @throws NullPointerException      if {@code collectionId} or {@code publicUntil} is {@code null}
      */
     public boolean makeCollectionPublicUntil(
             CollectionOfPublicationsId collectionId, LocalDateTime publicUntil, UserId userId)
@@ -196,6 +211,11 @@ public class CollectionOfPublicationsService {
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
         Objects.requireNonNull(publicUntil, "Public until date cannot be null");
         Objects.requireNonNull(userId, "userId cannot be null");
+
+
+        if (!publicUntil.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Public until date must be in the future");
+        }
 
         User user = getUser(userId);
 
@@ -206,6 +226,12 @@ public class CollectionOfPublicationsService {
 
         CollectionOfPublications collection =
                 collectionOfPublicationsRepository.findById(collectionId);
+        ;
+
+        if (!collection.getOwnerId().equals(userId)) {
+            throw new AccessDeniedException(
+                    "You do not have permission to modify a collection you do not own");
+        }
 
         boolean changed = collection.makePublicUntil(publicUntil);
 
@@ -252,7 +278,7 @@ public class CollectionOfPublicationsService {
      *
      * @param collectionOfPublicationsId the identifier to check; must not be {@code null}
      * @return {@code true} if a collection with the given identifier exists;
-     *         {@code false} otherwise
+     * {@code false} otherwise
      * @throws NullPointerException if {@code collectionOfPublicationsId} is {@code null}
      */
     public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId) {
@@ -267,7 +293,7 @@ public class CollectionOfPublicationsService {
      *
      * @param genreId the identifier of the genre to filter by; must not be {@code null}
      * @return a list of public {@link CollectionOfPublications} belonging to the given genre;
-     *         may be empty if none exist
+     * may be empty if none exist
      * @throws NullPointerException if {@code genreId} is {@code null}
      */
     public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
