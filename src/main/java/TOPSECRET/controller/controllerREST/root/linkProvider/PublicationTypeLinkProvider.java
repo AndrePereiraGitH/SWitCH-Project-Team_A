@@ -5,6 +5,7 @@ import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublicationT
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,7 @@ public class PublicationTypeLinkProvider {
     private final PublicationTypeAuthorizationPolicy policy;
     private final IUserRepository userRepository;
 
+    @Autowired
     public PublicationTypeLinkProvider(PublicationTypeAuthorizationPolicy policy, IUserRepository userRepository){
         this.policy = policy;
         this.userRepository = userRepository;
