@@ -153,6 +153,47 @@ class PhysicalAttributesTest {
        assertNotEquals(attributes, null);
        assertNotEquals(attributes, "not a physical attribute");
     }
+// -------------------------------------------------------------------------
+// Getters
+// -------------------------------------------------------------------------
 
+    @Test
+    void getDimensions_shouldReturnDimensions() {
+        // Arrange
+        Dimensions dimensionsDouble = mock(Dimensions.class);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensionsDouble, 2, 768);
+
+        // Act
+        Dimensions result = physicalAttributes.getDimensions();
+
+        // Assert
+        assertEquals(dimensionsDouble, result);
+    }
+
+    @Test
+    void getWeight_shouldReturnWeight() {
+        // Arrange
+        Dimensions dimensionsDouble = mock(Dimensions.class);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensionsDouble, 2.5, 768);
+
+        // Act
+        double result = physicalAttributes.getWeight();
+
+        // Assert
+        assertEquals(2.5, result);
+    }
+
+    @Test
+    void getNumberOfPages_shouldReturnNumberOfPages() {
+        // Arrange
+        Dimensions dimensionsDouble = mock(Dimensions.class);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensionsDouble, 2.5, 768);
+
+        // Act
+        int result = physicalAttributes.getNumberOfPages();
+
+        // Assert
+        assertEquals(768, result);
+    }
 
 }
