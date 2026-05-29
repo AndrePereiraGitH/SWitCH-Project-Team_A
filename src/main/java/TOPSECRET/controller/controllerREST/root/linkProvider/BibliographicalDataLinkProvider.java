@@ -73,7 +73,7 @@ public class BibliographicalDataLinkProvider {
             // Authorized user actions
             if (authorizationPolicy.canCreateBibliographicalData(user)) {
                 links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                        .createBibliographicalData(null, userId))
+                        .createBibliographicalData(null, null))
                         .withRel("create-bibliographical-data"));
             }
         });
