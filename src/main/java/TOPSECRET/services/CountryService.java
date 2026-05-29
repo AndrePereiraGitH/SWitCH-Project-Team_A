@@ -6,6 +6,7 @@ import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,26 @@ import org.springframework.stereotype.Service;
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
- * Application service responsible for Country use cases.
+ * Application service responsible for Country-related use cases.
+ *
+ * <p>
+ * This service coordinates the creation and retrieval of {@link Country}
+ * entities, while enforcing authorization and business validation rules.
+ * </p>
+ *
+ * <p>
+ * Responsibilities include:
+ * <ul>
+ *     <li>Validating user permissions through {@link CountryAuthorizationPolicy}</li>
+ *     <li>Creating Country instances using {@link CountryFactory}</li>
+ *     <li>Persisting and retrieving Countries through {@link ICountryRepository}</li>
+ *     <li>Retrieving users through {@link IUserRepository}</li>
+ * </ul>
+ * </p>
  */
 @Service
 public class CountryService {
@@ -27,11 +45,6 @@ public class CountryService {
 
     /**
      * Constructs the service with required dependencies.
-     *
-     * @param repository repository used for persistence operations
-     * @param factory factory used to create Country instances
-     * @param policy authorization policy used to validate user permissions
-     * @param userRepository repository used to retrieve users
      */
     public CountryService(
             CountryFactory factory,
@@ -102,5 +115,18 @@ public class CountryService {
                 .orElseThrow(() ->
                         new NoSuchElementException(
                                 "User not found with ID: " + id));
+    }
+
+    /**
+     * Retrieves a {@link Country} by its unique identifier.
+     *
+     * @param id the {@link CountryId} to search for; must not be {@code null}
+     * @return an {@link Optional} containing the Country if found; empty otherwise
+     */
+    public Optional<Country> findById(CountryId id) {
+
+        Objects.requireNonNull(id, "CountryId cannot be null");
+
+        return repository.findByID(id);
     }
 }

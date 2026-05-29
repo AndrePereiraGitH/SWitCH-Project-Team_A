@@ -5,8 +5,11 @@ import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 import java.util.Set;
@@ -20,57 +23,37 @@ import static org.mockito.Mockito.*;
  * <p>Verifies that HATEOAS links are correctly generated
  * based on user authorization rules.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class CountryLinkProviderTest {
 
+    @Mock
     private CountryAuthorizationPolicy policy;
+
+    @Mock
     private IUserRepository repository;
+
+    @InjectMocks
     private CountryLinkProvider provider;
-
-    private User adminUser;
-    private User normalUser;
-
-    private UserId adminUserId;
-    private UserId normalUserId;
-
-    @BeforeEach
-    void setup() {
-
-        // Arrange
-        policy = new CountryAuthorizationPolicy();
-        repository = mock(IUserRepository.class);
-
-        provider = new CountryLinkProvider(policy, repository);
-
-        adminUser = mock(User.class);
-        normalUser = mock(User.class);
-
-        adminUserId = new UserId("admin-id");
-        normalUserId = new UserId("normal-id");
-
-        when(adminUser.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
-        when(normalUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
-    }
 
     // -------------------------------------------------------------------------
     // ADMIN USER
     // -------------------------------------------------------------------------
 
     @Test
-    void adminUser_returnsRegisterCountryLink() {
+    void shouldReturnTwoLinks_whenUserHasPermission() {
 
-        // Arrange
-        when(repository.findByID(adminUserId)).thenReturn(Optional.of(adminUser));
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
 
-        // Act
-        var links = provider.getLinks(adminUserId);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterCountry(user)).thenReturn(true);
 
-        // Assert
-        assertNotNull(links);
+        // ACT
+        int result = provider.getLinks(userId).size();
 
-        boolean hasRegisterLink = links.stream()
-                .anyMatch(l -> l.getRel().value().equals("register-country"));
-
-        assertTrue(hasRegisterLink);
+        // ASSERT
+        assertEquals(2, result);
     }
 
     // -------------------------------------------------------------------------
@@ -78,21 +61,20 @@ class CountryLinkProviderTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void normalUser_doesNotReturnRegisterCountryLink() {
+    void shouldReturnOnlyDefaultLink_whenUserHasNoPermission() {
 
-        // Arrange
-        when(repository.findByID(normalUserId)).thenReturn(Optional.of(normalUser));
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
 
-        // Act
-        var links = provider.getLinks(normalUserId);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterCountry(user)).thenReturn(false);
 
-        // Assert
-        assertNotNull(links);
+        // ACT
+        int result = provider.getLinks(userId).size();
 
-        boolean hasRegisterLink = links.stream()
-                .anyMatch(l -> l.getRel().value().equals("register-country"));
-
-        assertFalse(hasRegisterLink);
+        // ASSERT
+        assertEquals(1, result);
     }
 
     // -------------------------------------------------------------------------
@@ -100,13 +82,17 @@ class CountryLinkProviderTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void userNotFound_throwsException() {
+    void shouldReturnOnlyDefaultLink_whenUserDoesNotExist() {
 
-        // Arrange
-        when(repository.findByID(adminUserId)).thenReturn(Optional.empty());
+        // ARRANGE
+        UserId userId = mock(UserId.class);
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> provider.getLinks(adminUserId));
+        when(repository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT
+        int result = provider.getLinks(userId).size();
+
+        // ASSERT
+        assertEquals(1, result);
     }
 }

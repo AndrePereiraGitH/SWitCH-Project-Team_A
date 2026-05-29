@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.CountryLinkProvider;
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.country.CountryMapper;
 import TOPSECRET.dto.country.request.RegisterCountryDTO;
@@ -66,7 +67,7 @@ public class CountryRESTController {
      *         or an error status when the operation fails
      */
     @PostMapping("")
-    public ResponseEntity<CountryResponseDTO> register(
+    public ResponseEntity<CountryResponseDTO> registerCountry(
             @RequestBody RegisterCountryDTO dto,
             @RequestParam UserId userId) {
 
@@ -79,10 +80,7 @@ public class CountryRESTController {
 
             CountryResponseDTO result = CountryMapper.toDTO(country);
 
-            List<Link> links = new ArrayList<>(provider.getLinks(userId));
-
-            links.add(linkTo(methodOn(CountryRESTController.class)
-                    .register(dto, userId)).withSelfRel());
+            List<Link> links = provider.getLinks(userId);
 
             links.forEach(result::add);
 
@@ -129,6 +127,38 @@ public class CountryRESTController {
         } catch (IllegalArgumentException e) {
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CountryResponseDTO> getCountry(
+            @PathVariable String id) {
+
+        try {
+
+            Country country = service.findById(new CountryId(id))
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("Country not found"));
+
+            CountryResponseDTO result = CountryMapper.toDTO(country);
+
+            result.add(linkTo(methodOn(CountryRESTController.class)
+                    .getCountry(id))
+                    .withSelfRel());
+
+            result.add(linkTo(methodOn(CountryRESTController.class)
+                    .getCountries())
+                    .withRel("get-countries"));
+
+            return ResponseEntity.ok(result);
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         } catch (Exception e) {
 

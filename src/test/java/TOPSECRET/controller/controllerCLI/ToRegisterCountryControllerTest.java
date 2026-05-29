@@ -59,7 +59,6 @@ class ToRegisterCountryControllerTest {
         Country result = controller.register("Portugal", userId);
 
         // Assert
-        assertNotNull(result);
         assertEquals(country, result);
     }
 

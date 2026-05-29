@@ -48,7 +48,6 @@ class CountryServiceTest {
     @BeforeEach
     void setup() {
 
-        // Arrange
         factory = mock(CountryFactory.class);
         repository = mock(ICountryRepository.class);
         userRepository = mock(IUserRepository.class);
@@ -61,8 +60,8 @@ class CountryServiceTest {
         adminUser = mock(User.class);
         normalUser = mock(User.class);
 
-        adminUserId = new UserId("admin-id");
-        normalUserId = new UserId("normal-id");
+        adminUserId = mock(UserId.class);
+        normalUserId = mock(UserId.class);
 
         when(adminUser.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
         when(normalUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
@@ -122,7 +121,6 @@ class CountryServiceTest {
         Country result = service.createAndSave("Portugal", adminUserId);
 
         // Assert
-        assertNotNull(result);
         assertEquals(country, result);
     }
 
@@ -189,8 +187,52 @@ class CountryServiceTest {
         List<Country> result = service.findAll();
 
         // Assert
-        assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(country, result.get(0));
+    }
+
+
+    // -------------------------------------------------------------------------
+    // findById
+    // -------------------------------------------------------------------------
+
+    @Test
+    void findById_existingCountry_returnsCountry() {
+
+        // Arrange
+        CountryId id = new CountryId("PORTUGAL");
+
+        when(repository.findByID(id))
+                .thenReturn(Optional.of(country));
+
+        // Act
+        Optional<Country> result = service.findById(id);
+
+        // Assert
+        assertTrue(result.isPresent());
+    }
+
+    @Test
+    void findById_nonExistingCountry_returnsEmptyOptional() {
+
+        // Arrange
+        CountryId id = new CountryId("PORTUGAL");
+
+        when(repository.findByID(id))
+                .thenReturn(Optional.empty());
+
+        // Act
+        Optional<Country> result = service.findById(id);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findById_nullId_throwsException() {
+
+        // Arrange + Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.findById(null));
     }
 }

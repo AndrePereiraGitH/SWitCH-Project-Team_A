@@ -30,6 +30,23 @@ public class ToRegisterCountryController {
 
         this.countryService = countryService;
     }
+
+    /**
+     * Registers a new {@link Country} in the system.
+     *
+     * <p>
+     * This method delegates the country creation and persistence logic
+     * to the {@link CountryService}.
+     * </p>
+     *
+     * @param countryName name of the country to be registered
+     * @param userId identifier of the user performing the operation
+     * @return the created and persisted {@link Country}
+     * @throws InstanceAlreadyExistsException if a country with the same
+     *         identifier already exists
+     * @throws AccessDeniedException if the user does not have permission
+     *         to register a country
+     */
     public Country register(String countryName, UserId userId)
             throws InstanceAlreadyExistsException, AccessDeniedException {
 
