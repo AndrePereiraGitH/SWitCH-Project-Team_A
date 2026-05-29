@@ -130,8 +130,14 @@ public class CountryRESTController {
 
             List<Link> links = provider.getLinks(userId);
 
-            result.forEach(dto -> links.forEach(dto::add));
+            result.forEach(dto -> {
 
+                links.forEach(dto::add);
+
+                dto.add(linkTo(methodOn(CountryRESTController.class)
+                        .getCountries(userId))
+                        .withSelfRel());
+            });
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
         } catch (IllegalArgumentException e) {

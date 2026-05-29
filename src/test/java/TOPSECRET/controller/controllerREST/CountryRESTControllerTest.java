@@ -243,6 +243,38 @@ class CountryRESTControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
+    @Test
+    void getCountries_addsSelfAndProviderLinks() {
+
+        // Arrange
+        when(country.getCountryName()).thenReturn("Portugal");
+        when(country.id()).thenReturn(new CountryId("PORTUGAL"));
+
+        when(countryService.findAll()).thenReturn(List.of(country));
+
+        List<Link> providerLinks = List.of(
+                Link.of("/countries", "get-all-countries")
+        );
+
+        when(linkProvider.getLinks(userId)).thenReturn(new ArrayList<>(providerLinks));
+
+        // Act
+        ResponseEntity<List<CountryResponseDTO>> response =
+                controller.getCountries(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        CountryResponseDTO dto = response.getBody().get(0);
+
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
+
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("self")));
+    }
+
+
     // -------------------------------------------------------------------------
     // getCountry
     // -------------------------------------------------------------------------
@@ -299,6 +331,32 @@ class CountryRESTControllerTest {
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void getCountry_containsSelfAndGetCountriesLinks() {
+
+        //Arrange
+        when(countryService.findById(any(CountryId.class)))
+                .thenReturn(Optional.of(country));
+
+        when(country.getCountryName()).thenReturn("Portugal");
+        when(country.id()).thenReturn(new CountryId("PORTUGAL"));
+
+        //Act
+        ResponseEntity<CountryResponseDTO> response =
+                controller.getCountry("PORTUGAL");
+
+        //Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        CountryResponseDTO dto = response.getBody();
+
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("self")));
+
+        assertTrue(dto.getLinks().stream()
+                .anyMatch(l -> l.getRel().value().equals("get-countries")));
     }
 
 }
