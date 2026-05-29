@@ -4,9 +4,11 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.Enum.UserRole;
 
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.UserService;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
 import java.util.Set;
 
 /**
@@ -22,7 +24,7 @@ public class ToRegisterUserController {
 
     public ToRegisterUserController(UserService userService) {
 
-        if(userService == null){
+        if (userService == null) {
             throw new IllegalArgumentException("UserService cannot be null");
         }
         this.userService = userService;
@@ -34,13 +36,16 @@ public class ToRegisterUserController {
      * <p>Validates all input parameters and delegates the creation and persistence
      * of the user to the {@link UserService}.</p>
      *
-     * @param username the desired username for the new user; must not be {@code null}
-     * @param profile  the profile information of the user; must not be {@code null}
-     * @param userRole the role assigned to the user; must not be {@code null}
+     * @param username    the desired username for the new user; must not be {@code null}
+     * @param profile     the profile information of the user; must not be {@code null}
+     * @param userRole    the role assigned to the user; must not be {@code null}
+     * @param requesterId the ID of the user performing the registration; must not be {@code null}
      * @return the created {@link User} instance
      * @throws IllegalArgumentException if any argument is {@code null}
      */
-    public User registerUser(String username, Profile profile, Set<UserRole> userRole) throws InstanceAlreadyExistsException {
+    public User registerUser(String username, Profile profile, Set<UserRole> userRole, UserId requesterId)
+            throws InstanceAlreadyExistsException, AccessDeniedException {
+
         if (username == null) {
             throw new IllegalArgumentException("Username cannot be null");
         }
@@ -50,7 +55,10 @@ public class ToRegisterUserController {
         if (userRole == null) {
             throw new IllegalArgumentException("UserRole cannot be null");
         }
+        if (requesterId == null) {
+            throw new IllegalArgumentException("RequesterId cannot be null");
+        }
 
-        return userService.createAndSave(username, profile, userRole);
+        return userService.createAndSave(username, profile, userRole, requesterId);
     }
 }
