@@ -7,6 +7,7 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
@@ -27,7 +28,14 @@ import static org.mockito.Mockito.*;
 class CollectionOfPublicationsRepositoryMemTest {
 
 
-    ICollectionOfPublicationsRepository sut;
+    private ICollectionOfPublicationsRepository sut;
+    private CollectionOfPublicationsFactory factoryDouble;
+
+    @BeforeEach
+    void setUp() {
+        sut = new CollectionOfPublicationsRepositoryMem();
+        factoryDouble = mock(CollectionOfPublicationsFactory.class);
+    }
 
     @Test
     void ensureRepositoryIsCreatedSuccessfully() {
@@ -312,18 +320,20 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findPublicCollectionsByGenreIdShouldReturnPublicCollectionsWhenMatchingCollectionsExist() {
         // ARRANGE
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem();
-        CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
         GenreId genreIdDouble = mock(GenreId.class);
         UserId userIdDouble = mock(UserId.class);
 
-        CollectionOfPublications collection = factory.create("My Collection", genreIdDouble, userIdDouble);
-        collection.makePublic();
-        repository.save(collection);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(factoryDouble.create("My Collection", genreIdDouble, userIdDouble)).thenReturn(collection);
+        when(collection.id()).thenReturn(mock(CollectionOfPublicationsId.class));
+        when(collection.getCollectionGenre()).thenReturn(genreIdDouble);
+        when(collection.getIsPrivate()).thenReturn(false);
+
+        sut.save(collection);
 
         // ACT
         List<CollectionOfPublications> result =
-                repository.findPublicCollectionsByGenreId(genreIdDouble);
+                sut.findPublicCollectionsByGenreId(genreIdDouble);
 
         // ASSERT
         assertEquals(1, result.size());
@@ -333,39 +343,43 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findPublicCollectionsByGenreIdShouldNotReturnPrivateCollections() {
         // ARRANGE
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem();
-        CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
         GenreId genreIdDouble = mock(GenreId.class);
         UserId userIdDouble = mock(UserId.class);
 
-        CollectionOfPublications collection = factory.create("My Collection", genreIdDouble, userIdDouble);
-        // collection is private by default — no makePublic() call
-        repository.save(collection);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(factoryDouble.create("My Collection", genreIdDouble, userIdDouble)).thenReturn(collection);
+        when(collection.id()).thenReturn(mock(CollectionOfPublicationsId.class));
+        when(collection.getCollectionGenre()).thenReturn(genreIdDouble);
+        when(collection.getIsPrivate()).thenReturn(true);
 
-        // ACT
+        sut.save(collection);
+
+        //ACT
         List<CollectionOfPublications> result =
-                repository.findPublicCollectionsByGenreId(genreIdDouble);
+                sut.findPublicCollectionsByGenreId(genreIdDouble);
 
-        // ASSERT
+        //ASSERT
         assertTrue(result.isEmpty());
     }
 
     @Test
     void findPublicCollectionsByGenreIdShouldNotReturnCollectionsWithDifferentGenre() {
         // ARRANGE
-        CollectionOfPublicationsRepositoryMem repository = new CollectionOfPublicationsRepositoryMem();
-        CollectionOfPublicationsFactory factory = new CollectionOfPublicationsFactory();
         GenreId genreIdDouble = mock(GenreId.class);
         GenreId otherGenreIdDouble = mock(GenreId.class);
         UserId userIdDouble = mock(UserId.class);
 
-        CollectionOfPublications collection = factory.create("My Collection", otherGenreIdDouble, userIdDouble);
-        collection.makePublic();
-        repository.save(collection);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(factoryDouble.create("My Collection", otherGenreIdDouble, userIdDouble)).thenReturn(collection);
+        when(collection.id()).thenReturn(mock(CollectionOfPublicationsId.class));
+        when(collection.getCollectionGenre()).thenReturn(otherGenreIdDouble);
+        when(collection.getIsPrivate()).thenReturn(false);
+
+        sut.save(collection);
 
         // ACT
         List<CollectionOfPublications> result =
-                repository.findPublicCollectionsByGenreId(genreIdDouble);
+                sut.findPublicCollectionsByGenreId(genreIdDouble);
 
         // ASSERT
         assertTrue(result.isEmpty());

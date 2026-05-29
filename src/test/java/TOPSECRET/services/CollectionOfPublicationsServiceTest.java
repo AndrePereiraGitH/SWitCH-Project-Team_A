@@ -151,6 +151,29 @@ class CollectionOfPublicationsServiceTest {
     // --------------------- CREATE AND SAVE -------------------------
     // ===============================================================
 
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenCollectionNameIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.createAndSave(null, genreIdDouble, userIdDouble));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenGenreIdIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.createAndSave("My Collection", null, userIdDouble));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenUserIdIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.createAndSave("My Collection", genreIdDouble, null));
+    }
+
+
     @Test
     void createAndSaveShouldReturnACollectionOfPublications()
             throws AccessDeniedException, InstanceAlreadyExistsException {
@@ -210,6 +233,7 @@ class CollectionOfPublicationsServiceTest {
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublic()).thenReturn(true);
 
         // Act
@@ -217,6 +241,25 @@ class CollectionOfPublicationsServiceTest {
 
         // Assert
         assertTrue(result);
+    }
+
+    @Test
+    void makeCollectionPublic_shouldThrowAccessDeniedException_whenUserDoesNotOwnCollection()
+            throws InstanceNotFoundException {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        UserId ownerIdDouble = mock(UserId.class);
+
+        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(ownerIdDouble);
+
+        // Act + Assert
+        assertThrows(AccessDeniedException.class,
+                () -> service.makeCollectionPublic(collectionId, userIdDouble));
     }
 
     @Test
@@ -260,6 +303,7 @@ class CollectionOfPublicationsServiceTest {
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublic()).thenReturn(false);
 
         // Act
@@ -295,6 +339,7 @@ class CollectionOfPublicationsServiceTest {
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublicUntil(publicUntil)).thenReturn(true);
 
         // Act
@@ -302,6 +347,39 @@ class CollectionOfPublicationsServiceTest {
 
         // Assert
         assertTrue(result);
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldThrowIllegalArgumentException_whenPublicUntilIsNotInFuture() {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        LocalDateTime publicUntil = LocalDateTime.now().minusDays(1);
+
+        // Act + Assert
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> service.makeCollectionPublicUntil(collectionId, publicUntil, userIdDouble));
+
+        assertEquals("Public until date must be in the future", ex.getMessage());
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldThrowAccessDeniedException_whenUserDoesNotOwnCollection()
+            throws InstanceNotFoundException {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        UserId ownerIdDouble = mock(UserId.class);
+
+        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
+        when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(ownerIdDouble);
+
+        // Act + Assert
+        assertThrows(AccessDeniedException.class,
+                () -> service.makeCollectionPublicUntil(collectionId, publicUntil, userIdDouble));
     }
 
     @Test
@@ -319,6 +397,7 @@ class CollectionOfPublicationsServiceTest {
 
         when(collectionOfPublicationsRepository.findById(collectionId))
                 .thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublicUntil(publicUntil))
                 .thenReturn(false);
 
@@ -398,6 +477,7 @@ class CollectionOfPublicationsServiceTest {
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublicUntil(publicUntil)).thenReturn(true);
 
         // Act

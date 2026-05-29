@@ -10,6 +10,7 @@ import TOPSECRET.dto.collectionOfPublications.request.RequestCollectionOfPublica
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
 import TOPSECRET.services.CollectionOfPublicationsService;
 import jakarta.validation.Valid;
+import org.apache.coyote.Response;
 import org.springframework.hateoas.Link;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST controller for managing collections of publications.
@@ -85,8 +89,12 @@ public class CollectionOfPublicationsRESTController {
             ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collection);
 
             List<Link> links = linkProvider.getLinksForCollectionOfPublications(userId);
-
             links.forEach(result::add);
+
+            result.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .createCollectionOfPublications(null, null))
+                    .withSelfRel());
+
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
         } catch (IllegalArgumentException e) {
@@ -103,26 +111,39 @@ public class CollectionOfPublicationsRESTController {
     /**
      * Makes the specified collection of publications permanently public.
      *
-     * <p>Delegates the operation to {@link CollectionOfPublicationsService} and returns
-     * the result as a boolean response body.</p>
+     * <p>Delegates the operation to {@link CollectionOfPublicationsService}, then retrieves
+     * the updated collection and returns it as a {@link ResponseCollectionOfPublicationsDTO},
+     * enriched with HATEOAS links permitted for the requesting user.</p>
      *
      * @param collectionId the identifier of the collection to make public;
      *                     must not be {@code null}
      * @param userId       the identifier of the user requesting the operation;
      *                     must not be {@code null}
-     * @return a {@link ResponseEntity} containing {@code true} if the collection was changed,
-     *         {@code false} if it was already public, with HTTP status {@code 200 OK} on success,
+     * @return a {@link ResponseEntity} containing the updated {@link ResponseCollectionOfPublicationsDTO}
+     *         with HTTP status {@code 200 OK} on success,
      *         {@code 400 Bad Request} if the input is invalid,
      *         {@code 403 Forbidden} if the user lacks permission, or
      *         {@code 500 Internal Server Error} if an unexpected error occurs
      */
     @PatchMapping("/{collectionId}/make-public")
-    public ResponseEntity<Boolean> makeCollectionPublic(
+    public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPublic(
             @PathVariable CollectionOfPublicationsId collectionId,
             @RequestParam UserId userId) {
 
         try {
-            boolean result = collectionService.makeCollectionPublic(collectionId, userId);
+            collectionService.makeCollectionPublic(collectionId, userId);
+
+            CollectionOfPublications collection = collectionService.findById(collectionId);
+
+            ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collection);
+
+            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userId);
+            links.forEach(result::add);
+
+            result.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .makeCollectionPublic(collectionId, userId))
+                    .withSelfRel());
+
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
         } catch (IllegalArgumentException e) {
@@ -139,8 +160,9 @@ public class CollectionOfPublicationsRESTController {
     /**
      * Makes the specified collection of publications public until the given date and time.
      *
-     * <p>Delegates the operation to {@link CollectionOfPublicationsService} and returns
-     * the result as a boolean response body.</p>
+     * <p>Delegates the operation to {@link CollectionOfPublicationsService}, then retrieves
+     * the updated collection and returns it as a {@link ResponseCollectionOfPublicationsDTO},
+     * enriched with HATEOAS links permitted for the requesting user.</p>
      *
      * @param collectionId the identifier of the collection to make public;
      *                     must not be {@code null}
@@ -148,23 +170,34 @@ public class CollectionOfPublicationsRESTController {
      *                     must not be {@code null} and must be in the future
      * @param userId       the identifier of the user requesting the operation;
      *                     must not be {@code null}
-     * @return a {@link ResponseEntity} containing {@code true} if the collection was changed,
-     *         {@code false} if it was already public until the same date and time,
+     * @return a {@link ResponseEntity} containing the updated {@link ResponseCollectionOfPublicationsDTO}
      *         with HTTP status {@code 200 OK} on success,
      *         {@code 400 Bad Request} if the input is invalid,
      *         {@code 403 Forbidden} if the user lacks permission, or
      *         {@code 500 Internal Server Error} if an unexpected error occurs
      */
     @PatchMapping("/{collectionId}/make-public-until")
-    public ResponseEntity<Boolean> makeCollectionPublicUntil(
+    public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPublicUntil(
             @PathVariable CollectionOfPublicationsId collectionId,
             @RequestParam LocalDateTime publicUntil,
             @RequestParam UserId userId) {
 
         try {
-            boolean result = collectionService.makeCollectionPublicUntil(
-                    collectionId, publicUntil, userId);
+            collectionService.makeCollectionPublicUntil(collectionId, publicUntil, userId);
+
+            CollectionOfPublications collection = collectionService.findById(collectionId);
+
+            ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collection);
+
+            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userId);
+            links.forEach(result::add);
+
+            result.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .makeCollectionPublicUntil(collectionId, publicUntil, userId))
+                    .withSelfRel());
+
             return ResponseEntity.status(HttpStatus.OK).body(result);
+
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

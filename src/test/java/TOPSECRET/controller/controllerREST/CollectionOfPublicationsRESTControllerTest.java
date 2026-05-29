@@ -52,21 +52,20 @@ class CollectionOfPublicationsRESTControllerTest {
         RequestCollectionOfPublicationsDTO requestDouble =
                 mock(RequestCollectionOfPublicationsDTO.class);
         UserId userIdDouble = mock(UserId.class);
-        GenreId genreIdDouble = mock(GenreId.class);
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
         ResponseCollectionOfPublicationsDTO responseDTO =
-                mock(ResponseCollectionOfPublicationsDTO.class);
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
-
-        when(collectionService.createAndSave(any(), any(), any()))
-                .thenReturn(collectionDouble);
-
-        when(linkProvider.getLinksForCollectionOfPublications(any()))
-                .thenReturn(new ArrayList<>());
+        when(requestDouble.genreId()).thenReturn("genre-123");
+        when(collectionService.createAndSave(any(), any(), any())).thenReturn(collectionDouble);
+        when(linkProvider.getLinksForCollectionOfPublications(any())).thenReturn(new ArrayList<>());
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toGenreId(any()))
+                    .thenReturn(mock(GenreId.class));
 
             mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
                     .thenReturn(responseDTO);
@@ -78,6 +77,7 @@ class CollectionOfPublicationsRESTControllerTest {
             // ASSERT
             assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
             assertEquals(responseDTO, response.getBody());
+            assertTrue(response.getBody().hasLink("self"));
         }
     }
 
@@ -89,15 +89,15 @@ class CollectionOfPublicationsRESTControllerTest {
         RequestCollectionOfPublicationsDTO requestDouble =
                 mock(RequestCollectionOfPublicationsDTO.class);
         UserId userIdDouble = mock(UserId.class);
-        GenreId genreIdDouble = mock(GenreId.class);
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
+        when(requestDouble.genreId()).thenReturn("genre-123");
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {
 
-            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
-                    .thenReturn(mock(ResponseCollectionOfPublicationsDTO.class));
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toGenreId(any()))
+                    .thenReturn(mock(GenreId.class));
 
             when(collectionService.createAndSave(any(), any(), any()))
                     .thenThrow(new IllegalArgumentException());
@@ -120,15 +120,15 @@ class CollectionOfPublicationsRESTControllerTest {
         RequestCollectionOfPublicationsDTO requestDouble =
                 mock(RequestCollectionOfPublicationsDTO.class);
         UserId userIdDouble = mock(UserId.class);
-        GenreId genreIdDouble = mock(GenreId.class);
 
+        when(requestDouble.genreId()).thenReturn("genre-123");
         when(requestDouble.collectionName()).thenReturn("My Collection");
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {
 
-            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
-                    .thenReturn(mock(ResponseCollectionOfPublicationsDTO.class));
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toGenreId(any()))
+                    .thenReturn(mock(GenreId.class));
 
             when(collectionService.createAndSave(any(), any(), any()))
                     .thenThrow(new AccessDeniedException("denied"));
@@ -151,15 +151,15 @@ class CollectionOfPublicationsRESTControllerTest {
         RequestCollectionOfPublicationsDTO requestDouble =
                 mock(RequestCollectionOfPublicationsDTO.class);
         UserId userIdDouble = mock(UserId.class);
-        GenreId genreIdDouble = mock(GenreId.class);
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
+        when(requestDouble.genreId()).thenReturn("genre-123");
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {
 
-            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
-                    .thenReturn(mock(ResponseCollectionOfPublicationsDTO.class));
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toGenreId(any()))
+                    .thenReturn(mock(GenreId.class));
 
             when(collectionService.createAndSave(any(), any(), any()))
                     .thenThrow(new RuntimeException());
@@ -185,37 +185,64 @@ class CollectionOfPublicationsRESTControllerTest {
         // ARRANGE
         CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
         UserId userIdDouble = mock(UserId.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+        ResponseCollectionOfPublicationsDTO responseDTO =
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
 
         when(collectionService.makeCollectionPublic(collectionIdDouble, userIdDouble))
                 .thenReturn(true);
+        when(collectionService.findById(collectionIdDouble)).thenReturn(collectionDouble);
+        when(linkProvider.getLinksForCollectionOfPublications(userIdDouble))
+                .thenReturn(new ArrayList<>());
 
-        // ACT
-        ResponseEntity<Boolean> response =
-                controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
-        assertTrue(response.getBody());
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+            assertEquals(responseDTO, response.getBody());
+            assertTrue(response.getBody().hasLink("self"));
+        }
     }
 
     @Test
-    void makeCollectionPublic_shouldReturnOkWithFalse_whenAlreadyPublic()
+    void makeCollectionPublic_shouldReturnOkWithDTO_whenAlreadyPublic()
             throws Exception {
 
         // ARRANGE
         CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
         UserId userIdDouble = mock(UserId.class);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+        ResponseCollectionOfPublicationsDTO responseDTO =
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
 
         when(collectionService.makeCollectionPublic(collectionIdDouble, userIdDouble))
                 .thenReturn(false);
+        when(collectionService.findById(collectionIdDouble)).thenReturn(collectionDouble);
+        when(linkProvider.getLinksForCollectionOfPublications(userIdDouble))
+                .thenReturn(new ArrayList<>());
 
-        // ACT
-        ResponseEntity<Boolean> response =
-                controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
-        assertFalse(response.getBody());
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+            assertEquals(responseDTO, response.getBody());
+        }
     }
 
     @Test
@@ -230,7 +257,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 .thenThrow(new IllegalArgumentException());
 
         // ACT
-        ResponseEntity<Boolean> response =
+        ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
                 controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
 
         // ASSERT
@@ -250,7 +277,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 .thenThrow(new AccessDeniedException("denied"));
 
         // ACT
-        ResponseEntity<Boolean> response =
+        ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
                 controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
 
         // ASSERT
@@ -270,7 +297,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 .thenThrow(new RuntimeException());
 
         // ACT
-        ResponseEntity<Boolean> response =
+        ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
                 controller.makeCollectionPublic(collectionIdDouble, userIdDouble);
 
         // ASSERT
@@ -290,38 +317,65 @@ class CollectionOfPublicationsRESTControllerTest {
         CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
         UserId userIdDouble = mock(UserId.class);
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+        ResponseCollectionOfPublicationsDTO responseDTO =
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
 
         when(collectionService.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble))
                 .thenReturn(true);
+        when(collectionService.findById(collectionIdDouble)).thenReturn(collectionDouble);
+        when(linkProvider.getLinksForCollectionOfPublications(userIdDouble))
+                .thenReturn(new ArrayList<>());
 
-        // ACT
-        ResponseEntity<Boolean> response =
-                controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
-        assertTrue(response.getBody());
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+            assertEquals(responseDTO, response.getBody());
+            assertTrue(response.getBody().hasLink("self"));
+        }
     }
 
     @Test
-    void makeCollectionPublicUntil_shouldReturnOkWithFalse_whenNotChanged()
+    void makeCollectionPublicUntil_shouldReturnOkWithDTO_whenNotChanged()
             throws Exception {
 
         // ARRANGE
         CollectionOfPublicationsId collectionIdDouble = mock(CollectionOfPublicationsId.class);
         UserId userIdDouble = mock(UserId.class);
         LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
+        ResponseCollectionOfPublicationsDTO responseDTO =
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
 
         when(collectionService.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble))
                 .thenReturn(false);
+        when(collectionService.findById(collectionIdDouble)).thenReturn(collectionDouble);
+        when(linkProvider.getLinksForCollectionOfPublications(userIdDouble))
+                .thenReturn(new ArrayList<>());
 
-        // ACT
-        ResponseEntity<Boolean> response =
-                controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
-        assertFalse(response.getBody());
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+            assertEquals(responseDTO, response.getBody());
+        }
     }
 
     @Test
@@ -337,7 +391,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 .thenThrow(new IllegalArgumentException());
 
         // ACT
-        ResponseEntity<Boolean> response =
+        ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
                 controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
 
         // ASSERT
@@ -358,7 +412,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 .thenThrow(new AccessDeniedException("denied"));
 
         // ACT
-        ResponseEntity<Boolean> response =
+        ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
                 controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
 
         // ASSERT
@@ -379,7 +433,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 .thenThrow(new RuntimeException());
 
         // ACT
-        ResponseEntity<Boolean> response =
+        ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
                 controller.makeCollectionPublicUntil(collectionIdDouble, publicUntil, userIdDouble);
 
         // ASSERT
@@ -395,19 +449,23 @@ class CollectionOfPublicationsRESTControllerTest {
         RequestCollectionOfPublicationsDTO requestDouble =
                 mock(RequestCollectionOfPublicationsDTO.class);
         UserId userIdDouble = mock(UserId.class);
-        GenreId genreIdDouble = mock(GenreId.class);
         CollectionOfPublications collectionDouble = mock(CollectionOfPublications.class);
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
 
-        Link link = Link.of("http://localhost/collection-of-publications").withRel("create-collection-of-publications");
+        Link link = Link.of("http://localhost/collection-of-publications")
+                .withRel("create-collection-of-publications");
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
+        when(requestDouble.genreId()).thenReturn("genre-123");
         when(collectionService.createAndSave(any(), any(), any())).thenReturn(collectionDouble);
         when(linkProvider.getLinksForCollectionOfPublications(any())).thenReturn(List.of(link));
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() -> CollectionOfPublicationsMapper.toGenreId(any()))
+                    .thenReturn(mock(GenreId.class));
 
             mapperMock.when(() -> CollectionOfPublicationsMapper.toDTO(any()))
                     .thenReturn(responseDTO);
