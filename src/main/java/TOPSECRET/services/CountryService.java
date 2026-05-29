@@ -123,10 +123,12 @@ public class CountryService {
      * @param id the {@link CountryId} to search for; must not be {@code null}
      * @return an {@link Optional} containing the Country if found; empty otherwise
      */
-    public Optional<Country> findById(CountryId id) {
+    public Country findById(CountryId id) {
 
         Objects.requireNonNull(id, "CountryId cannot be null");
 
-        return repository.findByID(id);
+        return repository.findByID(id)
+                .orElseThrow(() ->
+                        new NoSuchElementException("Country not found with ID: " + id));
     }
 }

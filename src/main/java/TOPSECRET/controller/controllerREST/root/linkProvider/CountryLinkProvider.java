@@ -55,7 +55,7 @@ public class CountryLinkProvider {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
 
         links.add(linkTo(methodOn(CountryRESTController.class)
-                .getCountries(id))
+                .getCountries())
                 .withRel("get-all-countries"));
 
         if (policy.canRegisterCountry(user)) {

@@ -31,10 +31,6 @@ class CountryAuthorizationPolicyTest {
 
     private CountryAuthorizationPolicy policy;
 
-    @BeforeEach
-    void setUp() {
-        policy = new CountryAuthorizationPolicy();
-    }
 
     // -------------------------------------------------
     // canRegisterCountry
@@ -44,6 +40,8 @@ class CountryAuthorizationPolicyTest {
     void admin_canRegisterCountry_shouldReturnTrue() {
 
         // Arrange
+        CountryAuthorizationPolicy policy = new CountryAuthorizationPolicy();
+
         User user = mock(User.class);
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
@@ -58,6 +56,8 @@ class CountryAuthorizationPolicyTest {
     void normalUser_cannotRegisterCountry_shouldReturnFalse() {
 
         // Arrange
+        CountryAuthorizationPolicy policy = new CountryAuthorizationPolicy();
+
         User user = mock(User.class);
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
@@ -72,6 +72,8 @@ class CountryAuthorizationPolicyTest {
     void user_withNoRoles_shouldReturnFalse() {
 
         // Arrange
+        CountryAuthorizationPolicy policy = new CountryAuthorizationPolicy();
+
         User user = mock(User.class);
         when(user.getUserRoles()).thenReturn(Set.of());
 
