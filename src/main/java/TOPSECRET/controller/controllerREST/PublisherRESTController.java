@@ -3,6 +3,7 @@ package TOPSECRET.controller.controllerREST;
 import TOPSECRET.controller.controllerREST.root.linkProvider.PublisherLinkProvider;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.publisher.PublisherMapper;
 import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
@@ -17,6 +18,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * REST Controller for managing Publisher resources.
@@ -70,6 +74,10 @@ public class PublisherRESTController {
             List<Link> links = publisherLinkProvider.getLinksForPublisher(userId);
             links.forEach(result::add);
 
+            result.add(linkTo(methodOn(PublisherRESTController.class)
+                    .createPublisher(requestPublisherDTO, userId))
+                    .withSelfRel());
+
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
         } catch (IllegalArgumentException e) {
@@ -82,29 +90,74 @@ public class PublisherRESTController {
     }
 
     /**
-     * Returns all publishers in the system.
+     * Returns all publishers registered in the system.
      *
-     * <p>This endpoint is used for discovery and listing purposes and is
-     * exposed in HATEOAS links via {@link PublisherLinkProvider}.</p>
+     * <p>Each item in the response is enriched with a self-link pointing to its
+     * individual resource endpoint. Returns HTTP 204 if no publishers exist.</p>
      *
-     * @param userId the user requesting the operation
-     * @return list of all publishers
+     * @return a {@link ResponseEntity} containing a list of {@link ResponsePublisherDTO},
+     * HTTP 204 if the list is empty, or HTTP 500 if an unexpected error occurs.
      */
     @GetMapping
-    public ResponseEntity<List<ResponsePublisherDTO>> getAllPublishers(
-            @RequestParam UserId userId) {
+    public ResponseEntity<List<ResponsePublisherDTO>> getAllPublishers() {
 
         try {
             List<Publisher> publishers = publisherService.findAll();
-            List<ResponsePublisherDTO> result = PublisherMapper.toDTOList(publishers);
 
-            List<Link> links = publisherLinkProvider.getLinksForPublisher(userId);
-            result.forEach(dto -> links.forEach(dto::add));
+            List<ResponsePublisherDTO> result = publishers.stream()
+                    .map(publisher -> {
+                        ResponsePublisherDTO dto = PublisherMapper.toDTO(publisher);
+                        dto.add(linkTo(methodOn(PublisherRESTController.class)
+                                .getPublisher(publisher.id()))
+                                .withSelfRel());
+                        return dto;
+                    })
+                    .toList();
+
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
 
             return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Returns a single Publisher identified by its unique ID.
+     *
+     * <p>Enriches the response with a self-link and a link to the full publisher collection.</p>
+     *
+     * @param id the {@link PublisherID} of the publisher to retrieve.
+     * @return a {@link ResponseEntity} containing the {@link ResponsePublisherDTO} and HTTP 200 status,
+     * HTTP 404 if the publisher is not found, or HTTP 500 if an unexpected error occurs.
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponsePublisherDTO> getPublisher(
+            @PathVariable PublisherID id) {
+
+        try {
+            Publisher publisher = publisherService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Publisher not found"));
+
+            ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
+
+            result.add(linkTo(methodOn(PublisherRESTController.class)
+                    .getPublisher(id))
+                    .withSelfRel());
+
+            result.add(linkTo(methodOn(PublisherRESTController.class)
+                    .getAllPublishers())
+                    .withRel("get-all-publishers"));
+
+            return ResponseEntity.ok(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

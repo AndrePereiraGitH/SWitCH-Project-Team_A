@@ -264,13 +264,13 @@
                     </excludedClasses>
 
                     <jvmArgs>
-                        <value>-Xmx2048m</value>
+                        <value>-Xmx512m</value>
                     </jvmArgs>
 
-                    <threads>1</threads>
+                    <threads>4</threads>
 
-                    <timeoutFactor>1.25</timeoutFactor>
-                    <timeoutConstant>6000</timeoutConstant>
+                    <timeoutFactor>1.1</timeoutFactor>
+                    <timeoutConstant>3000</timeoutConstant>
 
                 </configuration>
                 <executions>

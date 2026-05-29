@@ -7,6 +7,7 @@ import TOPSECRET.domain.Publisher.PublisherFactory;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Application service responsible for orchestrating the creation and persistence
@@ -77,7 +79,7 @@ public class PublisherService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
-        if (!authPolicy.canCreatPublisher(user)) {
+        if (!authPolicy.canCreatePublisher(user)) {
             throw new AccessDeniedException("User does not have permission to create a publisher");
         }
 
@@ -95,5 +97,16 @@ public class PublisherService {
      */
     public List<Publisher> findAll() {
         return repository.findAll();
+    }
+
+    /**
+     * Retrieves a {@link Publisher} by its unique identifier.
+     *
+     * @param id the {@link PublisherID} to search for; must not be {@code null}
+     * @return an {@link Optional} containing the Publisher if found; empty otherwise
+     */
+    public Optional<Publisher> findById(PublisherID id) {
+        Objects.requireNonNull(id, "PublisherID cannot be null");
+        return repository.findById(id);
     }
 }
