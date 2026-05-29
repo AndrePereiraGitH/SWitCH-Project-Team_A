@@ -1,20 +1,23 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.EditionAuthorizationPolicy;
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.EditionFactory;
 import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.TypeOfBinding;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -22,27 +25,13 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link EditionService}.
  *
- * <p>Covers two areas:</p>
- * <ul>
- *   <li><b>createAndSave — happy path</b>: verifies that an {@link Edition}
- *       is created via {@link EditionFactory} and persisted via
- *       {@link IEditionRepository}, returning the saved instance.</li>
- *   <li><b>createAndSave — null rejection</b>: verifies that mandatory parameters
- *       throw {@link NullPointerException} when {@code null}.</li>
- * </ul>
+ * <p>Validates the main business rules of edition creation,
+ * including authorization checks and repository interaction.</p>
  *
- * <h2>Test setup</h2>
- * <p>
- * These are pure unit tests using Mockito only.
- * No Spring context is loaded.
- * </p>
+ * <p>All dependencies are mocked using Mockito and tests follow the AAA pattern.</p>
  */
 @ExtendWith(MockitoExtension.class)
 class EditionServiceTest {
-
-    // =========================================================================
-    // Dependencies
-    // =========================================================================
 
     @Mock
     private IEditionRepository editionRepository;
@@ -50,34 +39,29 @@ class EditionServiceTest {
     @Mock
     private EditionFactory factory;
 
+    @Mock
+    private EditionAuthorizationPolicy policy;
+
+    @Mock
+    private IUserRepository userRepository;
+
     @InjectMocks
     private EditionService service;
 
-    // =========================================================================
-    // Test Doubles
-    // =========================================================================
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
 
-    private Code codeDouble;
-    private PhysicalAttributes physicalAttributesDouble;
-    private PublicationTypeId publicationTypeIdDouble;
-    private PublisherID publisherIDDouble;
-    private TypeOfBinding typeOfBindingDouble;
-
-    private Locale language;
-    private LocalDate date;
-
-    @BeforeEach
-    void setUp() {
-
-        codeDouble = mock(Code.class);
-        physicalAttributesDouble = mock(PhysicalAttributes.class);
-        publicationTypeIdDouble = mock(PublicationTypeId.class);
-        publisherIDDouble = mock(PublisherID.class);
-        typeOfBindingDouble = mock(TypeOfBinding.class);
-
-        language = Locale.ENGLISH;
-        date = LocalDate.of(2020, 1, 1);
-    }
+    private UserId userId() { return new UserId("user-1"); }
+    private User user() { return mock(User.class); }
+    private Edition edition() { return mock(Edition.class); }
+    private Code code() { return mock(Code.class); }
+    private PhysicalAttributes physicalAttributes() { return mock(PhysicalAttributes.class); }
+    private PublicationTypeId publicationTypeId() { return mock(PublicationTypeId.class); }
+    private PublisherID publisherId() { return mock(PublisherID.class); }
+    private Locale language() { return Locale.ENGLISH; }
+    private LocalDate date() { return LocalDate.of(2020, 1, 1); }
+    private TypeOfBinding binding() { return TypeOfBinding.HARDBACK; }
 
     // =========================================================================
     // Constructor
@@ -85,59 +69,145 @@ class EditionServiceTest {
 
     @Test
     void constructor_shouldThrowWhenRepositoryIsNull() {
-        // Act & Assert
-        assertThrows(NullPointerException.class,
-                () -> new EditionService(null, factory));
+
+        // Act
+        Exception ex = assertThrows(NullPointerException.class,
+                () -> new EditionService(null, factory, policy, userRepository));
+
+        // Assert
+        assertNotNull(ex);
     }
 
     @Test
     void constructor_shouldThrowWhenFactoryIsNull() {
 
-        // Act & Assert
-        assertThrows(NullPointerException.class,
-                () -> new EditionService(editionRepository, null));
+        // Act
+        Exception ex = assertThrows(NullPointerException.class,
+                () -> new EditionService(editionRepository, null, policy, userRepository));
+
+        // Assert
+        assertNotNull(ex);
+    }
+
+    @Test
+    void constructor_shouldThrowWhenPolicyIsNull() {
+
+        // Act
+        Exception ex = assertThrows(NullPointerException.class,
+                () -> new EditionService(editionRepository, factory, null, userRepository));
+
+        // Assert
+        assertNotNull(ex);
+    }
+
+    @Test
+    void constructor_shouldThrowWhenUserRepositoryIsNull() {
+
+        // Act
+        Exception ex = assertThrows(NullPointerException.class,
+                () -> new EditionService(editionRepository, factory, policy, null));
+
+        // Assert
+        assertNotNull(ex);
     }
 
     // =========================================================================
-    // createAndSave
+    // createAndSave — success
     // =========================================================================
 
     @Test
-    void createAndSave_shouldReturnEdition() {
+    void createAndSave_shouldReturnSavedEdition() throws AccessDeniedException {
 
-        // Arrange
-        Edition editionCreatedDouble = mock(Edition.class);
-        Edition editionSavedDouble = mock(Edition.class);
+        // ARRANGE
+        User user = user();
+        Edition created = edition();
+        Edition saved = edition();
 
-        when(factory.create(
-                "1st",
-                codeDouble,
-                physicalAttributesDouble,
-                publicationTypeIdDouble,
-                publisherIDDouble,
-                "Book",
-                language,
-                date,
-                typeOfBindingDouble
-        )).thenReturn(editionCreatedDouble);
-        when(editionRepository.save(editionCreatedDouble))
-                .thenReturn(editionSavedDouble);
+        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(policy.canCreateEdition(user)).thenReturn(true);
+        when(factory.create("1st", code(), physicalAttributes(), publicationTypeId(),
+                publisherId(), "Book", language(), date(), binding()))
+                .thenReturn(created);
+        when(editionRepository.save(created)).thenReturn(saved);
 
-        // Act
+        // ACT
         Edition result = service.createAndSave(
-                "1st",
-                codeDouble,
-                physicalAttributesDouble,
-                publicationTypeIdDouble,
-                publisherIDDouble,
-                "Book",
-                language,
-                date,
-                typeOfBindingDouble
-        );
+                "1st", code(), physicalAttributes(), publicationTypeId(),
+                publisherId(), "Book", language(), date(), binding(), userId());
 
-        // Assert
-        assertEquals(editionSavedDouble, result);
+        // ASSERT
+        assertSame(saved, result);
+    }
 
+    // =========================================================================
+    // createAndSave — access denied
+    // =========================================================================
+
+    @Test
+    void createAndSave_shouldThrowAccessDenied_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        User user = user();
+
+        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(policy.canCreateEdition(user)).thenReturn(false);
+
+        // ACT
+        Exception ex = assertThrows(AccessDeniedException.class,
+                () -> service.createAndSave(
+                        "1st", code(), physicalAttributes(), publicationTypeId(),
+                        publisherId(), "Book", language(), date(), binding(), userId()));
+
+        // ASSERT
+        assertNotNull(ex);
+    }
+
+    // =========================================================================
+    // createAndSave — user not found
+    // =========================================================================
+
+    @Test
+    void createAndSave_shouldThrowIllegalArgument_whenUserNotFound() {
+
+        // ARRANGE
+        when(userRepository.findByID(userId())).thenReturn(Optional.empty());
+
+        // ACT
+        Exception ex = assertThrows(IllegalArgumentException.class,
+                () -> service.createAndSave(
+                        "1st", code(), physicalAttributes(), publicationTypeId(),
+                        publisherId(), "Book", language(), date(), binding(), userId()));
+
+        // ASSERT
+        assertNotNull(ex);
+    }
+
+    // =========================================================================
+    // createAndSave — repository error
+    // =========================================================================
+
+    @Test
+    void createAndSave_shouldPropagateException_whenRepositoryThrowsOnSave()
+            throws AccessDeniedException {
+
+        // ARRANGE
+        User user = user();
+        Edition created = edition();
+
+        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(policy.canCreateEdition(user)).thenReturn(true);
+        when(factory.create("1st", code(), physicalAttributes(), publicationTypeId(),
+                publisherId(), "Book", language(), date(), binding()))
+                .thenReturn(created);
+        when(editionRepository.save(created)).thenThrow(new RuntimeException("DB error"));
+
+        // ACT
+        Exception ex = assertThrows(RuntimeException.class,
+                () -> service.createAndSave(
+                        "1st", code(), physicalAttributes(), publicationTypeId(),
+                        publisherId(), "Book", language(), date(), binding(), userId()));
+
+        // ASSERT
+        assertNotNull(ex);
     }
 }
