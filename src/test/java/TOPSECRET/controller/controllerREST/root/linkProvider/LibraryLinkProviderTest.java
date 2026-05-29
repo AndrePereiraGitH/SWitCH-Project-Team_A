@@ -4,12 +4,16 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.LibraryAuthorizationPolicy;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 
 import java.util.List;
 import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -18,30 +22,34 @@ import static org.mockito.Mockito.*;
  * These tests verify that HATEOAS links are correctly generated or withheld
  * based on user presence and authorization rules.
  */
+@ExtendWith(MockitoExtension.class)
 class LibraryLinkProviderTest {
 
+    @Mock
     private IUserRepository userRepo;
+
+    @Mock
     private LibraryAuthorizationPolicy authPolicy;
-    private LibraryLinkProvider linkProvider;
+
+    @Mock
     private UserId userId;
+
+    @Mock
     private UserId userId2;
+
+    @Mock
     private User userStub;
+
+    @Mock
     private User userStub2;
 
-    @BeforeEach
-    void setUp() {
-        userRepo = mock(IUserRepository.class);
-        authPolicy = mock(LibraryAuthorizationPolicy.class);
-        linkProvider = new LibraryLinkProvider(authPolicy, userRepo);
+    @InjectMocks
+    private LibraryLinkProvider linkProvider;
 
-        userId = mock(UserId.class);
-        userId2 = mock(UserId.class);
-        userStub = mock(User.class);
-        userStub2 = mock(User.class);
-    }
+    // ============ Authorized user ============
 
     @Test
-    void shouldReturnLinkWhenUserIsAuthorized() {
+    void shouldReturnGetAllAndCreateLinks_whenUserIsAuthorized() {
         // Arrange
         when(userRepo.findByID(userId)).thenReturn(Optional.of(userStub));
         when(authPolicy.canCreateLibrary(userStub)).thenReturn(true);
@@ -50,12 +58,13 @@ class LibraryLinkProviderTest {
         List<Link> links = linkProvider.getLinksForLibraries(userId);
 
         // Assert
-        assertFalse(links.isEmpty(), "Links should not be empty");
+        assertEquals(2, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-all-libraries")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
     }
 
     @Test
-    void shouldReturnLinkWhenSecondUserIsAuthorized() {
+    void shouldReturnGetAllAndCreateLinks_whenSecondUserIsAuthorized() {
         // Arrange
         when(userRepo.findByID(userId2)).thenReturn(Optional.of(userStub2));
         when(authPolicy.canCreateLibrary(userStub2)).thenReturn(true);
@@ -64,12 +73,15 @@ class LibraryLinkProviderTest {
         List<Link> links = linkProvider.getLinksForLibraries(userId2);
 
         // Assert
-        assertFalse(links.isEmpty(), "Links should not be empty");
+        assertEquals(2, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-all-libraries")));
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
     }
 
+    // ============ Unauthorized user ============
+
     @Test
-    void shouldReturnEmptyListWhenUserIsNotAuthorized() {
+    void shouldReturnOnlyGetAllLink_whenUserIsNotAuthorized() {
         // Arrange
         when(userRepo.findByID(userId)).thenReturn(Optional.of(userStub));
         when(authPolicy.canCreateLibrary(userStub)).thenReturn(false);
@@ -78,11 +90,13 @@ class LibraryLinkProviderTest {
         List<Link> links = linkProvider.getLinksForLibraries(userId);
 
         // Assert
-        assertTrue(links.isEmpty(), "Links should be empty for unauthorized users");
+        assertEquals(1, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-all-libraries")));
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
     }
 
     @Test
-    void shouldReturnEmptyListWhenSecondUserIsNotAuthorized() {
+    void shouldReturnOnlyGetAllLink_whenSecondUserIsNotAuthorized() {
         // Arrange
         when(userRepo.findByID(userId2)).thenReturn(Optional.of(userStub2));
         when(authPolicy.canCreateLibrary(userStub2)).thenReturn(false);
@@ -91,11 +105,15 @@ class LibraryLinkProviderTest {
         List<Link> links = linkProvider.getLinksForLibraries(userId2);
 
         // Assert
-        assertTrue(links.isEmpty(), "Links should be empty for unauthorized users");
+        assertEquals(1, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-all-libraries")));
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
     }
 
+    // ============ User not found ============
+
     @Test
-    void shouldReturnEmptyListWhenUserDoesNotExist() {
+    void shouldReturnOnlyGetAllLink_whenUserDoesNotExist() {
         // Arrange
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
@@ -103,11 +121,13 @@ class LibraryLinkProviderTest {
         List<Link> links = linkProvider.getLinksForLibraries(userId);
 
         // Assert
-        assertTrue(links.isEmpty(), "Links should be empty if user is not found in repository");
+        assertEquals(1, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-all-libraries")));
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
     }
 
     @Test
-    void shouldReturnEmptyListWhenSecondUserDoesNotExist() {
+    void shouldReturnOnlyGetAllLink_whenSecondUserDoesNotExist() {
         // Arrange
         when(userRepo.findByID(userId2)).thenReturn(Optional.empty());
 
@@ -115,6 +135,8 @@ class LibraryLinkProviderTest {
         List<Link> links = linkProvider.getLinksForLibraries(userId2);
 
         // Assert
-        assertTrue(links.isEmpty(), "Links should be empty if user is not found in repository");
+        assertEquals(1, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-all-libraries")));
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-library")));
     }
 }
