@@ -112,10 +112,13 @@ class CountryRESTControllerTest {
 
         // Assert
         assertNotNull(response.getBody());
-        assertFalse(response.getBody().getLinks().isEmpty());
         assertTrue(
                 response.getBody().getLinks().stream()
                         .anyMatch(l -> l.getRel().value().equals("register-country"))
+        );
+        assertTrue(
+                response.getBody().getLinks().stream()
+                        .anyMatch(l -> l.getRel().value().equals("self"))
         );
     }
 

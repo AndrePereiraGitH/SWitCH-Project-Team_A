@@ -82,17 +82,14 @@ class CountryLinkProviderTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void shouldReturnOnlyDefaultLink_whenUserDoesNotExist() {
+    void shouldThrowException_whenUserDoesNotExist() {
 
         // ARRANGE
         UserId userId = mock(UserId.class);
-
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
-        // ACT
-        int result = provider.getLinks(userId).size();
-
-        // ASSERT
-        assertEquals(1, result);
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> provider.getLinks(userId));
     }
 }

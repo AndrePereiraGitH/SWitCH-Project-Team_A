@@ -3,6 +3,7 @@ package TOPSECRET.controller.controllerREST.root.linkProvider;
 import TOPSECRET.controller.controllerREST.CountryRESTController;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.CountryAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.hateoas.Link;
@@ -51,19 +52,20 @@ public class CountryLinkProvider {
 
         List<Link> links = new ArrayList<>();
 
+        User user = repository.findByID(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
+
+        // always available
         links.add(linkTo(methodOn(CountryRESTController.class)
                 .getCountries())
                 .withRel("get-all-countries"));
 
-        repository.findByID(id).ifPresent(user -> {
+        if (policy.canRegisterCountry(user)) {
 
-            if (policy.canRegisterCountry(user)) {
-
-                links.add(linkTo(methodOn(CountryRESTController.class)
-                        .registerCountry(null, null))
-                        .withRel("register-country"));
-            }
-        });
+            links.add(linkTo(methodOn(CountryRESTController.class)
+                    .registerCountry(null, null))
+                    .withRel("register-country"));
+        }
 
         return links;
     }

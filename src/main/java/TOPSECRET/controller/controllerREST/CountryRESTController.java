@@ -84,6 +84,10 @@ public class CountryRESTController {
 
             links.forEach(result::add);
 
+            result.add(linkTo(methodOn(CountryRESTController.class)
+                    .registerCountry(null, null))
+                    .withSelfRel());
+
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
         } catch (InstanceAlreadyExistsException e) {
