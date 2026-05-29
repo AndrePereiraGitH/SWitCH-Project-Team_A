@@ -199,6 +199,10 @@
                 <configuration>
                     <excludes>
                         <exclude>**/ui/**/*</exclude>
+                        <exclude>TOPSECRET/domain/Enum/**</exclude>
+                        <exclude>TOPSECRET/dataInitializers/**</exclude>
+                        <exclude>TOPSECRET/dto/**/request/**</exclude>
+                        <exclude>TOPSECRET/dto/**/response/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -258,7 +262,7 @@
                     </outputFormats>
                     <excludedClasses>
                         <param>TOPSECRET.domain.Enum.*</param>
-                        <param>TOPSECRET.ListingDataInitializer</param>
+                        <param>TOPSECRET.dataInitializers.*</param>
                         <param>TOPSECRET.dto.*.request.*</param>
                         <param>TOPSECRET.dto.*.response.*</param>
                     </excludedClasses>
