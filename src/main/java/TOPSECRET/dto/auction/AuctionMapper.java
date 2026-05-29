@@ -4,8 +4,11 @@ import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
+import TOPSECRET.domain.ValueObjects.Price;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.auction.response.AuctionDTO;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -117,5 +120,26 @@ public class AuctionMapper {
      */
     public static ListingId toListingId(String listingId) {
         return new ListingId(listingId);
+    }
+
+    /**
+     * Converts a {@link String} identifier into a {@link UserId} Value Object.
+     *
+     * @param userId the string representation of the user identifier; must not be {@code null}
+     * @return the corresponding {@link UserId}
+     */
+    public static UserId toUserId(String userId) {
+        return new UserId(userId);
+    }
+
+    /**
+     * Converts a string value into a {@link Price}.
+     *
+     * @param price the price value as a string
+     * @return a {@link Price} value object
+     * @throws NumberFormatException if the price is not a valid decimal number
+     */
+    public static Price toPrice(String price) {
+        return new Price(new BigDecimal(price));
     }
 }

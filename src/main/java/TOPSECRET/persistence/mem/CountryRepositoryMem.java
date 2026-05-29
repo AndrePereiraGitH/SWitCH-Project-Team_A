@@ -1,10 +1,8 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.Country.CountryFactory;
 import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.ValueObjects.CountryId;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +50,6 @@ public class CountryRepositoryMem implements ICountryRepository {
             throw new IllegalArgumentException("Country cannot be null");
         }
 
-        if (!isANewCountry(countryName)) {
-            throw new IllegalArgumentException("Country is already registered");
-        }
-
         registeredCountries.add(countryName);
         return countryName;
     }
@@ -78,39 +72,11 @@ public class CountryRepositoryMem implements ICountryRepository {
                 .findFirst();
     }
 
-    /**
-     * Checks whether a {@link Country} is not already registered.
-     * <p>
-     * Duplicate detection is based on the country name using
-     * case-insensitive comparison.
-     * </p>
-     *
-     * @param country the {@link Country} to check
-     * @return {@code true} if the country is not yet registered;
-     *         {@code false} otherwise
-     */
-    private boolean isANewCountry(Country country) {
-        for (Country registered : registeredCountries) {
-            if (registered.getCountryName()
-                    .equalsIgnoreCase(country.getCountryName())) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     /**
      * {@inheritDoc}
      */
     public Optional<CountryId> findIdByName(String countryName) {
-
-        if (countryName == null) {
-            throw new NullPointerException("A country's name cannot be null");
-        }
-
-        if (countryName.isBlank()) {
-            throw new IllegalArgumentException("A country's name cannot be blank");
-        }
 
         String normalizedInput = normalizeCountryName(countryName);
 

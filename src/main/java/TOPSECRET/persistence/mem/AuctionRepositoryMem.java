@@ -1,38 +1,33 @@
 package TOPSECRET.persistence.mem;
 
 import TOPSECRET.domain.Auction.Auction;
-import TOPSECRET.domain.Auction.AuctionFactory;
 import TOPSECRET.domain.Auction.IAuctionRepository;
 import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.ListingId;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * In-memory implementation of {@link IAuctionRepository}.
  * <p>
- * This repository stores {@link Auction} instances in a static list and
- * provides operations for creating, retrieving, and filtering auctions.
+ * This repository stores {@link Auction} instances in a {@link Map} keyed by
+ * {@link AuctionId}, providing efficient lookup, creation, and update operations.
  * </p>
  * <p>
- * Auctions are created through an {@link AuctionFactory} and kept only
- * during the application's runtime.
+ * Data is kept only during the application's runtime.
  * </p>
  */
 public class AuctionRepositoryMem implements IAuctionRepository {
 
-    private static List<Auction> _auctionsList;
+    private final Map<AuctionId, Auction> _auctionsMap;
 
     // ============================================================
     // ================ CONSTRUCTOR ===============================
     // ============================================================
 
     public AuctionRepositoryMem() {
-        _auctionsList = new ArrayList<>();
+        _auctionsMap = new HashMap<>();
     }
 
     // ============================================================
@@ -48,13 +43,28 @@ public class AuctionRepositoryMem implements IAuctionRepository {
             throw new InstanceAlreadyExistsException("This auction already exists");
         }
 
-        _auctionsList.add(auction);
+        _auctionsMap.put(auction.id(), auction);
+
+        return auction;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Auction update(Auction auction) {
+
+        if (!isExistent(auction)) {
+            throw new IllegalArgumentException("Auction does not exist");
+        }
+
+        _auctionsMap.put(auction.id(), auction);
 
         return auction;
     }
 
     private boolean isExistent(Auction auction) {
-        return _auctionsList.contains(auction);
+        return _auctionsMap.containsKey(auction.id());
     }
 
     /**
@@ -62,7 +72,7 @@ public class AuctionRepositoryMem implements IAuctionRepository {
      */
     @Override
     public List<Auction> findAll() {
-        return List.copyOf(_auctionsList);
+        return List.copyOf(_auctionsMap.values());
     }
 
     /**
@@ -70,13 +80,12 @@ public class AuctionRepositoryMem implements IAuctionRepository {
      */
     @Override
     public Optional<Auction> findById(AuctionId id) {
+
         if (id == null) {
             throw new IllegalArgumentException("AuctionId cannot be null");
         }
 
-        return _auctionsList.stream()
-                .filter(auction -> auction.id().equals(id))
-                .findFirst();
+        return Optional.ofNullable(_auctionsMap.get(id));
     }
 
     /**
@@ -89,7 +98,7 @@ public class AuctionRepositoryMem implements IAuctionRepository {
             throw new IllegalArgumentException("List of listingIds cannot be null.");
         }
 
-        return _auctionsList.stream()
+        return _auctionsMap.values().stream()
                 .filter(auction -> listingIds.contains(auction.getListingId()))
                 .toList();
     }
@@ -99,11 +108,12 @@ public class AuctionRepositoryMem implements IAuctionRepository {
      */
     @Override
     public List<Auction> findByListingIdInOrderByAuctionDeadlineAsc(List<ListingId> listingIds) {
+
         if (listingIds == null) {
             throw new IllegalArgumentException("List of listingIds cannot be null.");
         }
 
-        return _auctionsList.stream()
+        return _auctionsMap.values().stream()
                 .filter(auction -> listingIds.contains(auction.getListingId()))
                 .sorted(Comparator.comparing(Auction::getAuctionEndDateTime))
                 .toList();
