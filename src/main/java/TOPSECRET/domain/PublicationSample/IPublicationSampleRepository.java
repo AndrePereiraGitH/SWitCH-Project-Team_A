@@ -1,5 +1,6 @@
 package TOPSECRET.domain.PublicationSample;
 
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.ValueObjects.*;
 
 import java.util.List;
@@ -8,23 +9,21 @@ import java.util.Optional;
 /**
  * Repository interface responsible for managing {@link PublicationSample} aggregates.
  *
- * <p>Provides operations grouped into four categories:</p>
+ * <p>Provides operations grouped into three categories:</p>
  * <ul>
- *   <li><b>Construction</b> — factory-style creation and persistence in a single step.</li>
- *   <li><b>Persistence</b> — low-level save and existence checks.</li>
+ *   <li><b>Persistence</b> — save and existence checks.</li>
  *   <li><b>Lookup</b> — queries by identity or associated identifiers.</li>
- *   <li><b>Domain Operations</b> — operations that involve domain logic beyond simple retrieval.</li>
+ *   <li><b>Domain Operations</b> — queries that involve domain-specific filtering.</li>
  * </ul>
  */
 public interface IPublicationSampleRepository {
-
 
     // =========================================================================
     // Persistence
     // =========================================================================
 
     /**
-     * Saves the given {@link PublicationSample} to the repository.
+     * Persists the given {@link PublicationSample}.
      *
      * @param publicationSample the sample to save; must not be {@code null}
      * @return the saved {@link PublicationSample}
@@ -38,27 +37,6 @@ public interface IPublicationSampleRepository {
      * @return {@code true} if a matching sample exists, {@code false} otherwise
      */
     boolean existsById(PublicationSampleId id);
-
-    /**
-     * Updates an existing {@link PublicationSample} in the persistence layer.
-     *
-     * <p>
-     * This operation is intended for aggregates that already exist and whose
-     * state has changed during the execution of a use case.
-     * </p>
-     *
-     * <p>
-     * The repository converts the domain object into its persistence
-     * representation, delegates the update operation to the JPA repository,
-     * and reconstructs the persisted aggregate before returning it.
-     * </p>
-     *
-     * @param publicationSample the publication sample to update
-     * @return the updated and persisted {@link PublicationSample}
-     *
-     * @throws NullPointerException if publicationSample is null
-     */
-    PublicationSample update(PublicationSample publicationSample);
 
     // =========================================================================
     // Lookup — by identity
@@ -75,7 +53,7 @@ public interface IPublicationSampleRepository {
     /**
      * Retrieves all {@link PublicationSample} instances stored in the repository.
      *
-     * @return a list of all publication samples; never {@code null}, but may be empty
+     * @return a list of all publication samples; never {@code null}, may be empty
      */
     List<PublicationSample> findAll();
 
@@ -127,7 +105,7 @@ public interface IPublicationSampleRepository {
      * Retrieves all publications owned by the given user that are assigned to a library.
      *
      * @param userId the user ID; must not be {@code null}
-     * @return a list of {@link PublicationSample} in a library; never {@code null}, may be empty
+     * @return a list of {@link PublicationSample} assigned to a library; never {@code null}, may be empty
      */
     List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId);
 
@@ -144,44 +122,12 @@ public interface IPublicationSampleRepository {
     // =========================================================================
 
     /**
-     * Associates the given {@link PublicationSample} with a library and persists the change.
+     * Retrieves all publication samples in the given library whose status is not in the excluded list.
      *
-     * @param publicationSample the sample to update; must not be {@code null}
-     * @param libraryId         the library to associate; must not be {@code null}
-     * @return {@code true} if the association was successfully persisted
-     * @throws IllegalArgumentException if the sample is already assigned to a library
+     * @param libraryId        the library identifier; must not be {@code null}
+     * @param excludedStatuses the statuses to exclude; must not be {@code null}
+     * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      */
-    boolean addPublicationToLibrary(PublicationSample publicationSample, LibraryId libraryId);
-
-    /**
-     * Retrieves all publication samples in the given library that are eligible for sale.
-     *
-     * @param libraryId the library identifier; must not be {@code null}
-     * @return a list of sale-eligible {@link PublicationSample}; never {@code null}, may be empty
-     */
-    List<PublicationSample> findAvailableForSaleByLibraryId(LibraryId libraryId);
-
-    /**
-     * Assigns the given collection to the specified publication samples and persists the change.
-     *
-     * @param collectionId         the collection identifier; must not be {@code null}
-     * @param publicationSampleIds the list of sample IDs to assign; must not be {@code null}
-     * @return {@code true} if the operation succeeded
-     */
-    boolean assignPublicationsToCollection(CollectionOfPublicationsId collectionId,
-                                           List<PublicationSampleId> publicationSampleIds);
-
-    /**
-     * Retrieves publications owned by the given user that are not yet assigned to the given collection.
-     *
-     * <p>Computes the difference between all publications in the user's library
-     * and those already assigned to the collection.</p>
-     *
-     * @param userId       the user identifier; must not be {@code null}
-     * @param collectionId the collection identifier; must not be {@code null}
-     * @return a list of available {@link PublicationSample}; never {@code null}, may be empty
-     */
-    List<PublicationSample> findAvailableForCollection(UserId userId,
-                                                       CollectionOfPublicationsId collectionId);
-
+    List<PublicationSample> findByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId,
+                                                                     List<PublicationStatus> excludedStatuses);
 }
