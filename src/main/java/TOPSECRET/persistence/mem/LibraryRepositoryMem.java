@@ -3,12 +3,15 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
 
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * In-memory implementation of {@link ILibraryRepository}.
@@ -64,5 +67,40 @@ public class LibraryRepositoryMem implements ILibraryRepository {
             throw new IllegalArgumentException("UserID can not be null");
         }
         return _libraries.containsKey(userId.getUserId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Library> findAll() {
+        return List.copyOf(_libraries.values());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Library> findById(LibraryId id) {
+        if (id == null) {
+            throw new IllegalArgumentException("LibraryId cannot be null");
+        }
+        return _libraries.values().stream()
+                .filter(library -> library.id().equals(id))
+                .findFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Library> findByUserId(UserId userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId cannot be null");
+        }
+
+        return _libraries.values().stream()
+                .filter(library -> library.getUserId().equals(userId))
+                .findFirst();
     }
 }

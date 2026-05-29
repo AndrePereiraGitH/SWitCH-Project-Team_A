@@ -42,12 +42,14 @@ public class LibraryLinkProvider {
     public List<Link> getLinksForLibraries(UserId userId) {
         List<Link> links = new ArrayList<>();
 
+        links.add(linkTo(methodOn(LibraryRESTController.class)
+                .getAllLibraries())
+                .withRel("get-all-libraries"));
+
         userRepo.findByID(userId).ifPresent(user -> {
-
             if (authPolicy.canCreateLibrary(user)) {
-
                 links.add(linkTo(methodOn(LibraryRESTController.class)
-                        .createLibrary(null, userId))
+                        .createLibrary(null, null))
                         .withRel("create-library"));
             }
         });
