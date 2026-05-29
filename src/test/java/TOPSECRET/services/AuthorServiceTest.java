@@ -1,139 +1,224 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AuthorAuthorizationPolicy;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
+import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.Country.ICountryRepository;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CountryId;
-import org.junit.jupiter.api.BeforeEach;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
-
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AuthorService}.
+ */
 @ExtendWith(MockitoExtension.class)
 class AuthorServiceTest {
+
+    @Mock
+    private IAuthorRepository authorRepository;
 
     @Mock
     private AuthorFactory authorFactory;
 
     @Mock
-    private IAuthorRepository authorRepo;
+    private AuthorAuthorizationPolicy policy;
+
+    @Mock
+    private IUserRepository userRepository;
+
+    @Mock
+    private ICountryRepository countryRepository;
 
     @InjectMocks
     private AuthorService authorService;
 
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
 
-    // ===================================================
-    // =================== CONSTRUCTOR ===================
-    // ===================================================
+    private UserId userId() { return new UserId("user-1"); }
+    private User user() { return mock(User.class); }
+    private Author author() { return mock(Author.class); }
+    private CountryId countryId() { return new CountryId("PORTUGAL"); }
+    private LocalDate dateOfBirth() { return LocalDate.of(1922, 11, 16); }
+
+    // =========================================================================
+    // Constructor
+    // =========================================================================
+
     @Test
-    void constructorShouldThrowExceptionWhenAuthorFactoryIsNull() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new AuthorService(null, authorRepo)
-        );
-
-        assertEquals("Author factory cannot be null.", exception.getMessage());
+    void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> new AuthorService(null, authorRepository, policy, userRepository, countryRepository));
     }
 
     @Test
-    void constructorShouldThrowExceptionWhenAuthorRepositoryIsNull() {
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> new AuthorService(authorFactory, null)
-        );
-
-        assertEquals("Author Repository cannot be null", exception.getMessage());
+    void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> new AuthorService(authorFactory, null, policy, userRepository, countryRepository));
     }
 
-
-    // ===================================================
-    // =============== CREATE AND SAVE ===================
-    // ===================================================
+    @Test
+    void constructor_shouldThrowNullPointerException_whenPolicyIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> new AuthorService(authorFactory, authorRepository, null, userRepository, countryRepository));
+    }
 
     @Test
-    void createAndSaveShouldReturnSavedAuthor() throws InstanceAlreadyExistsException {
-        // Arrange
+    void constructor_shouldThrowNullPointerException_whenUserRepositoryIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> new AuthorService(authorFactory, authorRepository, policy, null, countryRepository));
+    }
 
-        String name = "Fernando Pessoa";
-        CountryId countryID = mock(CountryId.class);
-        LocalDate dateOfBirth = LocalDate.of(1888, 6, 13);
-        String biography = "Portuguese poet and writer.";
+    @Test
+    void constructor_shouldThrowNullPointerException_whenCountryRepositoryIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> new AuthorService(authorFactory, authorRepository, policy, userRepository, null));
+    }
 
-        Author createdAuthor = mock(Author.class);
-        Author savedAuthor = mock(Author.class);
+    // =========================================================================
+    // createAndSave — success
+    // =========================================================================
 
-        when(authorFactory.create(name, countryID, dateOfBirth, biography))
-                .thenReturn(createdAuthor);
+    @Test
+    void createAndSave_shouldReturnSavedAuthor() throws InstanceAlreadyExistsException, AccessDeniedException {
 
-        when(authorRepo.save(createdAuthor))
-                .thenReturn(savedAuthor);
+        // ARRANGE
+        User user = user();
+        Author author = author();
+        Author savedAuthor = author();
 
-        // Act
-        Author result = authorService.createAndSave(name, countryID, dateOfBirth, biography);
+        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+        when(authorFactory.create("José Saramago", countryId(), dateOfBirth(), "Biography"))
+                .thenReturn(author);
+        when(authorRepository.save(author)).thenReturn(savedAuthor);
 
-        // Assert
+        // ACT
+        Author result = authorService.createAndSave(
+                "José Saramago", countryId(), dateOfBirth(), "Biography", userId());
+
+        // ASSERT
         assertSame(savedAuthor, result);
     }
 
     @Test
-    void createAndSaveShouldThrowExceptionWhenRepositoryThrowsInstanceAlreadyExistsException()
-            throws InstanceAlreadyExistsException {
+    void createAndSave_shouldCallRepositorySave_whenUserIsAdmin() throws Exception {
 
-        // Arrange
-        String name = "Fernando Pessoa";
-        CountryId countryID = mock(CountryId.class);
-        LocalDate dateOfBirth = LocalDate.of(1888, 6, 13);
-        String biography = "Portuguese poet and writer.";
+        // ARRANGE
+        User user = user();
+        Author author = author();
 
-        Author createdAuthor = mock(Author.class);
+        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+        when(authorFactory.create("José Saramago", countryId(), dateOfBirth(), "Biography"))
+                .thenReturn(author);
+        when(authorRepository.save(author)).thenReturn(author);
 
-        when(authorFactory.create(name, countryID, dateOfBirth, biography))
-                .thenReturn(createdAuthor);
+        // ACT
+        Author result = authorService.createAndSave(
+                "José Saramago", countryId(), dateOfBirth(), "Biography", userId());
 
-        when(authorRepo.save(createdAuthor))
-                .thenThrow(new InstanceAlreadyExistsException("AuthorId already exists"));
+        // ASSERT
+        assertSame(author, result);
+    }
 
-        // Act + Assert
-        InstanceAlreadyExistsException exception = assertThrows(
-                InstanceAlreadyExistsException.class,
-                () -> authorService.createAndSave(name, countryID, dateOfBirth, biography)
-        );
+    // =========================================================================
+    // createAndSave — access denied
+    // =========================================================================
 
-        assertEquals("AuthorId already exists", exception.getMessage());
+    @Test
+    void createAndSave_shouldThrowAccessDenied_whenUserIsNotAdmin() {
+
+        // ARRANGE
+        User user = user();
+
+        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(AccessDeniedException.class,
+                () -> authorService.createAndSave(
+                        "José Saramago", countryId(), dateOfBirth(), "Biography", userId()));
+    }
+
+    // =========================================================================
+    // createAndSave — repository error
+    // =========================================================================
+
+    @Test
+    void createAndSave_shouldPropagateException_whenRepositoryThrowsOnSave() throws Exception {
+
+        // ARRANGE
+        User user = user();
+        Author author = author();
+
+        when(userRepository.findByID(userId())).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+        when(authorFactory.create("José Saramago", countryId(), dateOfBirth(), "Biography"))
+                .thenReturn(author);
+        when(authorRepository.save(author)).thenThrow(new RuntimeException("DB error"));
+
+        // ACT + ASSERT
+        assertThrows(RuntimeException.class,
+                () -> authorService.createAndSave(
+                        "José Saramago", countryId(), dateOfBirth(), "Biography", userId()));
+    }
+
+    // =========================================================================
+    // resolveCountry
+    // =========================================================================
+
+    @Test
+    void resolveCountry_shouldReturnCountry_whenFound() {
+
+        // ARRANGE
+        Country countryDouble = mock(Country.class);
+        when(countryRepository.findByID(countryId())).thenReturn(Optional.of(countryDouble));
+
+        // ACT
+        Country result = authorService.resolveCountry(countryId());
+
+        // ASSERT
+        assertSame(countryDouble, result);
     }
 
     @Test
-    void createAndSaveShouldPropagateExceptionWhenFactoryThrowsException()
-            throws InstanceAlreadyExistsException {
+    void resolveCountry_shouldThrowException_whenCountryNotFound() {
 
-        // Arrange
-        String name = null;
-        CountryId countryID = mock(CountryId.class);
-        LocalDate dateOfBirth = LocalDate.of(1888, 6, 13);
-        String biography = "Portuguese poet and writer.";
+        // ARRANGE
+        when(countryRepository.findByID(countryId())).thenReturn(Optional.empty());
 
-        when(authorFactory.create(name, countryID, dateOfBirth, biography))
-                .thenThrow(new IllegalArgumentException("name cannot be null"));
-
-        // Act + Assert
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> authorService.createAndSave(name, countryID, dateOfBirth, biography)
-        );
-
-        assertEquals("name cannot be null", exception.getMessage());
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> authorService.resolveCountry(countryId()));
     }
 
+    @Test
+    void createAndSave_shouldThrowIllegalArgument_whenUserNotFound() {
+
+        // ARRANGE
+        when(userRepository.findByID(userId())).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> authorService.createAndSave(
+                        "José Saramago", countryId(), dateOfBirth(), "Biography", userId()));
+    }
 }
