@@ -10,7 +10,6 @@ import TOPSECRET.dto.collectionOfPublications.request.RequestCollectionOfPublica
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
 import TOPSECRET.services.CollectionOfPublicationsService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.hateoas.Link;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;

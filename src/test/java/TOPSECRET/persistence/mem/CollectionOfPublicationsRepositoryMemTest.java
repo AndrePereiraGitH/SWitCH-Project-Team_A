@@ -28,12 +28,10 @@ import static org.mockito.Mockito.*;
 class CollectionOfPublicationsRepositoryMemTest {
 
 
-    private ICollectionOfPublicationsRepository sut;
     private CollectionOfPublicationsFactory factoryDouble;
 
     @BeforeEach
     void setUp() {
-        sut = new CollectionOfPublicationsRepositoryMem();
         factoryDouble = mock(CollectionOfPublicationsFactory.class);
     }
 
@@ -47,7 +45,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     void saveShouldReturnSavedCollection() {
 
         // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
@@ -69,7 +67,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     void saveShouldThrowWhenCollectionAlreadyExists() {
 
         // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
@@ -92,7 +90,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void update_shouldUpdateAndReturnCollection_whenCollectionExists() throws InstanceNotFoundException {
         // arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         CollectionOfPublications existingCollection = mock(CollectionOfPublications.class);
@@ -115,7 +113,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void update_shouldThrow_whenCollectionIsNull() {
         // arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         // act + assert
         NullPointerException ex = assertThrows(
@@ -129,7 +127,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void update_shouldReturnNull_whenCollectionDoesNotExist() {
         // arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
@@ -152,7 +150,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     void existsByIdShouldThrowWhenIdIsNull() {
 
         // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         // Act + Assert
         assertThrows(
@@ -165,7 +163,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     void existsByIdShouldReturnTrueWhenCollectionExists() {
 
         // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
@@ -185,7 +183,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     void existsByIdShouldReturnFalseWhenCollectionDoesNotExist() {
 
         // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
@@ -203,7 +201,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findById_shouldFindCollection_whenExistsById() throws InstanceNotFoundException {
         // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
@@ -222,7 +220,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findById_shouldThrow_whenCollectionDoesNotExists() {
         //arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
         //act + assert
@@ -233,7 +231,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findById_shouldThrow_whenCollectionIdIsNull() {
         //arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         //act + assert
         NullPointerException ex = assertThrows(NullPointerException.class, () -> sut.findById(null));
@@ -248,7 +246,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void getUserCollectionsShouldThrowExceptionIfAllByUserIdNull() {
         //Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         //Act + assert
         assertThrows(IllegalArgumentException.class, () -> sut.findAllByOwnerId(null));
@@ -260,7 +258,7 @@ class CollectionOfPublicationsRepositoryMemTest {
         // Arrange
         UserId user = mock(UserId.class);
         UserId otherUser = mock(UserId.class);
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         CollectionOfPublications collection1 = mock(CollectionOfPublications.class);
         CollectionOfPublications collection2 = mock(CollectionOfPublications.class);
@@ -269,7 +267,6 @@ class CollectionOfPublicationsRepositoryMemTest {
         when(collection2.getOwnerId()).thenReturn(otherUser);
 
         // Act
-        // the list is private with no setter, so reflection is the only way to pre-populate it in a unit test
         Field field = CollectionOfPublicationsRepositoryMem.class
                 .getDeclaredField("_collectionOfPublicationsList");
         field.setAccessible(true);
@@ -296,7 +293,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void shouldThrowExceptionWhenGenreIsNull() {
         // Arrange
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
         IUserRepository userRepo = mock(IUserRepository.class);
 
         // Act + Assert
@@ -307,7 +304,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     void shouldReturnEmptyListPublicWhenNoCollectionsExist() {
         // Arrange
         GenreId desiredGenres = mock(GenreId.class);
-        sut = new CollectionOfPublicationsRepositoryMem();
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
         // Act
         List<CollectionOfPublications> result = sut.findPublicCollectionsByGenreId(desiredGenres);
@@ -320,6 +317,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findPublicCollectionsByGenreIdShouldReturnPublicCollectionsWhenMatchingCollectionsExist() {
         // ARRANGE
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
         GenreId genreIdDouble = mock(GenreId.class);
         UserId userIdDouble = mock(UserId.class);
 
@@ -343,6 +341,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findPublicCollectionsByGenreIdShouldNotReturnPrivateCollections() {
         // ARRANGE
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
         GenreId genreIdDouble = mock(GenreId.class);
         UserId userIdDouble = mock(UserId.class);
 
@@ -365,6 +364,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     @Test
     void findPublicCollectionsByGenreIdShouldNotReturnCollectionsWithDifferentGenre() {
         // ARRANGE
+        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
         GenreId genreIdDouble = mock(GenreId.class);
         GenreId otherGenreIdDouble = mock(GenreId.class);
         UserId userIdDouble = mock(UserId.class);
