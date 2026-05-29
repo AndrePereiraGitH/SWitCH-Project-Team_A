@@ -335,75 +335,43 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         assertTrue(result.isEmpty());
     }
 
-    // =========================================================================
-    // getUserCollections()
-    // =========================================================================
-
     @Test
-    void ensureGetUserCollectionsReturnsList() {
+    void findPublicCollectionsByGenreId_shouldReturnOnlyPublicCollections_WhenBothTypesExist() {
 
         // ARRANGE
-        UserId ownerId = mock(UserId.class);
-        CollectionOfPublicationsDM dm = mock(CollectionOfPublicationsDM.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        GenreId genreIdDouble = mock(GenreId.class);
 
-        List<CollectionOfPublicationsDM> dmList = List.of(dm);
-        List<CollectionOfPublications> collections = List.of(collection);
+        CollectionOfPublicationsDM publicDM = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublicationsDM privateDM = mock(CollectionOfPublicationsDM.class);
 
-        when(jpa.findByOwnerId(ownerId)).thenReturn(dmList);
-        when(assembler.toDomainList(dmList)).thenReturn(collections);
+        CollectionOfPublications publicCollection = mock(CollectionOfPublications.class);
+        CollectionOfPublications privateCollection = mock(CollectionOfPublications.class);
+
+        when(publicCollection.getIsPrivate()).thenReturn(false);
+        when(privateCollection.getIsPrivate()).thenReturn(true);
+
+        when(jpa.findPublicCollectionsByGenreId(genreIdDouble))
+                .thenReturn(List.of(publicDM, privateDM));
+
+        when(assembler.toDomain(publicDM)).thenReturn(publicCollection);
+        when(assembler.toDomain(privateDM)).thenReturn(privateCollection);
 
         // ACT
-        List<CollectionOfPublications> result = repo.getUserCollections(ownerId);
+        List<CollectionOfPublications> result = repo.findPublicCollectionsByGenreId(genreIdDouble);
 
         // ASSERT
-        assertNotNull(result);
+        assertEquals(1, result.size(), "One public collection found matching this genre");
+        assertEquals(publicCollection, result.get(0), "No public collections matching this genre found");
+        assertFalse(result.contains(privateCollection), "All filtered collections should be public");
     }
 
     @Test
-    void ensureGetUserCollectionsReturnsCorrectSize() {
-
-        // ARRANGE
-        UserId ownerId = mock(UserId.class);
-        CollectionOfPublicationsDM dm = mock(CollectionOfPublicationsDM.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        List<CollectionOfPublicationsDM> dmList = List.of(dm);
-        List<CollectionOfPublications> collections = List.of(collection);
-
-        when(jpa.findByOwnerId(ownerId)).thenReturn(dmList);
-        when(assembler.toDomainList(dmList)).thenReturn(collections);
-
-        // ACT
-        List<CollectionOfPublications> result =
-                repo.getUserCollections(ownerId);
-
-        // ASSERT
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    void ensureGetUserCollectionsThrowsExceptionWhenOwnerIdIsNull() {
-
+    void findPublicCollectionsByGenreId_shouldThrowNullPointerException_whenGenreIdIsNull() {
         // ACT & ASSERT
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.getUserCollections(null));
-    }
+        NullPointerException exception = assertThrows(NullPointerException.class, () -> {
+            repo.findPublicCollectionsByGenreId(null);
+        });
 
-    @Test
-    void ensureGetUserCollectionsReturnsEmptyList() {
-
-        // ARRANGE
-        UserId ownerId = mock(UserId.class);
-
-        when(jpa.findByOwnerId(ownerId)).thenReturn(List.of());
-        when(assembler.toDomainList(List.of())).thenReturn(List.of());
-
-        // ACT
-        List<CollectionOfPublications> result =
-                repo.getUserCollections(ownerId);
-
-        // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals("genreId cannot be null", exception.getMessage());
     }
 }

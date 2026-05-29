@@ -14,13 +14,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.management.InstanceAlreadyExistsException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Unit tests for {@link ToCreateCollectionOfPublicationsController} — US017.
+ * Unit tests for {@link ToCreateCollectionOfPublicationsController} feature.
  *
  * <p>All dependencies are replaced by mocks so only the controller logic is tested.
  * Each test follows the Arrange / Act / Assert structure.
@@ -121,7 +123,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     }
 
     @Test
-    void shouldCreateCollectionSuccessfully() {
+    void shouldCreateCollectionSuccessfully() throws AccessDeniedException, InstanceAlreadyExistsException {
         // Arrange
         UserId userId = mock(UserId.class);
         GenreId genreId = mock(GenreId.class);
@@ -137,7 +139,7 @@ class ToCreateCollectionOfPublicationsControllerTest {
     }
 
     @Test
-    void shouldPropagateExceptionWhenDuplicateExists() {
+    void shouldPropagateExceptionWhenDuplicateExists() throws AccessDeniedException, InstanceAlreadyExistsException {
         // Arrange
         UserId userId = mock(UserId.class);
         GenreId genreId = mock(GenreId.class);
