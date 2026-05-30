@@ -2,6 +2,7 @@ package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.LibraryAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.LibraryDM;
@@ -11,7 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+
 /**
  * JPA-based implementation of the {@link ILibraryRepository} interface.
  *
@@ -80,5 +84,38 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
         }
 
         return _jpaRepository.findByUserId(userId).isPresent();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Library> findAll() {
+        return _jpaRepository.findAll()
+                .stream()
+                .map(_assembler::toDomain)
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Library> findById(LibraryId id) {
+        return _jpaRepository.findById(id)
+                .map(_assembler::toDomain);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Optional<Library> findByUserId(UserId userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId cannot be null");
+        }
+
+        return _jpaRepository.findByUserId(userId)
+                .map(_assembler::toDomain);
     }
 }

@@ -49,6 +49,11 @@ public class EditionLinkProvider {
      */
     public List<Link> getLinks(UserId id) {
         List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(EditionRESTController.class)
+                .findAll(null))
+                .withRel("find-all-editions"));
+
         User user = repository.findByID(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         if (policy.canCreateEdition(user)) {

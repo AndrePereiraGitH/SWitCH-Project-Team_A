@@ -77,7 +77,7 @@ public class ToAddPublicationToAListOfMineController {
     public List<US018CollectionOfPublicationsDTO> getUserCollections() {
 
         List<CollectionOfPublications> userCollections =
-                _collectionRepo.getUserCollections(_userId);
+                _collectionRepo.findAllByOwnerId(_userId);
 
         return US018CollectionOfPublicationsMapper.toDTOs(userCollections);
     }

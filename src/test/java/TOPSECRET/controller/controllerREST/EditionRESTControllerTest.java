@@ -77,7 +77,7 @@ class EditionRESTControllerTest {
                 "publisher-1",
                 "Book",
                 "en",
-                "2010-01-01",
+                LocalDate.of(1989,10,10),
                 "HARDBACK"
         );
     }
@@ -209,4 +209,49 @@ class EditionRESTControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
         assertNull(result.getBody());
     }
+
+    @Test
+    void findAll_shouldReturnOkWithEditions() {
+        // Arrange
+
+        EditionRESTController sut = new EditionRESTController(service, provider);
+        UserId userId = new UserId("user-1");
+
+        Edition edition = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("edition-1");
+
+        when(service.findAll()).thenReturn(List.of(edition));
+
+        // Act
+        ResponseEntity<List<EditionDTO>> response = sut.findAll(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+
+    }
+
+    @Test
+    void findAll_shouldReturnInternalServerError_whenServiceThrowsException() {
+        // Arrange
+        EditionRESTController sut = new EditionRESTController(service, provider);
+
+        UserId userId = new UserId("user-1");
+        when(service.findAll())
+                .thenThrow(new RuntimeException("Erro"));
+
+        // Act
+        ResponseEntity<List<EditionDTO>> response = sut.findAll(userId);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+
+    }
+
+
 }

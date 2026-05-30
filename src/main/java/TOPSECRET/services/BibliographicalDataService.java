@@ -109,6 +109,38 @@ public class BibliographicalDataService {
     }
 
     /**
+     * Builds a map associating each bibliographical data entry with its list of author names.
+     *
+     * <p>For every {@link BibliographicalData} in the provided list, this method retrieves
+     * the corresponding authors using {@code getAuthors(BibliographicalData)} and stores
+     * them in a map keyed by the bibliographical data identifier.</p>
+     *
+     * @param bibliographicalDataList the list of bibliographical data entries to process
+     * @return a map where the key is the {@link BibliographicalDataId} and the value is
+     *         the list of author names associated with that entry
+     * @throws InstanceNotFoundException if the authors for a bibliographical data entry
+     *         cannot be found
+     */
+    public Map<BibliographicalDataId, List<String>> buildAuthorNamesMap(
+            List<BibliographicalData> bibliographicalDataList)
+            throws InstanceNotFoundException {
+
+        Map<BibliographicalDataId, List<String>> result = new HashMap<>();
+
+        for (BibliographicalData bd : bibliographicalDataList) {
+
+            List<String> authorNames = getAuthors(bd);
+
+            result.put(bd.id(), authorNames);
+        }
+        return result;
+    }
+
+    // ===================================================================
+    // ========================== GETTERS ================================
+    // ===================================================================
+
+    /**
      * Resolves the names of all authors associated with the given
      * {@link BibliographicalData}.
      *
@@ -143,29 +175,63 @@ public class BibliographicalDataService {
     public List<BibliographicalData> findAll() { return bibliographicalDataRepository.findAll(); }
 
     /**
-     * Retrieves all bibliographical data records and converts them into DTO objects.
+     * Retrieves a bibliographical data entity stored in the repository.
      *
-     * <p>Each {@link BibliographicalData} entity is mapped to a
-     * {@link responseBibliographicalDataDTO}, including the list of author names
-     * associated with the bibliographical record.</p>
-     *
-     * @return a list of {@link responseBibliographicalDataDTO} containing all
-     *         bibliographical data records
-     * @throws InstanceNotFoundException if an expected related instance
-     *         (such as an author) cannot be found during processing
+     * @return an Optional containing the {@link BibliographicalData} entity;
+     * @throws IllegalArgumentException if {@link BibliographicalDataId} is null
      */
-    public List<responseBibliographicalDataDTO> createDTOlist(List<BibliographicalData> bibliographicalData) throws InstanceNotFoundException {
-
-        List<responseBibliographicalDataDTO> result = new ArrayList<>();
-
-        for (BibliographicalData bd : bibliographicalData) {
-            List<String> authorNames = getAuthors(bd);
-            result.add(BibliographicalDataMapper.toDTO(bd, authorNames));
+    public Optional<BibliographicalData> findById(BibliographicalDataId bdId) {
+        if(bdId == null){
+            throw new IllegalArgumentException("Bibliographical Data Id cannot be null");
         }
-
-        return result;
+        return bibliographicalDataRepository.findById(bdId);
     }
 
-    public Optional<BibliographicalData> findById(BibliographicalDataId bdId) { return bibliographicalDataRepository.findById(bdId); }
+    /**
+     * Retrieves all bibliographical data records stored in the repository of a given genre.
+     *
+     * @return a list containing all {@link BibliographicalDataId} ids of a given genre;
+     * @throws IllegalArgumentException if {@link GenreId} is null
+     */
+    public List<BibliographicalDataId> findAllByGenreId(GenreId genreId) {
+        if (genreId == null){
+            throw new IllegalArgumentException("Genre Id cannot be null");
+        }
+        return bibliographicalDataRepository.findAllByGenreId(genreId);
+    }
 
+    /**
+     * Retrieves a bibliographical data Id stored in the repository by its title.
+     *
+     * @return an Optional containing the {@link BibliographicalDataId} id;
+     * @throws IllegalArgumentException if title is null
+     */
+    public Optional<BibliographicalDataId> findIdByTitle(String bdTitle) {
+        if (bdTitle == null){
+            throw new IllegalArgumentException("Title cannot be null");
+        }
+        return bibliographicalDataRepository.findIdByTitle(bdTitle);
+    }
+
+    /**
+     * Retrieves a bibliographical data Id stored in the repository by its author.
+     *
+     * @return a List containing all the {@link BibliographicalDataId} ids of the given author;
+     * @throws IllegalArgumentException if {@link AuthorId} is null
+     */
+    public List<BibliographicalDataId> findIdByAuthorId(AuthorId authorId) {
+        if (authorId == null){
+            throw new IllegalArgumentException("Author Id cannot be null");
+        }
+        return bibliographicalDataRepository.findIdByAuthorId(authorId);
+    }
+
+    /**
+     * Retrieves all bibliographical data titles stored in the repository.
+     *
+     * @return a List containing all the titles;
+     */
+    public List<String> getAllTitles() {
+        return bibliographicalDataRepository.getAllTitles();
+    }
 }

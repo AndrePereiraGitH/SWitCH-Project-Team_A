@@ -199,6 +199,10 @@
                 <configuration>
                     <excludes>
                         <exclude>**/ui/**/*</exclude>
+                        <exclude>TOPSECRET/domain/Enum/**</exclude>
+                        <exclude>TOPSECRET/dataInitializers/**</exclude>
+                        <exclude>TOPSECRET/dto/**/request/**</exclude>
+                        <exclude>TOPSECRET/dto/**/response/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -258,19 +262,19 @@
                     </outputFormats>
                     <excludedClasses>
                         <param>TOPSECRET.domain.Enum.*</param>
-                        <param>TOPSECRET.ListingDataInitializer</param>
+                        <param>TOPSECRET.dataInitializers.*</param>
                         <param>TOPSECRET.dto.*.request.*</param>
                         <param>TOPSECRET.dto.*.response.*</param>
                     </excludedClasses>
 
                     <jvmArgs>
-                        <value>-Xmx2048m</value>
+                        <value>-Xmx512m</value>
                     </jvmArgs>
 
-                    <threads>1</threads>
+                    <threads>4</threads>
 
-                    <timeoutFactor>1.25</timeoutFactor>
-                    <timeoutConstant>6000</timeoutConstant>
+                    <timeoutFactor>1.1</timeoutFactor>
+                    <timeoutConstant>3000</timeoutConstant>
 
                 </configuration>
                 <executions>
@@ -282,6 +286,38 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- SpotBugs + Find Security Bugs: bytecode bug patterns + security checks -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.3.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.h3xstream.findsecbugs</groupId>
+                        <artifactId>findsecbugs-plugin</artifactId>
+                        <version>1.14.0</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                    <failOnError>false</failOnError>
+                    <includeFilterFile>spotbugs-security-include.xml</includeFilterFile>
+                </configuration>
+            </plugin>
+
+            <!-- OWASP Dependency-Check: CVE scan of third-party dependencies -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.1.1</version>
+                <configuration>
+                    <!-- CI controls the threshold; local runs just generate the report -->
+                    <failBuildOnCVSS>11</failBuildOnCVSS>
+                    <format>HTML</format>
+                </configuration>
             </plugin>
 
             <plugin>

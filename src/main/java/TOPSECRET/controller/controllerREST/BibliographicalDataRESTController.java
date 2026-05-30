@@ -3,6 +3,7 @@ package TOPSECRET.controller.controllerREST;
 import TOPSECRET.controller.controllerREST.root.linkProvider.BibliographicalDataLinkProvider;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.bibliographicalData.BibliographicalDataMapper;
@@ -11,6 +12,7 @@ import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO
 import TOPSECRET.services.BibliographicalDataService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -27,7 +30,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  */
 @RestController
 @Tag(name = "Bibliographical Data", description = "Bibliographical Data management endpoint")
-@RequestMapping(path = "/BibliographicalData")
+@RequestMapping(path = "/bibliographicalData")
 public class BibliographicalDataRESTController {
 
     private final BibliographicalDataService service;
@@ -48,20 +51,43 @@ public class BibliographicalDataRESTController {
     }
 
     /**
-     * Retrieves all bibliographical data records.
+     * Retrieves all bibliographical data entries and returns them as a HATEOAS-enabled
+     * collection of {@code responseBibliographicalDataDTO}.
      *
-     * <p>Returns a list of {@link responseBibliographicalDataDTO}
-     * representing all bibliographical entries available in the system.</p>
+     * <p>This endpoint fetches all bibliographical data records, builds a mapping of
+     * associated author names, converts the entities into DTOs, and enriches the
+     * response with relevant HATEOAS links.</p>
      *
-     * @return a {@link ResponseEntity} containing the list of bibliographical
-     *         data DTOs with HTTP status 200 (OK),
-     *         HTTP status 400 (BAD REQUEST) if invalid arguments are provided,
-     *         or HTTP status 500 (INTERNAL SERVER ERROR) if an unexpected error occurs
+     * @param userId the identifier of the user requesting the bibliographical data
+     * @return a {@link ResponseEntity} containing a {@link CollectionModel} of
+     *         {@code responseBibliographicalDataDTO} objects with HATEOAS links,
+     *         or an appropriate HTTP error status if the request fails
      */
-    @GetMapping("/bibliographical-data")
-    public ResponseEntity<List<responseBibliographicalDataDTO>> getAllBibliographicalData() {
+    @GetMapping
+    public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData(
+            @RequestParam UserId userId) {
         try {
-            return ResponseEntity.ok(service.createDTOlist(service.findAll()));
+
+            List<BibliographicalData> bibliographicalDataList = service.findAll();
+
+            Map<BibliographicalDataId, List<String>> authorNamesMap = service.buildAuthorNamesMap(bibliographicalDataList);
+
+            List<responseBibliographicalDataDTO> responseList = BibliographicalDataMapper.toDTOs(
+                    bibliographicalDataList,
+                    authorNamesMap);
+
+            CollectionModel<responseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
+
+            collectionModel.add(
+                    linkTo(methodOn(BibliographicalDataRESTController.class)
+                            .getAllBibliographicalData(userId))
+                            .withSelfRel()
+            );
+
+            List<Link> links = provider.getLinksForBibliographicalData(userId);
+            collectionModel.add(links);
+
+            return ResponseEntity.ok(collectionModel);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -94,7 +120,6 @@ public class BibliographicalDataRESTController {
      * </ul>
      *
      * @throws IllegalArgumentException if the provided request data is invalid
-     * @throws AccessDeniedException if the user is not authorized to perform this action
      */
     @PostMapping("/bibliographical-data")
     public ResponseEntity<responseBibliographicalDataDTO> createBibliographicalData(

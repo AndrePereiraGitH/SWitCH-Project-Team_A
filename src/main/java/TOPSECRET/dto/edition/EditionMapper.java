@@ -64,52 +64,46 @@ public class EditionMapper {
     /**
      * Extracts and converts the {@link PublicationTypeId} value object from a {@link CreateEditionDTO}.
      *
-     * @param dto the request DTO; must not be {@code null}
+     * @param publicationTypeId the request DTO; must not be {@code null}
      * @return a {@link PublicationTypeId} value object
      */
-    public static PublicationTypeId toPublicationTypeId(CreateEditionDTO dto) {
-        return new PublicationTypeId(dto.publicationTypeId());
+    public static PublicationTypeId toPublicationTypeId(String publicationTypeId) {
+        return new PublicationTypeId(publicationTypeId);
     }
 
     /**
      * Extracts and converts the {@link PublisherID} value object from a {@link CreateEditionDTO}.
      *
-     * @param dto the request DTO; must not be {@code null}
+     * @param publisherId the request DTO; must not be {@code null}
      * @return a {@link PublisherID} value object
      */
-    public static PublisherID toPublisherId(CreateEditionDTO dto) {
-        return new PublisherID(dto.publisherId());
+    public static PublisherID toPublisherId(String publisherId) {
+        return new PublisherID(publisherId);
     }
 
     /**
      * Extracts and parses the edition language from a {@link CreateEditionDTO}.
      *
-     * @param dto the request DTO; must not be {@code null}
+     * @param language the request DTO; must not be {@code null}
      * @return a {@link Locale} parsed from the language tag
      */
-    public static Locale toEditionLanguage(CreateEditionDTO dto) {
-        return Locale.forLanguageTag(dto.editionLanguage());
-    }
-
-    /**
-     * Extracts and parses the edition date from a {@link CreateEditionDTO}.
-     *
-     * @param dto the request DTO; must not be {@code null}
-     * @return a {@link LocalDate} parsed from ISO format (yyyy-MM-dd)
-     */
-    public static LocalDate toEditionDate(CreateEditionDTO dto) {
-        return LocalDate.parse(dto.editionDate());
+    public static Locale toEditionLanguage(String language) {
+        return Locale.forLanguageTag(language);
     }
 
     /**
      * Extracts and converts the {@link TypeOfBinding} enum from a {@link CreateEditionDTO}.
      *
-     * @param dto the request DTO; must not be {@code null}
+     * @param typeOfBinding the request DTO; must not be {@code null}
      * @return a {@link TypeOfBinding} enum value
      * @throws IllegalArgumentException if the binding type is invalid
      */
-    public static TypeOfBinding toTypeOfBinding(CreateEditionDTO dto) {
-        return TypeOfBinding.valueOf(dto.typeOfBinding());
+    public static TypeOfBinding toTypeOfBinding(String typeOfBinding) {
+        return TypeOfBinding.fromString(typeOfBinding);
+    }
+
+    public static EditionId toEditionId(String editionId) {
+        return new EditionId(editionId);
     }
 
     /**
@@ -132,7 +126,7 @@ public class EditionMapper {
                 edition.getPublisherID().getId(),
                 edition.getMediaFormat(),
                 edition.getEditionLanguage().toLanguageTag(),
-                edition.getEditionDate().toString(),
+                edition.getEditionDate(),
                 edition.getTypeOfBinding().toString(),
                 edition.getPhysicalAttributes().getDimensions().getHeight(),
                 edition.getPhysicalAttributes().getDimensions().getWidth(),

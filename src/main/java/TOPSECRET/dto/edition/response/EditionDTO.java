@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
+import java.time.LocalDate;
+
 /**
  * Response Data Transfer Object used to represent an Edition in API responses.
  *
@@ -41,7 +43,7 @@ public class EditionDTO extends RepresentationModel<EditionDTO> {
     private final String publisherId;
     private final String mediaFormat;
     private final String editionLanguage;
-    private final String editionDate;
+    private final LocalDate editionDate;
     private final String typeOfBinding;
     private final double height;
     private final double width;

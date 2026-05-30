@@ -45,11 +45,8 @@ class PublicationTypeLinkProviderTest {
 
         User user = mock(User.class);
 
-        when(userRepository.findByID(userId))
-                .thenReturn(Optional.of(user));
-
-        when(policy.canCreatePublicationType(user))
-                .thenReturn(true);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationType(user)).thenReturn(true);
 
         // ACT
         List<Link> links =

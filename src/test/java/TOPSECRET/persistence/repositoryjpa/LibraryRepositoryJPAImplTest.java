@@ -1,6 +1,7 @@
 package TOPSECRET.persistence.repositoryjpa;
 
 import TOPSECRET.domain.Library.Library;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.persistence.repositoryjpa.assembler.LibraryAssembler;
 import TOPSECRET.persistence.repositoryjpa.datamodel.LibraryDM;
@@ -13,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -149,5 +151,130 @@ class LibraryRepositoryJPAImplTest {
 
         // Assert
         assertTrue(result);
+    }
+
+    // ============ findAll Tests ============
+
+    @Test
+    void givenNoLibraries_whenFindAll_thenReturnsEmptyList() {
+        // Arrange
+        when(jpaRepository.findAll()).thenReturn(List.of());
+
+        // Act
+        List<Library> result = repository.findAll();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenOneLibrary_whenFindAll_thenReturnsOneLibrary() {
+        // Arrange
+        when(jpaRepository.findAll()).thenReturn(List.of(libraryDMDouble));
+        when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
+
+        // Act
+        List<Library> result = repository.findAll();
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(libraryDouble, result.get(0));
+    }
+
+    @Test
+    void givenTwoLibraries_whenFindAll_thenReturnsBoth() {
+        // Arrange
+        LibraryDM libraryDMDouble2 = mock(LibraryDM.class);
+        Library libraryDouble2 = mock(Library.class);
+
+        when(jpaRepository.findAll()).thenReturn(List.of(libraryDMDouble, libraryDMDouble2));
+        when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
+        when(assembler.toDomain(libraryDMDouble2)).thenReturn(libraryDouble2);
+
+        // Act
+        List<Library> result = repository.findAll();
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+// ============ findById Tests ============
+
+    @Test
+    void givenExistingId_whenFindById_thenReturnsLibrary() {
+        // Arrange
+        LibraryId idDouble = mock(LibraryId.class);
+
+        when(jpaRepository.findById(idDouble)).thenReturn(Optional.of(libraryDMDouble));
+        when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
+
+        // Act
+        Optional<Library> result = repository.findById(idDouble);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(libraryDouble, result.get());
+    }
+
+    @Test
+    void givenNonExistingId_whenFindById_thenReturnsEmpty() {
+        // Arrange
+        LibraryId idDouble = mock(LibraryId.class);
+
+        when(jpaRepository.findById(idDouble)).thenReturn(Optional.empty());
+
+        // Act
+        Optional<Library> result = repository.findById(idDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // ============ findByUserId Tests ============
+
+    @Test
+    void givenNullUserId_whenFindByUserId_thenThrowsIllegalArgumentException() {
+
+        // Arrange, Act & Assert
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> repository.findByUserId(null)
+        );
+    }
+
+    @Test
+    void givenExistingUserId_whenFindByUserId_thenReturnsLibrary() {
+
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+
+        when(jpaRepository.findByUserId(userIdDouble))
+                .thenReturn(Optional.of(libraryDMDouble));
+
+        when(assembler.toDomain(libraryDMDouble))
+                .thenReturn(libraryDouble);
+
+        // Act
+        Optional<Library> result = repository.findByUserId(userIdDouble);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(libraryDouble, result.get());
+    }
+
+    @Test
+    void givenNonExistingUserId_whenFindByUserId_thenReturnsEmpty() {
+
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+
+        when(jpaRepository.findByUserId(userIdDouble))
+                .thenReturn(Optional.empty());
+
+        // Act
+        Optional<Library> result = repository.findByUserId(userIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 }

@@ -6,6 +6,7 @@ import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Library.LibraryFactory;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -118,5 +120,77 @@ class LibraryServiceTest {
         // Act + Assert
         assertThrows(InstanceAlreadyExistsException.class,
                 () -> service.createAndSave(libraryName, userIdDouble));
+    }
+    // ----------------- findAll() -----------------
+
+    @Test
+    void givenLibrariesExist_whenFindAll_thenReturnsAllLibraries() {
+
+        // Arrange
+        Library libraryDouble1 = mock(Library.class);
+        Library libraryDouble2 = mock(Library.class);
+
+        when(libraryRepositoryDouble.findAll()).thenReturn(List.of(libraryDouble1, libraryDouble2));
+
+        // Act
+        List<Library> result = service.findAll();
+
+        // Assert
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void givenNoLibraries_whenFindAll_thenReturnsEmptyList() {
+
+        // Arrange
+        when(libraryRepositoryDouble.findAll()).thenReturn(List.of());
+
+        // Act
+        List<Library> result = service.findAll();
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+// ----------------- findById() -----------------
+
+    @Test
+    void givenExistingId_whenFindById_thenReturnsLibrary() {
+
+        // Arrange
+        LibraryId idDouble = mock(LibraryId.class);
+        Library libraryDouble = mock(Library.class);
+
+        when(libraryRepositoryDouble.findById(idDouble)).thenReturn(Optional.of(libraryDouble));
+
+        // Act
+        Optional<Library> result = service.findById(idDouble);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertEquals(libraryDouble, result.get());
+    }
+
+    @Test
+    void givenNonExistingId_whenFindById_thenReturnsEmpty() {
+
+        // Arrange
+        LibraryId idDouble = mock(LibraryId.class);
+
+        when(libraryRepositoryDouble.findById(idDouble)).thenReturn(Optional.empty());
+
+        // Act
+        Optional<Library> result = service.findById(idDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void givenNullId_whenFindById_thenThrowsNullPointerException() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.findById(null));
     }
 }

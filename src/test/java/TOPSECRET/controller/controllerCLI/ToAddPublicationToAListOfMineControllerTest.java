@@ -56,7 +56,8 @@ class ToAddPublicationToAListOfMineControllerTest {
                         userId, collectionRepo, publicationService, publicationSampleMapper);
 
         List<CollectionOfPublications> collections = new ArrayList<>();
-        when(collectionRepo.getUserCollections(userId)).thenReturn(collections);
+
+        when(collectionRepo.findAllByOwnerId(userId)).thenReturn(collections);
 
         // Act
         List<US018CollectionOfPublicationsDTO> result = controller.getUserCollections();
@@ -124,7 +125,6 @@ class ToAddPublicationToAListOfMineControllerTest {
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         PublicationSampleId publicationId = mock(PublicationSampleId.class);
 
-        // Mock the expected returned PublicationSample
         PublicationSample expectedSample = mock(PublicationSample.class);
 
         when(publicationService.assignPublicationToCollection(collectionId, publicationId, userId))
@@ -207,7 +207,8 @@ class ToAddPublicationToAListOfMineControllerTest {
         when(collection.id()).thenReturn(mock(CollectionOfPublicationsId.class));
         when(collection.getCollectionName()).thenReturn("C1");
 
-        when(collectionRepo.getUserCollections(userId)).thenReturn(List.of(collection));
+        when(collectionRepo.findAllByOwnerId(userId))
+                .thenReturn(List.of(collection));
 
         // Act
         List<US018CollectionOfPublicationsDTO> result = controller.getUserCollections();
@@ -232,7 +233,6 @@ class ToAddPublicationToAListOfMineControllerTest {
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         PublicationSampleId pubId = mock(PublicationSampleId.class);
 
-        // Simulate a failure to find/save the entity returning null
         when(publicationService.assignPublicationToCollection(collectionId, pubId, userId))
                 .thenReturn(null);
 

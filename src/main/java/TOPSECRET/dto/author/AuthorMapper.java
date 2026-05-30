@@ -2,25 +2,52 @@ package TOPSECRET.dto.author;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryId;
+import TOPSECRET.dto.author.request.CreateAuthorDTO;
 import TOPSECRET.dto.author.response.AuthorDTO;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Mapper responsible for converting {@link Author} domain objects
- * into {@link AuthorDTO} response objects used in the presentation layer.
+ * Mapper responsible for converting between {@link CreateAuthorDTO} request objects,
+ * {@link Author} domain objects, and {@link AuthorDTO} response objects.
  *
- * <p>This class ensures a clear separation between the domain model and the API layer
- * by transforming domain entities into simplified DTO representations that are safe
- * to expose externally.</p>
+ * <p>This class is the only component that is aware of both the API layer
+ * and the domain layer. It centralizes all conversion logic, ensuring that:</p>
+ * <ul>
+ *   <li>Domain value objects are never exposed through the API boundary</li>
+ *   <li>Request primitives are correctly wrapped into domain value objects</li>
+ *   <li>Domain objects are flattened into API-safe response representations</li>
+ * </ul>
  *
  * <p>All methods are static — this class is stateless and holds no dependencies.</p>
  */
 public class AuthorMapper {
 
     private AuthorMapper() {}
+
+    /**
+     * Extracts and converts the country identifier from a {@link CreateAuthorDTO}.
+     *
+     * @param dto the request DTO; must not be {@code null}
+     * @return a {@link CountryId} value object
+     */
+    public static CountryId toCountryId(CreateAuthorDTO dto) {
+        return new CountryId(dto.countryId());
+    }
+
+    /**
+     * Extracts and parses the date of birth from a {@link CreateAuthorDTO}.
+     *
+     * @param dto the request DTO; must not be {@code null}
+     * @return a {@link LocalDate} parsed from ISO format (yyyy-MM-dd)
+     */
+    public static LocalDate toDateOfBirth(CreateAuthorDTO dto) {
+        return LocalDate.parse(dto.dateOfBirth());
+    }
 
     /**
      * Converts an {@link Author} domain object and its resolved {@link Country}
