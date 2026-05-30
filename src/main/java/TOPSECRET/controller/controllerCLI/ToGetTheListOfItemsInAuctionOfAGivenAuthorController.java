@@ -1,7 +1,6 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.Auction.Auction;
-import TOPSECRET.domain.Auction.IAuctionRepository;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Listing.IListingRepository;
@@ -15,6 +14,7 @@ import TOPSECRET.dto.US026AuctionMapper;
 import TOPSECRET.dto.US026AuthorDTO;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.dto.US026AuthorMapper;
+import TOPSECRET.services.AuctionService;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
@@ -32,7 +32,7 @@ public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
     private final IBibliographicalDataRepository biblioRepository;
     private final IPublicationSampleRepository pubRepo;
     private final IListingRepository listingRepo;
-    private final IAuctionRepository auctionRepository;
+    private final AuctionService auctionService;
     private final US026AuctionMapper mapper;
 
     /**
@@ -42,11 +42,11 @@ public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
      * @param biblioRepository the repository used to retrieve bibliographical data
      * @param pubRepo the repository used to retrieve publication samples
      * @param listingRepo the repository used to retrieve listings
-     * @param auctionRepository the repository used to retrieve auctions
+     * @param auctionService the service used to retrieve auctions
      * @param mapper the mapper used to convert auction domain objects into DTOs
      * @throws IllegalArgumentException if any dependency is null
      */
-    public ToGetTheListOfItemsInAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, IAuctionRepository auctionRepository, US026AuctionMapper mapper) {
+    public ToGetTheListOfItemsInAuctionOfAGivenAuthorController(IAuthorRepository authorRepository, IBibliographicalDataRepository biblioRepository, IPublicationSampleRepository pubRepo, IListingRepository listingRepo, AuctionService auctionService, US026AuctionMapper mapper) {
 
         if (authorRepository == null) {
             throw new IllegalArgumentException("AuthorRepository cannot be null");
@@ -63,8 +63,8 @@ public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
             throw new IllegalArgumentException("ListingRepository cannot be null");
         }
 
-        if (auctionRepository == null) {
-            throw new IllegalArgumentException("AuctionRepository cannot be null");
+        if (auctionService == null) {
+            throw new IllegalArgumentException("AuctionService cannot be null");
         }
 
         if (mapper == null) {
@@ -75,7 +75,7 @@ public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
         this.biblioRepository = biblioRepository;
         this.pubRepo = pubRepo;
         this.listingRepo = listingRepo;
-        this.auctionRepository = auctionRepository;
+        this.auctionService = auctionService;
         this.mapper = mapper;
     }
 
@@ -118,7 +118,7 @@ public class ToGetTheListOfItemsInAuctionOfAGivenAuthorController {
 
        List<ListingId> authorListings = listingRepo.findIdsByPublicationSampleIdIn(samplesOfAuthorID);
 
-       List<Auction> auctionsOfAuthor = auctionRepository.findByListingIdIn(authorListings);
+       List<Auction> auctionsOfAuthor = auctionService.findByListingIdIn(authorListings);
 
        return mapper.fromDomainList(auctionsOfAuthor);
     }

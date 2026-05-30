@@ -78,6 +78,26 @@ public class AuctionRepositoryJPAImpl implements IAuctionRepository {
      * {@inheritDoc}
      */
     @Override
+    @Transactional
+    public Auction update(Auction auction) {
+
+        Objects.requireNonNull(auction, "auction cannot be null");
+
+        if (!auctionRepoJPA.existsById(auction.id())) {
+            throw new IllegalArgumentException("Auction does not exist");
+        }
+
+        AuctionDM auctionDM = auctionAssembler.toDM(auction);
+
+        AuctionDM updatedAuctionDM = auctionRepoJPA.save(auctionDM);
+
+        return auctionAssembler.toDomain(updatedAuctionDM);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Optional<Auction> findById(AuctionId auctionId) {
 
         Objects.requireNonNull(auctionId, "auctionId cannot be null");

@@ -196,7 +196,8 @@ class ToPutForAuctionPublicationInUserLibraryControllerTest {
                 initialDate,
                 finalDate,
                 initialPrice,
-                buyOutPrice
+                buyOutPrice,
+                userId
         )).thenReturn(auction);
 
         // act
@@ -276,7 +277,8 @@ class ToPutForAuctionPublicationInUserLibraryControllerTest {
                 initialDate,
                 finalDate,
                 initialPrice,
-                buyOutPrice
+                buyOutPrice,
+                userId
         )).thenThrow(new InstanceAlreadyExistsException("Auction already exists"));
 
         // act + assert

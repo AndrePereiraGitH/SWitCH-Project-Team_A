@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,12 +29,12 @@ import static org.mockito.Mockito.when;
  * <p>This suite ensures that the repository enforces all required invariants and
  * behaves consistently with domain expectations, including:
  * <ul>
- *     <li>correct delegation of auction creation to the {@link AuctionFactory};</li>
  *     <li>prevention of duplicate auctions through {@link InstanceAlreadyExistsException};</li>
  *     <li>successful creation and storage of new auctions with distinct identities;</li>
+ *     <li>correct update of existing auctions without creating duplicates;</li>
  *     <li>accurate retrieval of all auctions stored in the repository;</li>
  *     <li>robust handling of edge cases such as empty repositories or attempts
- *         to add an already‑existing auction.</li>
+ *         to update a non-existing auction.</li>
  * </ul>
  *
  * <p>Overall, this test class provides comprehensive coverage of the in‑memory
@@ -126,6 +127,56 @@ class AuctionRepositoryMemTest {
         List<Auction> all = auctionRepository.findAll();
         assertEquals(beforeSize + 1, all.size());
         assertTrue(all.contains(newAuction));
+    }
+
+    // =================================================================================================================
+    // =============== UPDATE ==========================================================================================
+    // =================================================================================================================
+
+    @Test
+    void update_shouldReturnUpdatedAuction_whenAuctionExists() throws InstanceAlreadyExistsException {
+        // Arrange
+        IAuctionRepository repo = instantiateAuctionRepository();
+
+        // Act
+        Auction result = repo.update(auction1);
+
+        // Assert
+        assertSame(auction1, result);
+    }
+
+    @Test
+    void update_shouldNotCreateDuplicate_whenAuctionIsUpdated() throws InstanceAlreadyExistsException {
+        // Arrange
+        IAuctionRepository repo = instantiateAuctionRepository();
+        int beforeSize = repo.findAll().size();
+
+        // Act
+        repo.update(auction1);
+
+        // Assert
+        assertEquals(beforeSize, repo.findAll().size());
+    }
+
+    @Test
+    void update_shouldThrow_whenAuctionDoesNotExist() throws InstanceAlreadyExistsException {
+        // Arrange
+        IAuctionRepository repo = instantiateAuctionRepository();
+        Auction nonExistingAuction = mock(Auction.class);
+        AuctionId nonExistingId = mock(AuctionId.class);
+        when(nonExistingAuction.id()).thenReturn(nonExistingId);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> repo.update(nonExistingAuction));
+    }
+
+    @Test
+    void update_shouldThrow_whenAuctionIsNull() throws InstanceAlreadyExistsException {
+        // Arrange
+        IAuctionRepository repo = instantiateAuctionRepository();
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () -> repo.update(null));
     }
 
     // =================================================================================================================
@@ -396,8 +447,10 @@ class AuctionRepositoryMemTest {
 
     private Auction createAuctionDouble() {
         ListingId listingId = new ListingId("listingId");
+        AuctionId auctionId = new AuctionId(UUID.randomUUID().toString());
 
         Auction auction = mock(Auction.class);
+        when(auction.id()).thenReturn(auctionId);
         when(auction.getListingId()).thenReturn(listingId);
 
         return auction;
