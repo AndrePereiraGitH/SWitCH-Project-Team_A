@@ -35,7 +35,7 @@ class UserLinkProviderTest {
     private UserLinkProvider sut;
 
     @Test
-    void getLinksForUsers_shouldReturnLink_whenUserIsAuthorized() {
+    void getLinksForUsers_shouldReturnTwoLinks_whenUserIsAuthorized() {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
@@ -47,12 +47,13 @@ class UserLinkProviderTest {
         List<Link> result = sut.getLinksForUsers(userIdDouble);
 
         // Assert
-        assertEquals(1, result.size());
-        assertEquals("register-user", result.get(0).getRel().value());
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-user")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("register-user")));
     }
 
     @Test
-    void getLinksForUsers_shouldReturnEmptyList_whenUserIsNotAuthorized() {
+    void getLinksForUsers_shouldReturnOneLink_whenUserIsNotAuthorized() {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
@@ -64,11 +65,12 @@ class UserLinkProviderTest {
         List<Link> result = sut.getLinksForUsers(userIdDouble);
 
         // Assert
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals("get-user", result.get(0).getRel().value());
     }
 
     @Test
-    void getLinksForUsers_shouldReturnEmptyList_whenUserDoesNotExist() {
+    void getLinksForUsers_shouldReturnOneLink_whenUserDoesNotExist() {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
 
@@ -78,7 +80,8 @@ class UserLinkProviderTest {
         List<Link> result = sut.getLinksForUsers(userIdDouble);
 
         // Assert
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals("get-user", result.get(0).getRel().value());
         verifyNoInteractions(authPolicy);
     }
 }
