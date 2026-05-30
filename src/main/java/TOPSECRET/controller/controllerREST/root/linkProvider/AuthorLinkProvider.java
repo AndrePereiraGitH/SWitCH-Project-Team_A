@@ -51,9 +51,10 @@ public class AuthorLinkProvider {
         List<Link> links = new ArrayList<>();
         User user = repository.findByID(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         if (policy.canCreateAuthor(user)) {
             links.add(linkTo(methodOn(AuthorRESTController.class)
-                    .createAuthor(null, id))
+                    .createAuthor(null, null))
                     .withRel("create-author"));
         }
         return links;

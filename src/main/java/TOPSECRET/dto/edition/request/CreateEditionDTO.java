@@ -3,6 +3,8 @@ package TOPSECRET.dto.edition.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 
+import java.time.LocalDate;
+
 /**
  * Data Transfer Object used when registering a new edition in the system.
  *
@@ -51,7 +53,7 @@ public record CreateEditionDTO(
         @NotBlank(message = "Edition language cannot be blank")
         String editionLanguage,
         @NotBlank(message = "Edition date cannot be blank")
-        String editionDate,
+        LocalDate editionDate,
         @NotBlank(message = "Type of binding cannot be blank")
         String typeOfBinding
 ) {}

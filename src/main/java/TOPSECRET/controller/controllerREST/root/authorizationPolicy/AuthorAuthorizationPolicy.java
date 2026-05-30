@@ -25,6 +25,7 @@ public class AuthorAuthorizationPolicy {
      *         {@code false} otherwise
      */
     public boolean canCreateAuthor(User user) {
-        return user.getUserRoles().contains(UserRole.ADMIN);
+
+        return user.getUserRoles().contains(UserRole.ADMIN) || user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
 }

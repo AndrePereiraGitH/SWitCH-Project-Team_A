@@ -1,6 +1,11 @@
 package TOPSECRET.dto.author.request;
 
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
 /**
  * Data Transfer Object used when registering a new author in the system.
@@ -17,10 +22,14 @@ import jakarta.validation.constraints.NotBlank;
 public record CreateAuthorDTO(
         @NotBlank(message = "Author name cannot be blank or null!")
         String name,
+
         @NotBlank(message = "Country ID cannot be blank or null!")
         String countryId,
+
+        @DateTimeFormat(iso = DATE)
         @NotBlank(message = "Date of birth cannot be blank or null!")
-        String dateOfBirth,
+        LocalDate dateOfBirth,
+
         @NotBlank(message = "Biography cannot be blank or null!")
         String biography
 ) {}

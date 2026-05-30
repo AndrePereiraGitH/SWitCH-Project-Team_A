@@ -152,7 +152,7 @@ class AuthorMapperTest {
         CreateAuthorDTO dto = new CreateAuthorDTO(
                 "José Saramago",
                 "PORTUGAL",
-                "1922-11-16",
+                LocalDate.of(1922, 11, 16),
                 "Portuguese Nobel Prize-winning author."
         );
 
@@ -164,26 +164,4 @@ class AuthorMapperTest {
         assertEquals("PORTUGAL", result.getCountryID());
     }
 
-    // -------------------------------------------------------------------------
-    // toDateOfBirth()
-    // -------------------------------------------------------------------------
-
-    @Test
-    void toDateOfBirthShouldReturnLocalDateWhenDTOIsValid() {
-
-        // Arrange
-        CreateAuthorDTO dto = new CreateAuthorDTO(
-                "José Saramago",
-                "PORTUGAL",
-                "1922-11-16",
-                "Portuguese Nobel Prize-winning author."
-        );
-
-        // Act
-        LocalDate result = AuthorMapper.toDateOfBirth(dto);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(LocalDate.of(1922, 11, 16), result);
-    }
 }

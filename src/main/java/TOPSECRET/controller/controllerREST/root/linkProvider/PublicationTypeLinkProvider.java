@@ -40,6 +40,11 @@ public class PublicationTypeLinkProvider {
 
         List<Link> links = new ArrayList<>();
 
+        links.add(linkTo(methodOn(PublicationTypeRestController.class)
+                .getAllPublicationTypes())
+                .withRel("get-all-publication-types")
+                );
+
         User user = userRepository.findByID(userId)
                 .orElseThrow(() ->
                         new IllegalArgumentException("User not found"));
