@@ -5,6 +5,7 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.edition.request.CreateEditionDTO;
 import TOPSECRET.dto.edition.response.EditionDTO;
+import TOPSECRET.dto.edition.response.EditionIdResponseDTO;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -277,5 +278,38 @@ class EditionMapperTest {
     void toDTOs_shouldThrowException_whenListIsNull() {
         assertThrows(NullPointerException.class,
                 () -> EditionMapper.toDTOs(null));
+    }
+
+    @Test
+    void shouldConvertEditionIdToEditionIdResponseDTO() {
+
+        // Arrange
+        EditionId editionId = mock(EditionId.class);
+
+        when(editionId.getID()).thenReturn("edition-123");
+
+        // Act
+        EditionIdResponseDTO result =
+                EditionMapper.toEditionIdDTO(editionId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("edition-123", result.getEditionId());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenEditionIdIsNull() {
+
+        // Act + Assert
+        NullPointerException exception =
+                assertThrows(
+                        NullPointerException.class,
+                        () -> EditionMapper.toEditionIdDTO(null)
+                );
+
+        assertEquals(
+                "EditionId cannot be null",
+                exception.getMessage()
+        );
     }
 }

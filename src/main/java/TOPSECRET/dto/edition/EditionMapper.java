@@ -5,6 +5,7 @@ import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.edition.request.CreateEditionDTO;
 import TOPSECRET.dto.edition.response.EditionDTO;
+import TOPSECRET.dto.edition.response.EditionIdResponseDTO;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -134,6 +135,30 @@ public class EditionMapper {
                 edition.getPhysicalAttributes().getWeight(),
                 edition.getPhysicalAttributes().getNumberOfPages()
         );
+    }
+
+    /**
+     * Converts an {@link EditionId} value object into an
+     * {@link EditionIdResponseDTO}.
+     *
+     * <p>This method is intended for lightweight API responses
+     * where only the edition identifier is required, avoiding
+     * the overhead of exposing the complete edition data.</p>
+     *
+     * @param editionId the edition identifier to convert;
+     *                  must not be {@code null}
+     * @return an {@link EditionIdResponseDTO} containing the
+     *         identifier value of the provided edition
+     * @throws NullPointerException if {@code editionId} is {@code null}
+     */
+    public static EditionIdResponseDTO toEditionIdDTO(EditionId editionId) {
+
+        Objects.requireNonNull(editionId, "EditionId cannot be null");
+
+        EditionIdResponseDTO dto = new EditionIdResponseDTO(editionId.getID());
+
+        return dto;
+
     }
 
     /**

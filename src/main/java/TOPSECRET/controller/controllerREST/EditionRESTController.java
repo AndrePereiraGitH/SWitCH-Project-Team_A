@@ -2,15 +2,14 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.EditionLinkProvider;
 import TOPSECRET.domain.Edition.Edition;
-import TOPSECRET.domain.Enum.TypeOfBinding;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.edition.EditionMapper;
 import TOPSECRET.dto.edition.request.CreateEditionDTO;
 import TOPSECRET.dto.edition.response.EditionDTO;
+import TOPSECRET.dto.edition.response.EditionIdResponseDTO;
 import TOPSECRET.services.EditionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,65 +18,65 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
+import static java.util.stream.Collectors.toList;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 /**
- * REST controller responsible for managing Edition resources.
+ * REST controller responsible for managing {@link Edition} resources.
  *
- * <p>This controller exposes endpoints for creating Edition resources
- * and coordinates the interaction between DTOs, domain objects
- * and application services.</p>
+ * <p>Exposes endpoints for creating and retrieving editions.
+ * Responses follow the HATEOAS pattern, including hypermedia links
+ * that allow clients to navigate related resources.</p>
+ *
+ * <p>Base path: {@code /editions}</p>
  */
 @RestController
 @Tag(name = "Editions", description = "Editions management endpoint")
 @RequestMapping(path = "/editions")
 public class EditionRESTController {
 
-    private EditionService service;
-    private EditionLinkProvider provider;
-    private EditionService editionService;
-    private EditionMapper mapper;
-    private EditionLinkProvider editionLinkProvider;
+    private final EditionService service;
+    private final EditionLinkProvider provider;
 
     /**
-     * Creates a new Edition REST controller.
+     * Constructs a new {@code EditionRESTController} with the required dependencies.
      *
-     * @param service  service responsible for Edition operations
-     * @param provider provider responsible for generating HATEOAS links
+     * @param service  the service layer responsible for {@link Edition} business logic
+     * @param provider the provider responsible for generating HATEOAS links
+     *                 for edition responses
      */
-    public EditionRESTController(EditionService service, EditionLinkProvider provider, EditionMapper mapper) {
+    @Autowired
+    public EditionRESTController(EditionService service, EditionLinkProvider provider) {
         this.service = service;
         this.provider = provider;
-        this.mapper = mapper;
-    }
-
-    @Autowired
-    public EditionRESTController(EditionService editionService, EditionLinkProvider editionLinkProvider) {
-        this.editionService = editionService;
-        this.editionLinkProvider = editionLinkProvider;
     }
 
     /**
-     * Creates and stores a new Edition.
+     * Creates a new {@link Edition} and persists it.
      *
-     * <p>The request DTO is converted before delegating the
-     * creation process to the application service.</p>
+     * <p>The request DTO fields are mapped to domain value objects before
+     * delegating creation to the application service. The response includes
+     * HATEOAS links provided by {@link EditionLinkProvider} as well as a
+     * self-link pointing to this endpoint.</p>
      *
-     * <p>If the operation succeeds, a response DTO representing
-     * the created Edition is returned with HTTP status
-     * {@code 201 CREATED}.</p>
-     *
-     * @param dto    request data used to create the Edition
-     * @param userId identifier of the user performing the operation
-     * @return response entity containing the created Edition
-     *         or an error status when the operation fails
+     * @param dto    the request body containing the data required to create the edition
+     * @param userId the ID of the user performing the operation, used for
+     *               authorization and link generation
+     * @return a {@link ResponseEntity} containing:
+     *         <ul>
+     *           <li>{@code 201 Created} with the created {@link EditionDTO}
+     *               and HATEOAS links on success</li>
+     *           <li>{@code 400 Bad Request} if the provided arguments are invalid</li>
+     *           <li>{@code 403 Forbidden} if the user does not have permission
+     *               to perform this operation</li>
+     *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
+     *         </ul>
      */
     @PostMapping("")
     public ResponseEntity<EditionDTO> createEdition(
             @RequestBody CreateEditionDTO dto,
-            @PathVariable UserId userId) {
+            @RequestParam UserId userId) {
         try {
             Edition edition = service.createAndSave(
                     dto.editionNumber(),
@@ -110,61 +109,269 @@ public class EditionRESTController {
         }
     }
 
+    /**
+     * Retrieves a single {@link Edition} by its unique identifier.
+     *
+     * <p>The response includes two HATEOAS links:
+     * <ul>
+     *   <li>A self-link pointing to this endpoint</li>
+     *   <li>A {@code find-all} link pointing to the collection endpoint</li>
+     * </ul>
+     * </p>
+     *
+     * @param editionId the string representation of the edition's unique identifier,
+     *                  provided as a path variable
+     * @return a {@link ResponseEntity} containing:
+     *         <ul>
+     *           <li>{@code 200 OK} with the matching {@link EditionDTO}
+     *               and HATEOAS links on success</li>
+     *           <li>{@code 404 Not Found} if no edition exists for the given ID</li>
+     *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
+     *         </ul>
+     */
     @GetMapping("/{editionId}")
-    public ResponseEntity<EditionDTO> findById(@RequestParam String editionId, @PathVariable UserId userId) {
+    public ResponseEntity<EditionDTO> findById(
+            @PathVariable String editionId) {
 
         try {
             EditionId id = EditionMapper.toEditionId(editionId);
 
-            Edition edition = editionService.findById(id);
+            Edition edition = service.findById(id);
 
             EditionDTO editionDTO = EditionMapper.toDTO(edition);
 
             editionDTO.add(linkTo(methodOn(EditionRESTController.class)
-                    .findById(editionId, userId))
+                    .findById(editionId))
                     .withSelfRel());
 
             editionDTO.add(linkTo(methodOn(EditionRESTController.class)
-                    .findAll(userId))
+                    .findAll())
                     .withRel("find-all"));
 
             return ResponseEntity.status(HttpStatus.OK).body(editionDTO);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
+    /**
+     * Retrieves all existing {@link Edition} resources.
+     *
+     * <p>Each entry in the response list includes a self-link pointing to its
+     * individual resource endpoint.</p>
+     *
+     * @return a {@link ResponseEntity} containing:
+     *         <ul>
+     *           <li>{@code 200 OK} with a list of {@link EditionDTO} objects,
+     *               each enriched with a self-link</li>
+     *           <li>{@code 204 No Content} if no editions exist</li>
+     *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
+     *         </ul>
+     */
     @GetMapping("")
-    public ResponseEntity<List<EditionDTO>> findAll(@PathVariable UserId userId) {
+    public ResponseEntity<List<EditionDTO>> findAll() {
 
         try {
-
-            List<Edition> allEditions = editionService.findAll();
+            List<Edition> allEditions = service.findAll();
 
             List<EditionDTO> result = allEditions.stream()
                     .map(edition -> {
                         EditionDTO dto = EditionMapper.toDTO(edition);
 
                         Link selfLink = linkTo(methodOn(EditionRESTController.class)
-                                .findById(edition.id().getID(), userId))
+                                .findById(edition.id().getID()))
                                 .withSelfRel();
 
                         dto.add(selfLink);
-
                         return dto;
                     })
                     .toList();
 
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(result);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    /**
+     * Retrieves the identifiers of all {@link Edition} resources associated
+     * with a given publisher.
+     *
+     * <p>This is a lightweight endpoint suited for lookups where only the IDs
+     * are needed, avoiding the overhead of fetching full edition data.</p>
+     *
+     * @param publisherId the string representation of the publisher's unique
+     *                    identifier, provided as a path variable
+     * @return a {@link ResponseEntity} containing:
+     *         <ul>
+     *           <li>{@code 200 OK} with a list of edition ID strings on success</li>
+     *           <li>{@code 204 No Content} if no editions exist for the given
+     *               publisher</li>
+     *           <li>{@code 400 Bad Request} if the provided publisher ID is
+     *               invalid</li>
+     *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
+     *         </ul>
+     */
+    @GetMapping("/publisher/{publisherId}/ids")
+    public ResponseEntity<List<EditionIdResponseDTO>> findEditionIdsByPublisherId(
+            @PathVariable String publisherId) {
 
+        try {
+            PublisherID id = EditionMapper.toPublisherId(publisherId);
 
+            List<EditionIdResponseDTO> editionIds = service.findIdsByPublisherId(id)
+                    .stream()
+                    .map(editionId -> {
+                        EditionIdResponseDTO dto = EditionMapper.toEditionIdDTO(editionId);
 
+                        Link selfLink = linkTo(methodOn(EditionRESTController.class)
+                                .findById(editionId.getID()))
+                                .withSelfRel();
 
+                        dto.add(selfLink);
+                        return dto;
+                    })
+                    .toList();
 
+            if (editionIds.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(editionIds);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves all {@link Edition} resources associated with a given publisher,
+     * returning full edition data.
+     *
+     * <p>Each entry in the response list includes two HATEOAS links:
+     * <ul>
+     *   <li>A self-link pointing to the individual edition endpoint</li>
+     *   <li>A {@code find-by-publisher} link pointing back to this endpoint</li>
+     * </ul>
+     * </p>
+     *
+     * @param publisherId the string representation of the publisher's unique
+     *                    identifier, provided as a path variable
+     * @return a {@link ResponseEntity} containing:
+     *         <ul>
+     *           <li>{@code 200 OK} with a list of {@link EditionDTO} objects,
+     *               each enriched with HATEOAS links</li>
+     *           <li>{@code 204 No Content} if no editions exist for the given
+     *               publisher</li>
+     *           <li>{@code 400 Bad Request} if the provided publisher ID is
+     *               invalid</li>
+     *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
+     *         </ul>
+     */
+    @GetMapping("/publisher/{publisherId}")
+    public ResponseEntity<List<EditionDTO>> findByPublisherId(
+            @PathVariable String publisherId) {
+
+        try {
+            PublisherID id = EditionMapper.toPublisherId(publisherId);
+
+            List<EditionDTO> result = service.findByPublisherId(id)
+                    .stream()
+                    .map(edition -> {
+                        EditionDTO dto = EditionMapper.toDTO(edition);
+
+                        dto.add(linkTo(methodOn(EditionRESTController.class)
+                                .findById(edition.id().getID()))
+                                .withSelfRel());
+
+                        dto.add(linkTo(methodOn(EditionRESTController.class)
+                                .findByPublisherId(publisherId))
+                                .withRel("find-by-publisher"));
+
+                        return dto;
+                    })
+                    .toList();
+
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves all {@link Edition} resources associated with a given publication type.
+     *
+     * <p>Each entry in the response list includes two HATEOAS links:
+     * <ul>
+     *   <li>A self-link pointing to the individual edition endpoint</li>
+     *   <li>A {@code find-by-publication-type} link pointing back to this endpoint</li>
+     * </ul>
+     * </p>
+     *
+     * @param publicationTypeId the string representation of the publication type's
+     *                          unique identifier, provided as a path variable
+     * @return a {@link ResponseEntity} containing:
+     *         <ul>
+     *           <li>{@code 200 OK} with a list of {@link EditionDTO} objects,
+     *               each enriched with HATEOAS links</li>
+     *           <li>{@code 204 No Content} if no editions exist for the given
+     *               publication type</li>
+     *           <li>{@code 400 Bad Request} if the provided publication type ID
+     *               is invalid</li>
+     *           <li>{@code 500 Internal Server Error} for any unexpected failure</li>
+     *         </ul>
+     */
+    @GetMapping("/publication-type/{publicationTypeId}")
+    public ResponseEntity<List<EditionDTO>> findByPublicationTypeId(
+            @PathVariable String publicationTypeId) {
+
+        try {
+            PublicationTypeId id = EditionMapper.toPublicationTypeId(publicationTypeId);
+
+            List<EditionDTO> result = service.findByPublicationTypeId(id)
+                    .stream()
+                    .map(edition -> {
+                        EditionDTO dto = EditionMapper.toDTO(edition);
+
+                        dto.add(linkTo(methodOn(EditionRESTController.class)
+                                .findById(edition.id().getID()))
+                                .withSelfRel());
+
+                        dto.add(linkTo(methodOn(EditionRESTController.class)
+                                .findByPublicationTypeId(publicationTypeId))
+                                .withRel("find-by-publication-type"));
+
+                        return dto;
+                    })
+                    .toList();
+
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

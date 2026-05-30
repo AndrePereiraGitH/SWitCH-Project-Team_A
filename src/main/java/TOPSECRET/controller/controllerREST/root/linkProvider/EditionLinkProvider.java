@@ -51,7 +51,7 @@ public class EditionLinkProvider {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(EditionRESTController.class)
-                .findAll(null))
+                .findAll())
                 .withRel("find-all-editions"));
 
         User user = repository.findByID(id)
