@@ -24,7 +24,7 @@ public class UserAuthorizationPolicy {
      * @return {@code true} if the user has the ADMIN role; {@code false} otherwise
      */
 
-    public boolean canRegisterUser (User user){
+    public boolean canRegisterUser(User user){
         return user.getUserRoles().contains(UserRole.ADMIN);
     }
 }
