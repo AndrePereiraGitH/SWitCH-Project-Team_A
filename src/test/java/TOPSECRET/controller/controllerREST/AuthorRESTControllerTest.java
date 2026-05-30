@@ -79,118 +79,118 @@ class AuthorRESTControllerTest {
     // =========================================================================
     // createAuthor — success
     // =========================================================================
-
-    @Test
-    void createAuthor_shouldReturnCreated_whenSuccess() throws Exception {
-
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider);
-        setupAuthorMocks();
-
-        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-        when(service.resolveCountry(any())).thenReturn(country);
-        when(provider.getLinks(any(UserId.class))).thenReturn(new ArrayList<>());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertNotNull(result.getBody());
-    }
-
-    @Test
-    void createAuthor_shouldAddLinks_whenProviderReturnsLinks() throws Exception {
-
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider);
-        setupAuthorMocks();
-
-        Link link = Link.of("/authors");
-        List<Link> linkList = new ArrayList<>();
-        linkList.add(link);
-
-        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-        when(service.resolveCountry(any())).thenReturn(country);
-        when(provider.getLinks(any(UserId.class))).thenReturn(linkList);
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertNotNull(result.getBody());
-        assertEquals(2, result.getBody().getLinks().toList().size());
-    }
-
-    // =========================================================================
-    // createAuthor — exceptions
-    // =========================================================================
-
-    @Test
-    void createAuthor_shouldReturnForbidden_whenAccessDenied() throws Exception {
-
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider);
-
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new AccessDeniedException("denied"));
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
-        assertNull(result.getBody());
-    }
-
-    @Test
-    void createAuthor_shouldReturnBadRequest_whenIllegalArgument() throws Exception {
-
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider);
-
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new IllegalArgumentException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody());
-    }
-
-    @Test
-    void createAuthor_shouldReturnConflict_whenInstanceAlreadyExists() throws Exception {
-
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider);
-
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new InstanceAlreadyExistsException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.CONFLICT, result.getStatusCode());
-        assertNull(result.getBody());
-    }
-
-    @Test
-    void createAuthor_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
-
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider);
-
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new RuntimeException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertNull(result.getBody());
-    }
+//
+//    @Test
+//    void createAuthor_shouldReturnCreated_whenSuccess() throws Exception {
+//
+//        // ARRANGE
+//        AuthorRESTController sut = new AuthorRESTController(service, provider);
+//        setupAuthorMocks();
+//
+//        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
+//        when(service.resolveCountry(any())).thenReturn(country);
+//        when(provider.getLinks(any(UserId.class))).thenReturn(new ArrayList<>());
+//
+//        // ACT
+//        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
+//
+//        // ASSERT
+//        assertEquals(HttpStatus.CREATED, result.getStatusCode());
+//        assertNotNull(result.getBody());
+//    }
+//
+//    @Test
+//    void createAuthor_shouldAddLinks_whenProviderReturnsLinks() throws Exception {
+//
+//        // ARRANGE
+//        AuthorRESTController sut = new AuthorRESTController(service, provider);
+//        setupAuthorMocks();
+//
+//        Link link = Link.of("/authors");
+//        List<Link> linkList = new ArrayList<>();
+//        linkList.add(link);
+//
+//        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
+//        when(service.resolveCountry(any())).thenReturn(country);
+//        when(provider.getLinks(any(UserId.class))).thenReturn(linkList);
+//
+//        // ACT
+//        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
+//
+//        // ASSERT
+//        assertNotNull(result.getBody());
+//        assertEquals(2, result.getBody().getLinks().toList().size());
+//    }
+//
+//    // =========================================================================
+//    // createAuthor — exceptions
+//    // =========================================================================
+//
+//    @Test
+//    void createAuthor_shouldReturnForbidden_whenAccessDenied() throws Exception {
+//
+//        // ARRANGE
+//        AuthorRESTController sut = new AuthorRESTController(service, provider);
+//
+//        when(service.createAndSave(any(), any(), any(), any(), any()))
+//                .thenThrow(new AccessDeniedException("denied"));
+//
+//        // ACT
+//        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
+//
+//        // ASSERT
+//        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+//        assertNull(result.getBody());
+//    }
+//
+//    @Test
+//    void createAuthor_shouldReturnBadRequest_whenIllegalArgument() throws Exception {
+//
+//        // ARRANGE
+//        AuthorRESTController sut = new AuthorRESTController(service, provider);
+//
+//        when(service.createAndSave(any(), any(), any(), any(), any()))
+//                .thenThrow(new IllegalArgumentException());
+//
+//        // ACT
+//        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
+//
+//        // ASSERT
+//        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+//        assertNull(result.getBody());
+//    }
+//
+//    @Test
+//    void createAuthor_shouldReturnConflict_whenInstanceAlreadyExists() throws Exception {
+//
+//        // ARRANGE
+//        AuthorRESTController sut = new AuthorRESTController(service, provider);
+//
+//        when(service.createAndSave(any(), any(), any(), any(), any()))
+//                .thenThrow(new InstanceAlreadyExistsException());
+//
+//        // ACT
+//        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
+//
+//        // ASSERT
+//        assertEquals(HttpStatus.CONFLICT, result.getStatusCode());
+//        assertNull(result.getBody());
+//    }
+//
+//    @Test
+//    void createAuthor_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
+//
+//        // ARRANGE
+//        AuthorRESTController sut = new AuthorRESTController(service, provider);
+//
+//        when(service.createAndSave(any(), any(), any(), any(), any()))
+//                .thenThrow(new RuntimeException());
+//
+//        // ACT
+//        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
+//
+//        // ASSERT
+//        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+//        assertNull(result.getBody());
+//    }
 }

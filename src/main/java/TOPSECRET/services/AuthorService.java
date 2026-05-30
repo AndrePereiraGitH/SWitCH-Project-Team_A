@@ -4,10 +4,9 @@ import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AuthorAuthor
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
-import TOPSECRET.domain.Country.Country;
-import TOPSECRET.domain.Country.ICountryRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.security.access.AccessDeniedException;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,7 +32,7 @@ public class AuthorService {
     private final IAuthorRepository authorRepo;
     private final AuthorAuthorizationPolicy policy;
     private final IUserRepository userRepository;
-    private final ICountryRepository countryRepository;
+
 
     /**
      * Constructs an {@code AuthorService} with the required collaborators.
@@ -41,18 +41,15 @@ public class AuthorService {
      * @param authorRepo        the repository used to persist authors
      * @param policy            the authorization policy for author operations
      * @param userRepository    the repository used to retrieve users
-     * @param countryRepository the repository used to resolve countries
      */
     public AuthorService(AuthorFactory authorFactory,
                          IAuthorRepository authorRepo,
                          AuthorAuthorizationPolicy policy,
-                         IUserRepository userRepository,
-                         ICountryRepository countryRepository) {
+                         IUserRepository userRepository) {
         this.authorFactory = Objects.requireNonNull(authorFactory, "Author factory must not be null.");
         this.authorRepo = Objects.requireNonNull(authorRepo, "Author Repository must not be null.");
         this.policy = Objects.requireNonNull(policy, "Authorization policy must not be null.");
         this.userRepository = Objects.requireNonNull(userRepository, "User repository must not be null.");
-        this.countryRepository = Objects.requireNonNull(countryRepository, "Country repository must not be null.");
     }
 
     /**
@@ -83,16 +80,31 @@ public class AuthorService {
         return authorRepo.save(author);
     }
 
+
     /**
-     * Resolves a {@link Country} by its identifier.
+     * Retrieves all {@link Author} instances persisted in the repository.
      *
-     * @param countryId the identifier of the country to resolve
-     * @return the resolved {@link Country}
-     * @throws IllegalArgumentException if the country is not found
+     * @return a list of all authors; empty list if none exist
      */
-    public Country resolveCountry(CountryId countryId) {
-        return countryRepository.findByID(countryId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Country not found for ID: " + countryId.getCountryID()));
+    public List<Author> findAll() {
+        List<Author> authors = authorRepo.findAll();
+        return authors;
+    }
+
+    /**
+     * Retrieves an {@link Author} by its identifier.
+     *
+     * @param authorId the identifier of the author to retrieve
+     * @return the {@link Author} matching the given identifier
+     * @throws NullPointerException     if {@code authorId} is null
+     * @throws IllegalArgumentException if no author is found with the given identifier
+     */
+    public Author findById(AuthorId authorId) {
+
+        Objects.requireNonNull(authorId, "Author ID must not be null.");
+
+        Author author = authorRepo.findById(authorId)
+                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+        return author;
     }
 }

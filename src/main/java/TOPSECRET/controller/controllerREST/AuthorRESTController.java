@@ -57,33 +57,33 @@ public class AuthorRESTController {
      * @return response entity containing the created Author
      *         or an error status when the operation fails
      */
-    @PostMapping("")
-    public ResponseEntity<AuthorDTO> createAuthor(
-            @RequestBody CreateAuthorDTO dto,
-            @RequestParam UserId userId) {
-        try {
-            Author author = service.createAndSave(
-                    dto.name(),
-                    AuthorMapper.toCountryId(dto),
-                    AuthorMapper.toDateOfBirth(dto),
-                    dto.biography(),
-                    userId
-            );
-            Country country = service.resolveCountry(author.getCountryID());
-            AuthorDTO result = AuthorMapper.toDTO(author, country);
-            List<Link> links = new ArrayList<>(provider.getLinks(userId));
-            links.add(linkTo(methodOn(AuthorRESTController.class)
-                    .createAuthor(dto, userId)).withSelfRel());
-            links.forEach(result::add);
-            return ResponseEntity.status(HttpStatus.CREATED).body(result);
-        } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (InstanceAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
+//    @PostMapping("")
+//    public ResponseEntity<AuthorDTO> createAuthor(
+//            @RequestBody CreateAuthorDTO dto,
+//            @RequestParam UserId userId) {
+//        try {
+//            Author author = service.createAndSave(
+//                    dto.name(),
+//                    AuthorMapper.toCountryId(dto),
+//                    AuthorMapper.toDateOfBirth(dto),
+//                    dto.biography(),
+//                    userId
+//            );
+//            Country country = service.resolveCountry(author.getCountryID());
+//            AuthorDTO result = AuthorMapper.toDTO(author, country);
+//            List<Link> links = new ArrayList<>(provider.getLinks(userId));
+//            links.add(linkTo(methodOn(AuthorRESTController.class)
+//                    .createAuthor(dto, userId)).withSelfRel());
+//            links.forEach(result::add);
+//            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+//        } catch (AccessDeniedException e) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//        } catch (InstanceAlreadyExistsException e) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
 }
