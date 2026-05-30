@@ -19,8 +19,10 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -96,7 +98,6 @@ class UserRESTControllerTest {
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new IllegalArgumentException());
 
@@ -106,6 +107,36 @@ class UserRESTControllerTest {
 
             // Assert
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    // ================================================================
+    // POST /users — 409 CONFLICT
+    // ================================================================
+
+    @Test
+    void registerUser_shouldReturnConflict_whenInstanceAlreadyExistsException() throws Exception {
+
+        // Arrange
+        RequestUserDTO requestDouble = mock(RequestUserDTO.class);
+        UserId userIdDouble = mock(UserId.class);
+
+        when(requestDouble.username()).thenReturn("newuser");
+        when(requestDouble.role()).thenReturn("NORMAL_USER");
+
+        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
+            mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
+            when(userService.createAndSave(any(), any(), any(), any()))
+                    .thenThrow(new InstanceAlreadyExistsException());
+
+            // Act
+            ResponseEntity<ResponseUserDTO> response =
+                    controller.registerUser(requestDouble, userIdDouble);
+
+            // Assert
+            assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
             assertNull(response.getBody());
         }
     }
@@ -127,7 +158,6 @@ class UserRESTControllerTest {
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new AccessDeniedException("denied"));
 
@@ -158,7 +188,6 @@ class UserRESTControllerTest {
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new RuntimeException());
 
@@ -170,5 +199,74 @@ class UserRESTControllerTest {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
             assertNull(response.getBody());
         }
+    }
+
+    // ================================================================
+    // GET /users/{id} — 200 OK
+    // ================================================================
+
+    @Test
+    void getUser_shouldReturnOk_whenUserExists() {
+
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        User userDouble = mock(User.class);
+        ResponseUserDTO responseDTO = mock(ResponseUserDTO.class);
+        Link linkDouble = mock(Link.class);
+
+        when(userService.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+        when(userLinkProvider.getLinksForUsers(userIdDouble)).thenReturn(List.of(linkDouble));
+
+        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toDTO(userDouble)).thenReturn(responseDTO);
+
+            // Act
+            ResponseEntity<ResponseUserDTO> response = controller.getUser(userIdDouble);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(responseDTO, response.getBody());
+            verify(responseDTO).add(linkDouble);
+        }
+    }
+
+    // ================================================================
+    // GET /users/{id} — 404 NOT FOUND
+    // ================================================================
+
+    @Test
+    void getUser_shouldReturnNotFound_whenUserDoesNotExist() {
+
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userService.findByID(userIdDouble)).thenReturn(Optional.empty());
+
+        // Act
+        ResponseEntity<ResponseUserDTO> response = controller.getUser(userIdDouble);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    // ================================================================
+    // GET /users/{id} — 500 INTERNAL SERVER ERROR
+    // ================================================================
+
+    @Test
+    void getUser_shouldReturnInternalServerError_whenUnexpectedException() {
+
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userService.findByID(userIdDouble)).thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<ResponseUserDTO> response = controller.getUser(userIdDouble);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }

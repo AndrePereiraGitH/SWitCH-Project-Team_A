@@ -42,14 +42,18 @@ public class UserLinkProvider {
     /**
      * Returns the HATEOAS links available for a given user.
      *
-     * <p>If the user has permission to register new users, a link to the
-     * registration endpoint is included.</p>
+     * <p>Always includes a link to retrieve the user by ID.
+     * If the user has permission to register new users, a registration link is also included.</p>
      *
      * @param userId the identifier of the user whose permissions are evaluated
-     * @return list of {@link Link} available for the user; empty if no permissions
+     * @return list of {@link Link} available for the user
      */
     public List<Link> getLinksForUsers(UserId userId) {
         List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(UserRESTController.class)
+                .getUser(userId))
+                .withRel("get-user"));
 
         userRepository.findByID(userId).ifPresent(user -> {
             if (authPolicy.canRegisterUser(user)) {
