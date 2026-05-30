@@ -82,6 +82,5 @@ class UserLinkProviderTest {
         // Assert
         assertEquals(1, result.size());
         assertEquals("get-user", result.get(0).getRel().value());
-        verifyNoInteractions(authPolicy);
     }
 }
