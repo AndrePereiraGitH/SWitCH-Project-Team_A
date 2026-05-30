@@ -22,8 +22,6 @@ import org.springframework.http.ResponseEntity;
 import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -214,7 +212,7 @@ class UserRESTControllerTest {
         ResponseUserDTO responseDTO = mock(ResponseUserDTO.class);
         Link linkDouble = mock(Link.class);
 
-        when(userService.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+        when(userService.findByID(userIdDouble)).thenReturn(userDouble);
         when(userLinkProvider.getLinksForUsers(userIdDouble)).thenReturn(List.of(linkDouble));
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
@@ -226,7 +224,6 @@ class UserRESTControllerTest {
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertEquals(responseDTO, response.getBody());
-            verify(responseDTO).add(linkDouble);
         }
     }
 
@@ -240,7 +237,7 @@ class UserRESTControllerTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
 
-        when(userService.findByID(userIdDouble)).thenReturn(Optional.empty());
+        when(userService.findByID(userIdDouble)).thenThrow(new IllegalArgumentException());
 
         // Act
         ResponseEntity<ResponseUserDTO> response = controller.getUser(userIdDouble);

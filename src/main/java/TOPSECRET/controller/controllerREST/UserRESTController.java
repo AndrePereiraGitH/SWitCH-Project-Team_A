@@ -109,8 +109,7 @@ public class UserRESTController {
     public ResponseEntity<ResponseUserDTO> getUser(@PathVariable UserId id) {
 
         try {
-            User user = userService.findByID(id)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User user = userService.findByID(id);
 
             ResponseUserDTO result = UserMapper.toDTO(user);
 

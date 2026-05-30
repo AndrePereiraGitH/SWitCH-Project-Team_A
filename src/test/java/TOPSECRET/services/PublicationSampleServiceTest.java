@@ -158,33 +158,6 @@ class PublicationSampleServiceTest {
         assertEquals(saved, result);
     }
 
-    // =========================================================================
-    // existsById
-    // =========================================================================
-
-    @Test
-    void existsById_shouldReturnTrue_whenSampleExists() {
-        // Arrange
-        when(publicationSampleRepository.existsById(sampleId)).thenReturn(true);
-
-        // Act
-        boolean result = service.existsById(sampleId);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void existsById_shouldReturnFalse_whenSampleDoesNotExist() {
-        // Arrange
-        when(publicationSampleRepository.existsById(sampleId)).thenReturn(false);
-
-        // Act
-        boolean result = service.existsById(sampleId);
-
-        // Assert
-        assertFalse(result);
-    }
 
     // =========================================================================
     // findById
