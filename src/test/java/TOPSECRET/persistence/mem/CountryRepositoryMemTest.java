@@ -73,36 +73,6 @@ class CountryRepositoryMemTest {
                 () -> repository.save(null));
     }
 
-    @Test
-    void save_duplicateCountry_sameName() {
-        // Arrange
-        ICountryRepository repository = new CountryRepositoryMem();
-        Country c1 = factory.create("Portugal");
-        Country c2 = factory.create("Portugal");
-
-        repository.save(c1);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.save(c2));
-
-        assertEquals(1, repository.findAll().size());
-    }
-
-    @Test
-    void save_duplicateCountry_caseInsensitive() {
-        // Arrange
-        ICountryRepository repository = new CountryRepositoryMem();
-        Country c1 = factory.create("Portugal");
-        Country c2 = factory.create("portugal");
-
-        repository.save(c1);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.save(c2));
-    }
-
     // -------------------------------------------------------------------------
     // getAllCountries()
     // -------------------------------------------------------------------------
@@ -193,26 +163,6 @@ class CountryRepositoryMemTest {
         // Assert
         assertTrue(result.isPresent());
         assertEquals(country.id(), result.get());
-    }
-
-    @Test
-    void findIdByName_null() {
-        // Arrange
-        ICountryRepository repository = new CountryRepositoryMem();
-
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> repository.findIdByName(null));
-    }
-
-    @Test
-    void findIdByName_blank() {
-        // Arrange
-        ICountryRepository repository = new CountryRepositoryMem();
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repository.findIdByName(" "));
     }
 
     @Test

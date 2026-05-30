@@ -34,6 +34,20 @@ public interface IAuctionRepository {
     Auction save(Auction auction) throws InstanceAlreadyExistsException;
 
     /**
+     * Updates an existing {@link Auction} in the repository.
+     *
+     * <p>This method is intended for persistence scenarios where the auction
+     * aggregate has been modified (e.g., a new {@link Bid} was placed) and
+     * its state needs to be synchronized with the persistence layer.</p>
+     *
+     * @param auction the auction to update; must not be {@code null}
+     * @return the updated {@link Auction} instance as rehydrated from persistence
+     * @throws NullPointerException     if {@code auction} is {@code null}
+     * @throws IllegalArgumentException if no auction exists with the given identifier
+     */
+    Auction update(Auction auction);
+
+    /**
      * Returns the complete list of available auctions.
      *
      * @return a copy of the list containing all auctions

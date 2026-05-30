@@ -14,6 +14,7 @@ import TOPSECRET.dto.US016PublicationSampleDTO;
 import TOPSECRET.dto.US016PublicationSampleMapper;
 import TOPSECRET.services.AuctionService;
 import TOPSECRET.services.ListingService;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
@@ -96,7 +97,10 @@ public class ToPutForAuctionPublicationInUserLibraryController {
      * @throws InstanceAlreadyExistsException if the listing or the auction already exists
      */
 
-    public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID, Price initialPrice, String shortDescription, UserId sellerId, List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice) throws InstanceAlreadyExistsException {
+    public boolean createAuctionListing(String listingTitle, List<PublicationSampleId> selectedPublicationsID,
+                                        Price initialPrice, String shortDescription, UserId sellerId,
+                                        List<Picture> pictures, LocalDateTime initialDate, LocalDateTime finalDate, Price buyOutPrice)
+            throws InstanceAlreadyExistsException, InstanceNotFoundException, AccessDeniedException {
 
         if (listingTitle == null
                 || selectedPublicationsID == null
@@ -113,7 +117,7 @@ public class ToPutForAuctionPublicationInUserLibraryController {
 
         Listing persistedListing = listingService.createAndSave(listingTitle, selectedPublicationsID, SaleType.AUCTION, initialPrice, shortDescription, sellerId, pictures);
 
-        Auction persistedAuction = auctionService.createAndSave(persistedListing.id(), initialDate, finalDate, initialPrice, buyOutPrice);
+        Auction persistedAuction = auctionService.createAndSave(persistedListing.id(), initialDate, finalDate, initialPrice, buyOutPrice, sellerId);
 
 
         return true;

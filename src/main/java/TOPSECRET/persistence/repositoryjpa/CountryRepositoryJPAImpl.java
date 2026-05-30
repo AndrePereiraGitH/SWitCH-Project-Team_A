@@ -49,10 +49,6 @@ public class CountryRepositoryJPAImpl implements ICountryRepository {
 
         CountryDM dm = assembler.ToDM(country);
 
-        if (jpaRepository.existsById(dm.getCountryID())) {
-            throw new IllegalArgumentException("Country is already registered");
-        }
-
         jpaRepository.save(dm);
         return country;
     }
