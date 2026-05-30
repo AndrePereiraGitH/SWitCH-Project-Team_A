@@ -58,7 +58,7 @@ public class UserLinkProvider {
         userRepository.findByID(userId).ifPresent(user -> {
             if (authPolicy.canRegisterUser(user)) {
                 links.add(linkTo(methodOn(UserRESTController.class)
-                        .registerUser(null, userId))
+                        .registerUser(null, null))
                         .withRel("register-user"));
             }
         });

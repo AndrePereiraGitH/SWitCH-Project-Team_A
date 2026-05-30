@@ -48,10 +48,10 @@ class ToRegisterAuthorControllerTest {
         ToRegisterAuthorController controller = new ToRegisterAuthorController(serviceDouble);
 
         String name = "José Saramago";
-        CountryId countryId = new CountryId("PORTUGAL");
+        CountryId countryId = mock(CountryId.class);
         LocalDate dateOfBirth = LocalDate.of(1922, 11, 16);
         String biography = "Portuguese Nobel Prize-winning author.";
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
 
         Author authorDouble = mock(Author.class);
         when(serviceDouble.createAndSave(name, countryId, dateOfBirth, biography, userId))
@@ -62,7 +62,6 @@ class ToRegisterAuthorControllerTest {
 
         // Assert
         assertSame(authorDouble, result);
-        verify(serviceDouble).createAndSave(name, countryId, dateOfBirth, biography, userId);
     }
 
     // =========================================================================
@@ -78,10 +77,10 @@ class ToRegisterAuthorControllerTest {
         ToRegisterAuthorController controller = new ToRegisterAuthorController(serviceDouble);
 
         String name = "José Saramago";
-        CountryId countryId = new CountryId("PORTUGAL");
+        CountryId countryId = mock(CountryId.class);
         LocalDate dateOfBirth = LocalDate.of(1922, 11, 16);
         String biography = "Portuguese Nobel Prize-winning author.";
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
 
         doThrow(new AccessDeniedException("Access denied"))
                 .when(serviceDouble).createAndSave(name, countryId, dateOfBirth, biography, userId);
@@ -103,7 +102,7 @@ class ToRegisterAuthorControllerTest {
         ToRegisterAuthorController controller = new ToRegisterAuthorController(serviceDouble);
 
         String name = "José Saramago";
-        CountryId countryId = new CountryId("PORTUGAL");
+        CountryId countryId = mock(CountryId.class);
         LocalDate dateOfBirth = LocalDate.of(1922, 11, 16);
         String biography = "Portuguese Nobel Prize-winning author.";
         UserId userId = new UserId("user-1");

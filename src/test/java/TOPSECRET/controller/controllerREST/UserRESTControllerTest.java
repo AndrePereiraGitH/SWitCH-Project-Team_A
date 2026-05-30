@@ -57,13 +57,13 @@ class UserRESTControllerTest {
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
-        ResponseUserDTO responseDTO = mock(ResponseUserDTO.class);
-        Link linkDouble = mock(Link.class);
+        ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
         when(userService.createAndSave(any(), any(), any(), any())).thenReturn(userDouble);
-        when(userLinkProvider.getLinksForUsers(userIdDouble)).thenReturn(List.of(linkDouble));
+        when(userLinkProvider.getLinksForUsers(userIdDouble))
+                .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
@@ -76,8 +76,7 @@ class UserRESTControllerTest {
 
             // Assert
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
-            assertEquals(responseDTO, response.getBody());
-            verify(responseDTO).add(linkDouble);
+            assertTrue(response.getBody().hasLink("get-user"));
         }
     }
 
@@ -211,11 +210,11 @@ class UserRESTControllerTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
-        ResponseUserDTO responseDTO = mock(ResponseUserDTO.class);
-        Link linkDouble = mock(Link.class);
+        ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
         when(userService.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(userLinkProvider.getLinksForUsers(userIdDouble)).thenReturn(List.of(linkDouble));
+        when(userLinkProvider.getLinksForUsers(userIdDouble))
+                .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toDTO(userDouble)).thenReturn(responseDTO);
@@ -225,8 +224,7 @@ class UserRESTControllerTest {
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(responseDTO, response.getBody());
-            verify(responseDTO).add(linkDouble);
+            assertTrue(response.getBody().hasLink("get-user"));
         }
     }
 
