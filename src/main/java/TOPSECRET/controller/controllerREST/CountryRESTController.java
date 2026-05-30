@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -118,47 +119,67 @@ public class CountryRESTController {
      *         or an error status when the operation fails
      */
     @GetMapping("")
-    public ResponseEntity<List<CountryResponseDTO>> getCountries(
-            @RequestParam UserId userId
-    ){
+    public ResponseEntity<List<CountryResponseDTO>> getCountries() {
 
         try {
-
             List<Country> countries = service.findAll();
 
-            List<CountryResponseDTO> result = CountryMapper.toDTOs(countries);
+            List<CountryResponseDTO> result = countries.stream()
+                    .map(country -> {
+                        CountryResponseDTO dto = CountryMapper.toDTO(country);
 
-            List<Link> links = provider.getLinks(userId);
+                        dto.add(linkTo(methodOn(CountryRESTController.class)
+                                .getCountry(country.id().toString()))
+                                .withSelfRel());
 
-            result.forEach(dto -> {
+                        return dto;
+                    })
+                    .toList();
 
-                links.forEach(dto::add);
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
 
-                dto.add(linkTo(methodOn(CountryRESTController.class)
-                        .getCountries(userId))
-                        .withSelfRel());
-            });
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
-
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
         } catch (Exception e) {
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    /**
+     * Retrieves a single country by its unique identifier.
+     *
+     * <p>This endpoint fetches a {@link Country} from the system using its ID,
+     * converts it into a {@link CountryResponseDTO}, and enriches it with
+     * HATEOAS links for navigation.</p>
+     *
+     * <p>Included links:
+     * <ul>
+     *     <li>Self link to this country resource</li>
+     *     <li>Link to retrieve all countries</li>
+     * </ul>
+     * </p>
+     *
+     * <p>HTTP responses:
+     * <ul>
+     *     <li>{@code 200 OK} if the country is found</li>
+     *     <li>{@code 404 NOT FOUND} if no country exists with the given ID</li>
+     *     <li>{@code 500 INTERNAL SERVER ERROR} for unexpected failures</li>
+     * </ul>
+     * </p>
+     *
+     * @param id the unique identifier of the country
+     * @return a response entity containing the country DTO with links,
+     *         or an error status if the operation fails
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<CountryResponseDTO> getCountry(
-            @PathVariable String id) {
+    public ResponseEntity<CountryResponseDTO> getCountry(@PathVariable String id) {
 
         try {
-
-            Country country = service.findById(new CountryId(id))
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("Country not found"));
+            Country country = service.findById(new CountryId(id));
 
             CountryResponseDTO result = CountryMapper.toDTO(country);
 
@@ -167,17 +188,15 @@ public class CountryRESTController {
                     .withSelfRel());
 
             result.add(linkTo(methodOn(CountryRESTController.class)
-                    .getCountries(null))
-                    .withRel("get-countries"));
+                    .getCountries())
+                    .withRel("get-all-countries"));
 
             return ResponseEntity.ok(result);
 
-        } catch (IllegalArgumentException e) {
-
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
         } catch (Exception e) {
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

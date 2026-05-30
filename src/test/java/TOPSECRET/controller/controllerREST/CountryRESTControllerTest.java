@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -205,7 +207,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries(userId);
+                controller.getCountries();
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -222,7 +224,7 @@ class CountryRESTControllerTest {
 
         //Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries(userId);
+                controller.getCountries();
 
         //Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -237,43 +239,11 @@ class CountryRESTControllerTest {
 
         //Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries(userId);
+                controller.getCountries();
 
         //Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
-
-    @Test
-    void getCountries_addsSelfAndProviderLinks() {
-
-        // Arrange
-        when(country.getCountryName()).thenReturn("Portugal");
-        when(country.id()).thenReturn(new CountryId("PORTUGAL"));
-
-        when(countryService.findAll()).thenReturn(List.of(country));
-
-        List<Link> providerLinks = List.of(
-                Link.of("/countries", "get-all-countries")
-        );
-
-        when(linkProvider.getLinks(userId)).thenReturn(new ArrayList<>(providerLinks));
-
-        // Act
-        ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries(userId);
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        CountryResponseDTO dto = response.getBody().get(0);
-
-        assertTrue(dto.getLinks().stream()
-                .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
-
-        assertTrue(dto.getLinks().stream()
-                .anyMatch(l -> l.getRel().value().equals("self")));
-    }
-
 
     // -------------------------------------------------------------------------
     // getCountry
@@ -284,7 +254,7 @@ class CountryRESTControllerTest {
 
         // Arrange
         when(countryService.findById(any(CountryId.class)))
-                .thenReturn(Optional.of(country));
+                .thenReturn(country);
 
         when(country.getCountryName()).thenReturn("Portugal");
 
@@ -304,7 +274,7 @@ class CountryRESTControllerTest {
 
         // Arrange
         when(countryService.findById(any(CountryId.class)))
-                .thenReturn(Optional.of(country));
+                .thenReturn(country);
 
         when(country.getCountryName()).thenReturn("Portugal");
 
@@ -323,7 +293,7 @@ class CountryRESTControllerTest {
 
         // Arrange
         when(countryService.findById(any(CountryId.class)))
-                .thenReturn(Optional.empty());
+                .thenThrow(new NoSuchElementException("Country not found"));
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
@@ -338,7 +308,7 @@ class CountryRESTControllerTest {
 
         //Arrange
         when(countryService.findById(any(CountryId.class)))
-                .thenReturn(Optional.of(country));
+                .thenReturn(country);
 
         when(country.getCountryName()).thenReturn("Portugal");
         when(country.id()).thenReturn(new CountryId("PORTUGAL"));
@@ -356,7 +326,6 @@ class CountryRESTControllerTest {
                 .anyMatch(l -> l.getRel().value().equals("self")));
 
         assertTrue(dto.getLinks().stream()
-                .anyMatch(l -> l.getRel().value().equals("get-countries")));
+                .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
     }
-
 }

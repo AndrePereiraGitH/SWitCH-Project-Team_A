@@ -52,9 +52,8 @@ class CountryServiceTest {
         repository = mock(ICountryRepository.class);
         userRepository = mock(IUserRepository.class);
 
-        policy = new CountryAuthorizationPolicy();
+        policy = mock(CountryAuthorizationPolicy.class);
 
-        service = new CountryService(factory, repository, policy, userRepository);
 
         country = mock(Country.class);
         adminUser = mock(User.class);
@@ -111,10 +110,20 @@ class CountryServiceTest {
     void createAndSave_adminUser_returnsCountry() throws Exception {
 
         // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
+        when(policy.canRegisterCountry(adminUser)).thenReturn(true);
+
         when(userRepository.findByID(adminUserId)).thenReturn(Optional.of(adminUser));
+
+        when(userRepository.findByID(normalUserId)).thenReturn(Optional.of(normalUser));
+
         when(factory.create("Portugal")).thenReturn(country);
+
         when(country.id()).thenReturn(new CountryId("PORTUGAL"));
+
         when(repository.findByID(any(CountryId.class))).thenReturn(Optional.empty());
+
         when(repository.save(country)).thenReturn(country);
 
         // Act
@@ -132,7 +141,11 @@ class CountryServiceTest {
     void createAndSave_userNotFound_throwsException() {
 
         // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
         when(userRepository.findByID(adminUserId)).thenReturn(Optional.empty());
+
+        when(userRepository.findByID(normalUserId)).thenReturn(Optional.of(normalUser));
 
         // Act + Assert
         assertThrows(NoSuchElementException.class,
@@ -147,7 +160,11 @@ class CountryServiceTest {
     void createAndSave_normalUser_throwsAccessDenied() {
 
         // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
         when(userRepository.findByID(normalUserId)).thenReturn(Optional.of(normalUser));
+
+        when(userRepository.findByID(adminUserId)).thenReturn(Optional.of(adminUser));
 
         // Act + Assert
         assertThrows(AccessDeniedException.class,
@@ -162,9 +179,18 @@ class CountryServiceTest {
     void createAndSave_duplicateCountry_throwsException() throws Exception {
 
         // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
+        when(policy.canRegisterCountry(adminUser)).thenReturn(true);
+
         when(userRepository.findByID(adminUserId)).thenReturn(Optional.of(adminUser));
+
+        when(userRepository.findByID(normalUserId)).thenReturn(Optional.of(normalUser));
+
         when(factory.create("Portugal")).thenReturn(country);
+
         when(country.id()).thenReturn(new CountryId("PORTUGAL"));
+
         when(repository.findByID(any(CountryId.class))).thenReturn(Optional.of(country));
 
         // Act + Assert
@@ -180,6 +206,8 @@ class CountryServiceTest {
     void findAll_returnsCountries() {
 
         // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
         List<Country> countries = List.of(country);
         when(repository.findAll()).thenReturn(countries);
 
@@ -199,39 +227,41 @@ class CountryServiceTest {
     @Test
     void findById_existingCountry_returnsCountry() {
 
-        // Arrange
-        CountryId id = new CountryId("PORTUGAL");
+        CountryService service =
+                new CountryService(factory, repository, policy, userRepository);
+
+        CountryId id = mock(CountryId.class);
 
         when(repository.findByID(id))
                 .thenReturn(Optional.of(country));
 
-        // Act
-        Optional<Country> result = service.findById(id);
+        Country result = service.findById(id);
 
-        // Assert
-        assertTrue(result.isPresent());
+        assertEquals(country, result);
     }
 
     @Test
-    void findById_nonExistingCountry_returnsEmptyOptional() {
+    void findById_nonExistingCountry_throwsException() {
 
-        // Arrange
-        CountryId id = new CountryId("PORTUGAL");
+        CountryService service =
+                new CountryService(factory, repository, policy, userRepository);
+
+        CountryId id = mock(CountryId.class);
 
         when(repository.findByID(id))
                 .thenReturn(Optional.empty());
 
-        // Act
-        Optional<Country> result = service.findById(id);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        assertThrows(NoSuchElementException.class,
+                () -> service.findById(id));
     }
 
     @Test
     void findById_nullId_throwsException() {
 
-        // Arrange + Act + Assert
+        // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
+        // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> service.findById(null));
     }
