@@ -29,7 +29,7 @@ class AuthorLinkProviderTest {
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -49,7 +49,7 @@ class AuthorLinkProviderTest {
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -69,7 +69,7 @@ class AuthorLinkProviderTest {
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -88,7 +88,7 @@ class AuthorLinkProviderTest {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
@@ -108,7 +108,7 @@ class AuthorLinkProviderTest {
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
 
-        UserId userId = new UserId("user-1");
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));

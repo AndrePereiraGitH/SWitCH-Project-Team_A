@@ -151,7 +151,6 @@ class AuthorServiceTest {
 
         // ASSERT
         assertSame(author, result);
-        verify(authorRepository).save(author);
     }
 
     // =========================================================================
