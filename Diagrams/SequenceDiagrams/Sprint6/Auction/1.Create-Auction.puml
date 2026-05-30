@@ -1,0 +1,223 @@
+@startuml
+hide footbox
+autonumber
+
+title Create and Persist an Auction
+
+actor User
+participant ":UI" as UI
+
+participant ":PublicationSample\nRESTController" as PSCtrl
+participant ":ListingREST\nController" as ListCtrl
+participant ":AuctionREST\nController" as AuctionCtrl
+
+participant ":AuctionService" as auctionService
+participant ":IAuctionRepository" as AucRepo
+
+participant ":IUserRepository" as userRepo
+participant ":Auction\nAuthorizationPolicy" as policy
+participant ":IListingRepository" as listingRepo
+participant ":ListingService" as listingService
+
+participant ":AuctionAssembler" as auctionAssembler
+participant "auctionDM\n:AuctionDM" as DMAuction
+participant ":AuctionFactory" as aucFactory
+
+participant ":IAuctionRepositoryJPA" as auctionRepoJPA
+
+participant "auction: Auction" as auction
+
+participant ":persistedAuction\n:Auction" as persistedAuction
+participant ":auctionDMPersisted\n:AuctionDM" as auctionDMPersisted
+
+participant ":AuctionMapper" as AuctionMapper
+participant "responseDTO:\nAuctionDTO" as AuctionDTO
+
+database "Database" as db
+
+
+' --------------- GET ALL PUBLICATIONS IN USER'S LIBRARY ---------------
+User -> UI : I want to sell a publication of my library as an auction
+activate UI
+
+UI -> PSCtrl : getAllPublicationsInUserLibrary(userId)
+activate PSCtrl
+
+ref over PSCtrl
+[[2.GetAllPublicationsInUserLibrary.puml Get publications from user's library]]
+end ref
+
+PSCtrl --> UI : listOfPublicationsDTO
+deactivate PSCtrl
+
+UI --> User : Please, select one or more publications from your library
+deactivate UI
+
+User -> UI : Selected publications: pub1_dto
+activate UI
+UI --> User : Please provide listingTitle, saleType, price,\nshortDescription, pictures
+deactivate UI
+
+' --------------- CREATE A LISTING ---------------
+
+User -> UI : listingTitle, saleType, price, shortDescription, pictures
+activate UI
+
+UI -> ListCtrl : createListing(listingTitle, itemsId, price, \nshortDescription, sellerId, pictures)
+activate ListCtrl
+
+ref over ListCtrl
+[[2.Create-Listing.puml Create Listing]]
+end ref
+
+ListCtrl --> UI: persistedListing
+deactivate ListCtrl
+
+' --------------- CREATE AN AUCTION ---------------
+
+UI --> User: Please provide startDateTime, endDateTime,\n initialPrice, buyoutPrice)
+deactivate UI
+
+User -> UI: startDateTime, endDateTime, initialPrice, buyoutPrice
+activate UI
+
+UI -> AuctionCtrl: createAuction(persistedListing.id(), startDateTime, endDateTime,\ninitialPrice, buyoutPrice, userId)
+activate AuctionCtrl
+
+AuctionCtrl -> auctionService: createAndSave(persistedListing.id(), startDateTime,\n endDateTime, initialPrice, buyoutPrice, userId)
+activate auctionService
+
+auctionService -> userRepo : findByID(userId)
+activate userRepo
+userRepo --> auctionService : user
+deactivate userRepo
+
+auctionService -> policy : canCreateAuction(user)
+activate policy
+policy --> auctionService : true/ false
+deactivate policy
+
+alt canCreateAuction == false
+    auctionService --> AuctionCtrl : AccessDeniedException
+    AuctionCtrl --> UI : HTTP 403 FORBIDDEN
+end
+
+auctionService -> listingRepo : findById(listingId)
+activate listingRepo
+listingRepo --> auctionService : listing
+deactivate listingRepo
+
+auctionService -> auctionService : listing.getSaleType() == AUCTION?
+
+alt saleType != AUCTION
+    auctionService --> AuctionCtrl : IllegalArgumentException
+    AuctionCtrl --> UI : HTTP 400 BAD REQUEST
+end
+
+auctionService -> aucFactory : create(persistedListing.id(), startDateTime,\n endDateTime, initialPrice, buyoutPrice)
+activate aucFactory
+aucFactory -->> auction** : <<create>>
+aucFactory --> auctionService : auction
+deactivate aucFactory
+
+auctionService -> AucRepo : save(auction)
+activate AucRepo
+
+' ------ CONVERT DOMAIN INSTANCE INTO DM -------
+
+AucRepo -> auctionAssembler : toDM (auction)
+activate auctionAssembler
+auctionAssembler -->> DMAuction** : <<create>>
+auctionAssembler --> AucRepo : auctionDM
+deactivate auctionAssembler
+
+
+' ------ JPA PERSISTENCE ---------------
+
+AucRepo -> auctionRepoJPA : save (auctionDM)
+activate auctionRepoJPA
+auctionRepoJPA -> db : INSERT auctionDM
+activate db
+db -->> auctionRepoJPA : data
+deactivate db
+auctionRepoJPA -->> auctionDMPersisted ** : <<create>>
+auctionRepoJPA --> AucRepo : auctionDMPersisted
+deactivate auctionRepoJPA
+
+AucRepo -> auctionAssembler : toDomain(auctionDMPersisted)
+activate auctionAssembler
+
+' --------- GET DATA FROM AUCTION DM ---------------
+
+auctionAssembler -> auctionDMPersisted : id()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : auctionId
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getListingId()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : listingId
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getAuctionStartDateTime()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : startDate
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getAuctionFinalDateTime()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : finalDate
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getInitialPrice()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : initialPrice
+deactivate auctionDMPersisted
+
+auctionAssembler -> auctionDMPersisted : getBuyoutPrice()
+activate auctionDMPersisted
+auctionDMPersisted --> auctionAssembler : buyoutPrice
+deactivate auctionDMPersisted
+
+auctionAssembler -> aucFactory : create(auctionId, listingId, startDate,\n finalDate, initialPrice, buyOutPrice)
+activate aucFactory
+aucFactory -->> persistedAuction ** : <<create>>
+aucFactory --> auctionAssembler : persistedAuction
+deactivate aucFactory
+
+auctionAssembler --> AucRepo : persistedAuction
+deactivate auctionAssembler
+AucRepo --> auctionService : persistedAuction
+deactivate AucRepo
+auctionService --> AuctionCtrl : persistedAuction
+deactivate auctionService
+
+' --------------- Build response auction DTO ----------------
+
+AuctionCtrl -> listingService : findById(persistedAuction.getListingId())
+activate listingService
+listingService --> AuctionCtrl : listing
+deactivate listingService
+
+AuctionCtrl -> AuctionMapper : toDTO(persistedAuction, listing)
+activate AuctionMapper
+
+AuctionMapper -->> AuctionDTO ** : «create»
+
+AuctionMapper --> AuctionCtrl : responseDTO
+deactivate AuctionMapper
+
+' --------------- HATEOAS + HTTP STATUS ---------------
+
+AuctionCtrl -> AuctionCtrl : addLinks(responseDTO)
+
+' ---- UI RETURN ---------------
+
+AuctionCtrl --> UI : responseDTO + HTTP 201 CREATED
+deactivate AuctionCtrl
+
+UI --> User : Your publication(s) are now in an auction
+deactivate UI
+@enduml
+
+@enduml
