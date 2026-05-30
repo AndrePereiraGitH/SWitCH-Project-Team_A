@@ -1,72 +1,120 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.UserAuthorizationPolicy;
+import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
-import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.Profile;
-import TOPSECRET.domain.Enum.UserRole;
+import TOPSECRET.domain.ValueObjects.UserId;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.nio.file.AccessDeniedException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Service responsible for user-related application operations.
  *
- * <p>
- * This service coordinates the creation of {@link User} domain objects
- * through {@link UserFactory} and their persistence through
- * {@link IUserRepository}.
- * </p>
+ * <p>Coordinates the creation of {@link User} domain objects through
+ * {@link UserFactory}, authorization via {@link UserAuthorizationPolicy},
+ * and persistence through {@link IUserRepository}.</p>
  */
 @Service
 public class UserService {
 
     private final UserFactory userFactory;
     private final IUserRepository userRepository;
+    private final UserAuthorizationPolicy policy;
 
     /**
      * Creates an instance of {@code UserService}.
      *
-     * @param userFactory     the factory used to create {@link User} domain objects
-     * @param userRepository  the repository used to persist and retrieve users
+     * @param userFactory    the factory used to create {@link User} domain objects; must not be {@code null}
+     * @param userRepository the repository used to persist and retrieve users; must not be {@code null}
+     * @param policy         the authorization policy for user operations; must not be {@code null}
      */
-    public UserService(UserFactory userFactory, IUserRepository userRepository) {
-        if (userFactory == null) {
-            throw new IllegalArgumentException("User factory cannot be null.");
-        }
-
-        if (userRepository == null) {
-            throw new IllegalArgumentException("User repository cannot be null.");
-        }
-
-        this.userFactory = userFactory;
-        this.userRepository = userRepository;
+    public UserService(UserFactory userFactory,
+                       IUserRepository userRepository,
+                       UserAuthorizationPolicy policy) {
+        this.userFactory = Objects.requireNonNull(userFactory, "UserFactory cannot be null.");
+        this.userRepository = Objects.requireNonNull(userRepository, "UserRepository cannot be null.");
+        this.policy = Objects.requireNonNull(policy, "UserAuthorizationPolicy cannot be null.");
     }
 
     /**
      * Creates a new {@link User} and persists it.
      *
-     * <p>
-     * The user is first created using the {@link UserFactory}. After that,
-     * it is saved through the {@link IUserRepository}. The operation runs
-     * within a transaction.
-     * </p>
+     * <p>Validates that the requester exists and has permission to register users
+     * before delegating creation to {@link UserFactory} and persistence to
+     * {@link IUserRepository}.</p>
      *
-     * @param username the username of the user
-     * @param profile  the profile of the user
-     * @param userRoles the role assigned to the user
+     * @param username    the username of the new user
+     * @param profile     the profile of the new user
+     * @param userRoles   the roles assigned to the new user
+     * @param requesterId the ID of the user performing the registration
      * @return the persisted {@link User}
-     * @throws InstanceAlreadyExistsException if a user with the same identifier already exists
-     * @throws IllegalArgumentException if any invalid argument is rejected by the domain factory or repository
+     * @throws IllegalArgumentException       if the requester does not exist
+     * @throws AccessDeniedException          if the requester lacks permission
+     * @throws InstanceAlreadyExistsException if a user with the same identity already exists
      */
     @Transactional
-    public User createAndSave(String username, Profile profile, Set<UserRole> userRoles)
-            throws InstanceAlreadyExistsException {
+    public User createAndSave(String username, Profile profile, Set<UserRole> userRoles, UserId requesterId)
+            throws InstanceAlreadyExistsException, AccessDeniedException {
+
+        User requester = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new IllegalArgumentException("Requester not found: " + requesterId));
+
+        if (!policy.canRegisterUser(requester)) {
+            throw new AccessDeniedException("You do not have permission to register users.");
+        }
 
         User user = userFactory.create(username, profile, userRoles);
-
         return userRepository.save(user);
+    }
+
+    // =========================================================================
+    // Lookup
+    // =========================================================================
+
+    /**
+     * Finds a user by their unique identifier.
+     *
+     * @param userId the identifier to search for; must not be {@code null}
+     * @return an {@link Optional} containing the {@link User} if found,
+     *         or {@link Optional#empty()} if not found
+     * @throws NullPointerException if {@code userId} is {@code null}
+     */
+    public Optional<User> findByID(UserId userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null.");
+        return userRepository.findByID(userId);
+    }
+
+    /**
+     * Checks whether a user with the given username already exists.
+     *
+     * @param username the username to check; must not be {@code null}
+     * @return {@code true} if a user with the given username exists, {@code false} otherwise
+     * @throws NullPointerException if {@code username} is {@code null}
+     */
+    public boolean existsByUsername(String username) {
+        Objects.requireNonNull(username, "Username cannot be null.");
+        return userRepository.existsByUsername(username);
+    }
+
+    /**
+     * Finds the unique identifier of a user by their username.
+     *
+     * @param username the username to search for; must not be {@code null}
+     * @return an {@link Optional} containing the {@link UserId} if found,
+     *         or {@link Optional#empty()} if not found
+     * @throws NullPointerException if {@code username} is {@code null}
+     */
+    public Optional<UserId> findIdByUsername(String username) {
+        Objects.requireNonNull(username, "Username cannot be null.");
+        return userRepository.findIdByUsername(username);
     }
 }
