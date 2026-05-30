@@ -45,6 +45,18 @@ public class PhysicalAttributes {
         this._numberOfPages = numberOfPages;
     }
 
+    public Dimensions getDimensions() {
+        return _dimensions;
+    }
+
+    public double getWeight() {
+        return _weight;
+    }
+
+    public int getNumberOfPages() {
+        return _numberOfPages;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;

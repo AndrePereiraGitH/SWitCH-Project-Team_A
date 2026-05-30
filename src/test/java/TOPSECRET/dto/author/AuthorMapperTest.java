@@ -4,10 +4,14 @@ import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.dto.author.response.AuthorDTO;
+import TOPSECRET.domain.ValueObjects.CountryId;
+import TOPSECRET.dto.author.request.CreateAuthorDTO;
+
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -136,4 +140,28 @@ class AuthorMapperTest {
         assertThrows(NullPointerException.class,
                 () -> AuthorMapper.toDTOs(List.of(), null));
     }
+
+    // -------------------------------------------------------------------------
+    // toCountryId()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toCountryIdShouldReturnCountryIdWhenDTOIsValid() {
+
+        // Arrange
+        CreateAuthorDTO dto = new CreateAuthorDTO(
+                "José Saramago",
+                "PORTUGAL",
+                LocalDate.of(1922, 11, 16),
+                "Portuguese Nobel Prize-winning author."
+        );
+
+        // Act
+        CountryId result = AuthorMapper.toCountryId(dto);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("PORTUGAL", result.getCountryID());
+    }
+
 }
