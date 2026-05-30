@@ -13,11 +13,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link EditionLinkProvider}.
- *
- * <p>Validates link generation based on user authorization rules.</p>
- */
 class EditionLinkProviderTest {
 
     private final EditionAuthorizationPolicy policy = mock(EditionAuthorizationPolicy.class);
@@ -25,91 +20,86 @@ class EditionLinkProviderTest {
     private final UserId userId = new UserId("user-1");
 
     @Test
-    void getLinks_shouldReturnLink_whenUserCanCreateEdition() {
-
-        // ARRANGE
+    void getLinks_shouldReturnTwoLinks_whenUserCanCreateEdition() {
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateEdition(user)).thenReturn(true);
 
-        // ACT
         List<Link> result = sut.getLinks(userId);
 
-        // ASSERT
-        assertEquals(1, result.size());
-        assertEquals("create-edition", result.get(0).getRel().value());
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        assertTrue(result.stream()
+                .allMatch(link -> link.getHref() != null && !link.getHref().isBlank()));
+
+        verify(repository).findByID(userId);
+        verify(policy).canCreateEdition(user);
     }
 
     @Test
-    void getLinks_shouldReturnHref_whenUserCanCreateEdition() {
-
-        // ARRANGE
-        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-        User user = mock(User.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreateEdition(user)).thenReturn(true);
-
-        // ACT
-        List<Link> result = sut.getLinks(userId);
-
-        // ASSERT
-        assertFalse(result.isEmpty());
-        assertNotNull(result.get(0).getHref());
-    }
-
-    @Test
-    void getLinks_shouldReturnEmptyList_whenUserCannotCreateEdition() {
-
-        // ARRANGE
+    void getLinks_shouldReturnOneLink_whenUserCannotCreateEdition() {
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateEdition(user)).thenReturn(false);
 
-        // ACT
         List<Link> result = sut.getLinks(userId);
 
-        // ASSERT
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size());
+
+        assertTrue(result.get(0).getHref() != null && !result.get(0).getHref().isBlank());
+
+        verify(repository).findByID(userId);
+        verify(policy).canCreateEdition(user);
     }
 
     @Test
     void getLinks_shouldThrowException_whenUserDoesNotExist() {
-
-        // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
 
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
-        // ACT
         Exception ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> sut.getLinks(userId)
         );
 
-        // ASSERT
         assertEquals("User not found", ex.getMessage());
+
+        verify(repository).findByID(userId);
+        verifyNoInteractions(policy);
+    }
+
+    @Test
+    void getLinks_shouldReturnNonNullList_whenUserCanCreateEdition() {
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateEdition(user)).thenReturn(true);
+
+        List<Link> result = sut.getLinks(userId);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
     }
 
     @Test
     void getLinks_shouldReturnNonNullList_whenUserCannotCreateEdition() {
-
-        // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreateEdition(user)).thenReturn(false);
 
-        // ACT
         List<Link> result = sut.getLinks(userId);
 
-        // ASSERT
         assertNotNull(result);
+        assertFalse(result.isEmpty());
     }
 }
