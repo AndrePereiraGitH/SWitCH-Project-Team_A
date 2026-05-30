@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Set;
@@ -86,8 +87,44 @@ public class UserRESTController {
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves a user by their unique identifier.
+     *
+     * <p>Returns the user enriched with a self-link and navigational links
+     * based on the requester's permissions.</p>
+     *
+     * @param id the unique identifier of the user to retrieve
+     * @return HTTP 200 with the user DTO, HTTP 404 if not found, or HTTP 500 on error
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseUserDTO> getUser(@PathVariable UserId id) {
+
+        try {
+            User user = userService.findByID(id)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+            ResponseUserDTO result = UserMapper.toDTO(user);
+
+            result.add(linkTo(methodOn(UserRESTController.class)
+                    .getUser(id))
+                    .withSelfRel());
+
+            List<Link> links = userLinkProvider.getLinksForUsers(id);
+            links.forEach(result::add);
+
+            return ResponseEntity.ok(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
