@@ -1,5 +1,7 @@
 package TOPSECRET.domain.Enum;
 
+import java.util.Arrays;
+
 public enum TypeOfBinding {
     HARDBACK("Hardback"),          //Enum constants with associated data
     PAPERBACK("Paperback"),
@@ -16,6 +18,13 @@ public enum TypeOfBinding {
         // Enum constructor
     TypeOfBinding(String label) {
         this.label = label;
+    }
+
+    public static TypeOfBinding fromString(String label) {
+        return Arrays.stream(TypeOfBinding.values())
+                .filter(typeOfBinding -> typeOfBinding.toString().equalsIgnoreCase(label))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown TypeOfBinding"));
     }
 
         // Overriding toString()

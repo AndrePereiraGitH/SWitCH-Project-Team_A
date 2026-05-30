@@ -53,11 +53,21 @@ class PublicationTypeLinkProviderTest {
                 provider.getLinksForPublicationType(userId);
 
         // ASSERT
-        assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(
+                2,
+                links.size()
+        );
+        assertEquals(
+                "get-all-publication-types",
+                links.get(0)
+                        .getRel()
+                        .value()
+        );
         assertEquals(
                 "create-publication-type",
-                links.get(0).getRel().value()
+                links.get(1)
+                        .getRel()
+                        .value()
         );
     }
 
@@ -86,8 +96,19 @@ class PublicationTypeLinkProviderTest {
                 provider.getLinksForPublicationType(userId);
 
         // ASSERT
-        assertNotNull(links);
-        assertTrue(links.isEmpty());
+        assertFalse(
+                links.isEmpty()
+        );
+        assertEquals(
+                1,
+                links.size()
+        );
+        assertEquals(
+                "get-all-publication-types",
+                links.get(0)
+                        .getRel()
+                        .value()
+        );
     }
 
     @Test
