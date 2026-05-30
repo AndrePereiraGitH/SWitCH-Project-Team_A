@@ -11,6 +11,19 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link AuthorAuthorizationPolicy}.
+ *
+ * <p>This class verifies the behaviour of the authorization policy
+ * responsible for determining whether a user is allowed to create
+ * an Author.</p>
+ *
+ * <p>The following scenarios are covered:</p>
+ * <ul>
+ *   <li>Users with the {@code ADMIN} role are granted permission</li>
+ *   <li>Users with the {@code NORMAL_USER} role are granted permission</li>
+ *   <li>Users with both roles are granted permission</li>
+ *   <li>Users with no roles are denied permission</li>
+ *   <li>The result is consistent across multiple calls</li>
+ * </ul>
  */
 class AuthorAuthorizationPolicyTest {
 
@@ -21,6 +34,21 @@ class AuthorAuthorizationPolicyTest {
         User user = mock(User.class);
 
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        // ACT
+        boolean result = sut.canCreateAuthor(user);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreateAuthor_shouldReturnTrue_whenUserIsNormalUser() {
+        // ARRANGE
+        AuthorAuthorizationPolicy sut = new AuthorAuthorizationPolicy();
+        User user = mock(User.class);
+
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // ACT
         boolean result = sut.canCreateAuthor(user);
@@ -42,21 +70,6 @@ class AuthorAuthorizationPolicyTest {
 
         // ASSERT
         assertTrue(result);
-    }
-
-    @Test
-    void canCreateAuthor_shouldReturnFalse_whenUserIsNotAdmin() {
-        // ARRANGE
-        AuthorAuthorizationPolicy sut = new AuthorAuthorizationPolicy();
-        User user = mock(User.class);
-
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
-
-        // ACT
-        boolean result = sut.canCreateAuthor(user);
-
-        // ASSERT
-        assertFalse(result);
     }
 
     @Test

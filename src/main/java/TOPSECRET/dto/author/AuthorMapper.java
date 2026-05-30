@@ -40,16 +40,6 @@ public class AuthorMapper {
     }
 
     /**
-     * Extracts and parses the date of birth from a {@link CreateAuthorDTO}.
-     *
-     * @param dto the request DTO; must not be {@code null}
-     * @return a {@link LocalDate} parsed from ISO format (yyyy-MM-dd)
-     */
-    public static LocalDate toDateOfBirth(CreateAuthorDTO dto) {
-        return LocalDate.parse(dto.dateOfBirth());
-    }
-
-    /**
      * Converts an {@link Author} domain object and its resolved {@link Country}
      * into an {@link AuthorDTO} response.
      *

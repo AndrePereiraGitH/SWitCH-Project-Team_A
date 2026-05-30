@@ -47,15 +47,16 @@ public class AuthorLinkProvider {
      * @param id identifier of the user whose permissions are evaluated
      * @return list of links available for the user
      */
-//    public List<Link> getLinks(UserId id) {
-//        List<Link> links = new ArrayList<>();
-//        User user = repository.findByID(id)
-//                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-//        if (policy.canCreateAuthor(user)) {
-//            links.add(linkTo(methodOn(AuthorRESTController.class)
-//                    .createAuthor(null, id))
-//                    .withRel("create-author"));
-//        }
-//        return links;
-//    }
+    public List<Link> getLinks(UserId id) {
+        List<Link> links = new ArrayList<>();
+        User user = repository.findByID(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (policy.canCreateAuthor(user)) {
+            links.add(linkTo(methodOn(AuthorRESTController.class)
+                    .createAuthor(null, null))
+                    .withRel("create-author"));
+        }
+        return links;
+    }
 }
