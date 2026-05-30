@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -73,5 +74,47 @@ public class UserService {
 
         User user = userFactory.create(username, profile, userRoles);
         return userRepository.save(user);
+    }
+
+    // =========================================================================
+    // Lookup
+    // =========================================================================
+
+    /**
+     * Finds a user by their unique identifier.
+     *
+     * @param userId the identifier to search for; must not be {@code null}
+     * @return an {@link Optional} containing the {@link User} if found,
+     *         or {@link Optional#empty()} if not found
+     * @throws NullPointerException if {@code userId} is {@code null}
+     */
+    public Optional<User> findByID(UserId userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null.");
+        return userRepository.findByID(userId);
+    }
+
+    /**
+     * Checks whether a user with the given username already exists.
+     *
+     * @param username the username to check; must not be {@code null}
+     * @return {@code true} if a user with the given username exists, {@code false} otherwise
+     * @throws NullPointerException if {@code username} is {@code null}
+     */
+    public boolean existsByUsername(String username) {
+        Objects.requireNonNull(username, "Username cannot be null.");
+        return userRepository.existsByUsername(username);
+    }
+
+    /**
+     * Finds the unique identifier of a user by their username.
+     *
+     * @param username the username to search for; must not be {@code null}
+     * @return an {@link Optional} containing the {@link UserId} if found,
+     *         or {@link Optional#empty()} if not found
+     * @throws NullPointerException if {@code username} is {@code null}
+     */
+    public Optional<UserId> findIdByUsername(String username) {
+        Objects.requireNonNull(username, "Username cannot be null.");
+        return userRepository.findIdByUsername(username);
     }
 }

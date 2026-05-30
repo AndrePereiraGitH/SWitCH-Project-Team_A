@@ -129,4 +129,143 @@ class UserServiceTest {
         assertThrows(NullPointerException.class,
                 () -> new UserService(userFactory, userRepository, null));
     }
+
+    // ================================================================
+    // findByID — found
+    // ================================================================
+
+    @Test
+    void findByID_shouldReturnUser_whenUserExists() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        User userDouble = mock(User.class);
+        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+
+        // Act
+        Optional<User> result = service.findByID(userIdDouble);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(userDouble, result.get());
+    }
+
+    // ================================================================
+    // findByID — not found
+    // ================================================================
+
+    @Test
+    void findByID_shouldReturnEmpty_whenUserDoesNotExist() {
+        // Arrange
+        UserId userIdDouble = mock(UserId.class);
+        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
+
+        // Act
+        Optional<User> result = service.findByID(userIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // ================================================================
+    // findByID — null check
+    // ================================================================
+
+    @Test
+    void findByID_shouldThrowNullPointerException_whenUserIdIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.findByID(null));
+    }
+
+    // ================================================================
+    // existsByUsername — true
+    // ================================================================
+
+    @Test
+    void existsByUsername_shouldReturnTrue_whenUsernameExists() {
+        // Arrange
+        String username = "existinguser";
+        when(userRepository.existsByUsername(username)).thenReturn(true);
+
+        // Act
+        boolean result = service.existsByUsername(username);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    // ================================================================
+    // existsByUsername — false
+    // ================================================================
+
+    @Test
+    void existsByUsername_shouldReturnFalse_whenUsernameDoesNotExist() {
+        // Arrange
+        String username = "nonexistent";
+        when(userRepository.existsByUsername(username)).thenReturn(false);
+
+        // Act
+        boolean result = service.existsByUsername(username);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    // ================================================================
+    // existsByUsername — null check
+    // ================================================================
+
+    @Test
+    void existsByUsername_shouldThrowNullPointerException_whenUsernameIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.existsByUsername(null));
+    }
+
+    // ================================================================
+    // findIdByUsername — found
+    // ================================================================
+
+    @Test
+    void findIdByUsername_shouldReturnUserId_whenUsernameExists() {
+        // Arrange
+        String username = "existinguser";
+        UserId userIdDouble = mock(UserId.class);
+        when(userRepository.findIdByUsername(username)).thenReturn(Optional.of(userIdDouble));
+
+        // Act
+        Optional<UserId> result = service.findIdByUsername(username);
+
+        // Assert
+        assertTrue(result.isPresent());
+        assertSame(userIdDouble, result.get());
+    }
+
+    // ================================================================
+    // findIdByUsername — not found
+    // ================================================================
+
+    @Test
+    void findIdByUsername_shouldReturnEmpty_whenUsernameDoesNotExist() {
+        // Arrange
+        String username = "nonexistent";
+        when(userRepository.findIdByUsername(username)).thenReturn(Optional.empty());
+
+        // Act
+        Optional<UserId> result = service.findIdByUsername(username);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // ================================================================
+    // findIdByUsername — null check
+    // ================================================================
+
+    @Test
+    void findIdByUsername_shouldThrowNullPointerException_whenUsernameIsNull() {
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> service.findIdByUsername(null));
+    }
 }
