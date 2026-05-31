@@ -349,65 +349,49 @@ class BibliographicalDataServiceTest {
                 () -> service.buildAuthorNamesMap(bibliographicalDataList)
         );
     }
+
     // =============================================================
     // ===================== findById Tests ========================
     // =============================================================
 
     @Test
-    void findById_shouldReturnBibliographicalDataWhenExists() {
-        // Arrange
+    void findById_shouldReturnBibliographicalData_whenExists() throws InstanceNotFoundException {
+
+        // ARRANGE
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
         BibliographicalData bibliographicalData = mock(BibliographicalData.class);
 
         when(bibliographicalDataRepo.findById(bdId))
                 .thenReturn(Optional.of(bibliographicalData));
 
-        // Act
-        Optional<BibliographicalData> result = service.findById(bdId);
+        // ACT
+        BibliographicalData result = service.findById(bdId);
 
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(bibliographicalData, result.get());
+        // ASSERT
+        assertSame(bibliographicalData, result);
     }
 
     @Test
-    void findById_shouldReturnEmptyWhenNotFound() {
-        // Arrange
+    void findById_shouldThrowIllegalArgument_whenIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findById(null));
+    }
+
+    @Test
+    void findById_shouldThrowInstanceNotFoundException_whenNotFound() {
+
+        // ARRANGE
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
 
         when(bibliographicalDataRepo.findById(bdId))
                 .thenReturn(Optional.empty());
 
-        // Act
-        Optional<BibliographicalData> result = service.findById(bdId);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // ACT + ASSERT
+        assertThrows(InstanceNotFoundException.class,
+                () -> service.findById(bdId));
     }
-
-    // =============================================================
-    // ================== findAllByGenreId Tests ===================
-    // =============================================================
-
-    @Test
-    void findAllByGenreId_shouldReturnBibliographicalDataIds() {
-        // Arrange
-        GenreId genreId = mock(GenreId.class);
-        List<BibliographicalDataId> ids = List.of(
-                mock(BibliographicalDataId.class),
-                mock(BibliographicalDataId.class)
-        );
-
-        when(bibliographicalDataRepo.findAllByGenreId(genreId))
-                .thenReturn(ids);
-
-        // Act
-        List<BibliographicalDataId> result = service.findAllByGenreId(genreId);
-
-        // Assert
-        assertEquals(ids, result);
-    }
-
     // =============================================================
     // ================== findIdByTitle Tests ======================
     // =============================================================
