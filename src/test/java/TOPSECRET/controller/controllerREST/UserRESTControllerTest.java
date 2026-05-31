@@ -55,8 +55,7 @@ class UserRESTControllerTest {
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
-        ResponseUserDTO responseDTO = mock(ResponseUserDTO.class);
-        Link linkDouble = mock(Link.class);
+        ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");

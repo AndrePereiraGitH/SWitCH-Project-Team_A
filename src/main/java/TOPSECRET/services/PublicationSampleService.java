@@ -143,13 +143,13 @@ public class PublicationSampleService {
      * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      * @throws NullPointerException if {@code bdId} is {@code null}
      */
-    public List<PublicationSampleId> findIdsByBibliographicalDataId(BibliographicalDataId bdId) {
+    public List<PublicationSample> findByBibliographicalDataId(BibliographicalDataId bdId) {
         Objects.requireNonNull(bdId, "BibliographicalDataId cannot be null");
 
-        List<PublicationSampleId> allPublicationIdsWithSpecificBDId =
-                publicationSampleRepository.findIdsByBibliographicalDataId(bdId);
+        List<PublicationSample> allPublicationWithSpecificBDId =
+                publicationSampleRepository.findByBibliographicalDataId(bdId);
 
-        return allPublicationIdsWithSpecificBDId;
+        return allPublicationWithSpecificBDId;
     }
 
     /**
@@ -159,13 +159,13 @@ public class PublicationSampleService {
      * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      * @throws NullPointerException if {@code bdIds} is {@code null}
      */
-    public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
+    public List<PublicationSample> findByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
         Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
 
-        List<PublicationSampleId> allPublicationIdsWithSpecificBDIds =
-                publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+        List<PublicationSample> allPublicationWithSpecificBDIds =
+                publicationSampleRepository.findByBibliographicalDataIdIn(bdIds);
 
-        return allPublicationIdsWithSpecificBDIds;
+        return allPublicationWithSpecificBDIds;
     }
 
     /**
@@ -175,13 +175,13 @@ public class PublicationSampleService {
      * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      * @throws NullPointerException if {@code listOfEditionIds} is {@code null}
      */
-    public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
+    public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
         Objects.requireNonNull(listOfEditionIds, "Edition Ids cannot be null");
 
-        List<PublicationSampleId> allPublicationIdsWithSpecificEditionIds =
-                publicationSampleRepository.findIdsByEditionIdIn(listOfEditionIds);
+        List<PublicationSample> allPublicationWithSpecificEditionIds =
+                publicationSampleRepository.findByEditionIdIn(listOfEditionIds);
 
-        return allPublicationIdsWithSpecificEditionIds;
+        return allPublicationWithSpecificEditionIds;
     }
 
     /**

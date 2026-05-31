@@ -53,7 +53,7 @@ class PublicationSampleServiceTest {
         sample = mock(PublicationSample.class);
         libraryId = mock(LibraryId.class);
         collectionId = mock(CollectionOfPublicationsId.class);
-        bdId  = mock(BibliographicalDataId.class);
+        bdId = mock(BibliographicalDataId.class);
         editionId = mock(EditionId.class);
     }
 
@@ -63,40 +63,26 @@ class PublicationSampleServiceTest {
 
     @Test
     void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new PublicationSampleService(null, factory, policy, userRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new PublicationSampleService(publicationSampleRepository, null, policy, userRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenPolicyIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new PublicationSampleService(publicationSampleRepository, factory, null, userRepository));
-
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenUserRepositoryIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 new PublicationSampleService(publicationSampleRepository, factory, policy, null));
-
     }
 
     // =========================================================================
@@ -111,7 +97,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.createAndSave(bdId, userId, editionId, Condition.NEW));
-
     }
 
     @Test
@@ -137,7 +122,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(InstanceAlreadyExistsException.class, () ->
                 service.createAndSave(bdId, userId, editionId, Condition.NEW));
-
     }
 
     @Test
@@ -158,7 +142,6 @@ class PublicationSampleServiceTest {
         assertEquals(saved, result);
     }
 
-
     // =========================================================================
     // findById
     // =========================================================================
@@ -171,7 +154,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.findById(sampleId));
-
     }
 
     @Test
@@ -216,86 +198,112 @@ class PublicationSampleServiceTest {
     }
 
     // =========================================================================
-    // findIdsByBibliographicalDataId
+    // findByBibliographicalDataId
     // =========================================================================
 
     @Test
-    void findIdsByBibliographicalDataId_shouldThrowNullPointerException_whenBdIdIsNull() {
-        // Arrange
-
-        // Act & Assert
+    void findByBibliographicalDataId_shouldThrowNullPointerException_whenBdIdIsNull() {
         assertThrows(NullPointerException.class, () ->
-                service.findIdsByBibliographicalDataId(null));
-
+                service.findByBibliographicalDataId(null));
     }
 
     @Test
-    void findIdsByBibliographicalDataId_shouldReturnMatchingIds() {
+    void findByBibliographicalDataId_shouldReturnMatchingSamples() {
         // Arrange
-        List<PublicationSampleId> ids = List.of(sampleId);
-        when(publicationSampleRepository.findIdsByBibliographicalDataId(bdId)).thenReturn(ids);
+        List<PublicationSample> samples = List.of(sample);
+        when(publicationSampleRepository.findByBibliographicalDataId(bdId)).thenReturn(samples);
 
         // Act
-        List<PublicationSampleId> result = service.findIdsByBibliographicalDataId(bdId);
+        List<PublicationSample> result = service.findByBibliographicalDataId(bdId);
 
         // Assert
-        assertEquals(ids, result);
+        assertEquals(samples, result);
     }
 
-    // =========================================================================
-    // findIdsByBibliographicalDataIdIn
-    // =========================================================================
-
     @Test
-    void findIdsByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdsIsNull() {
+    void findByBibliographicalDataId_shouldReturnEmptyList_whenNoMatchExists() {
         // Arrange
+        when(publicationSampleRepository.findByBibliographicalDataId(bdId)).thenReturn(List.of());
 
-        // Act & Assert
+        // Act
+        List<PublicationSample> result = service.findByBibliographicalDataId(bdId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // =========================================================================
+    // findByBibliographicalDataIdIn
+    // =========================================================================
+
+    @Test
+    void findByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdsIsNull() {
         assertThrows(NullPointerException.class, () ->
-                service.findIdsByBibliographicalDataIdIn(null));
-
+                service.findByBibliographicalDataIdIn(null));
     }
 
     @Test
-    void findIdsByBibliographicalDataIdIn_shouldReturnMatchingIds() {
+    void findByBibliographicalDataIdIn_shouldReturnMatchingSamples() {
         // Arrange
         List<BibliographicalDataId> bdIds = List.of(bdId);
-        List<PublicationSampleId> ids = List.of(sampleId);
-        when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds)).thenReturn(ids);
+        List<PublicationSample> samples = List.of(sample);
+        when(publicationSampleRepository.findByBibliographicalDataIdIn(bdIds)).thenReturn(samples);
 
         // Act
-        List<PublicationSampleId> result = service.findIdsByBibliographicalDataIdIn(bdIds);
+        List<PublicationSample> result = service.findByBibliographicalDataIdIn(bdIds);
 
         // Assert
-        assertEquals(ids, result);
+        assertEquals(samples, result);
     }
 
-    // =========================================================================
-    // findIdsByEditionIdIn
-    // =========================================================================
-
     @Test
-    void findIdsByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
+    void findByBibliographicalDataIdIn_shouldReturnEmptyList_whenNoMatchExists() {
         // Arrange
+        List<BibliographicalDataId> bdIds = List.of(bdId);
+        when(publicationSampleRepository.findByBibliographicalDataIdIn(bdIds)).thenReturn(List.of());
 
-        // Act & Assert
+        // Act
+        List<PublicationSample> result = service.findByBibliographicalDataIdIn(bdIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // =========================================================================
+    // findByEditionIdIn
+    // =========================================================================
+
+    @Test
+    void findByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
         assertThrows(NullPointerException.class, () ->
-                service.findIdsByEditionIdIn(null));
-
+                service.findByEditionIdIn(null));
     }
 
     @Test
-    void findIdsByEditionIdIn_shouldReturnMatchingIds() {
+    void findByEditionIdIn_shouldReturnMatchingSamples() {
         // Arrange
         List<EditionId> editionIds = List.of(editionId);
-        List<PublicationSampleId> ids = List.of(sampleId);
-        when(publicationSampleRepository.findIdsByEditionIdIn(editionIds)).thenReturn(ids);
+        List<PublicationSample> samples = List.of(sample);
+        when(publicationSampleRepository.findByEditionIdIn(editionIds)).thenReturn(samples);
 
         // Act
-        List<PublicationSampleId> result = service.findIdsByEditionIdIn(editionIds);
+        List<PublicationSample> result = service.findByEditionIdIn(editionIds);
 
         // Assert
-        assertEquals(ids, result);
+        assertEquals(samples, result);
+    }
+
+    @Test
+    void findByEditionIdIn_shouldReturnEmptyList_whenNoMatchExists() {
+        // Arrange
+        List<EditionId> editionIds = List.of(editionId);
+        when(publicationSampleRepository.findByEditionIdIn(editionIds)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = service.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     // =========================================================================
@@ -304,12 +312,8 @@ class PublicationSampleServiceTest {
 
     @Test
     void findByLibraryId_shouldThrowNullPointerException_whenLibraryIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.findByLibraryId(null, userId));
-
     }
 
     @Test
@@ -320,7 +324,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.findByLibraryId(libraryId, userId));
-
     }
 
     @Test
@@ -355,12 +358,8 @@ class PublicationSampleServiceTest {
 
     @Test
     void findByCollectionOfPublicationsId_shouldThrowNullPointerException_whenCollectionIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.findByCollectionOfPublicationsId(null, userId));
-
     }
 
     @Test
@@ -371,7 +370,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.findByCollectionOfPublicationsId(collectionId, userId));
-
     }
 
     @Test
@@ -406,12 +404,8 @@ class PublicationSampleServiceTest {
 
     @Test
     void findByUserIdAndLibraryIdIsNotNull_shouldThrowNullPointerException_whenUserIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.findByUserIdAndLibraryIdIsNotNull(null));
-
     }
 
     @Test
@@ -422,7 +416,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.findByUserIdAndLibraryIdIsNotNull(userId));
-
     }
 
     @Test
@@ -457,12 +450,8 @@ class PublicationSampleServiceTest {
 
     @Test
     void findByUserIdAndLibraryIdIsNull_shouldThrowNullPointerException_whenUserIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.findByUserIdAndLibraryIdIsNull(null));
-
     }
 
     @Test
@@ -473,7 +462,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.findByUserIdAndLibraryIdIsNull(userId));
-
     }
 
     @Test
@@ -508,12 +496,8 @@ class PublicationSampleServiceTest {
 
     @Test
     void findByLibraryIdAndPublicationStatusNotIn_shouldThrowNullPointerException_whenLibraryIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.findByLibraryIdAndPublicationStatusNotIn(null, userId));
-
     }
 
     @Test
@@ -524,7 +508,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.findByLibraryIdAndPublicationStatusNotIn(libraryId, userId));
-
     }
 
     @Test
@@ -562,22 +545,14 @@ class PublicationSampleServiceTest {
 
     @Test
     void findAvailableForCollection_shouldThrowNullPointerException_whenUserIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.findAvailableForCollection(null, collectionId));
-
     }
 
     @Test
     void findAvailableForCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.findAvailableForCollection(userId, null));
-
     }
 
     @Test
@@ -604,7 +579,7 @@ class PublicationSampleServiceTest {
     @Test
     void findAvailableForCollection_shouldReturnOnlySamplesNotAlreadyInCollection() {
         // Arrange
-        PublicationSample inCollection    = mock(PublicationSample.class);
+        PublicationSample inCollection = mock(PublicationSample.class);
         PublicationSample notInCollection = mock(PublicationSample.class);
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
@@ -666,19 +641,12 @@ class PublicationSampleServiceTest {
 
     @Test
     void addPublicationToLibrary_shouldThrowNullPointerException_whenPublicationSampleIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.addPublicationToLibrary(null, libraryId, userId));
-
     }
 
     @Test
     void addPublicationToLibrary_shouldThrowNullPointerException_whenLibraryIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.addPublicationToLibrary(sampleId, null, userId));
     }
@@ -691,7 +659,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.addPublicationToLibrary(sampleId, libraryId, userId));
-
     }
 
     @Test
@@ -715,7 +682,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.addPublicationToLibrary(sampleId, libraryId, userId));
-
     }
 
     @Test
@@ -741,22 +707,14 @@ class PublicationSampleServiceTest {
 
     @Test
     void assignPublicationToCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.assignPublicationToCollection(null, sampleId, userId));
-
     }
 
     @Test
     void assignPublicationToCollection_shouldThrowNullPointerException_whenPublicationSampleIdIsNull() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 service.assignPublicationToCollection(collectionId, null, userId));
-
     }
 
     @Test
@@ -767,7 +725,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.assignPublicationToCollection(collectionId, sampleId, userId));
-
     }
 
     @Test
@@ -791,7 +748,6 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.assignPublicationToCollection(collectionId, sampleId, userId));
-
     }
 
     @Test
