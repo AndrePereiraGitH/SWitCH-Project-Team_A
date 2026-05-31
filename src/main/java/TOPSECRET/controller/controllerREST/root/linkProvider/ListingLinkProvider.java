@@ -60,6 +60,19 @@ public class ListingLinkProvider {
 
         User user = userRepo.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found"));
 
+
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .findById(null, null))
+                .withRel("find-by-id"));
+
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .findAll(null))
+                .withRel("find-all"));
+
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .getAllDirectSaleByGenre(null, null))
+                .withRel("get-all-direct-sale-by-genre"));
+
         if (authPolicy.canCreateListing(user)) {
             links.add(linkTo(methodOn(ListingRESTController.class)
                     .createListing(null, userId))
