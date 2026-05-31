@@ -22,8 +22,6 @@ import org.springframework.http.ResponseEntity;
 import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,7 +55,8 @@ class UserRESTControllerTest {
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
-        ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
+        ResponseUserDTO responseDTO = mock(ResponseUserDTO.class);
+        Link linkDouble = mock(Link.class);
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
@@ -212,7 +211,7 @@ class UserRESTControllerTest {
         User userDouble = mock(User.class);
         ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
-        when(userService.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+        when(userService.findByID(userIdDouble)).thenReturn(userDouble);
         when(userLinkProvider.getLinksForUsers(userIdDouble))
                 .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
 
@@ -225,6 +224,7 @@ class UserRESTControllerTest {
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertTrue(response.getBody().hasLink("get-user"));
+            assertEquals(responseDTO, response.getBody());
         }
     }
 
@@ -238,7 +238,7 @@ class UserRESTControllerTest {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
 
-        when(userService.findByID(userIdDouble)).thenReturn(Optional.empty());
+        when(userService.findByID(userIdDouble)).thenThrow(new IllegalArgumentException());
 
         // Act
         ResponseEntity<ResponseUserDTO> response = controller.getUser(userIdDouble);

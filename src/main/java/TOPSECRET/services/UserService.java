@@ -88,9 +88,11 @@ public class UserService {
      *         or {@link Optional#empty()} if not found
      * @throws NullPointerException if {@code userId} is {@code null}
      */
-    public Optional<User> findByID(UserId userId) {
+    public User findByID(UserId userId) {
         Objects.requireNonNull(userId, "UserId cannot be null.");
-        return userRepository.findByID(userId);
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+        return user;
     }
 
     /**

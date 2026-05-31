@@ -142,28 +142,45 @@ class UserServiceTest {
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
 
         // Act
-        Optional<User> result = service.findByID(userIdDouble);
+        User result = service.findByID(userIdDouble);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertSame(userDouble, result.get());
+        assertSame(userDouble, result);
     }
 
     // ================================================================
-    // findByID — not found
-    // ================================================================
+// findByID — success
+// ================================================================
 
     @Test
-    void findByID_shouldReturnEmpty_whenUserDoesNotExist() {
-        // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
+    void findByID_shouldReturnUser_whenFound() {
 
-        // Act
-        Optional<User> result = service.findByID(userIdDouble);
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
 
-        // Assert
-        assertTrue(result.isEmpty());
+        // ACT
+        User result = service.findByID(userId);
+
+        // ASSERT
+        assertSame(user, result);
+    }
+
+// ================================================================
+// findByID — not found
+// ================================================================
+
+    @Test
+    void findByID_shouldThrowIllegalArgument_whenUserNotFound() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findByID(userId));
     }
 
     // ================================================================
@@ -172,7 +189,8 @@ class UserServiceTest {
 
     @Test
     void findByID_shouldThrowNullPointerException_whenUserIdIsNull() {
-        // Act + Assert
+
+        // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> service.findByID(null));
     }

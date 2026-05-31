@@ -105,16 +105,6 @@ public class PublicationSampleService {
     // Lookup — by identity
     // =========================================================================
 
-    /**
-     * Checks whether a {@link PublicationSample} with the given identifier exists.
-     *
-     * @param publicationSampleId the identifier to check; must not be {@code null}
-     * @return {@code true} if a matching sample exists, {@code false} otherwise
-     */
-    public boolean existsById(PublicationSampleId publicationSampleId) {
-        boolean isExistent = publicationSampleRepository.existsById(publicationSampleId);
-        return isExistent;
-    }
 
     /**
      * Finds a {@link PublicationSample} by its unique identifier.
