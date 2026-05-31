@@ -73,8 +73,8 @@ public class PublicationSampleService {
      * @param editionId             the edition identifier to associate; must not be {@code null}
      * @param condition             the physical condition of the publication sample; must not be {@code null}
      * @return the newly created and persisted {@link PublicationSample}
-     * @throws EntityNotFoundException       if no user is found for the given {@code userId}
-     * @throws AccessDeniedException         if the user is not authorized to create a publication sample
+     * @throws EntityNotFoundException        if no user is found for the given {@code userId}
+     * @throws AccessDeniedException          if the user is not authorized to create a publication sample
      * @throws InstanceAlreadyExistsException if a publication sample with the same identity already exists
      */
     public PublicationSample createAndSave(
@@ -96,15 +96,14 @@ public class PublicationSampleService {
             throw new InstanceAlreadyExistsException("PublicationSample already exists");
         }
 
-        PublicationSample publicationSample = publicationSampleRepository.save(created);
+        PublicationSample saved = publicationSampleRepository.save(created);
 
-        return  publicationSample;
+        return saved;
     }
 
     // =========================================================================
     // Lookup — by identity
     // =========================================================================
-
 
     /**
      * Finds a {@link PublicationSample} by its unique identifier.
@@ -114,9 +113,8 @@ public class PublicationSampleService {
      * @throws EntityNotFoundException if no sample is found for the given identifier
      */
     public PublicationSample findById(PublicationSampleId publicationSampleId) {
-        PublicationSample publicationSample =
-                publicationSampleRepository.findById(publicationSampleId)
-                        .orElseThrow(() -> new EntityNotFoundException("PublicationSample not found"));
+        PublicationSample publicationSample = publicationSampleRepository.findById(publicationSampleId)
+                .orElseThrow(() -> new EntityNotFoundException("PublicationSample not found"));
 
         return publicationSample;
     }
@@ -137,62 +135,64 @@ public class PublicationSampleService {
     // =========================================================================
 
     /**
-     * Retrieves all publication sample IDs associated with the given bibliographical data ID.
+     * Retrieves all {@link PublicationSample} instances associated with the given bibliographical data ID.
      *
      * @param bdId the bibliographical data identifier; must not be {@code null}
-     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      * @throws NullPointerException if {@code bdId} is {@code null}
      */
     public List<PublicationSample> findByBibliographicalDataId(BibliographicalDataId bdId) {
         Objects.requireNonNull(bdId, "BibliographicalDataId cannot be null");
 
-        List<PublicationSample> allPublicationWithSpecificBDId =
+        List<PublicationSample> allPublicationsWithSpecificBDId =
                 publicationSampleRepository.findByBibliographicalDataId(bdId);
 
-        return allPublicationWithSpecificBDId;
+        return allPublicationsWithSpecificBDId;
     }
 
     /**
-     * Retrieves all publication sample IDs whose bibliographical data ID is contained in the given list.
+     * Retrieves all {@link PublicationSample} instances whose bibliographical data ID is in the given list.
      *
      * @param bdIds the list of bibliographical data identifiers; must not be {@code null}
-     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      * @throws NullPointerException if {@code bdIds} is {@code null}
      */
     public List<PublicationSample> findByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
         Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
 
-        List<PublicationSample> allPublicationWithSpecificBDIds =
+        List<PublicationSample> allPublicationsWithSpecificBDIds =
                 publicationSampleRepository.findByBibliographicalDataIdIn(bdIds);
 
-        return allPublicationWithSpecificBDIds;
+        return allPublicationsWithSpecificBDIds;
     }
 
     /**
-     * Retrieves all publication sample IDs associated with any of the given edition IDs.
+     * Retrieves all {@link PublicationSample} instances associated with any of the given edition IDs.
      *
      * @param listOfEditionIds the list of edition identifiers; must not be {@code null}
-     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      * @throws NullPointerException if {@code listOfEditionIds} is {@code null}
      */
     public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
         Objects.requireNonNull(listOfEditionIds, "Edition Ids cannot be null");
 
-        List<PublicationSample> allPublicationWithSpecificEditionIds =
+        List<PublicationSample> allPublicationsWithSpecificEditionIds =
                 publicationSampleRepository.findByEditionIdIn(listOfEditionIds);
 
-        return allPublicationWithSpecificEditionIds;
+        return allPublicationsWithSpecificEditionIds;
     }
 
     /**
      * Retrieves all {@link PublicationSample} instances that belong to the specified library.
      *
      * @param libraryId the library identifier; must not be {@code null}
+     * @param userId    the identifier of the requesting user; must not be {@code null}
      * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
-     * @throws NullPointerException if {@code libraryId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws NullPointerException    if {@code libraryId} is {@code null}
      */
     public List<PublicationSample> findByLibraryId(LibraryId libraryId, UserId userId) {
-
         Objects.requireNonNull(libraryId, "LibraryId cannot be null");
 
         User user = userRepository.findByID(userId)
@@ -202,21 +202,23 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> publicationSampleFromLibrary =
+        List<PublicationSample> publicationSamplesFromLibrary =
                 publicationSampleRepository.findByLibraryId(libraryId);
 
-        return publicationSampleFromLibrary;
+        return publicationSamplesFromLibrary;
     }
 
     /**
      * Retrieves all {@link PublicationSample} instances that belong to the specified collection.
      *
      * @param collectionId the collection identifier; must not be {@code null}
+     * @param userId       the identifier of the requesting user; must not be {@code null}
      * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
-     * @throws NullPointerException if {@code collectionId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws NullPointerException    if {@code collectionId} is {@code null}
      */
     public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId, UserId userId) {
-
         Objects.requireNonNull(collectionId, "CollectionId cannot be null");
 
         User user = userRepository.findByID(userId)
@@ -226,7 +228,10 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        return publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+        List<PublicationSample> publicationSamplesFromCollection =
+                publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+
+        return publicationSamplesFromCollection;
     }
 
     /**
@@ -234,10 +239,11 @@ public class PublicationSampleService {
      *
      * @param userId the user identifier; must not be {@code null}
      * @return a list of {@link PublicationSample} assigned to a library; never {@code null}, may be empty
-     * @throws NullPointerException if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws NullPointerException    if {@code userId} is {@code null}
      */
     public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId) {
-
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         User user = userRepository.findByID(userId)
@@ -247,10 +253,10 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> publicationSampleOwnedByUserAndNotInLibrary =
+        List<PublicationSample> publicationSamplesOwnedByUserInLibrary =
                 publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId);
 
-        return publicationSampleOwnedByUserAndNotInLibrary;
+        return publicationSamplesOwnedByUserInLibrary;
     }
 
     /**
@@ -258,10 +264,11 @@ public class PublicationSampleService {
      *
      * @param userId the user identifier; must not be {@code null}
      * @return a list of {@link PublicationSample} not assigned to any library; never {@code null}, may be empty
-     * @throws NullPointerException if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws NullPointerException    if {@code userId} is {@code null}
      */
     public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
-
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         User user = userRepository.findByID(userId)
@@ -271,10 +278,10 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> publicationSampleOwnedByUserAndInLibrary =
+        List<PublicationSample> publicationSamplesOwnedByUserNotInLibrary =
                 publicationSampleRepository.findByUserIdAndLibraryIdIsNull(userId);
 
-        return publicationSampleOwnedByUserAndInLibrary;
+        return publicationSamplesOwnedByUserNotInLibrary;
     }
 
     /**
@@ -284,11 +291,13 @@ public class PublicationSampleService {
      * {@link PublicationStatus#FOR_SALE}.</p>
      *
      * @param libraryId the library identifier; must not be {@code null}
-     * @return a list of {@link PublicationSample} available (not sold or for sale); never {@code null}, may be empty
-     * @throws NullPointerException if {@code libraryId} is {@code null}
+     * @param userId    the identifier of the requesting user; must not be {@code null}
+     * @return a list of {@link PublicationSample} available; never {@code null}, may be empty
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws NullPointerException    if {@code libraryId} is {@code null}
      */
     public List<PublicationSample> findByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId, UserId userId) {
-
         Objects.requireNonNull(libraryId, "LibraryId cannot be null");
 
         User user = userRepository.findByID(userId)
@@ -300,10 +309,10 @@ public class PublicationSampleService {
 
         List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
 
-        List<PublicationSample> publicationSampleAvailableForSale =
+        List<PublicationSample> publicationSamplesAvailable =
                 publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded);
 
-        return publicationSampleAvailableForSale;
+        return publicationSamplesAvailable;
     }
 
     // =========================================================================
@@ -320,10 +329,11 @@ public class PublicationSampleService {
      * @param collectionId the identifier of the target collection; must not be {@code null}
      * @return a list of {@link PublicationSample} available for addition to the collection;
      *         never {@code null}, may be empty
-     * @throws NullPointerException if {@code userId} or {@code collectionId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws AccessDeniedException   if the user is not authorized
+     * @throws NullPointerException    if {@code userId} or {@code collectionId} is {@code null}
      */
     public List<PublicationSample> findAvailableForCollection(UserId userId, CollectionOfPublicationsId collectionId) {
-
         Objects.requireNonNull(userId, "UserId cannot be null");
         Objects.requireNonNull(collectionId, "CollectionId cannot be null");
 
@@ -340,12 +350,12 @@ public class PublicationSampleService {
         List<PublicationSample> publicationsInCollection =
                 publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
 
-        List<PublicationSample> publicationForCollection =
+        List<PublicationSample> publicationsAvailableForCollection =
                 allUserPublications.stream()
                         .filter(p -> !publicationsInCollection.contains(p))
                         .toList();
 
-        return publicationForCollection;
+        return publicationsAvailableForCollection;
     }
 
     /**
@@ -353,12 +363,13 @@ public class PublicationSampleService {
      *
      * @param publicationSampleId the identifier of the publication sample to assign; must not be {@code null}
      * @param libraryId           the identifier of the target library; must not be {@code null}
+     * @param userId              the identifier of the requesting user; must not be {@code null}
      * @return the updated {@link PublicationSample} with the library assignment applied
+     * @throws EntityNotFoundException if no user or publication sample is found
+     * @throws AccessDeniedException   if the user is not authorized
      * @throws NullPointerException    if {@code publicationSampleId} or {@code libraryId} is {@code null}
-     * @throws EntityNotFoundException if no publication sample is found for the given identifier
      */
     public PublicationSample addPublicationToLibrary(PublicationSampleId publicationSampleId, LibraryId libraryId, UserId userId) {
-
         Objects.requireNonNull(publicationSampleId, "PublicationSampleId cannot be null.");
         Objects.requireNonNull(libraryId, "LibraryId cannot be null.");
 
@@ -374,8 +385,7 @@ public class PublicationSampleService {
 
         publicationSample.addPublicationToLibrary(libraryId);
 
-        PublicationSample publicationAssignedToLibrary =
-                publicationSampleRepository.save(publicationSample);
+        PublicationSample publicationAssignedToLibrary = publicationSampleRepository.save(publicationSample);
 
         return publicationAssignedToLibrary;
     }
@@ -385,12 +395,13 @@ public class PublicationSampleService {
      *
      * @param collectionId the identifier of the target collection; must not be {@code null}
      * @param pubSampleId  the identifier of the publication sample to assign; must not be {@code null}
+     * @param userId       the identifier of the requesting user; must not be {@code null}
      * @return the updated {@link PublicationSample} with the collection assignment applied
+     * @throws EntityNotFoundException if no user or publication sample is found
+     * @throws AccessDeniedException   if the user is not authorized
      * @throws NullPointerException    if {@code collectionId} or {@code pubSampleId} is {@code null}
-     * @throws EntityNotFoundException if no publication sample is found for the given identifier
      */
     public PublicationSample assignPublicationToCollection(CollectionOfPublicationsId collectionId, PublicationSampleId pubSampleId, UserId userId) {
-
         Objects.requireNonNull(collectionId, "CollectionId cannot be null.");
         Objects.requireNonNull(pubSampleId, "PublicationSampleId cannot be null.");
 
@@ -406,10 +417,8 @@ public class PublicationSampleService {
 
         publicationSample.addPublicationToCollection(collectionId);
 
-        PublicationSample publicationAssignedToCollection =
-                publicationSampleRepository.save(publicationSample);
+        PublicationSample publicationAssignedToCollection = publicationSampleRepository.save(publicationSample);
 
         return publicationAssignedToCollection;
     }
-
 }

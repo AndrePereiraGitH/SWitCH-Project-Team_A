@@ -20,8 +20,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Component
 public class PublicationSampleLinkProvider {
 
-    private PublicationSampleAuthorizationPolicy policy;
-    private IUserRepository userRepository;
+    private final PublicationSampleAuthorizationPolicy policy;
+    private final IUserRepository userRepository;
 
     @Autowired
     public PublicationSampleLinkProvider(PublicationSampleAuthorizationPolicy policy, IUserRepository userRepository) {
@@ -42,6 +42,23 @@ public class PublicationSampleLinkProvider {
                     .withRel("create-publication-sample"));
         }
 
+
+        links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                .findById(null, null))
+                .withRel("find-by-id"));
+
+
+        links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                .findAll(null))
+                .withRel("find-all"));
+
+        links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                .findByBibliographicalDataId(null,null))
+                .withRel("find-by-bdId"));
+
+        links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                .findByEditionIdIn(null,null))
+                .withRel("find-by-editionId"));
 
 
         return links;

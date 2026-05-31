@@ -1,6 +1,5 @@
 package TOPSECRET.controller.controllerREST;
 
-
 import TOPSECRET.controller.controllerREST.root.linkProvider.PublicationSampleLinkProvider;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
@@ -21,6 +20,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -28,7 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping(path = "/publicationSamples")
-@Tag(name="PublicationSamples", description= "Publication sample management endpoints")
+@Tag(name = "PublicationSamples", description = "Publication sample management endpoints")
 public class PublicationSampleRESTController {
 
     private final PublicationSampleService publicationSampleService;
@@ -38,10 +39,13 @@ public class PublicationSampleRESTController {
     private final UserService userService;
     private final PublicationSampleLinkProvider publicationSampleLinkProvider;
 
-
     @Autowired
     public PublicationSampleRESTController(UserService userService,
-            PublicationSampleService publicationSampleService, GenreService genreService, BibliographicalDataService bibliographicalDataService, AuthorService authorService, PublicationSampleLinkProvider publicationSampleLinkProvider) {
+                                           PublicationSampleService publicationSampleService,
+                                           GenreService genreService,
+                                           BibliographicalDataService bibliographicalDataService,
+                                           AuthorService authorService,
+                                           PublicationSampleLinkProvider publicationSampleLinkProvider) {
         this.publicationSampleService = publicationSampleService;
         this.genreService = genreService;
         this.bibliographicalDataService = bibliographicalDataService;
@@ -50,155 +54,198 @@ public class PublicationSampleRESTController {
         this.userService = userService;
     }
 
-
-
     @PostMapping("")
     public ResponseEntity<PublicationDTO> createPublicationSample(
             @RequestBody RegisterPublicationSampleDTO registerPublicationSampleDTO,
-            @PathVariable UserId userId) {
-
+            @RequestParam UserId userId) {
 
         BibliographicalDataId bdId = PublicationSampleMapper.toBdId(registerPublicationSampleDTO.bibliographicalDataId());
         EditionId editionId = PublicationSampleMapper.toEditionId(registerPublicationSampleDTO.editionId());
         Condition condition = PublicationSampleMapper.toCondition(registerPublicationSampleDTO.condition());
 
-        try{
-
+        try {
             PublicationSample pbSample =
-                    publicationSampleService.createAndSave(bdId,userId,editionId,condition);
+                    publicationSampleService.createAndSave(bdId, userId, editionId, condition);
 
-            BibliographicalData bd = bibliographicalDataService.findById(pbSample.getBibliographicalDataID());
-
-            PublicationDTO result = new PublicationDTO(
-                    pbSample.id().toString(),
-                    bd.getTitle(),
-                    getAuthors(bd),
-                    bd.getOriginalLanguage().toString(),
-                    getGenres(bd),
-                    getOwner(pbSample),
-                    pbSample.getCondition().toString()
-                    );
-
-
-            List<Link> links = publicationSampleLinkProvider.getPublicationSampleLinks(userId);
-
-            links.add(linkTo(methodOn(PublicationSampleRESTController.class).findById(pbSample.id())).withSelfRel());
-
-            links.forEach(result::add);
+            PublicationDTO result = toPublicationDTO(pbSample, userId);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (InstanceAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     @GetMapping("/{publicationSampleId}")
     public ResponseEntity<PublicationDTO> findById(
-            @PathVariable("publicationSampleId") PublicationSampleId publicationSampleId) {
+            @PathVariable("publicationSampleId") PublicationSampleId publicationSampleId,
+            @RequestParam UserId userId) {
 
-        try{
+        try {
             PublicationSample pbSample = publicationSampleService.findById(publicationSampleId);
 
-            BibliographicalData bd = bibliographicalDataService.findById(pbSample.getBibliographicalDataID());
-
-
-            PublicationDTO result = new PublicationDTO(
-                    pbSample.id().toString(),
-                    bd.getTitle(),
-                    getAuthors(bd),
-                    bd.getOriginalLanguage().toString(),
-                    getGenres(bd),
-                    getOwner(pbSample),
-                    pbSample.getCondition().toString()
-            );
-
-            Link selfLink = linkTo(methodOn(PublicationSampleRESTController.class)
-                    .findById(publicationSampleId)).withSelfRel();
-
-            Link withRel = linkTo(methodOn(PublicationSampleRESTController.class)
-                    .findById(publicationSampleId)).withRel("find-by-id");
-
-            result.add(selfLink);
-            result.add(withRel);
+            PublicationDTO result = toPublicationDTO(pbSample, userId);
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+    @GetMapping("")
+    public ResponseEntity<List<PublicationDTO>> findAll(@RequestParam UserId userId) {
 
+        try {
+            List<PublicationSample> pbSampleList = publicationSampleService.findAll();
 
+            List<PublicationDTO> publicationDTOS = new ArrayList<>();
+            for (PublicationSample pbSample : pbSampleList) {
+                publicationDTOS.add(toPublicationDTO(pbSample, userId));
+            }
 
+            return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(value = "", params = "bibliographicalDataId")
+    public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataId(
+            @RequestParam BibliographicalDataId bibliographicalDataId,
+            @RequestParam UserId userId) {
+
+        try {
+            List<PublicationSample> pbSampleList =
+                    publicationSampleService.findByBibliographicalDataId(bibliographicalDataId);
+
+            List<PublicationDTO> publicationDTOS = new ArrayList<>();
+            for (PublicationSample pbSample : pbSampleList) {
+                publicationDTOS.add(toPublicationDTO(pbSample, userId));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(value = "", params = "bibliographicalDataIds")
+    public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataIdIn(
+            @RequestParam List<BibliographicalDataId> bibliographicalDataIds,
+            @RequestParam UserId userId) {
+
+        try {
+            List<PublicationSample> pbSampleList =
+                    publicationSampleService.findByBibliographicalDataIdIn(bibliographicalDataIds);
+
+            List<PublicationDTO> publicationDTOS = new ArrayList<>();
+            for (PublicationSample pbSample : pbSampleList) {
+                publicationDTOS.add(toPublicationDTO(pbSample, userId));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(value = "", params = "editionIds")
+    public ResponseEntity<List<PublicationDTO>> findByEditionIdIn(
+            @RequestParam List<EditionId> editionIds,
+            @RequestParam UserId userId) {
+
+        try {
+            List<PublicationSample> pbSampleList =
+                    publicationSampleService.findByEditionIdIn(editionIds);
+
+            List<PublicationDTO> publicationDTOS = new ArrayList<>();
+            for (PublicationSample pbSample : pbSampleList) {
+                publicationDTOS.add(toPublicationDTO(pbSample, userId));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // =========================================================================
+    // Private helpers
+    // =========================================================================
+
+    private PublicationDTO toPublicationDTO(PublicationSample pbSample, UserId userId)
+            throws InstanceNotFoundException {
+
+        BibliographicalData bd = bibliographicalDataService.findById(pbSample.getBibliographicalDataID());
+
+        PublicationDTO result = new PublicationDTO(
+                pbSample.id().toString(),
+                bd.getTitle(),
+                getAuthors(bd),
+                bd.getOriginalLanguage().toString(),
+                getGenres(bd),
+                getOwner(pbSample),
+                pbSample.getCondition().toString()
+        );
+
+        List<Link> links = new ArrayList<>(
+                publicationSampleLinkProvider.getPublicationSampleLinks(userId));
+        links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                .findById(pbSample.id(), userId)).withSelfRel());
+        links.forEach(result::add);
+
+        return result;
+    }
 
     private List<String> getGenres(BibliographicalData bd) {
-        List<String> genres =
-                bd.getGenres()
+        return bd.getGenres()
                 .stream()
                 .map(genreService::findById)
                 .map(Genre::getGenreType)
                 .toList();
-
-        return genres;
     }
 
-
-    private List<String> getAuthors(BibliographicalData bd){
-        List<String> authors = bd.getAuthors().stream()
+    private List<String> getAuthors(BibliographicalData bd) {
+        return bd.getAuthors().stream()
                 .map(authorId -> authorService.findById(authorId).getName())
                 .toList();
-        return authors;
     }
-
 
     private String getOwner(PublicationSample publicationSample) {
         User user = userService.findByID(publicationSample.getOwnerID());
-        String name = user.getUserName();
-        return name;
+        return user.getUserName();
     }
-
-
-
-    //    @PostMapping("/publications/{id}/library")
-//    public ResponseEntity<PublicationReferenceDTO> addPublicationToMyList(
-//            @RequestBody AddPublicationToLibraryDTO addPublicationToLibraryDTO,
-//            @PathVariable UserId userId) throws InstanceNotFoundException {
-//
-//
-//        Library library = libraryService.findByUserId(userId)
-//                .orElseThrow(() -> new InstanceNotFoundException("Library not found"));
-//
-//
-//        PublicationSampleId pubSampleId =
-//                PublicationSampleMapper.toPubId(addPublicationToLibraryDTO.publicationId());
-//
-//
-//        PublicationSampleId publicationSampleId = publicationSampleService.findByLibraryId();
-//
-//
-//        try{
-//
-//            PublicationSample publicationSample =
-//                    publicationSampleService.addPublicationToLibrary(publicationSampleId,library,userId);
-//
-//
-//            BibliographicalDataId bdId = publicationSample.getBibliographicalDataID();
-//
-//            BibliographicalData bd = bibliographicalDataService.findById(bdId)
-//                    .orElseThrow(() -> new InstanceNotFoundException("BibliographicalData not found"));
-//
-//            PublicationReferenceDTO dto = PublicationSampleMapper.toReferenceDTO(publicationSample,bdId);
-//
-//
-//        }catch(Exception e){}
-//    }
 }

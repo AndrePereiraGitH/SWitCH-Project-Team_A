@@ -25,6 +25,31 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link PublicationSampleService}.
+ *
+ * <p>Validates business logic, authorization enforcement, null guards,
+ * and repository interactions across all service operations.</p>
+ *
+ * <p>Tests are organized into the following sections:</p>
+ * <ul>
+ *   <li><b>Constructor</b> — null guard validation.</li>
+ *   <li><b>createAndSave</b> — persistence with authorization and duplicate checks.</li>
+ *   <li><b>findById</b> — identity lookup.</li>
+ *   <li><b>findAll</b> — full collection retrieval.</li>
+ *   <li><b>findByBibliographicalDataId</b> — filter by single BD ID.</li>
+ *   <li><b>findByBibliographicalDataIdIn</b> — filter by multiple BD IDs.</li>
+ *   <li><b>findByEditionIdIn</b> — filter by edition IDs.</li>
+ *   <li><b>findByLibraryId</b> — filter by library with authorization.</li>
+ *   <li><b>findByCollectionOfPublicationsId</b> — filter by collection with authorization.</li>
+ *   <li><b>findByUserIdAndLibraryIdIsNotNull</b> — user publications in library.</li>
+ *   <li><b>findByUserIdAndLibraryIdIsNull</b> — user publications not in library.</li>
+ *   <li><b>findByLibraryIdAndPublicationStatusNotIn</b> — available publications in library.</li>
+ *   <li><b>findAvailableForCollection</b> — domain filtering for collection eligibility.</li>
+ *   <li><b>addPublicationToLibrary</b> — domain operation with authorization.</li>
+ *   <li><b>assignPublicationToCollection</b> — domain operation with authorization.</li>
+ * </ul>
+ */
 @ExtendWith(MockitoExtension.class)
 class PublicationSampleServiceTest {
 
