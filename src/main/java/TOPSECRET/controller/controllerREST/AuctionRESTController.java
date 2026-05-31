@@ -29,8 +29,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * REST controller for managing {@link Auction} resources.
  *
- * <p>Exposes endpoints for creating auctions, placing bids, and querying auctions
- * by different bibliographical criteria (genre, author, publisher, publication sample).</p>
+ * <p>Exposes endpoints for creating auctions, placing bids, retrieving a single auction
+ * by identifier, and querying auctions by different bibliographical criteria
+ * (genre, author, publisher, bibliographical data).</p>
  *
  * <p>All responses include HATEOAS links based on the requesting user's permissions,
  * as defined by {@link AuctionLinkProvider}.</p>
@@ -50,9 +51,6 @@ public class AuctionRESTController {
 
     private final AuctionService auctionService;
     private final ListingService listingService;
-    private final PublicationSampleService pubSampleService;
-    private final BibliographicalDataService bdService;
-    private final EditionService editionService;
     private final AuctionLinkProvider auctionLinkProvider;
 
     /**
@@ -76,25 +74,19 @@ public class AuctionRESTController {
             Price buyoutPrice = AuctionMapper.toPrice(requestDTO.buyoutPrice().toString());
             UserId sellerId = AuctionMapper.toUserId(userId);
 
+            Auction auction = auctionService.createAndSave(listingId, requestDTO.startDateTime(), requestDTO.endDateTime(),
+                    initialPrice, buyoutPrice, sellerId);
+
             Listing listing = listingService.findById(listingId);
-
-            Auction auction = auctionService.createAndSave(
-                    listingId,
-                    requestDTO.startDateTime(),
-                    requestDTO.endDateTime(),
-                    initialPrice,
-                    buyoutPrice,
-                    sellerId);
-
             AuctionDTO responseDTO = AuctionMapper.toDTO(auction, listing);
 
             List<Link> links = auctionLinkProvider.getLinksForAuction(sellerId);
 
             links.add(linkTo(methodOn(AuctionRESTController.class)
-                    .createAuction(requestDTO, userId))
+                    .getAuctionById(auction.id().toString(), userId))
                     .withSelfRel());
 
-            responseDTO.add(links);
+            links.forEach(responseDTO::add);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
@@ -151,102 +143,117 @@ public class AuctionRESTController {
      * Retrieves a list of auctions, optionally filtered by genre, author, publisher,
      * or bibliographical data, and optionally sorted by auction deadline.
      *
-     * <p>The filtering chain varies by criterion:</p>
-     * <ul>
-     *   <li><b>genre</b> — genre → bibliographical data → publication samples → listings → auctions</li>
-     *   <li><b>author</b> — author → bibliographical data → publication samples → listings → auctions</li>
-     *   <li><b>publisher</b> — publisher → editions → publication samples → listings → auctions</li>
-     *   <li><b>bibliographical data</b> — bibliographical data -> publication sample → listings → auctions</li>
-     *   <li><b>none</b> — returns all auctions</li>
-     * </ul>
+     * <p>Filtering logic is delegated to {@link AuctionService#findAuctions}, which
+     * resolves the appropriate chain of repositories based on the provided criterion.</p>
      *
      * <p>The {@code sortByDeadline} parameter is only applicable when filtering by genre.
      * For all other filters, results are returned in default order.</p>
      *
      * <p>Each returned {@link AuctionDTO} includes HATEOAS links based on the requesting
-     * user's permissions, as well as a self-referential link.</p>
+     * user's permissions, as well as a self-referential link pointing to
+     * {@code GET /auctions/{id}}.</p>
      *
-     * @param genreId          the genre identifier to filter by; optional
-     * @param authorId         the author identifier to filter by; optional
-     * @param publisherId      the publisher identifier to filter by; optional
-     * @param bibliographicalDataId    the bibliographical data identifier to filter by; optional
-     * @param sortByDeadline whether to sort results by auction deadline ascending;
-     *                       only applicable when filtering by genre; defaults to {@code false}
-     * @param userId         the identifier of the requesting user
+     * @param genreId               the genre identifier to filter by; optional
+     * @param authorId              the author identifier to filter by; optional
+     * @param publisherId           the publisher identifier to filter by; optional
+     * @param bibliographicalDataId the bibliographical data identifier to filter by; optional
+     * @param sortByDeadline        whether to sort results by auction deadline ascending;
+     *                              only applicable when filtering by genre; defaults to {@code false}
+     * @param userId                the identifier of the requesting user
      * @return {@code 200 OK} with the list of {@link AuctionDTO} and HATEOAS links,
      *         {@code 400 Bad Request} if any parameter is invalid,
      *         {@code 404 Not Found} if a referenced listing does not exist,
      *         {@code 500 Internal Server Error} for unexpected errors
      */
     @GetMapping
-    public ResponseEntity<List<AuctionDTO>> getAuctions(@RequestParam(required = false) String genreId,
-                                                        @RequestParam(required = false) String authorId,
-                                                        @RequestParam(required = false) String publisherId,
-                                                        @RequestParam(required = false) String bibliographicalDataId,
-                                                        @RequestParam(required = false, defaultValue = "false") boolean sortByDeadline,
-                                                        @RequestParam String userId) {
+    public ResponseEntity<List<AuctionDTO>> getAuctions(
+            @RequestParam(required = false) String genreId,
+            @RequestParam(required = false) String authorId,
+            @RequestParam(required = false) String publisherId,
+            @RequestParam(required = false) String bibliographicalDataId,
+            @RequestParam(required = false, defaultValue = "false") boolean sortByDeadline,
+            @RequestParam String userId) {
+
         try {
             UserId id = AuctionMapper.toUserId(userId);
-            List<Auction> auctions;
 
-            if (genreId != null) {
-                GenreId genreIdVO = AuctionMapper.toGenreId(genreId);
-                List<BibliographicalDataId> bdIds = bdService.findAllByGenreId(genreIdVO);
-                List<PublicationSampleId> pubSampleIds = pubSampleService.findIdsByBibliographicalDataIdIn(bdIds);
-                List<Listing> listings = listingService.findByAuctionAndPublicationSampleIdIn(pubSampleIds);
-                List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-                auctions = sortByDeadline
-                        ? auctionService.findByListingIdInOrderByAuctionDeadlineAsc(listingIds)
-                        : auctionService.findByListingIdIn(listingIds);
-
-            } else if (authorId != null) {
-                AuthorId authorIdVO = AuctionMapper.toAuthorId(authorId);
-                List<BibliographicalDataId> bdIds = bdService.findIdByAuthorId(authorIdVO);
-                List<PublicationSampleId> pubSampleIds = pubSampleService.findIdsByBibliographicalDataIdIn(bdIds);
-                List<Listing> listings = listingService.findByAuctionAndPublicationSampleIdIn(pubSampleIds);
-                List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-                auctions = auctionService.findByListingIdIn(listingIds);
-
-            } else if (publisherId != null) {
-                PublisherID publisherIdVO = AuctionMapper.toPublisherId(publisherId);
-                List<EditionId> editionIds = editionService.findIdsByPublisherId(publisherIdVO);
-                List<PublicationSampleId> pubSampleIds = pubSampleService.findIdsByEditionIdIn(editionIds);
-                List<Listing> listings = listingService.findByAuctionAndPublicationSampleIdIn(pubSampleIds);
-                List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-                auctions = auctionService.findByListingIdIn(listingIds);
-
-            } else if (bibliographicalDataId != null) {
-                BibliographicalDataId bdIdVO = AuctionMapper.toBibliographicalDataId(bibliographicalDataId);
-                List<PublicationSampleId> pubSampleIds = pubSampleService.findIdsByBibliographicalDataId(bdIdVO);
-                List<Listing> listings = listingService.findByAuctionAndPublicationSampleIdIn(pubSampleIds);
-                List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-                auctions = auctionService.findByListingIdIn(listingIds);
-
-            } else {
-                auctions = auctionService.findAll();
-            }
+            List<Auction> auctions = auctionService.findAuctions(
+                    genreId != null
+                            ? AuctionMapper.toGenreId(genreId)
+                            : null,
+                    authorId != null
+                            ? AuctionMapper.toAuthorId(authorId)
+                            : null,
+                    publisherId != null
+                            ? AuctionMapper.toPublisherId(publisherId)
+                            : null,
+                    bibliographicalDataId != null
+                            ? AuctionMapper.toBibliographicalDataId(bibliographicalDataId)
+                            : null,
+                    sortByDeadline);
 
             Map<ListingId, Listing> listingMap = auctions.stream()
                     .collect(Collectors.toMap(
                             Auction::getListingId,
-                            auction -> {
-                                return listingService.findById(auction.getListingId());
-                            },
-                            (existing, replacement) -> existing
-                    ));
+                            auction -> listingService.findById(auction.getListingId()),
+                            (existing, replacement) -> existing));
 
             List<AuctionDTO> responseDTOs = AuctionMapper.toDTOs(auctions, listingMap);
 
             List<Link> links = auctionLinkProvider.getLinksForAuction(id);
 
             responseDTOs.forEach(dto -> {
-                dto.add(links);
+                links.forEach(dto::add);
                 dto.add(linkTo(methodOn(AuctionRESTController.class)
-                        .getAuctions(genreId, authorId, publisherId, bibliographicalDataId, sortByDeadline, userId))
+                        .getAuctionById(dto.getAuctionId(), userId))
                         .withSelfRel());
             });
 
             return ResponseEntity.ok(responseDTOs);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException | EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves a single auction by its unique identifier.
+     *
+     * <p>Returns the {@link AuctionDTO} representation of the auction, enriched with
+     * HATEOAS links based on the requesting user's permissions, as well as a
+     * self-referential link identifying the resource.</p>
+     *
+     * @param auctionId the unique identifier of the auction to retrieve
+     * @param userId    the identifier of the requesting user
+     * @return {@code 200 OK} with the {@link AuctionDTO} and HATEOAS links,
+     *         {@code 400 Bad Request} if the {@code auctionId} is invalid,
+     *         {@code 404 Not Found} if the auction or its associated listing does not exist,
+     *         {@code 500 Internal Server Error} for unexpected errors
+     */
+    @GetMapping("/{auctionId}")
+    public ResponseEntity<AuctionDTO> getAuctionById(@PathVariable String auctionId, @RequestParam String userId) {
+
+        try {
+            AuctionId auctionIdVO = AuctionMapper.toAuctionId(auctionId);
+            UserId userIdVO = AuctionMapper.toUserId(userId);
+            Auction auction = auctionService.findById(auctionIdVO);
+            Listing listing = listingService.findById(auction.getListingId());
+
+            AuctionDTO responseDTO = AuctionMapper.toDTO(auction, listing);
+
+            List<Link> links = auctionLinkProvider.getLinksForAuction(userIdVO);
+
+            links.add(linkTo(methodOn(AuctionRESTController.class)
+                    .getAuctionById(auctionId, userId))
+                    .withSelfRel());
+
+            links.forEach(responseDTO::add);
+
+            return ResponseEntity.ok(responseDTO);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
