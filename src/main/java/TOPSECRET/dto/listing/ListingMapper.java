@@ -3,9 +3,7 @@ package TOPSECRET.dto.listing;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.ValueObjects.Picture;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +39,10 @@ public class ListingMapper {
                 listing.getPictures().stream().map(Picture::getPicture).toList(),
                 listing.getPublicationDate()
         );
+    }
+
+    public static ListingId toListingId(String id) {
+        return new ListingId(id);
     }
 
     /**
@@ -83,6 +85,14 @@ public class ListingMapper {
      */
     public static Picture toPicture(String picture) {
         return new Picture(picture);
+    }
+
+    public static UserId toUserId(String userId) {
+        return new UserId(userId);
+    }
+
+    public static GenreId toGenreId(String genreId) {
+        return new GenreId(genreId);
     }
 
 
