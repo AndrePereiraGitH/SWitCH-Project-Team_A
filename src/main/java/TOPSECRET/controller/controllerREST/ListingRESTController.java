@@ -2,7 +2,6 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.ListingLinkProvider;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -44,11 +43,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(path = "/listings")
 public class ListingRESTController {
 
-    private BibliographicalDataService biblioDataService;
-    private PublicationSampleService publicationService;
-    private ListingService listingService;
-    private EditionService editionService;
-    private ListingLinkProvider listingLinkProvider;
+    private final BibliographicalDataService biblioDataService;
+    private final PublicationSampleService publicationService;
+    private final ListingService listingService;
+    private final EditionService editionService;
+    private final ListingLinkProvider listingLinkProvider;
 
     /**
      * Creates a new {@code ListingRESTController}.
@@ -146,7 +145,7 @@ public class ListingRESTController {
             Listing listing = listingService.findById(listingId);
 
             List<PublicationSample> pubSamples = listing.getItemsId().stream()
-                    .map(publicationSampleId -> publicationService.findById(publicationSampleId))
+                    .map(publicationService::findById)
                     .toList();
 
             List<BibliographicalData> bibliographicalDatas = getBibliographicalData(pubSamples);
@@ -155,6 +154,7 @@ public class ListingRESTController {
 
             List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userId));
             links.add(linkTo(methodOn(ListingRESTController.class).findById(id, userId)).withSelfRel());
+            dto.add(links);
 
             return ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (EntityNotFoundException | InstanceNotFoundException e) {
