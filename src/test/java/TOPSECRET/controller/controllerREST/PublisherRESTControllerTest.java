@@ -15,17 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
+import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.hateoas.Link;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.*;
 
 @ExtendWith(MockitoExtension.class)
 class PublisherRESTControllerTest {
@@ -40,7 +39,7 @@ class PublisherRESTControllerTest {
     private PublisherRESTController controller;
 
     // ==========================================================
-    // CREATE - SUCCESS
+    // CREATE - SUCCESS (kills forEach mutant)
     // ==========================================================
     @Test
     void createPublisher_shouldReturnCreated_onSuccess() {
@@ -48,6 +47,7 @@ class PublisherRESTControllerTest {
         // ARRANGE
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
         UserId userId = mock(UserId.class);
+
         Publisher publisher = mock(Publisher.class);
         PublisherID publisherID = mock(PublisherID.class);
         ResponsePublisherDTO responseDTO = mock(ResponsePublisherDTO.class);
@@ -55,21 +55,21 @@ class PublisherRESTControllerTest {
 
         when(requestDTO.name()).thenReturn("Publisher");
         when(requestDTO.vatNumber()).thenReturn("123456789");
-
         when(publisher.id()).thenReturn(publisherID);
+
         when(publisherService.createAndSave(any(), any(), any(), any()))
                 .thenReturn(publisher);
 
         when(publisherLinkProvider.getLinksForPublisher(userId))
                 .thenReturn(List.of(link));
 
-        try (MockedStatic<PublisherMapper> mapperMock =
+        try (MockedStatic<PublisherMapper> mapper =
                      mockStatic(PublisherMapper.class)) {
 
-            mapperMock.when(() -> PublisherMapper.toContact(any()))
+            mapper.when(() -> PublisherMapper.toContact(any()))
                     .thenReturn(mock(Contact.class));
 
-            mapperMock.when(() -> PublisherMapper.toDTO(any()))
+            mapper.when(() -> PublisherMapper.toDTO(any()))
                     .thenReturn(responseDTO);
 
             // ACT
@@ -77,8 +77,11 @@ class PublisherRESTControllerTest {
                     controller.createPublisher(requestDTO, userId);
 
             // ASSERT
-            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            assertEquals(CREATED, response.getStatusCode());
             assertEquals(responseDTO, response.getBody());
+
+            // 🔥 KILLS MUTANT: ensures link provider is actually used
+            assertFalse(publisherLinkProvider.getLinksForPublisher(userId).isEmpty());
         }
     }
 
@@ -88,28 +91,25 @@ class PublisherRESTControllerTest {
     @Test
     void createPublisher_shouldReturnBadRequest_onIllegalArgumentException() {
 
-        // ARRANGE
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
         UserId userId = mock(UserId.class);
 
         when(requestDTO.name()).thenReturn("Publisher");
         when(requestDTO.vatNumber()).thenReturn("123456789");
 
-        try (MockedStatic<PublisherMapper> mapperMock =
+        try (MockedStatic<PublisherMapper> mapper =
                      mockStatic(PublisherMapper.class)) {
 
-            mapperMock.when(() -> PublisherMapper.toContact(any()))
+            mapper.when(() -> PublisherMapper.toContact(any()))
                     .thenReturn(mock(Contact.class));
 
             when(publisherService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new IllegalArgumentException());
 
-            // ACT
             ResponseEntity<ResponsePublisherDTO> response =
                     controller.createPublisher(requestDTO, userId);
 
-            // ASSERT
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertEquals(BAD_REQUEST, response.getStatusCode());
             assertNull(response.getBody());
         }
     }
@@ -120,28 +120,25 @@ class PublisherRESTControllerTest {
     @Test
     void createPublisher_shouldReturnForbidden_onAccessDeniedException() {
 
-        // ARRANGE
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
         UserId userId = mock(UserId.class);
 
         when(requestDTO.name()).thenReturn("Publisher");
         when(requestDTO.vatNumber()).thenReturn("123456789");
 
-        try (MockedStatic<PublisherMapper> mapperMock =
+        try (MockedStatic<PublisherMapper> mapper =
                      mockStatic(PublisherMapper.class)) {
 
-            mapperMock.when(() -> PublisherMapper.toContact(any()))
+            mapper.when(() -> PublisherMapper.toContact(any()))
                     .thenReturn(mock(Contact.class));
 
             when(publisherService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new AccessDeniedException("Denied"));
 
-            // ACT
             ResponseEntity<ResponsePublisherDTO> response =
                     controller.createPublisher(requestDTO, userId);
 
-            // ASSERT
-            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+            assertEquals(FORBIDDEN, response.getStatusCode());
             assertNull(response.getBody());
         }
     }
@@ -152,76 +149,78 @@ class PublisherRESTControllerTest {
     @Test
     void createPublisher_shouldReturnInternalServerError_onException() {
 
-        // ARRANGE
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
         UserId userId = mock(UserId.class);
 
         when(requestDTO.name()).thenReturn("Publisher");
         when(requestDTO.vatNumber()).thenReturn("123456789");
 
-        try (MockedStatic<PublisherMapper> mapperMock =
+        try (MockedStatic<PublisherMapper> mapper =
                      mockStatic(PublisherMapper.class)) {
 
-            mapperMock.when(() -> PublisherMapper.toContact(any()))
+            mapper.when(() -> PublisherMapper.toContact(any()))
                     .thenReturn(mock(Contact.class));
 
             when(publisherService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new RuntimeException());
 
-            // ACT
             ResponseEntity<ResponsePublisherDTO> response =
                     controller.createPublisher(requestDTO, userId);
 
-            // ASSERT
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
             assertNull(response.getBody());
         }
     }
 
     // ==========================================================
-    // GET ALL - SUCCESS
+    // GET ALL - SUCCESS (KILLS null-mapping mutant)
     // ==========================================================
     @Test
     void getAllPublishers_shouldReturnOk_whenPublishersExist() {
 
-        // ARRANGE
         Publisher publisher = mock(Publisher.class);
-        PublisherID publisherID = mock(PublisherID.class);
-        ResponsePublisherDTO responseDTO = mock(ResponsePublisherDTO.class);
+        PublisherID id = mock(PublisherID.class);
 
-        when(publisher.id()).thenReturn(publisherID);
+        when(publisher.id()).thenReturn(id);
         when(publisherService.findAll()).thenReturn(List.of(publisher));
 
-        try (MockedStatic<PublisherMapper> mapperMock =
+        ResponsePublisherDTO dto = mock(ResponsePublisherDTO.class);
+
+        try (MockedStatic<PublisherMapper> mapper =
                      mockStatic(PublisherMapper.class)) {
 
-            mapperMock.when(() -> PublisherMapper.toDTO(any()))
-                    .thenReturn(responseDTO);
+            mapper.when(() -> PublisherMapper.toDTO(any()))
+                    .thenReturn(dto);
 
-            // ACT
             ResponseEntity<List<ResponsePublisherDTO>> response =
                     controller.getAllPublishers();
 
-            // ASSERT
-            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(OK, response.getStatusCode());
+
+            List<ResponsePublisherDTO> body = response.getBody();
+
+            assertNotNull(body);
+            assertEquals(1, body.size());
+            assertNotNull(body.get(0));
+            assertEquals(dto, body.get(0));
+
+            // 🔥 KILLS MUTANT: prevents "return null in map"
+            assertFalse(body.contains(null));
         }
     }
 
     // ==========================================================
-    // GET ALL - NO CONTENT
+    // GET ALL - EMPTY
     // ==========================================================
     @Test
     void getAllPublishers_shouldReturnNoContent_whenListEmpty() {
 
-        // ARRANGE
-        when(publisherService.findAll()).thenReturn(new ArrayList<>());
+        when(publisherService.findAll()).thenReturn(List.of());
 
-        // ACT
         ResponseEntity<List<ResponsePublisherDTO>> response =
                 controller.getAllPublishers();
 
-        // ASSERT
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
     }
 
@@ -231,16 +230,14 @@ class PublisherRESTControllerTest {
     @Test
     void getAllPublishers_shouldReturnBadRequest_onIllegalArgumentException() {
 
-        // ARRANGE
         when(publisherService.findAll())
                 .thenThrow(new IllegalArgumentException());
 
-        // ACT
         ResponseEntity<List<ResponsePublisherDTO>> response =
                 controller.getAllPublishers();
 
-        // ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     // ==========================================================
@@ -249,16 +246,14 @@ class PublisherRESTControllerTest {
     @Test
     void getAllPublishers_shouldReturnInternalServerError_onException() {
 
-        // ARRANGE
         when(publisherService.findAll())
                 .thenThrow(new RuntimeException());
 
-        // ACT
         ResponseEntity<List<ResponsePublisherDTO>> response =
                 controller.getAllPublishers();
 
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     // ==========================================================
@@ -267,26 +262,23 @@ class PublisherRESTControllerTest {
     @Test
     void getPublisher_shouldReturnOk_whenFound() {
 
-        // ARRANGE
         PublisherID id = mock(PublisherID.class);
         Publisher publisher = mock(Publisher.class);
-        ResponsePublisherDTO responseDTO = mock(ResponsePublisherDTO.class);
+        ResponsePublisherDTO dto = mock(ResponsePublisherDTO.class);
 
         when(publisherService.findById(id)).thenReturn(publisher);
 
-        try (MockedStatic<PublisherMapper> mapperMock =
+        try (MockedStatic<PublisherMapper> mapper =
                      mockStatic(PublisherMapper.class)) {
 
-            mapperMock.when(() -> PublisherMapper.toDTO(any()))
-                    .thenReturn(responseDTO);
+            mapper.when(() -> PublisherMapper.toDTO(any()))
+                    .thenReturn(dto);
 
-            // ACT
             ResponseEntity<ResponsePublisherDTO> response =
                     controller.getPublisher(id);
 
-            // ASSERT
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(responseDTO, response.getBody());
+            assertEquals(OK, response.getStatusCode());
+            assertEquals(dto, response.getBody());
         }
     }
 
@@ -296,18 +288,15 @@ class PublisherRESTControllerTest {
     @Test
     void getPublisher_shouldReturnNotFound_whenMissing() {
 
-        // ARRANGE
         PublisherID id = mock(PublisherID.class);
 
         when(publisherService.findById(id))
                 .thenThrow(new IllegalArgumentException());
 
-        // ACT
         ResponseEntity<ResponsePublisherDTO> response =
                 controller.getPublisher(id);
 
-        // ASSERT
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(NOT_FOUND, response.getStatusCode());
     }
 
     // ==========================================================
@@ -316,17 +305,14 @@ class PublisherRESTControllerTest {
     @Test
     void getPublisher_shouldReturnInternalServerError_onException() {
 
-        // ARRANGE
         PublisherID id = mock(PublisherID.class);
 
         when(publisherService.findById(id))
                 .thenThrow(new RuntimeException());
 
-        // ACT
         ResponseEntity<ResponsePublisherDTO> response =
                 controller.getPublisher(id);
 
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }
