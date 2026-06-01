@@ -263,6 +263,8 @@ public class ListingRESTController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (EntityNotFoundException | InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -303,6 +305,8 @@ public class ListingRESTController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
