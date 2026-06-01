@@ -46,13 +46,22 @@ public class PublisherRESTController {
     /**
      * Creates and registers a new Publisher in the system.
      *
-     * <p>This method maps the incoming DTO to domain objects, saves the publisher via the service,
-     * and enriches the response with HATEOAS links tailored to the provided user's permissions.</p>
+     * <p>The request is mapped from {@link RequestPublisherDTO} into domain objects,
+     * persisted via {@link PublisherService}, and returned as a
+     * {@link ResponsePublisherDTO} enriched with HATEOAS links.</p>
      *
-     * @param requestPublisherDTO the data transfer object containing the new publisher's details.
-     * @param userId              the unique identifier of the user performing the creation.
-     * @return a {@link ResponseEntity} containing the created {@link ResponsePublisherDTO} and HTTP 201 status,
-     * or an error status (400, 403, 500) if the operation fails.
+     * <p>Responses:</p>
+     * <ul>
+     *     <li>201 Created – Publisher successfully created</li>
+     *     <li>400 Bad Request – invalid input data</li>
+     *     <li>403 Forbidden – user is not authorized to perform this action</li>
+     *     <li>500 Internal Server Error – unexpected failure</li>
+     * </ul>
+     *
+     * @param requestPublisherDTO the publisher data to create
+     * @param userId the identifier of the user performing the operation
+     * @return a {@link ResponseEntity} containing the created {@link ResponsePublisherDTO}
+     *         or an appropriate HTTP error status
      */
     @PostMapping
     public ResponseEntity<ResponsePublisherDTO> createPublisher(
@@ -90,13 +99,20 @@ public class PublisherRESTController {
     }
 
     /**
-     * Returns all publishers registered in the system.
+     * Retrieves all publishers registered in the system.
      *
-     * <p>Each item in the response is enriched with a self-link pointing to its
-     * individual resource endpoint. Returns HTTP 204 if no publishers exist.</p>
+     * <p>Each returned publisher is enriched with a self-link to its individual resource endpoint.</p>
      *
-     * @return a {@link ResponseEntity} containing a list of {@link ResponsePublisherDTO},
-     * HTTP 204 if the list is empty, or HTTP 500 if an unexpected error occurs.
+     * <p>Responses:</p>
+     * <ul>
+     *     <li>200 OK – list of publishers returned</li>
+     *     <li>204 No Content – no publishers exist</li>
+     *     <li>400 Bad Request – invalid request parameters</li>
+     *     <li>500 Internal Server Error – unexpected failure</li>
+     * </ul>
+     *
+     * @return a {@link ResponseEntity} containing a list of {@link ResponsePublisherDTO}
+     *         or an appropriate HTTP status if none exist or an error occurs
      */
     @GetMapping
     public ResponseEntity<List<ResponsePublisherDTO>> getAllPublishers() {
@@ -128,13 +144,21 @@ public class PublisherRESTController {
     }
 
     /**
-     * Returns a single Publisher identified by its unique ID.
+     * Retrieves a single Publisher by its unique identifier.
      *
-     * <p>Enriches the response with a self-link and a link to the full publisher collection.</p>
+     * <p>The returned resource is enriched with HATEOAS links to itself and to the full
+     * collection of publishers.</p>
      *
-     * @param id the {@link PublisherID} of the publisher to retrieve.
-     * @return a {@link ResponseEntity} containing the {@link ResponsePublisherDTO} and HTTP 200 status,
-     * HTTP 404 if the publisher is not found, or HTTP 500 if an unexpected error occurs.
+     * <p>Responses:</p>
+     * <ul>
+     *     <li>200 OK – publisher found and returned</li>
+     *     <li>404 Not Found – no publisher exists for the given ID</li>
+     *     <li>500 Internal Server Error – unexpected failure</li>
+     * </ul>
+     *
+     * @param id the {@link PublisherID} of the publisher to retrieve
+     * @return a {@link ResponseEntity} containing the {@link ResponsePublisherDTO}
+     *         or an appropriate HTTP error status
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponsePublisherDTO> getPublisher(
