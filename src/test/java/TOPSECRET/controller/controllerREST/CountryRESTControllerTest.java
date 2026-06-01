@@ -245,6 +245,29 @@ class CountryRESTControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
+    @Test
+    void getCountries_shouldReturnNoContent_whenEmpty() {
+
+        when(countryService.findAll()).thenReturn(List.of());
+
+        ResponseEntity<List<CountryResponseDTO>> response =
+                controller.getCountries();
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void getCountries_shouldReturnInternalServerError_onException() {
+
+        when(countryService.findAll()).thenThrow(new RuntimeException());
+
+        ResponseEntity<List<CountryResponseDTO>> response =
+                controller.getCountries();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
     // -------------------------------------------------------------------------
     // getCountry
     // -------------------------------------------------------------------------
@@ -328,4 +351,17 @@ class CountryRESTControllerTest {
         assertTrue(dto.getLinks().stream()
                 .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
     }
+
+    @Test
+    void getCountry_shouldReturnInternalServerError_onUnexpectedException() {
+
+        when(countryService.findById(any(CountryId.class)))
+                .thenThrow(new RuntimeException());
+
+        ResponseEntity<CountryResponseDTO> response =
+                controller.getCountry("PORTUGAL");
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
 }
