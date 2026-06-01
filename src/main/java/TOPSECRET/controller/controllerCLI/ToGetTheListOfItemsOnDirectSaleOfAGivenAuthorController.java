@@ -14,6 +14,7 @@ import TOPSECRET.dto.US025AuthorDTO;
 import TOPSECRET.dto.US025DirectSaleDTO;
 import TOPSECRET.dto.US025AuthorMapper;
 import TOPSECRET.dto.US025DirectSaleMapper;
+import TOPSECRET.services.ListingService;
 
 import java.util.List;
 import java.util.Comparator;
@@ -30,7 +31,7 @@ import java.util.Comparator;
 public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
 
     private final IAuthorRepository authorRepository;
-    private final IListingRepository listingRepository;
+    private final ListingService listingService;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
     private final US025AuthorMapper authorMapper;
@@ -40,7 +41,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
      * Constructs a new controller with the required repositories and mappers.
      *
      * @param authorRepository              repository for {@link TOPSECRET.domain.Author.Author} aggregates
-     * @param listingRepository             repository for {@link Listing} aggregates
+     * @param listingService             repository for {@link Listing} aggregates
      * @param bibliographicalDataRepository repository for {@link BibliographicalData} aggregates
      * @param publicationSampleRepository   repository for {@link PublicationSample} aggregates
      * @param authorMapper                  mapper for converting authors to DTOs
@@ -49,7 +50,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
      */
     public ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
             IAuthorRepository authorRepository,
-            IListingRepository listingRepository,
+            ListingService listingService,
             IBibliographicalDataRepository bibliographicalDataRepository,
             IPublicationSampleRepository publicationSampleRepository,
             US025AuthorMapper authorMapper,
@@ -57,7 +58,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
 
         if (authorRepository == null)
             throw new IllegalArgumentException("AuthorRepository cannot be null");
-        if (listingRepository == null)
+        if (listingService == null)
             throw new IllegalArgumentException("ListingRepository cannot be null");
         if (bibliographicalDataRepository == null)
             throw new IllegalArgumentException("BibliographicalDataRepository cannot be null");
@@ -69,7 +70,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
             throw new IllegalArgumentException("DirectSaleMapper cannot be null");
 
         this.authorRepository = authorRepository;
-        this.listingRepository = listingRepository;
+        this.listingService = listingService;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.publicationSampleRepository = publicationSampleRepository;
         this.authorMapper = authorMapper;
@@ -104,7 +105,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController {
                 publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
         List<Listing> listings =
-                listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(pubIds);
+                listingService.findAllDirectSaleAndPublicationSampleIdIn(pubIds);
 
         List<US025DirectSaleDTO> dtos = directSaleMapper.toDTOList(listings);
         dtos.sort(Comparator.comparing(US025DirectSaleDTO::publicationTitle));

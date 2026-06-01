@@ -17,6 +17,7 @@ import TOPSECRET.services.PublicationSampleService;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 /**
@@ -114,7 +115,7 @@ public class ToPutForSaleAPublicationInDirectSaleController {
      * @throws InstanceAlreadyExistsException if a listing already exists for any of the selected publications
      */
     public Listing createDirectSaleListing(String listingTitle, List<PublicationSampleId> pubSampleIds,
-                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) throws InstanceAlreadyExistsException {
+                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) throws InstanceAlreadyExistsException, AccessDeniedException {
 
         if (listingTitle == null || listingTitle.isBlank())
             throw new IllegalArgumentException("Listing title cannot be null or blank.");

@@ -1,7 +1,6 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
@@ -10,6 +9,7 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.dto.US023ListingDTO;
 import TOPSECRET.dto.US023ListingMapper;
+import TOPSECRET.services.ListingService;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
     private final IBibliographicalDataRepository _bdRepo;
-    private final IListingRepository _listingRepo;
+    private final ListingService listingService;
     private final IPublicationSampleRepository _pubSampleRepo;
     private final US023BibliographicalDataMapper _bdMapper;
     private final US023ListingMapper _listingMapper;
@@ -48,20 +48,20 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
      * and publication samples on direct sale for US023.
      *
      * @param bdRepo          the repository for bibliographical data
-     * @param listingRepo     the repository for listings
+     * @param listingService     the repository for listings
      * @param pubSampleRepo   the repository for publication samples
      * @param bdMapper        the mapper for converting bibliographical data to DTOs
      * @param pubSampleMapper the mapper for converting publication samples to DTOs
      */
     public ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(IBibliographicalDataRepository bdRepo,
-                                                                        IListingRepository listingRepo,
+                                                                        ListingService listingService,
                                                                         IPublicationSampleRepository pubSampleRepo,
                                                                         US023BibliographicalDataMapper bdMapper,
                                                                         US023ListingMapper pubSampleMapper) {
         if (bdRepo == null) {
             throw new IllegalArgumentException("bdRepo cannot be null");
         }
-        if (listingRepo == null) {
+        if (listingService == null) {
             throw new IllegalArgumentException("listingRepo cannot be null");
         }
         if (pubSampleRepo == null) {
@@ -75,7 +75,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
         }
 
         this._bdRepo = bdRepo;
-        this._listingRepo = listingRepo;
+        this.listingService = listingService;
         this._pubSampleRepo = pubSampleRepo;
         this._bdMapper = bdMapper;
         this._listingMapper = pubSampleMapper;
@@ -119,7 +119,7 @@ public class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController {
 
         List<PublicationSampleId> listOfPubSample = _pubSampleRepo.findIdsByBibliographicalDataId(bdId);
 
-        List<Listing> listOfDSListings = _listingRepo.findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSample);
+        List<Listing> listOfDSListings = listingService.findAllDirectSaleAndPublicationSampleIdIn(listOfPubSample);
 
         return _listingMapper.toDTOs(listOfDSListings);
     }

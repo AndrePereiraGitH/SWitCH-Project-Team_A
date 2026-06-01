@@ -4,7 +4,6 @@ import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.IAuthorRepository;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
@@ -15,6 +14,7 @@ import TOPSECRET.dto.US026AuctionMapper;
 import TOPSECRET.dto.US026AuthorDTO;
 import TOPSECRET.dto.US026AuthorMapper;
 import TOPSECRET.services.AuctionService;
+import TOPSECRET.services.ListingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,7 +37,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
     private IAuthorRepository authorRepository;
     private IBibliographicalDataRepository biblioRepository;
     private IPublicationSampleRepository pubRepo;
-    private IListingRepository listingRepo;
+    private ListingService listingService;
     private AuctionService auctionService;
     private US026AuctionMapper auctionMapper;
 
@@ -46,7 +46,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
         authorRepository = mock(IAuthorRepository.class);
         biblioRepository = mock(IBibliographicalDataRepository.class);
         pubRepo = mock(IPublicationSampleRepository.class);
-        listingRepo = mock(IListingRepository.class);
+        listingService = mock(ListingService.class);
         auctionService = mock(AuctionService.class);
         auctionMapper = mock(US026AuctionMapper.class);
     }
@@ -57,7 +57,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
             IAuthorRepository authorRepository,
             IBibliographicalDataRepository biblioRepository,
             IPublicationSampleRepository pubRepo,
-            IListingRepository listingRepo,
+            ListingService listingService,
             AuctionService auctionService,
             US026AuctionMapper mapper,
             String expected
@@ -68,7 +68,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
                         authorRepository,
                         biblioRepository,
                         pubRepo,
-                        listingRepo,
+                        listingService,
                         auctionService,
                         mapper
                 )
@@ -176,7 +176,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
         when(pubRepo.findIdsByBibliographicalDataId(bdId2))
                 .thenReturn(List.of(sampleId2));
-        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
+        when(listingService.findIdsByPublicationSampleIdIn(publicationSampleIds)).thenReturn(listingIds);
         when(auctionService.findByListingIdIn(listingIds)).thenReturn(auctions);
         when(auctionMapper.fromDomainList(auctions)).thenReturn(expected);
 
@@ -207,7 +207,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
         when(biblioRepository.findIdByAuthorId(authorId))
                 .thenReturn(bibliographicalDataIds);
 
-        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds))
+        when(listingService.findIdsByPublicationSampleIdIn(publicationSampleIds))
                 .thenReturn(listingIds);
 
         when(auctionService.findByListingIdIn(listingIds))
@@ -251,7 +251,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
         when(pubRepo.findIdsByBibliographicalDataId(bdId))
                 .thenReturn(publicationSampleIds);
 
-        when(listingRepo.findIdsByPublicationSampleIdIn(publicationSampleIds))
+        when(listingService.findIdsByPublicationSampleIdIn(publicationSampleIds))
                 .thenReturn(listingIds);
 
         when(auctionService.findByListingIdIn(listingIds))
@@ -274,7 +274,7 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
                 authorRepository,
                 biblioRepository,
                 pubRepo,
-                listingRepo,
+                listingService,
                 auctionService,
                 auctionMapper
         );
@@ -282,12 +282,12 @@ class ToGetTheListOfItemsInAuctionOfAGivenAuthorControllerTest {
 
     private static Stream<Arguments> invalidConstructorArguments() {
         return Stream.of(
-                of(null, mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(AuctionService.class), mock(US026AuctionMapper.class), "AuthorRepository cannot be null"),
-                of(mock(IAuthorRepository.class), null, mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(AuctionService.class), mock(US026AuctionMapper.class), "BibliographicalDataRepository cannot be null"),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), null, mock(IListingRepository.class), mock(AuctionService.class), mock(US026AuctionMapper.class), "PublicationSampleRepository cannot be null"),
+                of(null, mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(ListingService.class), mock(AuctionService.class), mock(US026AuctionMapper.class), "AuthorRepository cannot be null"),
+                of(mock(IAuthorRepository.class), null, mock(IPublicationSampleRepository.class), mock(ListingService.class), mock(AuctionService.class), mock(US026AuctionMapper.class), "BibliographicalDataRepository cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), null, mock(ListingService.class), mock(AuctionService.class), mock(US026AuctionMapper.class), "PublicationSampleRepository cannot be null"),
                 of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), null, mock(AuctionService.class), mock(US026AuctionMapper.class), "ListingRepository cannot be null"),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), null, mock(US026AuctionMapper.class), "AuctionService cannot be null"),
-                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(IListingRepository.class), mock(AuctionService.class), null, "AuctionMapper cannot be null")
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(ListingService.class), null, mock(US026AuctionMapper.class), "AuctionService cannot be null"),
+                of(mock(IAuthorRepository.class), mock(IBibliographicalDataRepository.class), mock(IPublicationSampleRepository.class), mock(ListingService.class), mock(AuctionService.class), null, "AuctionMapper cannot be null")
         );
     }
 }

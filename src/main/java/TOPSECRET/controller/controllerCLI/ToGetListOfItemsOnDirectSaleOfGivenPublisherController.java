@@ -1,7 +1,6 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.Edition.IEditionRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.EditionId;
@@ -12,6 +11,7 @@ import TOPSECRET.dto.US027ListingMapper;
 import TOPSECRET.dto.US027PublisherDTO;
 import TOPSECRET.dto.US027PublisherMapper;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.services.ListingService;
 import TOPSECRET.services.PublisherService;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -40,7 +40,7 @@ import java.util.List;
 public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
     private final PublisherService _publisherService;
-    private final IListingRepository _listingRepo;
+    private final ListingService listingService;
     private final IPublicationSampleRepository _pubSampleRepo;
     private final IEditionRepository _editionRepo;
     private final US027ListingMapper _mapper;
@@ -53,19 +53,19 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
      * associated with a given publisher.
      *
      * @param publisherService the repository used to retrieve publishers
-     * @param listingRepo the repository used to retrieve listings
+     * @param listingService the repository used to retrieve listings
      * @param pubSampleRepo the repository used to retrieve publication samples
      * @param editionRepo the repository used to retrieve editions
      * @param mapper the mapper responsible for converting listings into DTOs
      */
     public ToGetListOfItemsOnDirectSaleOfGivenPublisherController(PublisherService publisherService,
-                                                                  IListingRepository listingRepo,
+                                                                  ListingService listingService,
                                                                   IPublicationSampleRepository pubSampleRepo,
                                                                   IEditionRepository editionRepo,
                                                                   US027ListingMapper mapper) {
 
         this._publisherService = publisherService;
-        this._listingRepo = listingRepo;
+        this.listingService = listingService;
         this._pubSampleRepo = pubSampleRepo;
         this._editionRepo = editionRepo;
         this._mapper = mapper;
@@ -110,7 +110,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenPublisherController {
 
         List<PublicationSampleId> listOfPubSampleIds = _pubSampleRepo.findIdsByEditionIdIn(listOfEditionIds);
 
-        List<Listing> listOfListings = _listingRepo.findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds);
+        List<Listing> listOfListings = listingService.findAllDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds);
 
         return _mapper.toDTOs(listOfListings);
     }
