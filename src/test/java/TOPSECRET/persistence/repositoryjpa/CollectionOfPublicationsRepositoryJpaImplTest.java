@@ -15,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -142,51 +141,6 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> repo.save(null));
-    }
-
-    // ===========================================================
-    // ========== Tests for Update ===============================
-    // ===========================================================
-
-    @Test
-    void update_shouldReturnUpdatedCollection_whenCollectionIsValid() {
-        // arrange
-        CollectionOfPublications collection =
-                mock(CollectionOfPublications.class);
-
-        CollectionOfPublicationsDM collectionDMToUpdate =
-                mock(CollectionOfPublicationsDM.class);
-
-        CollectionOfPublicationsDM updatedCollectionDM =
-                mock(CollectionOfPublicationsDM.class);
-
-        CollectionOfPublications updatedCollection =
-                mock(CollectionOfPublications.class);
-
-        when(assembler.toDM(collection))
-                .thenReturn(collectionDMToUpdate);
-
-        when(jpa.save(collectionDMToUpdate))
-                .thenReturn(updatedCollectionDM);
-
-        when(assembler.toDomain(updatedCollectionDM))
-                .thenReturn(updatedCollection);
-
-        // act
-        CollectionOfPublications result = repo.update(collection);
-
-        // assert
-        assertEquals(updatedCollection, result);
-
-
-    }
-
-    @Test
-    void update_shouldThrow_whenCollectionIsNull() {
-
-        // act + assert
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> repo.update(null));
-        assertEquals("collection cannot be null", ex.getMessage());
     }
 
     // ===========================================================
@@ -347,17 +301,18 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         CollectionOfPublications publicCollection = mock(CollectionOfPublications.class);
         CollectionOfPublications privateCollection = mock(CollectionOfPublications.class);
 
-        when(publicCollection.getIsPrivate()).thenReturn(false);
-        when(privateCollection.getIsPrivate()).thenReturn(true);
+        when(publicCollection.isCurrentlyPublic()).thenReturn(true);
+        when(privateCollection.isCurrentlyPublic()).thenReturn(false);
 
-        when(jpa.findPublicCollectionsByGenreId(genreIdDouble))
+        when(jpa.findByGenreIdAndIsPrivateFalse(genreIdDouble))
                 .thenReturn(List.of(publicDM, privateDM));
 
         when(assembler.toDomain(publicDM)).thenReturn(publicCollection);
         when(assembler.toDomain(privateDM)).thenReturn(privateCollection);
 
         // ACT
-        List<CollectionOfPublications> result = repo.findPublicCollectionsByGenreId(genreIdDouble);
+        List<CollectionOfPublications> result =
+                repo.findPublicCollectionsByGenreId(genreIdDouble);
 
         // ASSERT
         assertEquals(1, result.size(), "One public collection found matching this genre");
