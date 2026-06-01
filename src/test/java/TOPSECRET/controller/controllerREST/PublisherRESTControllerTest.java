@@ -16,9 +16,11 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,6 +37,21 @@ class PublisherRESTControllerTest {
     @Mock
     private PublisherService publisherService;
 
+    @Mock
+    private RequestPublisherDTO requestDTO;
+
+    @Mock
+    private UserId userId;
+
+    @Mock
+    private Publisher publisher;
+
+    @Mock
+    private PublisherID publisherID;
+
+    @Mock
+    private Link providerLink;
+
     @InjectMocks
     private PublisherRESTController controller;
 
@@ -45,43 +62,43 @@ class PublisherRESTControllerTest {
     void createPublisher_shouldReturnCreated_onSuccess() {
 
         // ARRANGE
-        RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
-        UserId userId = mock(UserId.class);
-
-        Publisher publisher = mock(Publisher.class);
-        PublisherID publisherID = mock(PublisherID.class);
-        ResponsePublisherDTO responseDTO = mock(ResponsePublisherDTO.class);
-        Link link = mock(Link.class);
-
         when(requestDTO.name()).thenReturn("Publisher");
         when(requestDTO.vatNumber()).thenReturn("123456789");
+
         when(publisher.id()).thenReturn(publisherID);
 
         when(publisherService.createAndSave(any(), any(), any(), any()))
                 .thenReturn(publisher);
 
         when(publisherLinkProvider.getLinksForPublisher(userId))
-                .thenReturn(List.of(link));
+                .thenReturn(List.of(providerLink));
 
-        try (MockedStatic<PublisherMapper> mapper =
-                     mockStatic(PublisherMapper.class)) {
+        try (MockedStatic<PublisherMapper> mapper = mockStatic(PublisherMapper.class)) {
+
+            ResponsePublisherDTO dto = mock(ResponsePublisherDTO.class);
+
+            List<Link> captured = new ArrayList<>();
+
+            doAnswer(inv -> {
+                captured.add(inv.getArgument(0));
+                return dto;
+            }).when(dto).add(any(Link.class));
 
             mapper.when(() -> PublisherMapper.toContact(any()))
                     .thenReturn(mock(Contact.class));
 
-            mapper.when(() -> PublisherMapper.toDTO(any()))
-                    .thenReturn(responseDTO);
+            mapper.when(() -> PublisherMapper.toDTO(publisher))
+                    .thenReturn(dto);
 
             // ACT
             ResponseEntity<ResponsePublisherDTO> response =
                     controller.createPublisher(requestDTO, userId);
 
             // ASSERT
-            assertEquals(CREATED, response.getStatusCode());
-            assertEquals(responseDTO, response.getBody());
-
-            // 🔥 KILLS MUTANT: ensures link provider is actually used
-            assertFalse(publisherLinkProvider.getLinksForPublisher(userId).isEmpty());
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            assertEquals(dto, response.getBody());
+            assertFalse(captured.isEmpty());
+            assertTrue(captured.contains(providerLink));
         }
     }
 
