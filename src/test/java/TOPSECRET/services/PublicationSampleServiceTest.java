@@ -49,6 +49,8 @@ import static org.mockito.Mockito.*;
  *   <li><b>findAvailableForCollection</b> — domain filtering for collection eligibility.</li>
  *   <li><b>addPublicationToLibrary</b> — domain operation with authorization.</li>
  *   <li><b>assignPublicationToCollection</b> — domain operation with authorization.</li>
+ *   <li><b>findIdsByBibliographicalDataIdIn</b> — filter IDs by multiple BD IDs.</li>
+ *   <li><b>findIdsByEditionIdIn</b> — filter IDs by edition IDs.</li>
  * </ul>
  */
 @ExtendWith(MockitoExtension.class)
@@ -334,6 +336,80 @@ class PublicationSampleServiceTest {
 
         // Act
         List<PublicationSample> result = service.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // =========================================================================
+// findIdsByBibliographicalDataIdIn
+// =========================================================================
+
+    @Test
+    void findIdsByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdsIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findIdsByBibliographicalDataIdIn(null));
+    }
+
+    @Test
+    void findIdsByBibliographicalDataIdIn_shouldReturnMatchingIds() {
+        // Arrange
+        List<BibliographicalDataId> bdIds = List.of(bdId);
+        List<PublicationSampleId> ids = List.of(sampleId);
+        when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds)).thenReturn(ids);
+
+        // Act
+        List<PublicationSampleId> result = service.findIdsByBibliographicalDataIdIn(bdIds);
+
+        // Assert
+        assertEquals(ids, result);
+    }
+
+    @Test
+    void findIdsByBibliographicalDataIdIn_shouldReturnEmptyList_whenNoMatchExists() {
+        // Arrange
+        List<BibliographicalDataId> bdIds = List.of(bdId);
+        when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSampleId> result = service.findIdsByBibliographicalDataIdIn(bdIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+// =========================================================================
+// findIdsByEditionIdIn
+// =========================================================================
+
+    @Test
+    void findIdsByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findIdsByEditionIdIn(null));
+    }
+
+    @Test
+    void findIdsByEditionIdIn_shouldReturnMatchingIds() {
+        // Arrange
+        List<EditionId> editionIds = List.of(editionId);
+        List<PublicationSampleId> ids = List.of(sampleId);
+        when(publicationSampleRepository.findIdsByEditionIdIn(editionIds)).thenReturn(ids);
+
+        // Act
+        List<PublicationSampleId> result = service.findIdsByEditionIdIn(editionIds);
+
+        // Assert
+        assertEquals(ids, result);
+    }
+
+    @Test
+    void findIdsByEditionIdIn_shouldReturnEmptyList_whenNoMatchExists() {
+        // Arrange
+        List<EditionId> editionIds = List.of(editionId);
+        when(publicationSampleRepository.findIdsByEditionIdIn(editionIds)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSampleId> result = service.findIdsByEditionIdIn(editionIds);
 
         // Assert
         assertTrue(result.isEmpty());

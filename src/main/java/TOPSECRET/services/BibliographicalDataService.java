@@ -174,7 +174,7 @@ public class BibliographicalDataService {
      */
     public List<BibliographicalData> findAll() { return bibliographicalDataRepository.findAll(); }
 
-    /**
+     /**
      * Retrieves a bibliographical data entity stored in the repository.
      *
      * @return an Optional containing the {@link BibliographicalData} entity;

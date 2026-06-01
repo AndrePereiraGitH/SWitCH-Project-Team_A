@@ -171,6 +171,28 @@ public class PublicationSampleService {
     }
 
     /**
+     * Retrieves the identifiers of all {@link PublicationSample} instances whose
+     * bibliographical data ID is in the given list.
+     *
+     * <p>This method projects directly to {@link PublicationSampleId} at the
+     * repository level, avoiding the cost of hydrating full {@link PublicationSample}
+     * entities when only their identifiers are needed.</p>
+     *
+     * @param bdIds the list of bibliographical data identifiers; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     * @throws NullPointerException if {@code bdIds} is {@code null}
+     */
+    public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
+        Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
+
+        List<PublicationSampleId> allPublicationsIdsWithSpecificBDIds =
+                publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+
+
+        return allPublicationsIdsWithSpecificBDIds;
+    }
+
+    /**
      * Retrieves all {@link PublicationSample} instances associated with any of the given edition IDs.
      *
      * @param listOfEditionIds the list of edition identifiers; must not be {@code null}
@@ -184,6 +206,27 @@ public class PublicationSampleService {
                 publicationSampleRepository.findByEditionIdIn(listOfEditionIds);
 
         return allPublicationsWithSpecificEditionIds;
+    }
+
+    /**
+     * Retrieves the identifiers of all {@link PublicationSample} instances associated
+     * with any of the given edition IDs.
+     *
+     * <p>This method projects directly to {@link PublicationSampleId} at the
+     * repository level, avoiding the cost of hydrating full {@link PublicationSample}
+     * entities when only their identifiers are needed.</p>
+     *
+     * @param listOfEditionIds the list of edition identifiers; must not be {@code null}
+     * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
+     * @throws NullPointerException if {@code listOfEditionIds} is {@code null}
+     */
+    public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
+        Objects.requireNonNull(listOfEditionIds, "Edition Ids cannot be null");
+
+        List<PublicationSampleId> allPublicationsIdsWithSpecificEditionIds =
+                publicationSampleRepository.findIdsByEditionIdIn(listOfEditionIds);
+
+        return allPublicationsIdsWithSpecificEditionIds;
     }
 
 
