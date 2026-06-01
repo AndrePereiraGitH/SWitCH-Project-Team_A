@@ -2,10 +2,7 @@ package TOPSECRET.dto.auction;
 
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.ValueObjects.AuctionId;
-import TOPSECRET.domain.ValueObjects.ListingId;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.auction.response.AuctionDTO;
 
 import java.math.BigDecimal;
@@ -16,7 +13,9 @@ import java.util.Objects;
 
 /**
  * Utility class for mapping {@link Auction} domain objects to {@link AuctionDTO} response DTOs,
- * and for converting primitive identifiers to their corresponding Value Objects.
+ * and for converting primitive identifiers to their corresponding Value Objects
+ * ({@link AuctionId}, {@link ListingId}, {@link UserId}, {@link GenreId},
+ * {@link AuthorId}, {@link PublisherID}, {@link BibliographicalDataId} and {@link Price}).
  *
  * <p>This class is stateless and provides only static methods — it cannot be instantiated.</p>
  *
@@ -28,7 +27,6 @@ import java.util.Objects;
  *
  * @see AuctionDTO
  */
-
 public class AuctionMapper {
 
     private AuctionMapper() {
@@ -120,6 +118,46 @@ public class AuctionMapper {
      */
     public static ListingId toListingId(String listingId) {
         return new ListingId(listingId);
+    }
+
+    /**
+     * Converts a {@link String} identifier into a {@link BibliographicalDataId} Value Object.
+     *
+     * @param bdId the string representation of the bibliographical data identifier; must not be {@code null}
+     * @return the corresponding {@link BibliographicalDataId}
+     */
+    public static BibliographicalDataId toBibliographicalDataId(String bdId) {
+        return new BibliographicalDataId(bdId);
+    }
+
+    /**
+     * Converts a {@link String} identifier into a {@link GenreId} Value Object.
+     *
+     * @param genreId the string representation of the genre identifier; must not be {@code null}
+     * @return the corresponding {@link GenreId}
+     */
+    public static GenreId toGenreId(String genreId) {
+        return new GenreId(genreId);
+    }
+
+    /**
+     * Converts a {@link String} identifier into a {@link AuthorId} Value Object.
+     *
+     * @param authorId the string representation of the author identifier; must not be {@code null}
+     * @return the corresponding {@link AuthorId}
+     */
+    public static AuthorId toAuthorId(String authorId) {
+        return new AuthorId(authorId);
+    }
+
+    /**
+     * Converts a {@link String} identifier into a {@link PublisherID} Value Object.
+     *
+     * @param publisherId the string representation of the publisher identifier; must not be {@code null}
+     * @return the corresponding {@link PublisherID}
+     */
+    public static PublisherID toPublisherId(String publisherId) {
+        return new PublisherID(publisherId);
     }
 
     /**
