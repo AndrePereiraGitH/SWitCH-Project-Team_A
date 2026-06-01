@@ -1,0 +1,247 @@
+@startuml
+
+hide footbox
+autonumber
+title Get Auction Items By Genre
+
+actor User
+participant ":UI" as UI
+
+participant ":GenreREST\nController" as GenreController
+participant ":AuctionREST\nController" as AuctionController
+
+participant ":Bibliographical\nDataService" as BDService
+participant ":IBibliographical\nDataRepository" as BDRepo
+participant ":IBibliographicalData\nRepositoryJPA" as BDRepoJPA
+participant "bdDMList:\nList<BibliographicalDataDM>" as bdDMList
+participant "listOfBioDataId:\nList<BibliographicalDataId>" as bdIdList
+
+participant ":Publication\nSampleService" as PSService
+participant ":IPublicationSample\nRepository" as PubSampleRepo
+participant ":IPublicationSample\nRepositoryJPA" as PSRepoJPA
+participant "pbSampleDMList:\nList<PublicationSampleDM>" as pbDMList
+participant "listOfItemsId:\nList<PublicationSampleId>" as pbIdList
+
+participant ":Listing\nService" as LService
+participant ":IListing\nRepository" as ListingRepo
+participant ":IListing\nRepositoryJPA" as ListingRepoJPA
+participant ":ListingAssembler" as ListingAssembler
+participant ":ListingFactory" as ListingFactory
+participant "listingDMList:\nList<ListingDM>" as listingDMList
+participant "listOfListings:\nList<Listing>" as listingList
+participant "listing:\nListing" as listing
+
+participant ":Auction\nService" as AuctionService
+participant ":IAuction\nRepository" as AuctionRepo
+participant ":IAuction\nRepositoryJPA" as AuctionRepoJPA
+participant ":Auction\nAssembler" as AuctionAssembler
+participant ":Auction\nFactory" as AuctionFactory
+participant "auction:\nAuction" as auction
+participant "auctionDMList:\nList<AuctionDM>" as auctionDMList
+participant "listOfAuctionOnGivenGenre:\nList<Auction>" as auctionList
+participant "listingMap:\nMap<ListingId, Listing>" as listingMap
+participant ":AuctionMapper" as AuctionMapper
+participant "listOfAuctionDTO:\nList<AuctionDTO>" as AuctionDTOList
+participant "responseDTO:\nAuctionDTO" as AuctionDTO
+
+database "Database" as DB
+
+
+' =========================================================
+' 1. Get All Genres
+' =========================================================
+
+User -> UI : I want to get the list of items\n on auction of a given genre
+activate UI
+
+UI -> GenreController: getGenres()
+activate GenreController
+
+ref over GenreController
+[[2.GetAllGenres.puml Get all genres]]
+end ref
+
+GenreController --> UI: listOfGenreDTO
+deactivate GenreController
+
+UI --> User: Which genre? Choose!
+deactivate UI
+
+' =========================================================
+' 2. Get bibliographicalData By GenreId
+' =========================================================
+
+User -> UI: genreResponseDTO
+activate UI
+
+UI -> AuctionController: getAuctions(genre=genreId)
+activate AuctionController
+
+AuctionController -> BDService: findAllByGenreId(genreId)
+activate BDService
+
+BDService -> BDRepo : findAllByGenreId(genreId)
+activate BDRepo
+BDRepo -> BDRepoJPA : findAllByGenreId(genreId)
+activate BDRepoJPA
+BDRepoJPA -> DB : SELECT * FROM bibliographical_data\nWHERE genre_Id IN
+activate DB
+DB --> BDRepoJPA : data
+deactivate DB
+BDRepoJPA -->> bdDMList ** : <<create>>
+BDRepoJPA -->> bdIdList ** : <<create>>
+loop for each dm in bdDMList
+    BDRepoJPA -> bdIdList : add(dm.bdId())
+end
+BDRepoJPA --> BDRepo : listOfBioDataId
+deactivate BDRepoJPA
+BDRepo --> BDService: listOfBioDataId
+deactivate BDRepo
+BDService --> AuctionController : listOfBioDataId
+deactivate BDService
+
+' =========================================================
+' 3. Get publicationSample By BibliographicalDataIds
+' =========================================================
+
+AuctionController -> PSService: findIdsByBibliographicalDataIdIn(listOfBioDataId)
+activate PSService
+PSService -> PubSampleRepo : findIdsByBibliographicalDataIdIn(listOfBioDataId)
+activate PubSampleRepo
+PubSampleRepo -> PSRepoJPA : findIdsBy\nBibliographicalDataIdIn(listOfBioDataId)
+activate PSRepoJPA
+PSRepoJPA -> DB : SELECT * FROM publication_sample\nWHERE bibliographical_data_id IN
+activate DB
+DB --> PSRepoJPA : data
+deactivate DB
+PSRepoJPA -->> pbDMList ** : <<create>>
+PSRepoJPA -->> pbIdList ** : <<create>>
+
+loop for each dm in pbSampleDMList
+    PSRepoJPA -> pbIdList : add(dm.getPubSampleId())
+end
+
+PSRepoJPA --> PubSampleRepo : listOfItemsId
+deactivate PSRepoJPA
+PubSampleRepo --> PSService: listOfItemsId
+deactivate PubSampleRepo
+PSService --> AuctionController : listOfItemsId
+deactivate PSService
+
+' =========================================================
+' 4. Get listings By PublicationSampleIds
+' =========================================================
+
+AuctionController -> LService : findByAuctionAndPublicationSampleIdIn(listOfItemsId)
+activate LService
+LService -> ListingRepo : findAllByAuctionAnd\nPublicationSampleIdIn(listOfItemsId)
+activate ListingRepo
+ListingRepo -> ListingRepoJPA : findAllByAuctionAnd\nPublicationSampleIdIn(listOfItemsId)
+activate ListingRepoJPA
+ListingRepoJPA -> DB : SELECT * FROM listing\nWHERE publication_sample_id IN
+activate DB
+DB --> ListingRepoJPA : data
+deactivate DB
+
+ListingRepoJPA -->> listingDMList ** : <<create>>
+
+ListingRepoJPA --> ListingRepo : listOfListings
+deactivate ListingRepoJPA
+
+ListingRepo --> listingList**: «create»
+
+loop for each dm in listingDMList
+    ListingRepo -> ListingAssembler : toDomain(dm)
+    activate ListingAssembler
+    ListingAssembler -> ListingFactory : create(dm.getListingId(), .... )
+    activate ListingFactory
+    ListingFactory -->> listing ** : <<create>>
+    ListingFactory --> ListingAssembler : listing
+    deactivate ListingFactory
+    ListingAssembler --> ListingRepo : listing
+    deactivate ListingAssembler
+    ListingRepo -> listingList : add(listing)
+end
+
+ListingRepo --> LService : listOfListings
+deactivate ListingRepo
+LService --> AuctionController : listOfListings
+deactivate LService
+
+' =========================================================
+' 5. Get auctions By ListingIds
+' =========================================================
+
+AuctionController -> AuctionController : listOfListings.stream()\n.map(Listing::id).toList()
+
+AuctionController -> AuctionService : findByListingIdIn(listOfListingId)
+activate AuctionService
+AuctionService -> AuctionRepo : findByListingIdIn(listOfListingId)
+activate AuctionRepo
+AuctionRepo -> AuctionRepoJPA : findByListingIdIn(listOfListingId)
+activate AuctionRepoJPA
+AuctionRepoJPA -> DB : SELECT * FROM auction\nWHERE listing_id IN
+activate DB
+DB --> AuctionRepoJPA : data
+deactivate DB
+AuctionRepoJPA -->> auctionDMList ** : <<create>>
+AuctionRepoJPA --> AuctionRepo : auctionDMList
+deactivate AuctionRepoJPA
+
+AuctionRepo -->> auctionList ** : <<create>>
+
+loop for each dm in auctionDMList
+    AuctionRepo -> AuctionAssembler : toDomain(dm)
+    activate AuctionAssembler
+    AuctionAssembler -> AuctionFactory : create(dm.getAuctionId(), .... )
+    activate AuctionFactory
+    AuctionFactory -->> auction ** : <<create>>
+    AuctionFactory --> AuctionAssembler : auction
+    deactivate AuctionFactory
+    AuctionAssembler --> AuctionRepo : auction
+    deactivate AuctionAssembler
+    AuctionRepo -> auctionList : add(auction)
+end
+
+AuctionRepo --> AuctionService : listOfAuctionOnGivenGenre
+deactivate AuctionRepo
+AuctionService --> AuctionController : listOfAuctionOnGivenGenre
+deactivate AuctionService
+
+' =========================================================
+' 6. Build auctionDTOs
+' =========================================================
+
+AuctionController -->> listingMap ** : <<create>>
+note right : Collectors.toMap(Listing::id, listing -> listing)\nfrom listOfListings
+
+AuctionController -> AuctionMapper : toDTOs(listOfAuctionOnGivenGenre, listingMap)
+activate AuctionMapper
+AuctionMapper -->> AuctionDTOList ** : <<create>>
+
+loop for each auction in listOfAuctionOfGivenGenre
+    AuctionMapper -> AuctionDTO ** : toDTO
+    AuctionMapper -> AuctionDTOList : add(responseDTO)
+end
+AuctionMapper --> AuctionController : listOfAuctionDTO
+deactivate AuctionMapper
+
+' =========================================================
+' 7. HATEOAS enrichment
+' =========================================================
+
+loop for each responseDTO in listOfAuctionDTO
+    AuctionController -> AuctionController : addLinks(responseDTO)
+end
+
+' =========================================================
+' 8. Response to User
+' =========================================================
+
+AuctionController --> UI : listOfAuctionDTO + HTTP 200 OK
+deactivate AuctionController
+
+UI --> User : Display items
+deactivate UI
+
+@enduml
