@@ -8,14 +8,12 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.domain.User.IUserRepository;
-
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Service responsible for managing {@link Library} operations.
@@ -32,15 +30,6 @@ public class LibraryService {
     private final LibraryAuthorizationPolicy policy;
     private final IUserRepository userRepository;
 
-    /**
-     * Constructs a new {@code LibraryService} with the required dependencies.
-     *
-     * @param libraryRepository the repository used to persist libraries; must not be null
-     * @param libraryFactory    the factory used to create library instances; must not be null
-     * @param policy            the authorization policy for library operations; must not be null
-     * @param userRepository    the repository used to fetch users; must not be null
-     * @throws IllegalArgumentException if any argument is null
-     */
     public LibraryService(ILibraryRepository libraryRepository,
                           LibraryFactory libraryFactory,
                           LibraryAuthorizationPolicy policy,
@@ -92,26 +81,25 @@ public class LibraryService {
 
     /**
      * Retrieves a {@link Library} by its unique identifier.
-     *
-     * @param id the {@link LibraryId} to search for; must not be {@code null}
-     * @return an {@link Optional} containing the Library if found; empty otherwise
      */
-    public Optional<Library> findById(LibraryId id) {
+    public Library findById(LibraryId id) {
         Objects.requireNonNull(id, "LibraryID cannot be null");
-        return _libraryRepository.findById(id);
+
+        return _libraryRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Library not found with id: " + id));
     }
 
     /**
      * Finds and returns the {@link Library} associated with the given user ID.
-     *
-     * @param userId the {@link UserId} to search for
-     * @return an {@link Optional} containing the Library if found; empty otherwise
      */
-    public Optional<Library> findByUserId(UserId userId) {
+    public Library findByUserId(UserId userId) {
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
-        return _libraryRepository.findByUserId(userId);
+        return _libraryRepository.findByUserId(userId)
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Library not found for user: " + userId));
     }
 }

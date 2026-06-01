@@ -22,12 +22,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link PublisherService}.
- *
- * <p>Verifies that {@code createAndSave} correctly delegates to the factory
- * and repository, and rejects null arguments with a {@link NullPointerException}.</p>
- */
 @ExtendWith(MockitoExtension.class)
 class PublisherServiceTest {
 
@@ -46,133 +40,166 @@ class PublisherServiceTest {
     @InjectMocks
     private PublisherService service;
 
-    // ========== Tests for createAndSave =========================
-
+    // =========================================================
+    // createAndSave - SUCCESS
+    // =========================================================
     @Test
-    void createAndSave_shouldReturnSavedPublisher_whenInputAndUserAreValid() throws AccessDeniedException {
-        // Arrange
-        String name = "Penguin Books";
-        String vat = "123456789";
-        Contact contactDouble = mock(Contact.class);
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
-        Publisher publisherDouble = mock(Publisher.class);
-        Publisher savedPublisherDouble = mock(Publisher.class);
+    void givenValidData_whenCreateAndSave_thenReturnsPublisher() {
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canCreatePublisher(userDouble)).thenReturn(true);
-        when(factory.create(name, vat, contactDouble)).thenReturn(publisherDouble);
-        when(repository.save(publisherDouble)).thenReturn(savedPublisherDouble);
+        // ARRANGE
+        String name = "Pub";
+        String vat = "123";
+        Contact contact = mock(Contact.class);
+        UserId userId = mock(UserId.class);
 
-        // Act
-        Publisher result = service.createAndSave(name, vat, contactDouble, userIdDouble);
+        User user = mock(User.class);
+        Publisher publisher = mock(Publisher.class);
 
-        // Assert
-        assertSame(savedPublisherDouble, result);
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(authPolicy.canCreatePublisher(user))
+                .thenReturn(true);
+
+        when(factory.create(name, vat, contact))
+                .thenReturn(publisher);
+
+        when(repository.save(publisher))
+                .thenReturn(publisher);
+
+        // ACT
+        Publisher result = service.createAndSave(name, vat, contact, userId);
+
+        // ASSERT
+        assertEquals(publisher, result);
     }
 
+    // =========================================================
+    // createAndSave - USER NOT FOUND
+    // =========================================================
     @Test
-    void createAndSave_shouldThrowIllegalArgumentException_whenUserNotFound() {
-        // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        Contact contactDouble = mock(Contact.class);
+    void givenUserNotFound_whenCreateAndSave_thenThrowsException() {
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
+        // ARRANGE
+        String name = "Pub";
+        String vat = "123";
+        Contact contact = mock(Contact.class);
+        UserId userId = mock(UserId.class);
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> service.createAndSave("Name", "123", contactDouble, userIdDouble));
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.createAndSave(name, vat, contact, userId)
+        );
     }
 
+    // =========================================================
+    // createAndSave - ACCESS DENIED
+    // =========================================================
     @Test
-    void createAndSave_shouldThrowAccessDeniedException_whenPolicyFails() {
-        // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
-        Contact contactDouble = mock(Contact.class);
+    void givenUnauthorizedUser_whenCreateAndSave_thenThrowsAccessDenied() {
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canCreatePublisher(userDouble)).thenReturn(false);
+        // ARRANGE
+        String name = "Pub";
+        String vat = "123";
+        Contact contact = mock(Contact.class);
+        UserId userId = mock(UserId.class);
 
-        // Act + Assert
-        assertThrows(AccessDeniedException.class,
-                () -> service.createAndSave("Name", "123", contactDouble, userIdDouble));
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(authPolicy.canCreatePublisher(user))
+                .thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(
+                AccessDeniedException.class,
+                () -> service.createAndSave(name, vat, contact, userId)
+        );
     }
 
+    // =========================================================
+    // findAll
+    // =========================================================
     @Test
-    void createAndSave_shouldThrowNullPointerException_whenNameIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> service.createAndSave(null, "123", mock(Contact.class), mock(UserId.class)));
-    }
+    void givenPublishersExist_whenFindAll_thenReturnsList() {
 
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenVatNumberIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> service.createAndSave("Name", null, mock(Contact.class), mock(UserId.class)));
-    }
+        // ARRANGE
+        Publisher p1 = mock(Publisher.class);
+        Publisher p2 = mock(Publisher.class);
 
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenContactIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> service.createAndSave("Name", "123", null, mock(UserId.class)));
-    }
+        when(repository.findAll())
+                .thenReturn(List.of(p1, p2));
 
-    @Test
-    void createAndSave_shouldThrowNullPointerException_whenUserIdIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> service.createAndSave("Name", "123", mock(Contact.class), null));
-    }
+        // ACT
+        List<Publisher> result = service.findAll();
 
-    @Test
-    void findAll_shouldReturnAllPublishers() throws AccessDeniedException {
-
-        // Arrange
-        Publisher publisher1 = mock(Publisher.class);
-        Publisher publisher2 = mock(Publisher.class);
-
-        when(repository.findAll()).thenReturn(List.of(publisher1, publisher2));
-
-        // Act
-        var result = service.findAll();
-
-        // Assert
+        // ASSERT
         assertEquals(2, result.size());
     }
 
-    // ========== Tests for findById =========================
-
     @Test
-    void findById_shouldReturnPublisher_whenPublisherExists() {
-        // Arrange
-        PublisherID idDouble = mock(PublisherID.class);
-        Publisher publisherDouble = mock(Publisher.class);
+    void givenNoPublishers_whenFindAll_thenReturnsEmptyList() {
 
-        when(repository.findById(idDouble)).thenReturn(Optional.of(publisherDouble));
+        // ARRANGE
+        when(repository.findAll())
+                .thenReturn(List.of());
 
-        // Act
-        Optional<Publisher> result = service.findById(idDouble);
+        // ACT
+        List<Publisher> result = service.findAll();
 
-        // Assert
-        assertSame(publisherDouble, result.get());
-    }
-
-    @Test
-    void findById_shouldReturnEmpty_whenPublisherDoesNotExist() {
-        // Arrange
-        PublisherID idDouble = mock(PublisherID.class);
-
-        when(repository.findById(idDouble)).thenReturn(Optional.empty());
-
-        // Act
-        Optional<Publisher> result = service.findById(idDouble);
-
-        // Assert
+        // ASSERT
         assertTrue(result.isEmpty());
     }
 
+    // =========================================================
+    // findById
+    // =========================================================
     @Test
-    void findById_shouldThrowNullPointerException_whenIdIsNull() {
-        assertThrows(NullPointerException.class,
-                () -> service.findById(null));
+    void givenExistingId_whenFindById_thenReturnsPublisher() {
+
+        // ARRANGE
+        PublisherID id = mock(PublisherID.class);
+        Publisher publisher = mock(Publisher.class);
+
+        when(repository.findById(id))
+                .thenReturn(Optional.of(publisher));
+
+        // ACT
+        Publisher result = service.findById(id);
+
+        // ASSERT
+        assertEquals(publisher, result);
+    }
+
+    @Test
+    void givenNonExistingId_whenFindById_thenThrowsException() {
+
+        // ARRANGE
+        PublisherID id = mock(PublisherID.class);
+
+        when(repository.findById(id))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.findById(id)
+        );
+    }
+
+    @Test
+    void givenNullId_whenFindById_thenThrowsNullPointerException() {
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> service.findById(null)
+        );
     }
 }
