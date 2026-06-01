@@ -1,7 +1,10 @@
 package TOPSECRET.dto.collectionOfPublications;
 
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
+import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.collectionOfPublications.response.PublicCollectionOfPublicationsDTO;
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
 
 import java.util.List;
@@ -59,13 +62,74 @@ public final class CollectionOfPublicationsMapper {
     }
 
     /**
+     * Maps a {@link CollectionOfPublications} domain object to a
+     * {@link PublicCollectionOfPublicationsDTO}.
+     *
+     * @param collection the collection to map; must not be {@code null}
+     * @return a DTO representing the publicly visible information of the collection
+     * @throws NullPointerException if {@code collection} is {@code null}
+     */
+    public static PublicCollectionOfPublicationsDTO toPublicDTO(
+            CollectionOfPublications collection) {
+
+        Objects.requireNonNull(collection);
+
+        return new PublicCollectionOfPublicationsDTO(
+                collection.id().toString(),
+                collection.getCollectionName(),
+                collection.getOwnerId().toString(),
+                collection.getPublicUntil()
+        );
+    }
+
+    /**
+     * Maps a list of {@link CollectionOfPublications} domain objects to a list of
+     * {@link PublicCollectionOfPublicationsDTO}.
+     *
+     * @param collections the collections to map; must not be {@code null}
+     * @return an unmodifiable list containing the mapped DTOs
+     * @throws NullPointerException if {@code collections} is {@code null}
+     */
+    public static List<PublicCollectionOfPublicationsDTO> toPublicDTOList(
+            List<CollectionOfPublications> collections) {
+
+        Objects.requireNonNull(collections);
+
+        return collections.stream()
+                .map(CollectionOfPublicationsMapper::toPublicDTO)
+                .toList();
+    }
+
+    /**
      * Converts a {@link String} identifier into an {@link GenreId} Value Object.
      *
-     * @param genreId the string representation of the auction identifier; must not be {@code null}
+     * @param genreId the string representation of the genre identifier; must not be {@code null}
      * @return the corresponding {@link GenreId}
      */
     public static GenreId toGenreId(String genreId) {
 
         return new GenreId(genreId);
+    }
+
+    /**
+     * Converts a {@link String} identifier into an {@link UserId} Value Object.
+     *
+     * @param userId the string representation of the user identifier; must not be {@code null}
+     * @return the corresponding {@link UserId}
+     */
+    public static UserId toUserId(String userId) {
+
+        return new UserId(userId);
+    }
+
+    /**
+     * Converts a {@link String} identifier into an {@link CollectionOfPublicationsId} Value Object.
+     *
+     * @param collectionOfPublicationsId the string representation of the collection identifier; must not be {@code null}
+     * @return the corresponding {@link CollectionOfPublicationsId}
+     */
+    public static CollectionOfPublicationsId toCollectionId(String collectionOfPublicationsId) {
+
+        return new CollectionOfPublicationsId(collectionOfPublicationsId);
     }
 }
