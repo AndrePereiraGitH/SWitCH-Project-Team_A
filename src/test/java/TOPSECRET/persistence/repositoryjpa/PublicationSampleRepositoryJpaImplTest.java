@@ -540,6 +540,280 @@ class PublicationSampleRepositoryJpaImplTest {
     }
 
     // =========================================================================
+// findByBibliographicalDataId
+// =========================================================================
+
+    @Test
+    void findByBibliographicalDataId_shouldReturnMappedPublications_whenMultipleMatchExist() {
+
+        // Arrange
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
+
+        PublicationSample sample1 = mock(PublicationSample.class);
+        PublicationSample sample2 = mock(PublicationSample.class);
+
+        when(jpa.findAllByBdId(bdIdDouble))
+                .thenReturn(List.of(dm1, dm2));
+
+        when(assembler.toDomain(dm1)).thenReturn(sample1);
+        when(assembler.toDomain(dm2)).thenReturn(sample2);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByBibliographicalDataId(bdIdDouble);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(sample1));
+        assertTrue(result.contains(sample2));
+    }
+
+    @Test
+    void findByBibliographicalDataId_shouldReturnOnePublication_whenOneMatchExists() {
+
+        // Arrange
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+        PublicationSample sample = mock(PublicationSample.class);
+
+        when(jpa.findAllByBdId(bdIdDouble))
+                .thenReturn(List.of(dm));
+
+        when(assembler.toDomain(dm)).thenReturn(sample);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByBibliographicalDataId(bdIdDouble);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(sample, result.get(0));
+    }
+
+    @Test
+    void findByBibliographicalDataId_shouldReturnEmptyList_whenNoMatchExists() {
+
+        // Arrange
+        when(jpa.findAllByBdId(bdIdDouble))
+                .thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByBibliographicalDataId(bdIdDouble);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByBibliographicalDataId_shouldThrowNullPointerException_whenBdIdIsNull() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> repository.findByBibliographicalDataId(null));
+    }
+
+// =========================================================================
+// findByBibliographicalDataIdIn
+// =========================================================================
+
+    @Test
+    void findByBibliographicalDataIdIn_shouldReturnMappedPublications_whenMultipleMatchesExist() {
+
+        // Arrange
+        BibliographicalDataId bdId1 = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId2 = mock(BibliographicalDataId.class);
+        List<BibliographicalDataId> ids = List.of(bdId1, bdId2);
+
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
+
+        PublicationSample sample1 = mock(PublicationSample.class);
+        PublicationSample sample2 = mock(PublicationSample.class);
+
+        when(jpa.findAllByBdIdIn(ids))
+                .thenReturn(List.of(dm1, dm2));
+
+        when(assembler.toDomain(dm1)).thenReturn(sample1);
+        when(assembler.toDomain(dm2)).thenReturn(sample2);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByBibliographicalDataIdIn(ids);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(sample1));
+        assertTrue(result.contains(sample2));
+    }
+
+    @Test
+    void findByBibliographicalDataIdIn_shouldReturnOnePublication_whenOneMatchExists() {
+
+        // Arrange
+        List<BibliographicalDataId> ids = List.of(bdIdDouble);
+
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+        PublicationSample sample = mock(PublicationSample.class);
+
+        when(jpa.findAllByBdIdIn(ids))
+                .thenReturn(List.of(dm));
+
+        when(assembler.toDomain(dm)).thenReturn(sample);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByBibliographicalDataIdIn(ids);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(sample, result.get(0));
+    }
+
+    @Test
+    void findByBibliographicalDataIdIn_shouldReturnEmptyList_whenNoMatchExists() {
+
+        // Arrange
+        List<BibliographicalDataId> ids = List.of(bdIdDouble);
+
+        when(jpa.findAllByBdIdIn(ids))
+                .thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByBibliographicalDataIdIn(ids);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByBibliographicalDataIdIn_shouldReturnEmptyList_whenEmptyListProvided() {
+
+        // Arrange
+        List<BibliographicalDataId> ids = List.of();
+
+        when(jpa.findAllByBdIdIn(ids))
+                .thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByBibliographicalDataIdIn(ids);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdListIsNull() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> repository.findByBibliographicalDataIdIn(null));
+    }
+
+    // =========================================================================
+    // findByEditionIdIn
+    // =========================================================================
+
+    @Test
+    void findByEditionIdIn_shouldReturnMappedPublications_whenMultipleMatchesExist() {
+
+        // Arrange
+        EditionId editionId1 = mock(EditionId.class);
+        EditionId editionId2 = mock(EditionId.class);
+        List<EditionId> editionIds = List.of(editionId1, editionId2);
+
+        PublicationSampleDM dm1 = mock(PublicationSampleDM.class);
+        PublicationSampleDM dm2 = mock(PublicationSampleDM.class);
+
+        PublicationSample sample1 = mock(PublicationSample.class);
+        PublicationSample sample2 = mock(PublicationSample.class);
+
+        when(jpa.findAllByEditionIdIn(editionIds))
+                .thenReturn(List.of(dm1, dm2));
+
+        when(assembler.toDomain(dm1)).thenReturn(sample1);
+        when(assembler.toDomain(dm2)).thenReturn(sample2);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(sample1));
+        assertTrue(result.contains(sample2));
+    }
+
+    @Test
+    void findByEditionIdIn_shouldReturnOnePublication_whenOneMatchExists() {
+
+        // Arrange
+        EditionId editionId = mock(EditionId.class);
+        List<EditionId> editionIds = List.of(editionId);
+
+        PublicationSampleDM dm = mock(PublicationSampleDM.class);
+        PublicationSample sample = mock(PublicationSample.class);
+
+        when(jpa.findAllByEditionIdIn(editionIds))
+                .thenReturn(List.of(dm));
+
+        when(assembler.toDomain(dm)).thenReturn(sample);
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals(sample, result.get(0));
+    }
+
+    @Test
+    void findByEditionIdIn_shouldReturnEmptyList_whenNoMatchExists() {
+
+        // Arrange
+        EditionId editionId = mock(EditionId.class);
+        List<EditionId> editionIds = List.of(editionId);
+
+        when(jpa.findAllByEditionIdIn(editionIds))
+                .thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByEditionIdIn_shouldReturnEmptyList_whenEmptyListProvided() {
+
+        // Arrange
+        List<EditionId> editionIds = List.of();
+
+        when(jpa.findAllByEditionIdIn(editionIds))
+                .thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result =
+                repository.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByEditionIdIn_shouldThrowNullPointerException_whenEditionIdListIsNull() {
+
+        // Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> repository.findByEditionIdIn(null));
+    }
+
+    // =========================================================================
     // findByLibraryId
     // =========================================================================
 

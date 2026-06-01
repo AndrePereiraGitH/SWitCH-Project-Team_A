@@ -88,7 +88,7 @@ public class ToPutForSaleAPublicationInDirectSaleController {
 
         Library library = _libraryRepo.getByUserId(userId);
 
-        List<PublicationSample> availablePubSamples = _pubSampleService.findByLibraryIdAndPublicationStatusNotIn(library.id(),userId);
+        List<PublicationSample> availablePubSamples = _pubSampleService.findByLibraryIdAndPublicationStatusNotIn(userId);
 
         return _pubSampleMapper.toDTOs(availablePubSamples);
     }

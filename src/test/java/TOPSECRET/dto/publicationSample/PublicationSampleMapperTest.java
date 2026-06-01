@@ -7,10 +7,7 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
-import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.ValueObjects.EditionId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.publicationSample.response.PublicationDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationDetailsDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationReferenceDTO;
@@ -376,6 +373,19 @@ class PublicationSampleMapperTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> toCondition(conditionString));
+    }
+
+    @Test
+    void toUserId_wrapsId() {
+        // Arrange
+        String rawUserId = "user-123";
+
+        // Act
+        UserId id = PublicationSampleMapper.toUserId(rawUserId);
+
+        // Assert
+        assertNotNull(id, "The returned UserId should not be null");
+        assertEquals("user-123", id.getUserId(), "The wrapped ID value should match the input string");
     }
 
 

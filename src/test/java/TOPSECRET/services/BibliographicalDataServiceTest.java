@@ -349,7 +349,6 @@ class BibliographicalDataServiceTest {
                 () -> service.buildAuthorNamesMap(bibliographicalDataList)
         );
     }
-
     // =============================================================
     // ===================== findById Tests ========================
     // =============================================================
@@ -392,6 +391,31 @@ class BibliographicalDataServiceTest {
         assertThrows(InstanceNotFoundException.class,
                 () -> service.findById(bdId));
     }
+
+
+    // =============================================================
+    // ================== findAllByGenreId Tests ===================
+    // =============================================================
+
+    @Test
+    void findAllByGenreId_shouldReturnBibliographicalDataIds() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        List<BibliographicalDataId> ids = List.of(
+                mock(BibliographicalDataId.class),
+                mock(BibliographicalDataId.class)
+        );
+
+        when(bibliographicalDataRepo.findAllByGenreId(genreId))
+                .thenReturn(ids);
+
+        // Act
+        List<BibliographicalDataId> result = service.findAllByGenreId(genreId);
+
+        // Assert
+        assertEquals(ids, result);
+    }
+
     // =============================================================
     // ================== findIdByTitle Tests ======================
     // =============================================================

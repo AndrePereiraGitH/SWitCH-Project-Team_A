@@ -282,6 +282,7 @@ public class ListingRESTController {
             List<EditionId> publisherEditions = editionService.findIdsByPublisherId(publisherID);
             List<PublicationSampleId> publisherPublications = publicationService.findIdsByEditionIdIn(publisherEditions);
 
+
             List<Listing> publisherListings = listingService.findAllDirectSaleAndPublicationSampleIdIn(publisherPublications);
 
             List<ListingResponseDTO> dtos = new ArrayList<>();
