@@ -58,7 +58,7 @@ public class LibraryRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .createLibrary(requestLibraryDTO, userId))
+                    .getLibrary(library.id()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -76,10 +76,18 @@ public class LibraryRESTController {
      * Returns all libraries registered in the system.
      *
      * <p>Each item in the response is enriched with a self-link pointing to its
-     * individual resource endpoint. Returns HTTP 204 if no libraries exist.</p>
+     * individual resource endpoint.</p>
+     *
+     * <p>Responses:</p>
+     * <ul>
+     *     <li>200 OK – when libraries exist</li>
+     *     <li>204 No Content – when no libraries are found</li>
+     *     <li>400 Bad Request – for invalid input</li>
+     *     <li>500 Internal Server Error – for unexpected errors</li>
+     * </ul>
      *
      * @return a {@link ResponseEntity} containing a list of {@link ResponseLibraryDTO},
-     *         HTTP 204 if the list is empty, or HTTP 500 if an unexpected error occurs.
+     *         or an appropriate HTTP status if no content or an error occurs.
      */
     @GetMapping
     public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries() {
@@ -113,20 +121,30 @@ public class LibraryRESTController {
     /**
      * Returns a single Library identified by its unique ID.
      *
-     * <p>Enriches the response with a self-link and a link to the full library collection.</p>
+     * <p>The response is enriched with:</p>
+     * <ul>
+     *     <li>a self-link to the resource itself</li>
+     *     <li>a link to the full library collection</li>
+     * </ul>
+     *
+     * <p>Responses:</p>
+     * <ul>
+     *     <li>200 OK – when the library is found</li>
+     *     <li>404 Not Found – when no library exists for the given ID</li>
+     *     <li>400 Bad Request – for invalid ID format or input</li>
+     *     <li>500 Internal Server Error – for unexpected errors</li>
+     * </ul>
      *
      * @param id the {@link LibraryId} of the library to retrieve.
-     * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO} and HTTP 200 status,
-     *         HTTP 404 if the library is not found, or HTTP 500 if an unexpected error occurs.
+     * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO}
+     *         if found, or an appropriate HTTP status otherwise.
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponseLibraryDTO> getLibrary(
             @PathVariable LibraryId id) {
 
         try {
-            Library library = libService.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Library not found"));
-
+            Library library = libService.findById(id);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
