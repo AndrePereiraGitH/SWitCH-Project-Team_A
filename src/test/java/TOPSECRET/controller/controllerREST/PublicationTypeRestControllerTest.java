@@ -416,15 +416,24 @@ class PublicationTypeRestControllerTest {
     // GET BY ID SUCCESS
     // =========================================================
 
+    // =========================================================
+// shouldReturnPublicationTypeByIdSuccessfully
+// =========================================================
+
     @Test
     void shouldReturnPublicationTypeByIdSuccessfully() {
 
-        // ARRANGE
+        // Arrange
         PublicationTypeId id = mock(PublicationTypeId.class);
-        PublicationType publicationType = mock(PublicationType.class);
-        PublicationTypeResponseDTO responseDTO = mock(PublicationTypeResponseDTO.class);
 
-        when(service.findById(id)).thenReturn(Optional.of(publicationType));
+        PublicationType publicationType =
+                mock(PublicationType.class);
+
+        PublicationTypeResponseDTO responseDTO =
+                mock(PublicationTypeResponseDTO.class);
+
+        when(service.findById(id))
+                .thenReturn(publicationType);
 
         try (MockedStatic<PublicationTypeMapper> mapper =
                      mockStatic(PublicationTypeMapper.class)) {
@@ -433,13 +442,20 @@ class PublicationTypeRestControllerTest {
                             PublicationTypeMapper.toDTO(publicationType))
                     .thenReturn(responseDTO);
 
-            // ACT
+            // Act
             ResponseEntity<PublicationTypeResponseDTO> response =
                     controller.getPublicationTypeId(id);
 
-            // ASSERT
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals(responseDTO, response.getBody());
+            // Assert
+            assertEquals(
+                    HttpStatus.OK,
+                    response.getStatusCode()
+            );
+
+            assertEquals(
+                    responseDTO,
+                    response.getBody()
+            );
         }
     }
 
@@ -447,20 +463,32 @@ class PublicationTypeRestControllerTest {
     // GET BY ID NOT FOUND
     // =========================================================
 
+    // =========================================================
+// shouldReturnNotFoundWhenPublicationTypeDoesNotExist
+// =========================================================
+
     @Test
     void shouldReturnNotFoundWhenPublicationTypeDoesNotExist() {
 
-        // ARRANGE
+        // Arrange
         PublicationTypeId id = mock(PublicationTypeId.class);
 
-        when(service.findById(id)).thenReturn(Optional.empty());
+        when(service.findById(id))
+                .thenThrow(
+                        new IllegalArgumentException(
+                                "PublicationType not found"
+                        )
+                );
 
-        // ACT
+        // Act
         ResponseEntity<PublicationTypeResponseDTO> response =
                 controller.getPublicationTypeId(id);
 
-        // ASSERT
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        // Assert
+        assertEquals(
+                HttpStatus.NOT_FOUND,
+                response.getStatusCode()
+        );
     }
 
     // =========================================================
@@ -497,7 +525,7 @@ class PublicationTypeRestControllerTest {
         PublicationTypeResponseDTO responseDTO =
                 new PublicationTypeResponseDTO("1", "Book");
 
-        when(service.findById(id)).thenReturn(Optional.of(publicationType));
+        when(service.findById(id)).thenReturn(publicationType);
 
         try (MockedStatic<PublicationTypeMapper> mapper =
                      mockStatic(PublicationTypeMapper.class)) {

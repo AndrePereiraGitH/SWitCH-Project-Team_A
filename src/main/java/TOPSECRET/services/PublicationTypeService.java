@@ -101,13 +101,14 @@ public class PublicationTypeService {
      * @param id PublicationType id
      * @return matching PublicationType if found
      */
-    public Optional<PublicationType> findById(PublicationTypeId id) {
+    public PublicationType findById(PublicationTypeId id) {
 
         if (id == null) {
             throw new IllegalArgumentException("id cannot be null");
         }
 
-        return repository.findById(id);
+        return repository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("PublicationType not found"));
     }
 
     /**
@@ -116,7 +117,7 @@ public class PublicationTypeService {
      * @param mediaFormat publication media format
      * @return matching PublicationType if found
      */
-    public Optional<PublicationType> findByMediaFormat(String mediaFormat) {
+    public PublicationType findByMediaFormat(String mediaFormat) {
 
         if (mediaFormat == null) {
             throw new IllegalArgumentException(
@@ -124,6 +125,7 @@ public class PublicationTypeService {
             );
         }
 
-        return repository.findByMediaFormat(mediaFormat);
+        return repository.findByMediaFormat(mediaFormat).orElseThrow(() ->
+                new IllegalArgumentException("PublicationType not found"));
     }
 }
