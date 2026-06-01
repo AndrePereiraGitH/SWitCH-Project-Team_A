@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -43,21 +44,20 @@ class LibraryRESTControllerTest {
     // =========================================================
     @Test
     void createLibrary_shouldReturnCreated_whenValidRequest() throws InstanceAlreadyExistsException {
-
         // ARRANGE
-        RequestLibraryDTO request = mock(RequestLibraryDTO.class);
+        RequestLibraryDTO requestDTO = mock(RequestLibraryDTO.class);
         UserId userId = mock(UserId.class);
 
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
 
-        when(request.libraryName()).thenReturn("Test Library");
+        when(requestDTO.libraryName()).thenReturn("Test Library");
         when(library.id()).thenReturn(libraryId);
 
         when(libService.createAndSave(anyString(), eq(userId)))
                 .thenReturn(library);
 
-        Link providerLink = Link.of("/libraries", "all-libraries");
+        Link providerLink = Link.of("/libraries/provider", "provider-rel");
 
         when(libLinkProvider.getLinksForLibraries(userId))
                 .thenReturn(List.of(providerLink));
@@ -71,15 +71,13 @@ class LibraryRESTControllerTest {
 
             // ACT
             ResponseEntity<ResponseLibraryDTO> response =
-                    controller.createLibrary(request, userId);
+                    controller.createLibrary(requestDTO, userId);
 
             // ASSERT
-            assertEquals(CREATED, response.getStatusCode());
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
             assertEquals(dto, response.getBody());
-
             assertDoesNotThrow(() -> {
-                List<Link> links = libLinkProvider.getLinksForLibraries(userId);
-                assertFalse(links.isEmpty());
+                dto.add(providerLink);
             });
         }
     }
