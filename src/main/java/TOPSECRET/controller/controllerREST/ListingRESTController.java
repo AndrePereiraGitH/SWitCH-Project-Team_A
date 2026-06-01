@@ -1,8 +1,8 @@
 package TOPSECRET.controller.controllerREST;
 
-import TOPSECRET.controller.controllerREST.root.linkProvider.BibliographicalDataLinkProvider;
 import TOPSECRET.controller.controllerREST.root.linkProvider.ListingLinkProvider;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -27,11 +27,18 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller responsible for listing-related endpoints.
+ *
+ * <p>This controller exposes operations to create listings, retrieve listings
+ * by identifier, retrieve all listings, and retrieve direct-sale listings by
+ * genre. It coordinates the listing, publication sample, bibliographical data,
+ * and HATEOAS link services to build complete listing response DTOs.</p>
+ */
 @RestController
 @Tag(name = "Listings", description = "Listing management endpoints")
 @RequestMapping(path = "/listings")
@@ -43,6 +50,15 @@ public class ListingRESTController {
     private EditionService editionService;
     private ListingLinkProvider listingLinkProvider;
 
+    /**
+     * Creates a new {@code ListingRESTController}.
+     *
+     * @param biblioDataService the service used to retrieve bibliographical data
+     * @param publicationService the service used to retrieve publication samples
+     * @param listingService the service used to manage listings
+     * @param editionService the service used to manage editions
+     * @param listingLinkProvider the provider used to generate listing HATEOAS links
+     */
     @Autowired
     public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, ListingLinkProvider listingLinkProvider) {
         this.biblioDataService = biblioDataService;
@@ -88,7 +104,7 @@ public class ListingRESTController {
 
             List<PublicationSample> publicationSamples = itemsId.stream().map(publicationService::findById).toList();
 
-           List<BibliographicalData> biblioDatas = getBibliographicalData(publicationSamples);
+            List<BibliographicalData> biblioDatas = getBibliographicalData(publicationSamples);
 
             ListingResponseDTO result = ListingMapper.toResponseDTO(listing, biblioDatas);
 
@@ -98,7 +114,7 @@ public class ListingRESTController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (AccessDeniedException e) {
-           return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (EntityNotFoundException | InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e) {
@@ -108,6 +124,20 @@ public class ListingRESTController {
         }
     }
 
+    /**
+     * Finds a listing by its identifier.
+     *
+     * <p>This endpoint retrieves the listing, loads the related publication samples
+     * and bibliographical data, converts the result to a response DTO, and adds the
+     * available HATEOAS links for the requesting user.</p>
+     *
+     * @param id the identifier of the listing to retrieve
+     * @param userId the identifier of the user requesting the listing
+     * @return {@code 200 OK} with the listing DTO,
+     *         {@code 404 NOT_FOUND} if the listing, user, or related data is not found,
+     *         {@code 400 BAD_REQUEST} if the identifier is invalid,
+     *         or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ListingResponseDTO> findById(@PathVariable String id, @RequestParam UserId userId) {
         ListingId listingId = ListingMapper.toListingId(id);
@@ -139,6 +169,19 @@ public class ListingRESTController {
 
     }
 
+    /**
+     * Retrieves all listings available in the system.
+     *
+     * <p>For each listing, this endpoint loads its publication samples and related
+     * bibliographical data, converts the listing to a response DTO, and adds the
+     * available HATEOAS links for the requesting user.</p>
+     *
+     * @param userId the identifier of the user requesting the listings
+     * @return {@code 200 OK} with the list of listing DTOs,
+     *         {@code 404_NOT_FOUND} if the user or related data is not found,
+     *         {@code 400_BAD_REQUEST} if the user identifier is invalid,
+     *         or {@code 500_INTERNAL_SERVER_ERROR} for unexpected errors
+     */
     @GetMapping("")
     public ResponseEntity<List<ListingResponseDTO>> findAll(@RequestParam String userId) {
 
@@ -173,8 +216,21 @@ public class ListingRESTController {
 
     }
 
-
-    @GetMapping("/direct-sale/{genreId}")
+    /**
+     * Retrieves all direct-sale listings associated with a given genre.
+     *
+     * <p>This endpoint finds bibliographical data for the genre, retrieves the
+     * related publication samples, searches for direct-sale listings containing
+     * those samples, converts each listing to a response DTO, and adds the available
+     * HATEOAS links for the requesting user.</p>
+     *
+     * @param genreId the identifier of the genre used to filter direct-sale listings
+     * @param userId the identifier of the user requesting the listings
+     * @return {@code 200 OK} with the list of matching listing DTOs,
+     *         {@code 404_NOT_FOUND} if related data or the user is not found,
+     *         or {@code 400_BAD_REQUEST} if one of the identifiers is invalid
+     */
+    @GetMapping("/direct-sale/genre/{genreId}")
     public ResponseEntity<List<ListingResponseDTO>> getAllDirectSaleByGenre(@PathVariable String genreId, @RequestParam String userId) {
 
         try {
@@ -210,14 +266,53 @@ public class ListingRESTController {
         }
     }
 
+    /**
+     * Retrieves all direct-sale listings associated with a given publisher.
+     *
+     * @return currently {@code null}; this endpoint is not implemented yet
+     */
+    @GetMapping("/direct-sale/publisher/{publisherId}")
+    public ResponseEntity<List<ListingResponseDTO>> getAllDirectSaleByPublisher(@PathVariable String publisherId, @RequestParam String userId) {
 
-    @GetMapping("/direct-sale/{publisher-id}")
-    public ResponseEntity<List<ListingResponseDTO>> getAllDirectSaleByPublisher() {
+        try {
+            UserId userId1 = ListingMapper.toUserId(userId);
+            PublisherID publisherID = ListingMapper.toPublisherId(publisherId);
+            List<EditionId> publisherEditions = editionService.findIdsByPublisherId(publisherID);
+            List<PublicationSampleId> publisherPublications = publicationService.findIdsByEditionIdIn(publisherEditions);
 
-        return null;
+            List<Listing> publisherListings = listingService.findAllDirectSaleAndPublicationSampleIdIn(publisherPublications);
 
+            List<ListingResponseDTO> dtos = new ArrayList<>();
+
+            for (Listing listing : publisherListings) {
+
+                List<PublicationSample> pubs = getPublicationSamples(listing);
+                List<BibliographicalData> bds = getBibliographicalData(pubs);
+
+                ListingResponseDTO dto = ListingMapper.toResponseDTO(listing, bds);
+
+                List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userId1));
+                links.add(linkTo(methodOn(ListingRESTController.class).getAllDirectSaleByPublisher(publisherId, userId)).withSelfRel());
+                dto.add(links);
+
+                dtos.add(dto);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(dtos);
+
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 
+    /**
+     * Retrieves the bibliographical data associated with the given publication samples.
+     *
+     * @param pubSamples the publication samples whose bibliographical data should be loaded
+     * @return a list containing the bibliographical data for each publication sample
+     * @throws InstanceNotFoundException if any bibliographical data entry is not found
+     */
     private List<BibliographicalData> getBibliographicalData(List<PublicationSample> pubSamples) throws InstanceNotFoundException {
         List<BibliographicalData> bibliographicalDatas = new ArrayList<>();
 
@@ -230,6 +325,12 @@ public class ListingRESTController {
         return bibliographicalDatas;
     }
 
+    /**
+     * Retrieves the publication samples associated with a listing.
+     *
+     * @param listing the listing whose publication samples should be loaded
+     * @return a list containing the publication samples associated with the listing
+     */
     private List<PublicationSample> getPublicationSamples(Listing listing) {
 
         List<PublicationSample> pubSamples = new ArrayList<>();

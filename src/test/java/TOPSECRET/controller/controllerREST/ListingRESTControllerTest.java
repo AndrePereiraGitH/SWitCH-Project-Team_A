@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.ListingLinkProvider;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
@@ -23,6 +24,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import javax.management.InstanceNotFoundException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -205,14 +208,18 @@ class ListingRESTControllerTest {
             throws InstanceNotFoundException {
 
         // Arrange
-        String genreId = "fantasy";
+        String genreId = "22222222";
         String userId = "11111111";
+
+        GenreId genreIdObject = mock(GenreId.class);
+        UserId userIdObject = mock(UserId.class);
 
         BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
         Listing listing = mock(Listing.class);
         PublicationSample publicationSample = mock(PublicationSample.class);
         BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+        ListingResponseDTO dto = mock(ListingResponseDTO.class);
 
         when(biblioDataService.findAllByGenreId(any(GenreId.class)))
                 .thenReturn(List.of(bibliographicalDataId));
@@ -229,14 +236,29 @@ class ListingRESTControllerTest {
         when(biblioDataService.findById(bibliographicalDataId)).thenReturn(bibliographicalData);
         when(listingLinkProvider.getLinksForListings(any(UserId.class))).thenReturn(List.of());
 
-        // Act
-        ResponseEntity<List<ListingResponseDTO>> response =
-                controller.getAllDirectSaleByGenre(genreId, userId);
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId(genreId))
+                    .thenReturn(genreIdObject);
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
+            mockedMapper.when(() -> ListingMapper.toUserId(userId))
+                    .thenReturn(userIdObject);
+
+            mockedMapper.when(() -> ListingMapper.toResponseDTO(
+                            eq(listing),
+                            eq(List.of(bibliographicalData))
+                    ))
+                    .thenReturn(dto);
+
+            // Act
+            ResponseEntity<List<ListingResponseDTO>> response =
+                    controller.getAllDirectSaleByGenre(genreId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertEquals(1, response.getBody().size());
+            assertSame(dto, response.getBody().get(0));
+        }
     }
 
     @Test
@@ -354,5 +376,74 @@ class ListingRESTControllerTest {
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
+    }
+
+    // ============================================================
+    // --------------  getAllDirectSaleByPublisher  ---------------
+    // ============================================================
+
+    @Test
+    void getAllDirectSaleByPublisher_shouldReturnOkWithDtos_whenListingsExist()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        String publisherId = "publisher-1";
+        String userId = "11111111";
+
+        EditionId editionId = mock(EditionId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+
+        Listing listing = mock(Listing.class);
+        ListingId listingId = mock(ListingId.class);
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
+        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+        Price price = mock(Price.class);
+        Picture picture = mock(Picture.class);
+
+        when(editionService.findIdsByPublisherId(any(PublisherID.class)))
+                .thenReturn(List.of(editionId));
+
+        when(publicationService.findIdsByEditionIdIn(List.of(editionId)))
+                .thenReturn(List.of(publicationSampleId));
+
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(publicationSampleId)))
+                .thenReturn(List.of(listing));
+
+        when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
+        when(publicationService.findById(publicationSampleId)).thenReturn(publicationSample);
+        when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(biblioDataService.findById(bibliographicalDataId)).thenReturn(bibliographicalData);
+
+        when(listing.id()).thenReturn(listingId);
+        when(listingId.getId()).thenReturn("listing-1");
+
+        when(listing.getListingTitle()).thenReturn("Listing title");
+        when(listing.getPrice()).thenReturn(price);
+        when(price.toString()).thenReturn("10.00");
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(listing.getShortDescription()).thenReturn("Short description");
+
+        UserId sellerId = mock(UserId.class);
+        when(listing.getSellerId()).thenReturn(sellerId);
+        when(sellerId.getUserId()).thenReturn("seller-1");
+
+        when(picture.getPicture()).thenReturn("pic.jpg");
+        when(listing.getPictures()).thenReturn(List.of(picture));
+        when(listing.getPublicationDate()).thenReturn(LocalDate.now());
+
+        when(bibliographicalData.getTitle()).thenReturn("Book title");
+
+        when(listingLinkProvider.getLinksForListings(any(UserId.class)))
+                .thenReturn(List.of());
+
+        // Act
+        ResponseEntity<List<ListingResponseDTO>> response =
+                controller.getAllDirectSaleByPublisher(publisherId, userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
     }
 }
