@@ -32,14 +32,7 @@ public interface ICollectionOfPublicationsRepository {
      * @throws IllegalArgumentException if the collection already exists
      */
     CollectionOfPublications save(CollectionOfPublications collectionOfPublications);
-    /**
-     * Updates an existing collection of publications.
-     *
-     * @param collection the collection of publications to update; must not be null
-     * @return the updated collection of publications
-     * @throws NullPointerException if {@code collection} is null
-     */
-    CollectionOfPublications update(CollectionOfPublications collection);
+
     /**
      * Verifies whether a collection with the given identifier exists.
      *
