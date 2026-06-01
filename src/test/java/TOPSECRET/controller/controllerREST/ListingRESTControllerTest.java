@@ -7,6 +7,7 @@ import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
+import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.services.BibliographicalDataService;
 import TOPSECRET.services.EditionService;
@@ -22,10 +23,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,6 +55,245 @@ class ListingRESTControllerTest {
 
     @InjectMocks
     private ListingRESTController controller;
+
+    // ============================================================
+    // --------------  createListing  -----------------------------
+    // ============================================================
+
+    @Test
+    void createListing_shouldReturnCreatedWithDtoAndLinks_whenListingIsCreated()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        ListingRequestDTO request = mock(ListingRequestDTO.class);
+
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
+        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+
+        Listing listing = mock(Listing.class);
+        ListingId listingId = mock(ListingId.class);
+        ListingResponseDTO dto = mock(ListingResponseDTO.class);
+
+        Picture picture = mock(Picture.class);
+        Price price = mock(Price.class);
+
+        Link providerLink = Link.of("/listings", "all");
+        List<Link> addedLinks = new ArrayList<>();
+
+        when(request.getPublicationIds()).thenReturn(List.of("pub-1"));
+        when(request.getSaleType()).thenReturn("DIRECT_SALE");
+        when(request.getPrice()).thenReturn("10.00");
+        when(request.getPictures()).thenReturn(List.of("pic.jpg"));
+        when(request.getListingTitle()).thenReturn("Listing title");
+        when(request.getShortDescription()).thenReturn("Short description");
+
+        when(listingService.createAndSave(
+                eq("Listing title"),
+                eq(List.of(publicationSampleId)),
+                eq(SaleType.DIRECT_SALE),
+                eq(price),
+                eq("Short description"),
+                eq(userId),
+                eq(List.of(picture))
+        )).thenReturn(listing);
+
+        when(publicationService.findById(publicationSampleId)).thenReturn(publicationSample);
+        when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(biblioDataService.findById(bibliographicalDataId)).thenReturn(bibliographicalData);
+
+        when(listing.id()).thenReturn(listingId);
+        when(listingId.getId()).thenReturn("listing-1");
+
+        when(listingLinkProvider.getLinksForListings(userId)).thenReturn(List.of(providerLink));
+        when(dto.add(any(Link.class))).thenAnswer(invocation -> {
+            addedLinks.add(invocation.getArgument(0));
+            return dto;
+        });
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toPublicationId("pub-1"))
+                    .thenReturn(publicationSampleId);
+            mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE"))
+                    .thenReturn(SaleType.DIRECT_SALE);
+            mockedMapper.when(() -> ListingMapper.toPrice("10.00"))
+                    .thenReturn(price);
+            mockedMapper.when(() -> ListingMapper.toPicture("pic.jpg"))
+                    .thenReturn(picture);
+            mockedMapper.when(() -> ListingMapper.toResponseDTO(
+                            eq(listing),
+                            eq(List.of(bibliographicalData))
+                    ))
+                    .thenReturn(dto);
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response =
+                    controller.createListing(request, userId);
+
+            // Assert
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            assertSame(dto, response.getBody());
+            assertEquals(2, addedLinks.size());
+            assertTrue(addedLinks.stream().anyMatch(link -> link.getRel().value().equals("all")));
+            assertTrue(addedLinks.stream().anyMatch(link -> link.getRel().value().equals("self")));
+        }
+    }
+
+    @Test
+    void createListing_shouldReturnForbidden_whenServiceThrowsAccessDeniedException() {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        ListingRequestDTO request = mock(ListingRequestDTO.class);
+
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Price price = mock(Price.class);
+
+        when(request.getPublicationIds()).thenReturn(List.of("pub-1"));
+        when(request.getSaleType()).thenReturn("DIRECT_SALE");
+        when(request.getPrice()).thenReturn("10.00");
+        when(request.getPictures()).thenReturn(List.of());
+        when(request.getListingTitle()).thenReturn("Listing title");
+        when(request.getShortDescription()).thenReturn("Short description");
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toPublicationId("pub-1"))
+                    .thenReturn(publicationSampleId);
+            mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE"))
+                    .thenReturn(SaleType.DIRECT_SALE);
+            mockedMapper.when(() -> ListingMapper.toPrice("10.00"))
+                    .thenReturn(price);
+
+            when(listingService.createAndSave(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                    any()
+            )).thenThrow(new AccessDeniedException("denied"));
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response =
+                    controller.createListing(request, userId);
+
+            // Assert
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void createListing_shouldReturnNotFound_whenPublicationRelatedDataDoesNotExist() {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        ListingRequestDTO request = mock(ListingRequestDTO.class);
+
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Price price = mock(Price.class);
+        Listing listing = mock(Listing.class);
+
+        when(request.getPublicationIds()).thenReturn(List.of("pub-1"));
+        when(request.getSaleType()).thenReturn("DIRECT_SALE");
+        when(request.getPrice()).thenReturn("10.00");
+        when(request.getPictures()).thenReturn(List.of());
+        when(request.getListingTitle()).thenReturn("Listing title");
+        when(request.getShortDescription()).thenReturn("Short description");
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toPublicationId("pub-1"))
+                    .thenReturn(publicationSampleId);
+            mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE"))
+                    .thenReturn(SaleType.DIRECT_SALE);
+            mockedMapper.when(() -> ListingMapper.toPrice("10.00"))
+                    .thenReturn(price);
+
+            when(listingService.createAndSave(any(), any(), any(), any(), any(), any(), any()))
+                    .thenReturn(listing);
+            when(publicationService.findById(publicationSampleId))
+                    .thenThrow(new EntityNotFoundException());
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response =
+                    controller.createListing(request, userId);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void createListing_shouldReturnBadRequest_whenServiceThrowsIllegalArgumentException() {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        ListingRequestDTO request = mock(ListingRequestDTO.class);
+
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Price price = mock(Price.class);
+
+        when(request.getPublicationIds()).thenReturn(List.of("11111111"));
+        when(request.getSaleType()).thenReturn("DIRECT_SALE");
+        when(request.getPrice()).thenReturn("10.00");
+        when(request.getPictures()).thenReturn(List.of());
+        when(request.getListingTitle()).thenReturn("Listing title");
+        when(request.getShortDescription()).thenReturn("Short description");
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toPublicationId("11111111")).thenReturn(publicationSampleId);
+            mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE")).thenReturn(SaleType.DIRECT_SALE);
+            mockedMapper.when(() -> ListingMapper.toPrice("10.00")).thenReturn(price);
+
+            when(listingService.createAndSave(any(), any(), any(), any(), any(), any(), any()))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response = controller.createListing(request, userId);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void createListing_shouldReturnInternalServerError_whenServiceThrowsUnexpectedException() {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        ListingRequestDTO request = mock(ListingRequestDTO.class);
+
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Price price = mock(Price.class);
+
+        when(request.getPublicationIds()).thenReturn(List.of("11111111"));
+        when(request.getSaleType()).thenReturn("DIRECT_SALE");
+        when(request.getPrice()).thenReturn("10.00");
+        when(request.getPictures()).thenReturn(List.of());
+        when(request.getListingTitle()).thenReturn("Listing title");
+        when(request.getShortDescription()).thenReturn("Short description");
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toPublicationId("11111111")).thenReturn(publicationSampleId);
+            mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE")).thenReturn(SaleType.DIRECT_SALE);
+            mockedMapper.when(() -> ListingMapper.toPrice("10.00")).thenReturn(price);
+
+            when(listingService.createAndSave(any(), any(), any(), any(), any(), any(), any()))
+                    .thenThrow(new RuntimeException());
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response = controller.createListing(request, userId);
+
+            // Assert
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
 
     // ============================================================
     // --------------  findAll  -----------------------------------
@@ -199,6 +441,114 @@ class ListingRESTControllerTest {
         assertNull(response.getBody());
     }
 
+    // ============================================================
+    // --------------  findById  -----------------------------------
+    // ============================================================
+
+    @Test
+    void findById_shouldReturnOkWithDto_whenListingExists()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        String id = "listing-1";
+        UserId userId = mock(UserId.class);
+
+        ListingId listingId = mock(ListingId.class);
+        Listing listing = mock(Listing.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
+        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+        ListingResponseDTO dto = mock(ListingResponseDTO.class);
+
+        when(listingService.findById(listingId)).thenReturn(listing);
+        when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
+        when(publicationService.findById(publicationSampleId)).thenReturn(publicationSample);
+        when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(biblioDataService.findById(bibliographicalDataId)).thenReturn(bibliographicalData);
+        when(listingLinkProvider.getLinksForListings(userId)).thenReturn(List.of());
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(id))
+                    .thenReturn(listingId);
+            mockedMapper.when(() -> ListingMapper.toResponseDTO(
+                            eq(listing),
+                            eq(List.of(bibliographicalData))
+                    ))
+                    .thenReturn(dto);
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response =
+                    controller.findById(id, userId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertSame(dto, response.getBody());
+        }
+    }
+
+    @Test
+    void findById_shouldReturnNotFound_whenListingDoesNotExist() {
+
+        // Arrange
+        String id = "listing-1";
+        UserId userId = mock(UserId.class);
+        ListingId listingId = mock(ListingId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(id))
+                    .thenReturn(listingId);
+
+            when(listingService.findById(listingId))
+                    .thenThrow(new EntityNotFoundException());
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response =
+                    controller.findById(id, userId);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void findById_shouldThrowIllegalArgumentException_whenListingIdIsInvalid() {
+
+        // Arrange
+        String id = "";
+        UserId userId = mock(UserId.class);
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                controller.findById(id, userId)
+        );
+    }
+
+    @Test
+    void findById_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+
+        // Arrange
+        String id = "listing-1";
+        UserId userId = mock(UserId.class);
+        ListingId listingId = mock(ListingId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(id))
+                    .thenReturn(listingId);
+
+            when(listingService.findById(listingId))
+                    .thenThrow(new RuntimeException());
+
+            // Act
+            ResponseEntity<ListingResponseDTO> response =
+                    controller.findById(id, userId);
+
+            // Assert
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
     // ============================================================
     // --------------  getAllDirectSaleByGenre  -------------------
     // ============================================================
@@ -445,5 +795,73 @@ class ListingRESTControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
+    }
+
+    @Test
+    void getAllDirectSaleByPublisher_shouldReturnBadRequest_whenPublisherIdIsInvalid() {
+
+        // Arrange
+        String publisherId = "";
+        String userId = "11111111";
+
+        // Act
+        ResponseEntity<List<ListingResponseDTO>> response =
+                controller.getAllDirectSaleByPublisher(publisherId, userId);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void getAllDirectSaleByPublisher_shouldReturnBadRequest_whenUserIdIsInvalid() {
+
+        // Arrange
+        String publisherId = "publisher-1";
+        String userId = "";
+
+        // Act
+        ResponseEntity<List<ListingResponseDTO>> response =
+                controller.getAllDirectSaleByPublisher(publisherId, userId);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void getAllDirectSaleByPublisher_shouldReturnNotFound_whenBibliographicalDataDoesNotExist()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        String publisherId = "publisher-1";
+        String userId = "11111111";
+
+        EditionId editionId = mock(EditionId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Listing listing = mock(Listing.class);
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
+
+        when(editionService.findIdsByPublisherId(any(PublisherID.class)))
+                .thenReturn(List.of(editionId));
+        when(publicationService.findIdsByEditionIdIn(List.of(editionId)))
+                .thenReturn(List.of(publicationSampleId));
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(publicationSampleId)))
+                .thenReturn(List.of(listing));
+
+        when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
+        when(publicationService.findById(publicationSampleId)).thenReturn(publicationSample);
+        when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(biblioDataService.findById(bibliographicalDataId))
+                .thenThrow(new InstanceNotFoundException());
+
+        // Act
+        ResponseEntity<List<ListingResponseDTO>> response =
+                controller.getAllDirectSaleByPublisher(publisherId, userId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }
