@@ -176,7 +176,7 @@ public class PublicationSampleRESTController {
      * @return HTTP 200 with a list of {@link PublicationDTO}, or an error status
      */
     @GetMapping("")
-    public ResponseEntity<List<PublicationDTO>> findAll(@RequestParam String userId) {
+    public ResponseEntity<List<PublicationDTO>> findAll(@RequestParam(required = false) String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
@@ -209,7 +209,7 @@ public class PublicationSampleRESTController {
      * @param userId                the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, or an error status
      */
-    @GetMapping(value = "", params = "bibliographicalDataId")
+    @GetMapping("/by-bibliographical-data/{bibliographicalDataId}")
     public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataId(
             @RequestParam BibliographicalDataId bibliographicalDataId,
             @RequestParam String userId) {
@@ -246,7 +246,7 @@ public class PublicationSampleRESTController {
      * @param userId                 the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, or an error status
      */
-    @GetMapping(value = "", params = "bibliographicalDataIds")
+    @GetMapping("/by-bibliographical-data")
     public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataIdIn(
             @RequestParam List<BibliographicalDataId> bibliographicalDataIds,
             @RequestParam String userId) {
@@ -283,7 +283,7 @@ public class PublicationSampleRESTController {
      * @param userId     the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, or an error status
      */
-    @GetMapping(value = "", params = "editionIds")
+    @GetMapping("/by-edition")
     public ResponseEntity<List<PublicationDTO>> findByEditionIdIn(
             @RequestParam List<EditionId> editionIds,
             @RequestParam String userId) {
@@ -362,7 +362,7 @@ public class PublicationSampleRESTController {
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
      *         HTTP 404 if not found, or HTTP 500 on error
      */
-    @GetMapping(value = "", params = "inLibrary")
+    @GetMapping("/in-library")
     public ResponseEntity<List<PublicationDTO>> findByUserIdAndLibraryIdIsNotNull(
             @RequestParam String userId) {
 
@@ -401,7 +401,7 @@ public class PublicationSampleRESTController {
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
      *         HTTP 404 if not found, or HTTP 500 on error
      */
-    @GetMapping(value = "", params = "notInLibrary")
+    @GetMapping("/not-in-library")
     public ResponseEntity<List<PublicationDTO>> findByUserIdAndLibraryIdIsNull(
             @RequestParam String userId) {
 
@@ -442,7 +442,7 @@ public class PublicationSampleRESTController {
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
      *         HTTP 404 if the user or library is not found, or HTTP 500 on error
      */
-    @GetMapping(value = "", params = "availableInLibrary")
+    @GetMapping("/available-in-library")
     public ResponseEntity<List<PublicationDTO>> findByLibraryIdAndPublicationStatusNotIn(
             @RequestParam String userId) {
 

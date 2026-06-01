@@ -116,7 +116,7 @@ class PublicationSampleLinkProviderTest {
         List<Link> links = linkProvider.getPublicationSampleLinks(userId);
 
         // Assert
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-editionId")));
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-editionIds")));
     }
 
     // =========================================================================

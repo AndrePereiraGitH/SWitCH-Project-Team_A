@@ -94,7 +94,7 @@ public class PublicationSampleLinkProvider {
 
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
                 .findByEditionIdIn(null, null))
-                .withRel("find-by-editionId"));
+                .withRel("find-by-editionIds"));
 
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
                 .findByBibliographicalDataIdIn(null, null))
