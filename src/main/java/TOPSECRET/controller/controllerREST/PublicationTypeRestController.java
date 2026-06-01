@@ -92,7 +92,7 @@ public class PublicationTypeRestController {
             List<Link> links = publicationTypeLinkProvider.getLinksForPublicationType(userId);
             links.forEach(result::add);
             result.add(linkTo(methodOn(PublicationTypeRestController.class)
-                    .createPublicationType(createPublicationTypeDTO, userId))
+                    .getPublicationTypeId(publicationType.id()))
                     .withSelfRel()
             );
 
@@ -183,8 +183,7 @@ public class PublicationTypeRestController {
             @PathVariable PublicationTypeId id) {
 
         try {
-            PublicationType publicationType = service.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("PublicationType not found"));
+            PublicationType publicationType = service.findById(id);
 
             PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
 
