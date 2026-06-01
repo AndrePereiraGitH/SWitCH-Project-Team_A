@@ -178,7 +178,7 @@ public class CollectionOfPublicationsService {
         boolean changed = collection.makePublic();
 
         if (changed) {
-            collectionOfPublicationsRepository.update(collection);
+            collectionOfPublicationsRepository.save(collection);
         }
 
         return changed;
@@ -236,7 +236,7 @@ public class CollectionOfPublicationsService {
         boolean changed = collection.makePublicUntil(publicUntil);
 
         if (changed) {
-            collectionOfPublicationsRepository.update(collection);
+            collectionOfPublicationsRepository.save(collection);
         }
 
         return changed;

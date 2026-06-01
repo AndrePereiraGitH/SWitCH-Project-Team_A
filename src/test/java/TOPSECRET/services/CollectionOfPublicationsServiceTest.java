@@ -323,6 +323,30 @@ class CollectionOfPublicationsServiceTest {
         assertEquals("CollectionOfPublicationsId cannot be null", ex.getMessage());
     }
 
+    @Test
+    void makeCollectionPublic_shouldThrowAccessDenied_whenUserIsNotOwner() throws InstanceNotFoundException {
+
+        // arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+
+        UserId userId = new UserId("user-1");
+        UserId ownerId = new UserId("owner-1");
+
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+
+        when(collectionOfPublicationsRepository.findById(collectionId))
+                .thenReturn(collection);
+
+        when(collection.getOwnerId()).thenReturn(ownerId);
+
+        assertThrows(AccessDeniedException.class,
+                () -> service.makeCollectionPublic(collectionId, userId));
+    }
+
     // ===========================================================================
     // ---------------------- MAKE COLLECTION PUBLIC UNTIL-------------------------
     // ============================================================================
@@ -485,6 +509,31 @@ class CollectionOfPublicationsServiceTest {
 
         // Assert
         assertTrue(result);
+    }
+
+    @Test
+    void makeCollectionPublicUntil_shouldThrowAccessDenied_whenUserIsNotOwner() throws InstanceNotFoundException {
+
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+
+        UserId userId = new UserId("user-1");
+        UserId ownerId = new UserId("owner-1");
+
+        LocalDateTime future = LocalDateTime.now().plusDays(2);
+
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
+
+        when(collectionOfPublicationsRepository.findById(collectionId))
+                .thenReturn(collection);
+
+        when(collection.getOwnerId()).thenReturn(ownerId);
+
+        assertThrows(AccessDeniedException.class,
+                () -> service.makeCollectionPublicUntil(collectionId, future, userId));
     }
 
     // ===============================================================
