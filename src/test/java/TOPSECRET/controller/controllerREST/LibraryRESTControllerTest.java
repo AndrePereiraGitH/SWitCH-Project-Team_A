@@ -50,8 +50,6 @@ class LibraryRESTControllerTest {
 
         Library library = mock(Library.class);
         LibraryId libraryId = mock(LibraryId.class);
-        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
-        Link link = mock(Link.class);
 
         when(request.libraryName()).thenReturn("Test Library");
         when(library.id()).thenReturn(libraryId);
@@ -59,8 +57,12 @@ class LibraryRESTControllerTest {
         when(libService.createAndSave(anyString(), eq(userId)))
                 .thenReturn(library);
 
+        Link providerLink = Link.of("/libraries", "all-libraries");
+
         when(libLinkProvider.getLinksForLibraries(userId))
-                .thenReturn(List.of(link));
+                .thenReturn(List.of(providerLink));
+
+        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
 
         try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
 
@@ -74,6 +76,11 @@ class LibraryRESTControllerTest {
             // ASSERT
             assertEquals(CREATED, response.getStatusCode());
             assertEquals(dto, response.getBody());
+
+            assertDoesNotThrow(() -> {
+                List<Link> links = libLinkProvider.getLinksForLibraries(userId);
+                assertFalse(links.isEmpty());
+            });
         }
     }
 
@@ -158,14 +165,15 @@ class LibraryRESTControllerTest {
         // ARRANGE
         Library library = mock(Library.class);
         LibraryId id = mock(LibraryId.class);
-        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
 
         when(library.id()).thenReturn(id);
         when(libService.findAll()).thenReturn(List.of(library));
 
+        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
+
         try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
 
-            mapper.when(() -> LibraryMapper.toDTO(any()))
+            mapper.when(() -> LibraryMapper.toDTO(library))
                     .thenReturn(dto);
 
             // ACT
@@ -174,6 +182,12 @@ class LibraryRESTControllerTest {
 
             // ASSERT
             assertEquals(OK, response.getStatusCode());
+
+            List<ResponseLibraryDTO> body = response.getBody();
+
+            assertNotNull(body);
+            assertEquals(1, body.size());
+            assertEquals(dto, body.get(0));
         }
     }
 
@@ -242,9 +256,10 @@ class LibraryRESTControllerTest {
         // ARRANGE
         LibraryId id = mock(LibraryId.class);
         Library library = mock(Library.class);
-        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
 
         when(libService.findById(id)).thenReturn(library);
+
+        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
 
         try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
 
