@@ -58,7 +58,7 @@ public class LibraryRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .createLibrary(requestLibraryDTO, userId))
+                    .getLibrary(library.id()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -124,9 +124,7 @@ public class LibraryRESTController {
             @PathVariable LibraryId id) {
 
         try {
-            Library library = libService.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Library not found"));
-
+            Library library = libService.findById(id);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)

@@ -40,157 +40,239 @@ class LibraryServiceTest {
     @InjectMocks
     private LibraryService service;
 
-    // ----------------- createAndSave() SUCCESS -----------------
+    // ----------------- createAndSave() -----------------
 
     @Test
     void givenValidLibraryNameAndUserId_whenCreateAndSave_thenReturnsLibrary()
             throws Exception {
 
-        // Arrange
+        // ARRANGE
         String libraryName = "My Library";
+
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
+
         Library createdLibraryDouble = mock(Library.class);
         Library savedLibraryDouble = mock(Library.class);
 
-        when(userRepositoryDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(policyDouble.canCreateLibrary(userDouble)).thenReturn(true);
-        when(libraryFactoryDouble.create(libraryName, userIdDouble)).thenReturn(createdLibraryDouble);
-        when(libraryRepositoryDouble.save(createdLibraryDouble)).thenReturn(savedLibraryDouble);
+        when(userRepositoryDouble.findByID(userIdDouble))
+                .thenReturn(Optional.of(userDouble));
 
-        // Act
-        Library result = service.createAndSave(libraryName, userIdDouble);
+        when(policyDouble.canCreateLibrary(userDouble))
+                .thenReturn(true);
 
-        // Assert
+        when(libraryFactoryDouble.create(libraryName, userIdDouble))
+                .thenReturn(createdLibraryDouble);
+
+        when(libraryRepositoryDouble.save(createdLibraryDouble))
+                .thenReturn(savedLibraryDouble);
+
+        // ACT
+        Library result =
+                service.createAndSave(libraryName, userIdDouble);
+
+        // ASSERT
         assertEquals(savedLibraryDouble, result);
     }
-
-    // ----------------- USER NOT FOUND -----------------
 
     @Test
     void givenUserNotFound_whenCreateAndSave_thenThrowsIllegalArgumentException() {
 
-        // Arrange
+        // ARRANGE
         String libraryName = "My Library";
+
         UserId userIdDouble = mock(UserId.class);
 
-        when(userRepositoryDouble.findByID(userIdDouble)).thenReturn(Optional.empty());
+        when(userRepositoryDouble.findByID(userIdDouble))
+                .thenReturn(Optional.empty());
 
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> service.createAndSave(libraryName, userIdDouble));
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.createAndSave(libraryName, userIdDouble)
+        );
     }
 
-    // ----------------- ACCESS DENIED -----------------
-
     @Test
-    void givenUserWithoutPermission_whenCreateAndSave_thenThrowsAccessDenied() {
+    void givenUserWithoutPermission_whenCreateAndSave_thenThrowsAccessDeniedException() {
 
-        // Arrange
+        // ARRANGE
         String libraryName = "My Library";
+
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
 
-        when(userRepositoryDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(policyDouble.canCreateLibrary(userDouble)).thenReturn(false);
+        when(userRepositoryDouble.findByID(userIdDouble))
+                .thenReturn(Optional.of(userDouble));
 
-        // Act + Assert
-        assertThrows(AccessDeniedException.class,
-                () -> service.createAndSave(libraryName, userIdDouble));
+        when(policyDouble.canCreateLibrary(userDouble))
+                .thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(
+                AccessDeniedException.class,
+                () -> service.createAndSave(libraryName, userIdDouble)
+        );
     }
-
-    // ----------------- LIBRARY ALREADY EXISTS -----------------
 
     @Test
     void givenExistingLibraryForUser_whenCreateAndSave_thenThrowsInstanceAlreadyExistsException()
             throws Exception {
 
-        // Arrange
+        // ARRANGE
         String libraryName = "My Library";
+
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
+
         Library createdLibraryDouble = mock(Library.class);
 
-        when(userRepositoryDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(policyDouble.canCreateLibrary(userDouble)).thenReturn(true);
-        when(libraryFactoryDouble.create(libraryName, userIdDouble)).thenReturn(createdLibraryDouble);
+        when(userRepositoryDouble.findByID(userIdDouble))
+                .thenReturn(Optional.of(userDouble));
+
+        when(policyDouble.canCreateLibrary(userDouble))
+                .thenReturn(true);
+
+        when(libraryFactoryDouble.create(libraryName, userIdDouble))
+                .thenReturn(createdLibraryDouble);
+
         when(libraryRepositoryDouble.save(createdLibraryDouble))
                 .thenThrow(new InstanceAlreadyExistsException("exists"));
 
-        // Act + Assert
-        assertThrows(InstanceAlreadyExistsException.class,
-                () -> service.createAndSave(libraryName, userIdDouble));
+        // ACT + ASSERT
+        assertThrows(
+                InstanceAlreadyExistsException.class,
+                () -> service.createAndSave(libraryName, userIdDouble)
+        );
     }
-    // ----------------- findAll() -----------------
+
+// =========================================================
+// findAll()
+// =========================================================
 
     @Test
     void givenLibrariesExist_whenFindAll_thenReturnsAllLibraries() {
 
-        // Arrange
+        // ARRANGE
         Library libraryDouble1 = mock(Library.class);
         Library libraryDouble2 = mock(Library.class);
 
-        when(libraryRepositoryDouble.findAll()).thenReturn(List.of(libraryDouble1, libraryDouble2));
+        when(libraryRepositoryDouble.findAll())
+                .thenReturn(List.of(libraryDouble1, libraryDouble2));
 
-        // Act
+        // ACT
         List<Library> result = service.findAll();
 
-        // Assert
+        // ASSERT
         assertEquals(2, result.size());
     }
 
     @Test
     void givenNoLibraries_whenFindAll_thenReturnsEmptyList() {
 
-        // Arrange
-        when(libraryRepositoryDouble.findAll()).thenReturn(List.of());
+        // ARRANGE
+        when(libraryRepositoryDouble.findAll())
+                .thenReturn(List.of());
 
-        // Act
+        // ACT
         List<Library> result = service.findAll();
 
-        // Assert
+        // ASSERT
         assertTrue(result.isEmpty());
     }
 
-// ----------------- findById() -----------------
+// =========================================================
+// findById()
+// =========================================================
 
     @Test
     void givenExistingId_whenFindById_thenReturnsLibrary() {
 
-        // Arrange
+        // ARRANGE
         LibraryId idDouble = mock(LibraryId.class);
         Library libraryDouble = mock(Library.class);
 
-        when(libraryRepositoryDouble.findById(idDouble)).thenReturn(Optional.of(libraryDouble));
+        when(libraryRepositoryDouble.findById(idDouble))
+                .thenReturn(Optional.of(libraryDouble));
 
-        // Act
-        Optional<Library> result = service.findById(idDouble);
+        // ACT
+        Library result = service.findById(idDouble);
 
-        // Assert
-        assertTrue(result.isPresent());
-        assertEquals(libraryDouble, result.get());
+        // ASSERT
+        assertEquals(libraryDouble, result);
     }
 
     @Test
-    void givenNonExistingId_whenFindById_thenReturnsEmpty() {
+    void givenNonExistingId_whenFindById_thenThrowsIllegalArgumentException() {
 
-        // Arrange
+        // ARRANGE
         LibraryId idDouble = mock(LibraryId.class);
 
-        when(libraryRepositoryDouble.findById(idDouble)).thenReturn(Optional.empty());
+        when(libraryRepositoryDouble.findById(idDouble))
+                .thenReturn(Optional.empty());
 
-        // Act
-        Optional<Library> result = service.findById(idDouble);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.findById(idDouble)
+        );
     }
 
     @Test
     void givenNullId_whenFindById_thenThrowsNullPointerException() {
 
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> service.findById(null));
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> service.findById(null)
+        );
     }
+
+// =========================================================
+// findByUserId()
+// =========================================================
+
+    @Test
+    void givenExistingUserId_whenFindByUserId_thenReturnsLibrary() {
+
+        // ARRANGE
+        UserId userIdDouble = mock(UserId.class);
+        Library libraryDouble = mock(Library.class);
+
+        when(libraryRepositoryDouble.findByUserId(userIdDouble))
+                .thenReturn(Optional.of(libraryDouble));
+
+        // ACT
+        Library result = service.findByUserId(userIdDouble);
+
+        // ASSERT
+        assertEquals(libraryDouble, result);
+    }
+
+    @Test
+    void givenNonExistingUserId_whenFindByUserId_thenThrowsIllegalArgumentException() {
+
+        // ARRANGE
+        UserId userIdDouble = mock(UserId.class);
+
+        when(libraryRepositoryDouble.findByUserId(userIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.findByUserId(userIdDouble)
+        );
+    }
+
+    @Test
+    void givenNullUserId_whenFindByUserId_thenThrowsIllegalArgumentException() {
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.findByUserId(null)
+        );
+    }
+
 }
