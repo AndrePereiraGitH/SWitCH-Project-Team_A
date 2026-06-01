@@ -221,7 +221,6 @@ class PublisherRESTControllerTest {
             assertNotNull(body.get(0));
             assertEquals(dto, body.get(0));
 
-            // 🔥 KILLS MUTANT: prevents "return null in map"
             assertFalse(body.contains(null));
         }
     }
