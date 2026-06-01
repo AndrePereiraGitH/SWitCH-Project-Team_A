@@ -75,7 +75,7 @@ public class PublisherRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(PublisherRESTController.class)
-                    .createPublisher(requestPublisherDTO, userId))
+                    .getPublisher(publisher.id()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -141,9 +141,7 @@ public class PublisherRESTController {
             @PathVariable PublisherID id) {
 
         try {
-            Publisher publisher = publisherService.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Publisher not found"));
-
+            Publisher publisher = publisherService.findById(id);
             ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
             result.add(linkTo(methodOn(PublisherRESTController.class)

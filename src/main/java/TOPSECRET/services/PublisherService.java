@@ -105,9 +105,11 @@ public class PublisherService {
      * @param id the {@link PublisherID} to search for; must not be {@code null}
      * @return an {@link Optional} containing the Publisher if found; empty otherwise
      */
-    public Optional<Publisher> findById(PublisherID id) {
+    public Publisher findById(PublisherID id) {
         Objects.requireNonNull(id, "PublisherID cannot be null");
-        return repository.findById(id);
+        return repository.findById(id)
+                .orElseThrow(() ->
+                new IllegalArgumentException("Publisher not found eith id: " + id));
     }
 
 }
