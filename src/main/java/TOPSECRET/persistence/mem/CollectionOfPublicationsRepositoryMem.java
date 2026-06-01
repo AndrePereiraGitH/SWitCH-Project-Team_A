@@ -68,27 +68,6 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
     /**
      * {@inheritDoc}
      */
-    @Override
-    public CollectionOfPublications update(CollectionOfPublications collection) {
-
-        Objects.requireNonNull(collection, "collection cannot be null");
-
-        for (int i = 0; i < _collectionOfPublicationsList.size(); i++) {
-
-            CollectionOfPublications existingCollection =
-                    _collectionOfPublicationsList.get(i);
-
-            if (existingCollection.id().equals(collection.id())) {
-                _collectionOfPublicationsList.set(i, collection);
-                return collection;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public boolean existsById(CollectionOfPublicationsId collectionOfPublicationsId) {
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsID cannot be null.");

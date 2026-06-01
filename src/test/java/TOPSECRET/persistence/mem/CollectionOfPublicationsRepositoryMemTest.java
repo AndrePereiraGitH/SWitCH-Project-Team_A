@@ -84,65 +84,6 @@ class CollectionOfPublicationsRepositoryMemTest {
     }
 
     // ===================================================
-    // -------------------  UPDATE -----------------------
-    // ===================================================
-
-    @Test
-    void update_shouldUpdateAndReturnCollection_whenCollectionExists() throws InstanceNotFoundException {
-        // arrange
-        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-
-        CollectionOfPublications existingCollection = mock(CollectionOfPublications.class);
-
-        CollectionOfPublications updatedCollection = mock(CollectionOfPublications.class);
-
-        when(existingCollection.id()).thenReturn(id);
-        when(updatedCollection.id()).thenReturn(id);
-
-        sut.save(existingCollection);
-
-        // act
-        CollectionOfPublications result = sut.update(updatedCollection);
-
-        // assert
-        assertEquals(updatedCollection, result);
-        assertEquals(updatedCollection, sut.findById(id));
-    }
-
-    @Test
-    void update_shouldThrow_whenCollectionIsNull() {
-        // arrange
-        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
-
-        // act + assert
-        NullPointerException ex = assertThrows(
-                NullPointerException.class,
-                () -> sut.update(null)
-        );
-
-        assertEquals("collection cannot be null", ex.getMessage());
-    }
-
-    @Test
-    void update_shouldReturnNull_whenCollectionDoesNotExist() {
-        // arrange
-        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
-
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-
-        when(collection.id()).thenReturn(id);
-
-        // act
-        CollectionOfPublications result = sut.update(collection);
-
-        // assert
-        assertNull(result);
-    }
-
-    // ===================================================
     // ------------------  EXISTS BY ID-------------------
     // ===================================================
 
