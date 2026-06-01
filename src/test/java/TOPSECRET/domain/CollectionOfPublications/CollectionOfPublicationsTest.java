@@ -232,10 +232,6 @@ class CollectionOfPublicationsTest {
     }
 
 
-
-
-
-
     // ====================================================
     // ------------- MakePublic Tests --------------------
     // ====================================================
@@ -353,6 +349,91 @@ class CollectionOfPublicationsTest {
 
         // act
         boolean result = collection.getIsPrivate();
+
+        // assert
+        assertFalse(result);
+    }
+
+    // ====================================================
+    // ------------- isCurrentlyPublic Tests --------------
+    // ====================================================
+
+    @Test
+    void isCurrentlyPublic_shouldReturnFalse_whenCollectionIsPrivate() {
+
+        // arrange
+        GenreId genre = mock(GenreId.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications("Cool books", genre, user);
+
+        // act
+        boolean result = collection.isCurrentlyPublic();
+
+        // assert
+        assertFalse(result);
+    }
+
+    @Test
+    void isCurrentlyPublic_shouldReturnTrue_whenCollectionIsPublicWithoutExpiration() {
+
+        // arrange
+        GenreId genre = mock(GenreId.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications("Cool books", genre, user);
+
+        collection.makePublic();
+
+        // act
+        boolean result = collection.isCurrentlyPublic();
+
+        // assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isCurrentlyPublic_shouldReturnTrue_whenPublicUntilIsInFuture() {
+
+        // arrange
+        GenreId genre = mock(GenreId.class);
+        UserId user = mock(UserId.class);
+
+        CollectionOfPublications collection =
+                new CollectionOfPublications("Cool books", genre, user);
+
+        collection.makePublicUntil(LocalDateTime.now().plusDays(1));
+
+        // act
+        boolean result = collection.isCurrentlyPublic();
+
+        // assert
+        assertTrue(result);
+    }
+
+    @Test
+    void isCurrentlyPublic_shouldReturnFalse_whenPublicUntilHasExpired() {
+
+        // arrange
+        GenreId genre = mock(GenreId.class);
+        UserId user = mock(UserId.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        //here we are using very explicitly the reconstructor method
+        CollectionOfPublications collection =
+                new CollectionOfPublications(
+                        id,
+                        "Cool books",
+                        genre,
+                        user,
+                        false,
+                        LocalDateTime.now().minusDays(1)
+                );
+
+        // act
+        boolean result = collection.isCurrentlyPublic();
 
         // assert
         assertFalse(result);
@@ -547,7 +628,6 @@ class CollectionOfPublicationsTest {
         //Act + assert
         assertTrue(collectionGrace.sameAs(collectionRocky));
     }
-
 
 
     @Test

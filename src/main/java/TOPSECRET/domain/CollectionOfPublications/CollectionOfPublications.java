@@ -181,6 +181,30 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return true;
     }
 
+    /**
+     * Determines whether this collection of publications is currently public.
+     *
+     * <p>A collection is currently public if:
+     * <ul>
+     *     <li>it is not private</li>
+     *     <li>and either it has no expiration date, or the expiration date is in the future</li>
+     * </ul>
+     *
+     * @return true if currently public, false otherwise
+     */
+    public boolean isCurrentlyPublic() {
+
+        if (_isPrivate) {
+            return false;
+        }
+
+        if (publicUntil == null) {
+            return true;
+        }
+
+        return publicUntil.isAfter(LocalDateTime.now());
+    }
+
     public boolean getIsPrivate() {
         return _isPrivate;
     }
@@ -238,7 +262,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     @Override
     public int hashCode() {
         return Objects.hash(
-                _collectionName.toLowerCase(), // must match equalsIgnoreCase — lowercase makes them consistent
+                _collectionName.toLowerCase(),
                 _collectionGenreId,
                 _ownerId,
                 _isPrivate
