@@ -3,10 +3,7 @@ package TOPSECRET.dto.auction;
 import TOPSECRET.domain.Auction.Auction;
 import TOPSECRET.domain.Enum.AuctionStatus;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.ValueObjects.AuctionId;
-import TOPSECRET.domain.ValueObjects.ListingId;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.auction.response.AuctionDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,8 +31,9 @@ import static org.mockito.Mockito.when;
  *   <li>Conversion of {@link AuctionStatus} enum to its {@link String} representation</li>
  *   <li>Correct resolution of denormalized Listing fields ({@code listingTitle}, {@code listingDescription})</li>
  *   <li>Correct conversion of primitive identifiers to Value Objects ({@link AuctionId},
- *       {@link ListingId}, {@link UserId}, {@link Price}), including rejection of
- *       invalid decimal values for {@link Price}</li>
+ *       {@link ListingId}, {@link UserId}, {@link GenreId}, {@link AuthorId},
+ *       {@link PublisherID}, {@link BibliographicalDataId} and {@link Price}),
+ *       including rejection of invalid decimal values for {@link Price}</li>
  * </ul>
  */
 
@@ -315,6 +313,42 @@ class AuctionMapperTest {
 
         // Assert
         assertEquals(new ListingId("l123"), result);
+    }
+
+    @Test
+    void shouldConvertStringToBibliographicalDataId() {
+        // Act
+        BibliographicalDataId result = AuctionMapper.toBibliographicalDataId("bd123");
+
+        // Assert
+        assertEquals(new BibliographicalDataId("bd123"), result);
+    }
+
+    @Test
+    void shouldConvertStringToGenreId() {
+        // Act
+        GenreId result = AuctionMapper.toGenreId("g123");
+
+        // Assert
+        assertEquals(new GenreId("g123"), result);
+    }
+
+    @Test
+    void shouldConvertStringToAuthorId() {
+        // Act
+        AuthorId result = AuctionMapper.toAuthorId("a123");
+
+        // Assert
+        assertEquals(new AuthorId("a123"), result);
+    }
+
+    @Test
+    void shouldConvertStringToPublisherId() {
+        // Act
+        PublisherID result = AuctionMapper.toPublisherId("p123");
+
+        // Assert
+        assertEquals(new PublisherID("p123"), result);
     }
 
     @Test
