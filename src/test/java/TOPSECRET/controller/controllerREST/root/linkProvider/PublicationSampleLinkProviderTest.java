@@ -25,8 +25,9 @@ import static org.mockito.Mockito.*;
  *
  * <p>Tests are organized into the following sections:</p>
  * <ul>
- *   <li><b>getPublicationSampleLinks — success</b> — links present for authorized users.</li>
- *   <li><b>getPublicationSampleLinks — authorization</b> — conditional links based on policy.</li>
+ *   <li><b>getPublicationSampleLinks — fixed links</b> — always-included links.</li>
+ *   <li><b>getPublicationSampleLinks — conditional links</b> — policy-gated links.</li>
+ *   <li><b>getPublicationSampleLinks — link counts</b> — total link count validation.</li>
  *   <li><b>getPublicationSampleLinks — exceptions</b> — user not found.</li>
  * </ul>
  */
@@ -40,7 +41,7 @@ class PublicationSampleLinkProviderTest {
     private PublicationSampleLinkProvider linkProvider;
 
     // =========================================================================
-    // getPublicationSampleLinks — success
+    // getPublicationSampleLinks — fixed links (always included)
     // =========================================================================
 
     @Test
@@ -50,7 +51,6 @@ class PublicationSampleLinkProviderTest {
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(false);
 
         // Act
         List<Link> links = linkProvider.getPublicationSampleLinks(userId);
@@ -66,7 +66,6 @@ class PublicationSampleLinkProviderTest {
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(false);
 
         // Act
         List<Link> links = linkProvider.getPublicationSampleLinks(userId);
@@ -82,7 +81,6 @@ class PublicationSampleLinkProviderTest {
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(false);
 
         // Act
         List<Link> links = linkProvider.getPublicationSampleLinks(userId);
@@ -92,13 +90,27 @@ class PublicationSampleLinkProviderTest {
     }
 
     @Test
+    void getPublicationSampleLinks_shouldReturnFindByBdIdsLink() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-bdIds")));
+    }
+
+    @Test
     void getPublicationSampleLinks_shouldReturnFindByEditionIdLink() throws InstanceNotFoundException {
 
         // Arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(false);
 
         // Act
         List<Link> links = linkProvider.getPublicationSampleLinks(userId);
@@ -107,24 +119,8 @@ class PublicationSampleLinkProviderTest {
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-editionId")));
     }
 
-    @Test
-    void getPublicationSampleLinks_shouldReturnFourLinks_whenCannotCreate() throws InstanceNotFoundException {
-
-        // Arrange
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(false);
-
-        // Act
-        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
-
-        // Assert
-        assertEquals(4, links.size());
-    }
-
     // =========================================================================
-    // getPublicationSampleLinks — authorization
+    // getPublicationSampleLinks — conditional links (policy-gated)
     // =========================================================================
 
     @Test
@@ -150,7 +146,6 @@ class PublicationSampleLinkProviderTest {
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(false);
 
         // Act
         List<Link> links = linkProvider.getPublicationSampleLinks(userId);
@@ -160,19 +155,262 @@ class PublicationSampleLinkProviderTest {
     }
 
     @Test
-    void getPublicationSampleLinks_shouldReturnFiveLinks_whenUserCanCreate() throws InstanceNotFoundException {
+    void getPublicationSampleLinks_shouldIncludeFindByCollectionIdLink_whenAuthorized() throws InstanceNotFoundException {
 
         // Arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(true);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-collectionId")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldNotIncludeFindByCollectionIdLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-collectionId")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldIncludeFindInLibraryLink_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByUserIdAndLibraryIdIsNotNull(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-in-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldNotIncludeFindInLibraryLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-in-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldIncludeFindNotInLibraryLink_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByUserIdAndLibraryIdIsNull(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldNotIncludeFindNotInLibraryLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldIncludeFindAvailableInLibraryLink_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-in-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldNotIncludeFindAvailableInLibraryLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-in-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldIncludeFindAvailableForCollectionLink_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindAvailableForCollection(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-for-collection")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldNotIncludeFindAvailableForCollectionLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-for-collection")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldIncludeAddToLibraryLink_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("add-to-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldNotIncludeAddToLibraryLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("add-to-library")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldIncludeAssignToCollectionLink_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("assign-to-collection")));
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldNotIncludeAssignToCollectionLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("assign-to-collection")));
+    }
+
+    // =========================================================================
+    // getPublicationSampleLinks — link counts
+    // =========================================================================
+
+    @Test
+    void getPublicationSampleLinks_shouldReturnFiveFixedLinks_whenNoPolicyGranted() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
 
         // Act
         List<Link> links = linkProvider.getPublicationSampleLinks(userId);
 
         // Assert
         assertEquals(5, links.size());
+    }
+
+    @Test
+    void getPublicationSampleLinks_shouldReturnThirteenLinks_whenAllPoliciesGranted() throws InstanceNotFoundException {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(true);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(policy.canFindByUserIdAndLibraryIdIsNotNull(user)).thenReturn(true);
+        when(policy.canFindByUserIdAndLibraryIdIsNull(user)).thenReturn(true);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(true);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPublicationSampleLinks(userId);
+
+        // Assert
+        assertEquals(13, links.size());
     }
 
     // =========================================================================

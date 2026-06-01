@@ -162,7 +162,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double, pubSample2Double);
-        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn( userIdDouble))
                 .thenReturn(pubSamples);
 
         List<US015PublicationSampleDTO> dtoFromMapper = List.of(
@@ -187,7 +187,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
         when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
-        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))
                 .thenReturn(List.of());
 
         when(mapperDouble.toDTOs(List.of())).thenReturn(List.of());
@@ -209,7 +209,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double);
-        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))
                 .thenReturn(pubSamples);
 
         List<US015PublicationSampleDTO> dtoList =

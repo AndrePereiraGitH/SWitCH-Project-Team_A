@@ -10,6 +10,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.publicationSample.response.PublicationDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationDetailsDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationReferenceDTO;
@@ -219,6 +220,18 @@ public class PublicationSampleMapper {
     // -------------------------------------------------------------------------
     // toVO methods
     // -------------------------------------------------------------------------
+
+
+    /**
+     * Converts a string representation of a user ID into a {@code UserId} object.
+     *
+     * @param userId the string representing the user's ID
+     * @return a new {@code UserId} instance corresponding to the provided string
+     */
+    public static UserId toUserId(String userId) {
+        UserId id = new UserId(userId);
+        return id;
+    }
 
     /**
      * Converts a string ID into a {@link PublicationSampleId} value object.

@@ -6,7 +6,9 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.services.LibraryService;
 import TOPSECRET.services.PublicationSampleService;
+import jakarta.persistence.EntityNotFoundException;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
@@ -89,10 +91,8 @@ public class ToAddPublicationToLibraryController {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
-        Library library = _libraryRepository.getByUserId(userId);
-        LibraryId libraryId = library.id();
 
-        PublicationSample updatedSample = _service.addPublicationToLibrary(publicationSampleId, libraryId, userId);
+        PublicationSample updatedSample = _service.addPublicationToLibrary(publicationSampleId, userId);
 
         return updatedSample != null;
     }
