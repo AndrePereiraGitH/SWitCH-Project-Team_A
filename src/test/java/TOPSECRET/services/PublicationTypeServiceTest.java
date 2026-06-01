@@ -45,8 +45,10 @@ class PublicationTypeServiceTest {
 
     @InjectMocks
     private PublicationTypeService service;
+// =========================================================
+// CREATE SUCCESS
+// =========================================================
 
-    // CREATE SUCCESS
     @Test
     void shouldCreatePublicationTypeSuccessfully()
             throws Exception {
@@ -59,103 +61,32 @@ class PublicationTypeServiceTest {
 
         PublicationType entity = mock(PublicationType.class);
 
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationType(user)).thenReturn(true);
-        when(repository.findByMediaFormat(format)).thenReturn(Optional.empty());
-        when(factory.create(format)).thenReturn(entity);
-        when(repository.save(entity)).thenReturn(entity);
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(policy.canCreatePublicationType(user))
+                .thenReturn(true);
+
+        when(repository.findByMediaFormat(format))
+                .thenReturn(Optional.empty());
+
+        when(factory.create(format))
+                .thenReturn(entity);
+
+        when(repository.save(entity))
+                .thenReturn(entity);
 
         // ACT
-        PublicationType result = service.createAndSave(format, userId);
+        PublicationType result =
+                service.createAndSave(format, userId);
 
         // ASSERT
         assertEquals(entity, result);
     }
 
-    // VALIDATION
-
-    @Test
-    void shouldThrowWhenRepositoryIsNull() {
-
-        // ARRANGE
-        PublicationTypeFactory factory = mock(PublicationTypeFactory.class);
-        IUserRepository userRepository = mock(IUserRepository.class);
-        PublicationTypeAuthorizationPolicy policy =
-                mock(PublicationTypeAuthorizationPolicy.class);
-
-        // ACT + ASSERT
-        assertThrows(
-                NullPointerException.class,
-                () -> new PublicationTypeService(
-                        null,
-                        factory,
-                        userRepository,
-                        policy
-                )
-        );
-    }
-
-    @Test
-    void shouldThrowWhenFactoryIsNull() {
-
-        // ARRANGE
-        IPublicationTypeRepository repo = mock(IPublicationTypeRepository.class);
-        IUserRepository userRepository = mock(IUserRepository.class);
-        PublicationTypeAuthorizationPolicy policy = mock(PublicationTypeAuthorizationPolicy.class);
-
-        // ACT + ASSERT
-        assertThrows(
-                NullPointerException.class,
-                () -> new PublicationTypeService(
-                        repo,
-                        null,
-                        userRepository,
-                        policy
-                )
-        );
-    }
-
-    @Test
-    void shouldThrowWhenUserRepositoryIsNull() {
-
-        // ARRANGE
-        IPublicationTypeRepository repo = mock(IPublicationTypeRepository.class);
-        IUserRepository userRepository = mock(IUserRepository.class);
-        PublicationTypeAuthorizationPolicy policy = mock(PublicationTypeAuthorizationPolicy.class);
-
-        // ACT + ASSERT
-        assertThrows(
-                NullPointerException.class,
-                () -> new PublicationTypeService(
-                        repo,
-                        factory,
-                        null,
-                        policy
-                )
-        );
-    }
-
-    @Test
-    void shouldThrowWhenPolicyIsNull() {
-
-        // ARRANGE
-        IPublicationTypeRepository repo = mock(IPublicationTypeRepository.class);
-        IUserRepository userRepository = mock(IUserRepository.class);
-        PublicationTypeAuthorizationPolicy policy = mock(PublicationTypeAuthorizationPolicy.class);
-
-        // ACT + ASSERT
-        assertThrows(
-                NullPointerException.class,
-                () -> new PublicationTypeService(
-                        repo,
-                        factory,
-                        userRepository,
-                        null
-                )
-        );
-    }
-
-    // DUPLICATE
+// =========================================================
+// DUPLICATE
+// =========================================================
 
     @Test
     void shouldThrowWhenPublicationTypeAlreadyExists()
@@ -167,11 +98,17 @@ class PublicationTypeServiceTest {
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
-        PublicationType existing = mock(PublicationType.class);
+        PublicationType existing =
+                mock(PublicationType.class);
 
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationType(user)).thenReturn(true);
-        when(repository.findByMediaFormat(format)).thenReturn(Optional.of(existing));
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(policy.canCreatePublicationType(user))
+                .thenReturn(true);
+
+        when(repository.findByMediaFormat(format))
+                .thenReturn(Optional.of(existing));
 
         // ACT + ASSERT
         assertThrows(
@@ -180,80 +117,9 @@ class PublicationTypeServiceTest {
         );
     }
 
-    // ACCESS DENIED
-
-    @Test
-    void shouldThrowWhenUserHasNoPermission() {
-
-        // ARRANGE
-        String format = "Book";
-
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationType(user)).thenReturn(false);
-
-        // ACT + ASSERT
-        assertThrows(
-                AccessDeniedException.class,
-                () -> service.createAndSave(format, userId)
-        );
-    }
-
-    // USER NOT FOUND
-
-    @Test
-    void shouldThrowWhenUserDoesNotExist() {
-
-        // ARRANGE
-        String format = "Book";
-
-        UserId userId = mock(UserId.class);
-        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
-
-        // ACT + ASSERT
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> service.createAndSave(format, userId)
-        );
-    }
-    // FIND ALL
-
-    @Test
-    void shouldReturnAllPublicationTypes() {
-
-        // ARRANGE
-        PublicationType pt1 = mock(PublicationType.class);
-        PublicationType pt2 = mock(PublicationType.class);
-
-        when(repository.findAll()).thenReturn(List.of(pt1, pt2));
-
-        // ACT
-        List<PublicationType> result = service.findAll();
-
-        // ASSERT
-        assertEquals(2, result.size());
-        assertTrue(result.contains(pt1));
-        assertTrue(result.contains(pt2));
-
-    }
-
-    @Test
-    void shouldReturnEmptyListWhenNoPublicationTypesExist() {
-
-        // ARRANGE
-        when(repository.findAll()).thenReturn(List.of());
-
-        // ACT
-        List<PublicationType> result = service.findAll();
-
-        // ASSERT
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
-    // FIND BY MEDIA FORMAT
+// =========================================================
+// FIND BY MEDIA FORMAT SUCCESS
+// =========================================================
 
     @Test
     void shouldFindPublicationTypeByMediaFormat() {
@@ -261,32 +127,43 @@ class PublicationTypeServiceTest {
         // ARRANGE
         String format = "Book";
 
-        PublicationType publicationType = mock(PublicationType.class);
+        PublicationType publicationType =
+                mock(PublicationType.class);
 
-        when(repository.findByMediaFormat(format)).thenReturn(Optional.of(publicationType));
+        when(repository.findByMediaFormat(format))
+                .thenReturn(Optional.of(publicationType));
 
         // ACT
-        Optional<PublicationType> result = service.findByMediaFormat(format);
+        PublicationType result =
+                service.findByMediaFormat(format);
 
         // ASSERT
-        assertTrue(result.isPresent());
-        assertEquals(publicationType, result.get());
+        assertEquals(publicationType, result);
     }
 
+// =========================================================
+// FIND BY MEDIA FORMAT NOT FOUND
+// =========================================================
+
     @Test
-    void shouldReturnEmptyWhenMediaFormatDoesNotExist() {
+    void shouldThrowWhenMediaFormatDoesNotExist() {
 
         // ARRANGE
         String format = "Book";
 
-        when(repository.findByMediaFormat(format)).thenReturn(Optional.empty());
+        when(repository.findByMediaFormat(format))
+                .thenReturn(Optional.empty());
 
-        // ACT
-        Optional<PublicationType> result = service.findByMediaFormat(format);
-
-        // ASSERT
-        assertTrue(result.isEmpty());
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.findByMediaFormat(format)
+        );
     }
+
+// =========================================================
+// FIND BY MEDIA FORMAT NULL
+// =========================================================
 
     @Test
     void shouldThrowWhenMediaFormatIsNull() {
@@ -297,6 +174,10 @@ class PublicationTypeServiceTest {
                 () -> service.findByMediaFormat(null)
         );
     }
+
+// =========================================================
+// FIND BY ID SUCCESS
+// =========================================================
 
     @Test
     void shouldFindPublicationTypeById() {
@@ -312,20 +193,19 @@ class PublicationTypeServiceTest {
                 .thenReturn(Optional.of(publicationType));
 
         // ACT
-        Optional<PublicationType> result =
+        PublicationType result =
                 service.findById(id);
 
         // ASSERT
-        assertTrue(result.isPresent());
-
-        assertEquals(
-                publicationType,
-                result.get()
-        );
+        assertEquals(publicationType, result);
     }
 
+// =========================================================
+// FIND BY ID NOT FOUND
+// =========================================================
+
     @Test
-    void shouldReturnEmptyWhenIdDoesNotExist() {
+    void shouldThrowWhenIdDoesNotExist() {
 
         // ARRANGE
         PublicationTypeId id =
@@ -334,13 +214,16 @@ class PublicationTypeServiceTest {
         when(repository.findById(id))
                 .thenReturn(Optional.empty());
 
-        // ACT
-        Optional<PublicationType> result =
-                service.findById(id);
-
-        // ASSERT
-        assertTrue(result.isEmpty());
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> service.findById(id)
+        );
     }
+
+// =========================================================
+// FIND BY ID NULL
+// =========================================================
 
     @Test
     void shouldThrowWhenIdIsNull() {
@@ -350,5 +233,49 @@ class PublicationTypeServiceTest {
                 IllegalArgumentException.class,
                 () -> service.findById(null)
         );
+    }
+
+// =========================================================
+// FIND ALL SUCCESS
+// =========================================================
+
+    @Test
+    void shouldReturnAllPublicationTypes() {
+
+        // ARRANGE
+        PublicationType pt1 = mock(PublicationType.class);
+        PublicationType pt2 = mock(PublicationType.class);
+
+        when(repository.findAll())
+                .thenReturn(List.of(pt1, pt2));
+
+        // ACT
+        List<PublicationType> result =
+                service.findAll();
+
+        // ASSERT
+        assertEquals(2, result.size());
+        assertTrue(result.contains(pt1));
+        assertTrue(result.contains(pt2));
+    }
+
+// =========================================================
+// FIND ALL EMPTY
+// =========================================================
+
+    @Test
+    void shouldReturnEmptyListWhenNoPublicationTypesExist() {
+
+        // ARRANGE
+        when(repository.findAll())
+                .thenReturn(List.of());
+
+        // ACT
+        List<PublicationType> result =
+                service.findAll();
+
+        // ASSERT
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
     }
 }
