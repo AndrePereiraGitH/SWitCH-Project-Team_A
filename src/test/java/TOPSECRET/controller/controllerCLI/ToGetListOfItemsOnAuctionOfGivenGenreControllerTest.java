@@ -13,6 +13,7 @@ import TOPSECRET.dto.US022GenreDTO;
 
 import TOPSECRET.dto.US022GenreMapper;
 import TOPSECRET.services.AuctionService;
+import TOPSECRET.services.ListingService;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -27,7 +28,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
     private AuctionService auctionService = mock(AuctionService.class);
     private IBibliographicalDataRepository bibliographicalDataRepository = mock(IBibliographicalDataRepository.class);
     private IPublicationSampleRepository publicationSampleRepository = mock(IPublicationSampleRepository.class);
-    private IListingRepository listingRepository = mock(IListingRepository.class);
+    private ListingService listingService = mock(ListingService.class);
     private US022GenreMapper genreMapper = mock(US022GenreMapper.class);
     private US022AuctionMapper auctionMapper = mock(US022AuctionMapper.class);
 
@@ -43,7 +44,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
                         null,
                         genreRepository,
-                        listingRepository,
+                        listingService,
                         bibliographicalDataRepository,
                         publicationSampleRepository,
                         genreMapper,
@@ -65,7 +66,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
                         auctionService,
                         null,
-                        listingRepository,
+                        listingService,
                         bibliographicalDataRepository,
                         publicationSampleRepository,
                         genreMapper,
@@ -110,7 +111,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
                         auctionService,
                         genreRepository,
-                        listingRepository,
+                        listingService,
                         null,
                         publicationSampleRepository,
                         genreMapper,
@@ -132,7 +133,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
                         auctionService,
                         genreRepository,
-                        listingRepository,
+                        listingService,
                         bibliographicalDataRepository,
                         null,
                         genreMapper,
@@ -154,7 +155,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
                         auctionService,
                         genreRepository,
-                        listingRepository,
+                        listingService,
                         bibliographicalDataRepository,
                         publicationSampleRepository,
                         null,
@@ -176,7 +177,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
                 () -> new ToGetListOfItemsOnAuctionOfGivenGenreController(
                         auctionService,
                         genreRepository,
-                        listingRepository,
+                        listingService,
                         bibliographicalDataRepository,
                         publicationSampleRepository,
                         genreMapper,
@@ -222,7 +223,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(genre));
         when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(bdIds);
         when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(anyList())).thenReturn(itemIds);
-        when(listingRepository.findIdsByPublicationSampleIdIn(anyList())).thenReturn(listingIds);
+        when(listingService.findIdsByPublicationSampleIdIn(anyList())).thenReturn(listingIds);
         when(auctionService.findByListingIdIn(anyList())).thenReturn(auctions);
 
         US022AuctionDTO dtoDouble = mock(US022AuctionDTO.class);
@@ -234,7 +235,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -270,13 +271,13 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
 
         when(bibliographicalDataRepository.findAllByGenreId(genreIdDouble)).thenReturn(List.of());
         when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(List.of())).thenReturn(List.of());
-        when(listingRepository.findIdsByPublicationSampleIdIn(List.of())).thenReturn(List.of());
+        when(listingService.findIdsByPublicationSampleIdIn(List.of())).thenReturn(List.of());
         when(auctionService.findByListingIdIn(List.of())).thenReturn(List.of());
 
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -298,7 +299,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -317,7 +318,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -343,7 +344,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -378,7 +379,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -403,7 +404,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -431,7 +432,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -460,7 +461,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -488,12 +489,12 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(genreDTO.genreId()).thenReturn(genreId);
         when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(List.of(bdId));
         when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(anyList())).thenReturn(List.of(sampleId));
-        when(listingRepository.findIdsByPublicationSampleIdIn(anyList())).thenReturn(List.of());
+        when(listingService.findIdsByPublicationSampleIdIn(anyList())).thenReturn(List.of());
 
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -516,7 +517,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -535,7 +536,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         List<Auction> auctions = List.of(mock(Auction.class));
         when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(List.of(bdId));
         when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(anyList())).thenReturn(List.of(itemId));
-        when(listingRepository.findIdsByPublicationSampleIdIn(anyList())).thenReturn(List.of(listingId));
+        when(listingService.findIdsByPublicationSampleIdIn(anyList())).thenReturn(List.of(listingId));
         when(auctionService.findByListingIdInOrderByAuctionDeadlineAsc(anyList())).thenReturn(auctions);
 
         List<US022AuctionDTO> dtoList = List.of(mock(US022AuctionDTO.class));
@@ -555,7 +556,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -578,7 +579,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         sut = new ToGetListOfItemsOnAuctionOfGivenGenreController(
                 auctionService,
                 genreRepository,
-                listingRepository,
+                listingService,
                 bibliographicalDataRepository,
                 publicationSampleRepository,
                 genreMapper,
@@ -612,7 +613,7 @@ class ToGetListOfItemsOnAuctionOfGivenGenreControllerTest {
         when(bibliographicalDataRepository.findAllByGenreId(genreId)).thenReturn(bdIds);
         when(publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds)).thenReturn(itemIds);
 
-        when(listingRepository.findIdsByPublicationSampleIdIn(itemIds)).thenReturn(listingIds);
+        when(listingService.findIdsByPublicationSampleIdIn(itemIds)).thenReturn(listingIds);
         when(auctionService.findByListingIdInOrderByAuctionDeadlineAsc(listingIds)).thenReturn(auctions);
         when(auctionMapper.toDTOList(auctions)).thenReturn(dtoList);
 

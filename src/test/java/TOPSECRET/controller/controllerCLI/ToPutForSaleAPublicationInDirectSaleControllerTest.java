@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -296,7 +297,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     }
 
     @Test
-    void createDirectSaleListing_ShouldReturnListingCreatedByListingService() throws InstanceAlreadyExistsException {
+    void createDirectSaleListing_ShouldReturnListingCreatedByListingService() throws InstanceAlreadyExistsException, AccessDeniedException {
         // Arrange
         Listing expectedListing = mock(Listing.class);
         when(listingServiceDouble.createAndSave("title", List.of(pubSampleId1Double), SaleType.DIRECT_SALE,
