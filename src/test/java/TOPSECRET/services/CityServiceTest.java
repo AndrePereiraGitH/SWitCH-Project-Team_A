@@ -206,25 +206,22 @@ class CityServiceTest {
         when(doubleCityRepository.findById(doubleCityId)).thenReturn(Optional.of(doubleCity));
 
         // Act
-        Optional<City> result = sut.findById(doubleCityId);
+        City result = sut.findById(doubleCityId);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(doubleCity, result.get());
+        assertEquals(doubleCity, result);
     }
 
     @Test
-    void shouldReturnEmpty_whenCityDoesNotExist() {
+    void shouldThrowWhenCityNotFound() {
         // Arrange
         CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
         CityId doubleCityId = mock(CityId.class);
         when(doubleCityRepository.findById(doubleCityId)).thenReturn(Optional.empty());
 
-        // Act
-        Optional<City> result = sut.findById(doubleCityId);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.findById(doubleCityId));
     }
 
     @Test

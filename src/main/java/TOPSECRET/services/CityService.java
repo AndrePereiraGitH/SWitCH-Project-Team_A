@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Application service responsible for coordinating the creation and
@@ -89,14 +88,13 @@ public class CityService {
      * Returns the city matching the given identifier.
      *
      * @param cityId the identifier to search for; must not be {@code null}
-     * @return an {@link Optional} containing the matching {@link City},
-     *         or {@link Optional#empty()} if not found
-     * @throws IllegalArgumentException if {@code cityId} is {@code null}
+     * @return the matching {@link City}
+     * @throws IllegalArgumentException if {@code cityId} is {@code null} or not found
      */
-    public Optional<City> findById(CityId cityId) {
+    public City findById(CityId cityId) {
         if (cityId == null) {
             throw new IllegalArgumentException("CityId cannot be null");
         }
-        return cityRepository.findById(cityId);
-    }
+        return cityRepository.findById(cityId)
+                .orElseThrow(() -> new IllegalArgumentException("City not found"));    }
 }
