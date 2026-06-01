@@ -296,4 +296,25 @@ class ListingMapperTest {
         assertThrows(Exception.class,
                 () -> ListingMapper.toPicture(pictureValue));
     }
+    // ============================================================
+    // --------------  toPublisherId  ---------------------------------
+    // ============================================================
+
+    @Test
+    void toPublisherId_shouldReturn_PublisherId() {
+        // arrange
+        String publisherId = "publisherId";
+
+        // act
+        PublisherID result = ListingMapper.toPublisherId(publisherId);
+
+        // assert
+        assertEquals(new PublisherID(publisherId), result);
+    }
+
+    @Test
+    void toPublisherId_shouldThrow_whenPublisherIdIsNull() {
+        // act + assert
+        assertThrows(Exception.class, () -> ListingMapper.toPublisherId(null));
+    }
 }

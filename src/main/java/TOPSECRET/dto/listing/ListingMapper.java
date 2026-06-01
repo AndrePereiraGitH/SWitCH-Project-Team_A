@@ -41,6 +41,12 @@ public class ListingMapper {
         );
     }
 
+    /**
+     * Converts a string identifier into a {@link ListingId}.
+     *
+     * @param id the publication sample identifier as a string
+     * @return a {@link ListingId} value object
+     */
     public static ListingId toListingId(String id) {
         return new ListingId(id);
     }
@@ -87,12 +93,34 @@ public class ListingMapper {
         return new Picture(picture);
     }
 
+    /**
+     * Converts a string value into a {@link UserId}.
+     *
+     * @param userId the price value as a string
+     * @return a {@link UserId} value object
+     */
     public static UserId toUserId(String userId) {
         return new UserId(userId);
     }
 
+    /**
+     * Converts a string value into a {@link GenreId}.
+     *
+     * @param genreId the price value as a string
+     * @return a {@link GenreId} value object
+     */
     public static GenreId toGenreId(String genreId) {
         return new GenreId(genreId);
+    }
+
+    /**
+     * Converts a string value into a {@link PublisherID}.
+     *
+     * @param publisherId the price value as a string
+     * @return a {@link PublisherID} value object
+     */
+    public static PublisherID toPublisherId(String publisherId) {
+        return new PublisherID(publisherId);
     }
 
 
