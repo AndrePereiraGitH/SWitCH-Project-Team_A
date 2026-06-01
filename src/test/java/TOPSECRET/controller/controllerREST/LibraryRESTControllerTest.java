@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +37,18 @@ class LibraryRESTControllerTest {
     @Mock
     private LibraryService libService;
 
+    @Mock
+    private RequestLibraryDTO requestDTO;
+
+    @Mock
+    private UserId userId;
+
+    @Mock
+    private Library library;
+
+    @Mock
+    private LibraryId libraryId;
+
     @InjectMocks
     private LibraryRESTController controller;
 
@@ -44,20 +57,15 @@ class LibraryRESTControllerTest {
     // =========================================================
     @Test
     void createLibrary_shouldReturnCreated_whenValidRequest() throws InstanceAlreadyExistsException {
-        // ARRANGE
-        RequestLibraryDTO requestDTO = mock(RequestLibraryDTO.class);
-        UserId userId = mock(UserId.class);
 
-        Library library = mock(Library.class);
-        LibraryId libraryId = mock(LibraryId.class);
+        // ARRANGE
+        Link providerLink = Link.of("/libraries/provider", "provider-rel");
 
         when(requestDTO.libraryName()).thenReturn("Test Library");
         when(library.id()).thenReturn(libraryId);
 
         when(libService.createAndSave(anyString(), eq(userId)))
                 .thenReturn(library);
-
-        Link providerLink = Link.of("/libraries/provider", "provider-rel");
 
         when(libLinkProvider.getLinksForLibraries(userId))
                 .thenReturn(List.of(providerLink));
@@ -69,6 +77,14 @@ class LibraryRESTControllerTest {
             mapper.when(() -> LibraryMapper.toDTO(library))
                     .thenReturn(dto);
 
+            // 🔥 CAPTURE REAL SIDE EFFECTS
+            List<Link> captured = new ArrayList<>();
+
+            doAnswer(inv -> {
+                captured.add(inv.getArgument(0));
+                return dto;
+            }).when(dto).add(any(Link.class));
+
             // ACT
             ResponseEntity<ResponseLibraryDTO> response =
                     controller.createLibrary(requestDTO, userId);
@@ -76,9 +92,8 @@ class LibraryRESTControllerTest {
             // ASSERT
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
             assertEquals(dto, response.getBody());
-            assertDoesNotThrow(() -> {
-                dto.add(providerLink);
-            });
+            assertFalse(captured.isEmpty());
+            assertTrue(captured.contains(providerLink));
         }
     }
 
