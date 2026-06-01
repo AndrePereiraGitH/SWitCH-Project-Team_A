@@ -73,6 +73,10 @@ public class ListingLinkProvider {
                 .getAllDirectSaleByGenre(null, null))
                 .withRel("get-all-direct-sale-by-genre"));
 
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .getAllDirectSaleByPublisher(null, null))
+                .withRel("get-all-direct-sale-by-publisher"));
+
         if (authPolicy.canCreateListing(user)) {
             links.add(linkTo(methodOn(ListingRESTController.class)
                     .createListing(null, userId))

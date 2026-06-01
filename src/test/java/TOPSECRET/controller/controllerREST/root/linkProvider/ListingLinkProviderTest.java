@@ -46,7 +46,7 @@ class ListingLinkProviderTest {
         List<Link> result = linkProvider.getLinksForListings(userId);
 
         // Assert
-        assertEquals(4, result.size());
+        assertEquals(5, result.size());
 
         assertTrue(result.stream().anyMatch(link ->
                 link.getRel().value().equals("find-by-id")));
@@ -56,6 +56,9 @@ class ListingLinkProviderTest {
 
         assertTrue(result.stream().anyMatch(link ->
                 link.getRel().value().equals("get-all-direct-sale-by-genre")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("get-all-direct-sale-by-publisher")));
 
         assertTrue(result.stream().anyMatch(link ->
                 link.getRel().value().equals("create-listing")));
@@ -76,7 +79,7 @@ class ListingLinkProviderTest {
         List<Link> result = linkProvider.getLinksForListings(userId);
 
         // Assert
-        assertEquals(3, result.size());
+        assertEquals(4, result.size());
 
         assertTrue(result.stream().anyMatch(link ->
                 link.getRel().value().equals("find-by-id")));
@@ -87,10 +90,12 @@ class ListingLinkProviderTest {
         assertTrue(result.stream().anyMatch(link ->
                 link.getRel().value().equals("get-all-direct-sale-by-genre")));
 
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("get-all-direct-sale-by-publisher")));
+
         assertFalse(result.stream().anyMatch(link ->
                 link.getRel().value().equals("create-listing")));
     }
-
     @Test
     void getLinksForListings_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
 
