@@ -7,8 +7,10 @@ import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.collectionOfPublications.CollectionOfPublicationsMapper;
 import TOPSECRET.dto.collectionOfPublications.request.RequestCollectionOfPublicationsDTO;
+import TOPSECRET.dto.collectionOfPublications.response.PublicCollectionOfPublicationsDTO;
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
 import TOPSECRET.services.CollectionOfPublicationsService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.Link;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -57,44 +60,52 @@ public class CollectionOfPublicationsRESTController {
     }
 
     /**
-     * Creates a new private collection of publications for the given user.
+     * Creates a new collection of publications for the specified owner.
      *
-     * <p>Delegates creation to {@link CollectionOfPublicationsService} and returns
-     * the persisted collection as a {@link ResponseCollectionOfPublicationsDTO},
-     * enriched with HATEOAS links permitted for the requesting user.</p>
+     * <p>This endpoint receives the collection data, validates the request,
+     * converts the incoming DTO values into their corresponding domain value
+     * objects, and delegates the creation and persistence of the collection
+     * to the application service.</p>
      *
-     * @param requestCollectionDTO the request body containing the collection details;
-     *                             must not be {@code null}
-     * @param userId               the identifier of the user creating the collection;
-     *                             must not be {@code null}
-     *                             must not be {@code null}
-     * @return a {@link ResponseEntity} containing the created {@link ResponseCollectionOfPublicationsDTO}
-     * with HTTP status {@code 201 Created} on success,
-     * {@code 400 Bad Request} if the input is invalid,
-     * {@code 403 Forbidden} if the user lacks permission, or
-     * {@code 500 Internal Server Error} if an unexpected error occurs
+     * <p>Upon successful creation, a {@link ResponseCollectionOfPublicationsDTO}
+     * is returned enriched with HATEOAS links, including a self link to the
+     * newly created collection and additional collection-related links.</p>
+     *
+     * @param requestCollectionDTO the request payload containing the collection
+     *                             name and genre identifier; must be valid
+     * @param ownerId the identifier of the user who owns the collection
+     * @return a {@link ResponseEntity} containing the created
+     *         {@link ResponseCollectionOfPublicationsDTO} and HTTP status:
+     *         <ul>
+     *             <li>{@code 201 CREATED} if the collection is successfully created</li>
+     *             <li>{@code 400 BAD REQUEST} if the provided data is invalid</li>
+     *             <li>{@code 403 FORBIDDEN} if the user is not authorized to create the collection</li>
+     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     *         </ul>
      */
     @PostMapping("/")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> createCollectionOfPublications(
             @RequestBody @Valid RequestCollectionOfPublicationsDTO requestCollectionDTO,
-            @RequestParam UserId userId) {
+            @RequestParam String ownerId) {
 
         GenreId genreId = CollectionOfPublicationsMapper.toGenreId(requestCollectionDTO.genreId());
+        UserId userId = CollectionOfPublicationsMapper.toUserId(ownerId);
 
         try {
             CollectionOfPublications collection = collectionService.createAndSave(
                     requestCollectionDTO.collectionName(), genreId, userId);
 
-            ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collection);
+            ResponseCollectionOfPublicationsDTO responseDTO = CollectionOfPublicationsMapper.toDTO(collection);
 
             List<Link> links = linkProvider.getLinksForCollectionOfPublications(userId);
-            links.forEach(result::add);
 
-            result.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
-                    .createCollectionOfPublications(null, null))
+            links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .getCollectionById(collection.id().toString(), userId.toString()))
                     .withSelfRel());
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+            links.forEach(responseDTO::add);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -119,10 +130,10 @@ public class CollectionOfPublicationsRESTController {
      * @param userId       the identifier of the user requesting the operation;
      *                     must not be {@code null}
      * @return a {@link ResponseEntity} containing the updated {@link ResponseCollectionOfPublicationsDTO}
-     *         with HTTP status {@code 200 OK} on success,
-     *         {@code 400 Bad Request} if the input is invalid,
-     *         {@code 403 Forbidden} if the user lacks permission, or
-     *         {@code 500 Internal Server Error} if an unexpected error occurs
+     * with HTTP status {@code 200 OK} on success,
+     * {@code 400 Bad Request} if the input is invalid,
+     * {@code 403 Forbidden} if the user lacks permission, or
+     * {@code 500 Internal Server Error} if an unexpected error occurs
      */
     @PatchMapping("/{collectionId}/make-public")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPublic(
@@ -170,10 +181,10 @@ public class CollectionOfPublicationsRESTController {
      * @param userId       the identifier of the user requesting the operation;
      *                     must not be {@code null}
      * @return a {@link ResponseEntity} containing the updated {@link ResponseCollectionOfPublicationsDTO}
-     *         with HTTP status {@code 200 OK} on success,
-     *         {@code 400 Bad Request} if the input is invalid,
-     *         {@code 403 Forbidden} if the user lacks permission, or
-     *         {@code 500 Internal Server Error} if an unexpected error occurs
+     * with HTTP status {@code 200 OK} on success,
+     * {@code 400 Bad Request} if the input is invalid,
+     * {@code 403 Forbidden} if the user lacks permission, or
+     * {@code 500 Internal Server Error} if an unexpected error occurs
      */
     @PatchMapping("/{collectionId}/make-public-until")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPublicUntil(
@@ -204,6 +215,104 @@ public class CollectionOfPublicationsRESTController {
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves all currently public collections associated with a given genre.
+     *
+     * <p>A collection is considered public if it has been explicitly made public
+     * and its visibility period has not expired. Collections that are private or
+     * whose public visibility period has elapsed are not included in the result.</p>
+     *
+     * <p>The provided genre identifier is converted into a {@link GenreId} value
+     * object and used to retrieve matching collections through the application
+     * service. The resulting domain objects are mapped into
+     * {@link PublicCollectionOfPublicationsDTO} instances before being returned.</p>
+     *
+     * @param genreId the identifier of the genre whose public collections are to
+     *                be retrieved; must not be {@code null}
+     * @return a {@link ResponseEntity} containing a list of
+     *         {@link PublicCollectionOfPublicationsDTO} and:
+     *         <ul>
+     *             <li>{@code 200 OK} if the operation succeeds</li>
+     *             <li>{@code 400 BAD REQUEST} if the provided genre identifier is invalid</li>
+     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     *         </ul>
+     */
+    @GetMapping("/public")
+    public ResponseEntity<List<PublicCollectionOfPublicationsDTO>>
+    findPublicCollectionsByGenreId(@RequestParam String genreId) {
+
+        try {
+
+            GenreId genreIdVO =
+                    CollectionOfPublicationsMapper.toGenreId(genreId);
+
+            List<CollectionOfPublications> collections =
+                    collectionService.findPublicCollectionsByGenreId(genreIdVO);
+
+            List<PublicCollectionOfPublicationsDTO> response =
+                    CollectionOfPublicationsMapper.toPublicDTOList(collections);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves a collection of publications by its unique identifier.
+     *
+     * <p>This endpoint retrieves the requested
+     * {@link CollectionOfPublications}, converts it into a
+     * {@link ResponseCollectionOfPublicationsDTO}, and enriches the response
+     * with HATEOAS links available to the requesting user.</p>
+     *
+     * <p>A self link pointing to the retrieved collection is also included
+     * in the response.</p>
+     *
+     * @param collectionId the identifier of the collection to retrieve;
+     *                     must correspond to an existing collection
+     * @param userId       the identifier of the user requesting the resource;
+     *                     used to determine which HATEOAS links should be exposed
+     * @return a {@link ResponseEntity} containing the
+     *         {@link ResponseCollectionOfPublicationsDTO} and:
+     *         <ul>
+     *             <li>{@code 200 OK} if the collection is successfully retrieved</li>
+     *             <li>{@code 404 NOT FOUND} if no collection exists with the given identifier</li>
+     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     *         </ul>
+     */
+    @GetMapping("/{collectionId}")
+    public ResponseEntity<ResponseCollectionOfPublicationsDTO> getCollectionById(
+            @PathVariable String collectionId, @RequestParam String userId) {
+
+        try {
+            CollectionOfPublicationsId collectionIdVo = CollectionOfPublicationsMapper.toCollectionId(collectionId);
+            UserId userIdVO = CollectionOfPublicationsMapper.toUserId(userId);
+            CollectionOfPublications collection = collectionService.findById(collectionIdVo);
+            ResponseCollectionOfPublicationsDTO responseDTO = CollectionOfPublicationsMapper.toDTO(collection);
+
+            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userIdVO);
+
+            links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .getCollectionById(collectionId, userId)).withSelfRel());
+
+            links.forEach(responseDTO::add);
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+
+        } catch (InstanceNotFoundException | EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
