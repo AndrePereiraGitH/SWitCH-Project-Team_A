@@ -77,7 +77,6 @@ class LibraryRESTControllerTest {
             mapper.when(() -> LibraryMapper.toDTO(library))
                     .thenReturn(dto);
 
-            // 🔥 CAPTURE REAL SIDE EFFECTS
             List<Link> captured = new ArrayList<>();
 
             doAnswer(inv -> {
