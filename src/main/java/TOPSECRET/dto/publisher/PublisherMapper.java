@@ -91,4 +91,23 @@ public final class PublisherMapper {
 
         return new Email(split[0], split[1]);
     }
+
+    /**
+     * Converts a string value into a {@link PublisherID}.
+     *
+     * @param publisherId the publisherId value as a string
+     * @return a {@link PublisherID} value object
+     */
+    public static PublisherID toPublisherId(String publisherId) {
+        return new PublisherID(publisherId);
+    }
+    /**
+     * Converts a string value into a {@link UserId}.
+     *
+     * @param userId the userId value as a string
+     * @return a {@link UserId} value object
+     */
+    public static UserId toUserId(String userId) {
+        return new UserId(userId);
+    }
 }
