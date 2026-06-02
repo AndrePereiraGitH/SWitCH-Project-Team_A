@@ -1,6 +1,7 @@
 package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.country.response.CountryResponseDTO;
 
 import java.util.ArrayList;
@@ -68,4 +69,22 @@ public class CountryMapper {
 
             return dtos;
         }
+
+    /**
+     * Converts a raw {@link String} representation of a user identifier
+     * into a {@link UserId} domain value object.
+     *
+     * <p>This method acts as a simple adapter between external string-based
+     * inputs (e.g., request parameters or DTO fields) and the strongly-typed
+     * {@code UserId} value object used in the domain layer.</p>
+     *
+     * @param userId the string representation of the user identifier
+     * @return a {@code UserId} value object wrapping the provided string
+     * @throws IllegalArgumentException if the provided {@code userId} is
+     *         null, blank, or otherwise invalid according to {@link UserId}
+     */
+    public static UserId toUserId (String userId){
+
+        return new UserId(userId);
+    }
 }
