@@ -176,4 +176,14 @@ public class EditionMapper {
         }
         return dtos;
     }
+    /**
+     * Converts a String representation of a user identifier into a {@link UserId}.
+     *
+     * @param userId the user identifier as a String
+     * @return the corresponding {@link UserId}
+     * @throws IllegalArgumentException if the provided identifier is invalid
+     */
+    public static UserId toUserId(String userId) {
+        return new UserId(userId);
+    }
 }
