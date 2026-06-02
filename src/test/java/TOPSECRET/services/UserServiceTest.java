@@ -252,11 +252,10 @@ class UserServiceTest {
         when(userRepository.findIdByUsername(username)).thenReturn(Optional.of(userIdDouble));
 
         // Act
-        Optional<UserId> result = service.findIdByUsername(username);
+        UserId result = service.findIdByUsername(username);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertSame(userIdDouble, result.get());
+        assertSame(userIdDouble, result);
     }
 
     // ================================================================
@@ -264,16 +263,14 @@ class UserServiceTest {
     // ================================================================
 
     @Test
-    void findIdByUsername_shouldReturnEmpty_whenUsernameDoesNotExist() {
+    void findIdByUsername_shouldThrowIllegalArgumentException_whenUsernameDoesNotExist() {
         // Arrange
         String username = "nonexistent";
         when(userRepository.findIdByUsername(username)).thenReturn(Optional.empty());
 
-        // Act
-        Optional<UserId> result = service.findIdByUsername(username);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findIdByUsername(username));
     }
 
     // ================================================================
