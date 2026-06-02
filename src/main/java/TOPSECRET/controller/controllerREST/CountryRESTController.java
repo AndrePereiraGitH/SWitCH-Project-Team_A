@@ -86,7 +86,7 @@ public class CountryRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(CountryRESTController.class)
-                    .registerCountry(dto, userId))
+                    .getCountry(country.id().getCountryID()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
