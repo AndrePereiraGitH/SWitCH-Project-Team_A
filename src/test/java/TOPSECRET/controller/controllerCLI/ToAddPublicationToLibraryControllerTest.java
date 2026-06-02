@@ -11,6 +11,7 @@ import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublicationSampleService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -170,7 +171,7 @@ class ToAddPublicationToLibraryControllerTest {
 
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
 
-        when(pubSampleServiceDouble.addPublicationToLibrary(idDouble, libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.addPublicationToLibrary(idDouble, userIdDouble))
                 .thenReturn(publication1);
 
         // Act
@@ -191,7 +192,7 @@ class ToAddPublicationToLibraryControllerTest {
 
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
 
-        when(pubSampleServiceDouble.addPublicationToLibrary(idDouble, libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.addPublicationToLibrary(idDouble, userIdDouble))
                 .thenReturn(null);
 
         // Act
@@ -230,8 +231,7 @@ class ToAddPublicationToLibraryControllerTest {
     }
 
     @Test
-    void addPublication_userHasNoLibrary_throwsException()
-            throws InstanceNotFoundException {
+    void addPublication_userHasNoLibrary_throwsException() {
         // Arrange
         ToAddPublicationToLibraryController controller =
                 new ToAddPublicationToLibraryController(
@@ -240,11 +240,11 @@ class ToAddPublicationToLibraryControllerTest {
 
         PublicationSampleId idDouble = mock(PublicationSampleId.class);
 
-        when(libraryRepositoryDouble.getByUserId(userIdDouble))
-                .thenThrow(new InstanceNotFoundException());
+        when(pubSampleServiceDouble.addPublicationToLibrary(idDouble, userIdDouble))
+                .thenThrow(new EntityNotFoundException());
 
         // Act + Assert
-        assertThrows(InstanceNotFoundException.class,
+        assertThrows(EntityNotFoundException.class,
                 () -> controller.addPublicationToLibrary(userIdDouble, idDouble));
     }
 }

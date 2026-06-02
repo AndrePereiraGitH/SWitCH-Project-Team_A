@@ -2,13 +2,13 @@ package TOPSECRET.controller.controllerCLI;
 
 
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US024AucListingDTO;
 import TOPSECRET.dto.US024AucListingMapper;
+import TOPSECRET.services.ListingService;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
 
     private IBibliographicalDataRepository _bdRepo;
     private IPublicationSampleRepository _pubRepo;
-    private IListingRepository _listingRepo;
+    private ListingService listingService;
 
 
     /**
@@ -31,10 +31,10 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
      *
      * @param _bdRepo      the bibliographical data repository; must not be null
      * @param _pubRepo     the publication sample repository; must not be null
-     * @param _listingRepo the listing repository; must not be null
+     * @param listingService the listing repository; must not be null
      * @throws NullPointerException if any of the provided repositories is null
      */
-    public ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(IBibliographicalDataRepository _bdRepo, IPublicationSampleRepository _pubRepo, IListingRepository _listingRepo) {
+    public ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(IBibliographicalDataRepository _bdRepo, IPublicationSampleRepository _pubRepo, ListingService listingService) {
 
         if(_bdRepo == null){
             throw new NullPointerException("BibliographicalDataRepository can not be null");
@@ -44,13 +44,13 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
             throw new NullPointerException("PublicationSampleRepository can not be null");
         }
 
-        if(_listingRepo == null){
+        if(listingService == null){
             throw new NullPointerException("ListingRepository can not be null");
         }
 
         this._bdRepo = _bdRepo;
         this._pubRepo = _pubRepo;
-        this._listingRepo = _listingRepo;
+        this.listingService = listingService;
     }
 
     /**
@@ -92,7 +92,7 @@ public class ToGetTheListOfItemsOnAuctionOfAGivenPublicationController {
 
         List<PublicationSampleId> listOfPubSampleId = _pubRepo.findIdsByBibliographicalDataId(bdId);
 
-        List<Listing> listOfAuctionListingsOfGivenPublication = _listingRepo.findAllByAuctionAndPublicationSampleIdIn(listOfPubSampleId);
+        List<Listing> listOfAuctionListingsOfGivenPublication = listingService.findByAuctionAndPublicationSampleIdIn(listOfPubSampleId);
 
         List<US024AucListingDTO> listOfAuctionListingsDTO = US024AucListingMapper.toDTOs(listOfAuctionListingsOfGivenPublication);
 

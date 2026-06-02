@@ -7,6 +7,7 @@ import TOPSECRET.domain.ValueObjects.Address;
 import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Email;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -60,32 +61,35 @@ public class PublisherDataInitializer implements ApplicationRunner {
      * Penguin Random House — a major book publisher.
      */
     private Publisher buildPenguinRandomHouse() {
+        PublisherID id = new PublisherID("publisher-001");
         Email email = new Email("info", "penguinrandomhouse.com");
         Address address = new Address("1745 Broadway", "B1", "10019", new CityId("New York"));
         Contact contact = new Contact("2128407000", "1", email, address);
 
-        return publisherFactory.create("Penguin Random House", "500123456", contact);
+        return publisherFactory.create(id, "Penguin Random House", "500123456", contact);
     }
 
     /**
      * HarperCollins — a major book publisher.
      */
     private Publisher buildHarperCollins() {
+        PublisherID id = new PublisherID("publisher-002");
         Email email = new Email("contact", "harpercollins.com");
         Address address = new Address("195 Broadway", "A1", "10007", new CityId("New York"));
         Contact contact = new Contact("2126075000", "1", email, address);
 
-        return publisherFactory.create("HarperCollins", "500234567", contact);
+        return publisherFactory.create(id, "HarperCollins", "500234567", contact);
     }
 
     /**
      * National Geographic Society — publisher of the National Geographic magazine.
      */
     private Publisher buildNationalGeographicSociety() {
+        PublisherID id = new PublisherID("publisher-003");
         Email email = new Email("askus", "nationalgeographic.com");
         Address address = new Address("1145 17th Street NW", "1", "20036", new CityId("Washington DC"));
         Contact contact = new Contact("2027754000", "1", email, address);
 
-        return publisherFactory.create("National Geographic Society", "500345678", contact);
+        return publisherFactory.create(id, "National Geographic Society", "500345678", contact);
     }
 }

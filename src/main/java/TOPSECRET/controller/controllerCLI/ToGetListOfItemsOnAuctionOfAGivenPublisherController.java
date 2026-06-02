@@ -3,7 +3,6 @@ package TOPSECRET.controller.controllerCLI;
 import java.util.List;
 
 import TOPSECRET.domain.Edition.IEditionRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
@@ -14,6 +13,7 @@ import TOPSECRET.dto.US028ListingDTO;
 import TOPSECRET.dto.US028ListingMapper;
 import TOPSECRET.dto.US028PublisherDTO;
 import TOPSECRET.dto.US028PublisherMapper;
+import TOPSECRET.services.ListingService;
 import TOPSECRET.services.PublisherService;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -22,7 +22,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
     private final PublisherService publisherService;
     private final IEditionRepository editionRepo;
     private final IPublicationSampleRepository pubSampleRepo;
-    private final IListingRepository listingRepo;
+    private final ListingService listingService;
     private final US028ListingMapper listingMapper;
     private final US028PublisherMapper publisherMapper;
 
@@ -30,7 +30,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
             PublisherService publisherService,
             IEditionRepository editionRepo,
             IPublicationSampleRepository pubSampleRepo,
-            IListingRepository listingRepo,
+            ListingService listingService,
             US028ListingMapper listingMapper,
             US028PublisherMapper publisherMapper
     ) {
@@ -46,7 +46,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
             throw new IllegalArgumentException("pubSampleRepo cannot be null");
         }
 
-        if (listingRepo == null) {
+        if (listingService == null) {
             throw new IllegalArgumentException("listingRepo cannot be null");
         }
 
@@ -61,7 +61,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
         this.publisherService = publisherService;
         this.editionRepo = editionRepo;
         this.pubSampleRepo = pubSampleRepo;
-        this.listingRepo = listingRepo;
+        this.listingService = listingService;
         this.listingMapper = listingMapper;
         this.publisherMapper = publisherMapper;
     }
@@ -97,7 +97,7 @@ public class ToGetListOfItemsOnAuctionOfAGivenPublisherController {
                 pubSampleRepo.findIdsByEditionIdIn(listOfEditionIds);
 
         List<Listing> auctionListings =
-                listingRepo.findAllByAuctionAndPublicationSampleIdIn(listOfPublicationSampleIds);
+                listingService.findByAuctionAndPublicationSampleIdIn(listOfPublicationSampleIds);
 
         return listingMapper.toDTO(auctionListings);
     }

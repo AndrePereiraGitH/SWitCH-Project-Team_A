@@ -2,7 +2,6 @@ package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Edition.IEditionRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.Publisher.Publisher;
@@ -14,6 +13,7 @@ import TOPSECRET.dto.US027ListingDTO;
 import TOPSECRET.dto.US027ListingMapper;
 import TOPSECRET.dto.US027PublisherDTO;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.services.ListingService;
 import TOPSECRET.services.PublisherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     // =================================================================================================================
 
     PublisherService publisherService;
-    IListingRepository listingRepoDouble;
+    ListingService listingService;
     IPublicationSampleRepository pubSampleRepoDouble;
     IEditionRepository editionRepoDouble;
     US027ListingMapper mapperDouble;
@@ -62,7 +62,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
     @BeforeEach
     void setUp() {
         publisherService = mock(PublisherService.class);
-        listingRepoDouble = mock(IListingRepository.class);
+        listingService = mock(ListingService.class);
         pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
         editionRepoDouble = mock(IEditionRepository.class);
         mapperDouble = mock(US027ListingMapper.class);
@@ -104,7 +104,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
         List<US027PublisherDTO> result = controller.findAllPublishers();
@@ -120,7 +120,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
         List<US027PublisherDTO> result = controller.findAllPublishers();
@@ -136,7 +136,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act + Assert
         assertThrows(RuntimeException.class, controller::findAllPublishers);
@@ -151,7 +151,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Arrange
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () -> controller.findListOfItemsOnDirectSaleByPublisherId(null));
@@ -164,7 +164,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
         List<US027ListingDTO> result =
@@ -182,7 +182,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
         List<US027ListingDTO> result =
@@ -197,11 +197,11 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Arrange
         when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
-        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenReturn(List.of());
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenReturn(List.of());
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
         List<US027ListingDTO> result =
@@ -218,7 +218,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act + Assert
         assertThrows(RuntimeException.class,
@@ -233,7 +233,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act + Assert
         assertThrows(RuntimeException.class,
@@ -245,11 +245,11 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         // Arrange
         when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double))).thenReturn(List.of(pubSampleId1Double));
-        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenThrow(new RuntimeException("DB error"));
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double))).thenThrow(new RuntimeException("DB error"));
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act + Assert
         assertThrows(RuntimeException.class,
@@ -265,13 +265,13 @@ class ToGetListOfItemsOnDirectSaleOfGivenPublisherControllerTest {
         when(editionRepoDouble.findIdsByPublisherId(publisherId1Double)).thenReturn(List.of(editionId1Double, editionId2Double));
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionId1Double, editionId2Double)))
                 .thenReturn(List.of(pubSampleId1Double, pubSampleId2Double));
-        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double, pubSampleId2Double)))
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(pubSampleId1Double, pubSampleId2Double)))
                 .thenReturn(List.of(listingDouble1, listingDouble2));
         when(mapperDouble.toDTOs(List.of(listingDouble1, listingDouble2))).thenReturn(List.of(listingDTODouble1, listingDTODouble2));
 
         ToGetListOfItemsOnDirectSaleOfGivenPublisherController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenPublisherController(
-                        publisherService, listingRepoDouble, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
+                        publisherService, listingService, pubSampleRepoDouble, editionRepoDouble, mapperDouble);
 
         // Act
         List<US027ListingDTO> result =

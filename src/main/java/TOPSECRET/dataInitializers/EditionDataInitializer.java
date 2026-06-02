@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ import java.util.Locale;
  * for development / demo environments only — disable or remove it for production.
  */
 @Component
+@Order(2)
 public class EditionDataInitializer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(EditionDataInitializer.class);
@@ -61,16 +63,15 @@ public class EditionDataInitializer implements ApplicationRunner {
      * A modern book edition published after 2007, requiring an ISBN-13 code.
      */
     private Edition buildModernBookEdition() {
+        EditionId editionId = new EditionId("edition-001");
         Code code = new Code(null, "978-0-13-468599-1", null);
-
-        Dimensions dimensions = new Dimensions(10,20,30);
-
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 23.5,500);
-
+        Dimensions dimensions = new Dimensions(10, 20, 30);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 23.5, 500);
         PublicationTypeId publicationTypeId = new PublicationTypeId("pub-type-001");
         PublisherID publisherID = new PublisherID("publisher-001");
 
         return editionFactory.create(
+                editionId,
                 "3rd Edition",
                 code,
                 physicalAttributes,
@@ -87,16 +88,15 @@ public class EditionDataInitializer implements ApplicationRunner {
      * A vintage book edition published between 1970 and 2006, requiring an ISBN-10 code.
      */
     private Edition buildVintageBookEdition() {
+        EditionId editionId = new EditionId("edition-002");
         Code code = new Code("0-13-110362-8", null, null); // ISBN-10
-
-        Dimensions dimensions = new Dimensions(70,20,30);
-
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0,500);
-
+        Dimensions dimensions = new Dimensions(70, 20, 30);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 400.0, 500);
         PublicationTypeId publicationTypeId = new PublicationTypeId("pub-type-002");
         PublisherID publisherID = new PublisherID("publisher-002");
 
         return editionFactory.create(
+                editionId,
                 "1st Edition",
                 code,
                 physicalAttributes,
@@ -113,16 +113,15 @@ public class EditionDataInitializer implements ApplicationRunner {
      * A magazine edition published after 1976, requiring an ISSN code.
      */
     private Edition buildMagazineEdition() {
+        EditionId editionId = new EditionId("edition-003");
         Code code = new Code(null, null, "0027-9358"); // ISSN
-
-        Dimensions dimensions = new Dimensions(10,20,80);
-
-        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 800.5,700);
-
+        Dimensions dimensions = new Dimensions(10, 20, 80);
+        PhysicalAttributes physicalAttributes = new PhysicalAttributes(dimensions, 800.5, 700);
         PublicationTypeId publicationTypeId = new PublicationTypeId("pub-type-003");
         PublisherID publisherID = new PublisherID("publisher-003");
 
         return editionFactory.create(
+                editionId,
                 "Vol. 241 No. 4",
                 code,
                 physicalAttributes,
