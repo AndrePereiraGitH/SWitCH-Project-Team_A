@@ -83,8 +83,9 @@ public class ListingRESTController {
      *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @PostMapping("")
-    public ResponseEntity<ListingResponseDTO> createListing(@RequestBody ListingRequestDTO listingRequestDTO, @RequestParam UserId userId) {
+    public ResponseEntity<ListingResponseDTO> createListing(@RequestBody ListingRequestDTO listingRequestDTO, @RequestParam String userId) {
 
+        UserId userIdVO = ListingMapper.toUserId(userId);
         List<PublicationSampleId> itemsId = listingRequestDTO.getPublicationIds().stream().map(ListingMapper::toPublicationId).toList();
         SaleType saleType = ListingMapper.toSaleType(listingRequestDTO.getSaleType());
         Price price = ListingMapper.toPrice(listingRequestDTO.getPrice());
@@ -97,7 +98,7 @@ public class ListingRESTController {
                     saleType,
                     price,
                     listingRequestDTO.getShortDescription(),
-                    userId,
+                    userIdVO,
                     pictures
             );
 
@@ -107,7 +108,7 @@ public class ListingRESTController {
 
             ListingResponseDTO result = ListingMapper.toResponseDTO(listing, biblioDatas);
 
-            List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userId));
+            List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userIdVO));
             links.add(linkTo(methodOn(ListingRESTController.class).findById(listing.id().getId(), userId)).withSelfRel());
             links.forEach(result::add);
 
@@ -138,8 +139,9 @@ public class ListingRESTController {
      *         or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ListingResponseDTO> findById(@PathVariable String id, @RequestParam UserId userId) {
+    public ResponseEntity<ListingResponseDTO> findById(@PathVariable String id, @RequestParam String userId) {
         ListingId listingId = ListingMapper.toListingId(id);
+        UserId userIdVO = ListingMapper.toUserId(userId);
 
         try {
             Listing listing = listingService.findById(listingId);
@@ -152,7 +154,7 @@ public class ListingRESTController {
 
             ListingResponseDTO dto = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
 
-            List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userId));
+            List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userIdVO));
             links.add(linkTo(methodOn(ListingRESTController.class).findById(id, userId)).withSelfRel());
             dto.add(links);
 
@@ -200,7 +202,7 @@ public class ListingRESTController {
                 ListingResponseDTO dto = ListingMapper.toResponseDTO(listing, biblioDataList);
 
                 List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userId1));
-                links.add(linkTo(methodOn(ListingRESTController.class).findById(listing.id().getId(), userId1)).withSelfRel());
+                links.add(linkTo(methodOn(ListingRESTController.class).findById(listing.id().getId(), userId)).withSelfRel());
                 dto.add(links);
 
                 allDTO.add(dto);

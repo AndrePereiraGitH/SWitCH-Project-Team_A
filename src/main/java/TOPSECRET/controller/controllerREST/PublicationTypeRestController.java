@@ -65,7 +65,7 @@ public class PublicationTypeRestController {
      *
      * @param createPublicationTypeDTO the request body containing the media format
      *                                 of the publication type to be created
-     * @param userId                   the ID of the user performing the operation,
+     * @param  userId                  the ID of the user performing the operation,
      *                                 used for authorization and link generation
      * @return a {@link ResponseEntity} containing:
      *         <ul>
@@ -82,17 +82,19 @@ public class PublicationTypeRestController {
     @PostMapping("")
     public ResponseEntity<PublicationTypeResponseDTO> createPublicationType(
             @RequestBody CreatePublicationTypeDTO createPublicationTypeDTO,
-            @RequestParam UserId userId){
+            @RequestParam String userId){
 
         try {
-            PublicationType publicationType = service.createAndSave(createPublicationTypeDTO.mediaFormat(), userId);
+
+            UserId id = PublicationTypeMapper.toUserId(userId);
+            PublicationType publicationType = service.createAndSave(createPublicationTypeDTO.mediaFormat(), id);
 
             PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
 
-            List<Link> links = publicationTypeLinkProvider.getLinksForPublicationType(userId);
+            List<Link> links = publicationTypeLinkProvider.getLinksForPublicationType(id);
             links.forEach(result::add);
             result.add(linkTo(methodOn(PublicationTypeRestController.class)
-                    .getPublicationTypeId(publicationType.id()))
+                    .getPublicationTypeId(publicationType.id().toString()))
                     .withSelfRel()
             );
 
@@ -139,7 +141,7 @@ public class PublicationTypeRestController {
                                         linkTo(
                                                 methodOn(PublicationTypeRestController.class)
                                                         .getPublicationTypeId(
-                                                                publicationType.id()
+                                                                publicationType.id().toString()
                                                         )
                                         ).withSelfRel()
                                 );
@@ -180,10 +182,12 @@ public class PublicationTypeRestController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<PublicationTypeResponseDTO> getPublicationTypeId(
-            @PathVariable PublicationTypeId id) {
+            @PathVariable String id) {
 
         try {
-            PublicationType publicationType = service.findById(id);
+            PublicationTypeId publicationTypeId = PublicationTypeMapper.toPublicationTypeId(id);
+
+            PublicationType publicationType = service.findById(publicationTypeId);
 
             PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
 

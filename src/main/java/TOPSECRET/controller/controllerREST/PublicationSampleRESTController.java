@@ -141,13 +141,15 @@ public class PublicationSampleRESTController {
      */
     @GetMapping("/{publicationSampleId}")
     public ResponseEntity<PublicationDTO> findById(
-            @PathVariable("publicationSampleId") PublicationSampleId publicationSampleId,
+            @PathVariable("publicationSampleId") String publicationSampleId,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
-            PublicationSample pbSample = publicationSampleService.findById(publicationSampleId);
+            PublicationSampleId pbSampleId = PublicationSampleMapper.toPubId(publicationSampleId);
+
+            PublicationSample pbSample = publicationSampleService.findById(pbSampleId);
 
             PublicationDTO result = toPublicationDTO(pbSample, id);
 
@@ -641,7 +643,7 @@ public class PublicationSampleRESTController {
         List<Link> links = new ArrayList<>(
                 publicationSampleLinkProvider.getPublicationSampleLinks(userId));
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                .findById(pbSample.id(), userId.toString())).withSelfRel());
+                .findById(pbSample.id().getID(), userId.toString())).withSelfRel());
         links.forEach(result::add);
 
         return result;
