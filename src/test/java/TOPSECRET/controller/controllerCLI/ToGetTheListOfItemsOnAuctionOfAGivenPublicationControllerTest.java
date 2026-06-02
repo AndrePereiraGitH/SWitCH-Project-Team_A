@@ -1,7 +1,6 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
@@ -9,6 +8,7 @@ import TOPSECRET.domain.ValueObjects.ListingId;
 import TOPSECRET.domain.ValueObjects.Price;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.dto.US024AucListingDTO;
+import TOPSECRET.services.ListingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
 
     private IBibliographicalDataRepository bdRepository;
     private IPublicationSampleRepository pubSampleRepository;
-    private IListingRepository listingRepository;
+    private ListingService listingService;
     private ToGetTheListOfItemsOnAuctionOfAGivenPublicationController controller;
 
     // -------------------------------------------------------------------------
@@ -51,9 +51,9 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     void setUp() {
         bdRepository = mock(IBibliographicalDataRepository.class);
         pubSampleRepository = mock(IPublicationSampleRepository.class);
-        listingRepository = mock(IListingRepository.class);
+        listingService = mock(ListingService.class);
         controller = new ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(
-                bdRepository, pubSampleRepository, listingRepository);
+                bdRepository, pubSampleRepository, listingService);
     }
 
 
@@ -65,7 +65,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     void constructor_ShouldThrowNullPointerException_WhenBdRepositoryIsNull() {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                new ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(null, pubSampleRepository, listingRepository)
+                new ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(null, pubSampleRepository, listingService)
         );
     }
 
@@ -73,7 +73,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     void constructor_ShouldThrowNullPointerException_WhenPubSampleRepositoryIsNull() {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
-                new ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository, null, listingRepository)
+                new ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository, null, listingService)
         );
     }
 
@@ -89,7 +89,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
     void constructor_ShouldCreateController_WhenAllRepositoriesAreValid() {
         // Act
         ToGetTheListOfItemsOnAuctionOfAGivenPublicationController controller =
-                new ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository, pubSampleRepository, listingRepository);
+                new ToGetTheListOfItemsOnAuctionOfAGivenPublicationController(bdRepository, pubSampleRepository, listingService);
 
         // Assert
         assertNotNull(controller);
@@ -168,7 +168,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
                 .thenReturn(Optional.of(bdId));
         when(pubSampleRepository.findIdsByBibliographicalDataId(bdId))
                 .thenReturn(List.of(pubId_1, pubId_2, pubId_3));
-        when(listingRepository.findAllByAuctionAndPublicationSampleIdIn(List.of(pubId_1, pubId_2, pubId_3)))
+        when(listingService.findByAuctionAndPublicationSampleIdIn(List.of(pubId_1, pubId_2, pubId_3)))
                 .thenReturn(List.of());
 
         // Act
@@ -195,7 +195,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublicationControllerTest {
                 .thenReturn(Optional.of(bdId));
         when(pubSampleRepository.findIdsByBibliographicalDataId(bdId))
                 .thenReturn(List.of(pubId_1, pubId_2, pubId_3));
-        when(listingRepository.findAllByAuctionAndPublicationSampleIdIn(List.of(pubId_1, pubId_2, pubId_3)))
+        when(listingService.findByAuctionAndPublicationSampleIdIn(List.of(pubId_1, pubId_2, pubId_3)))
                 .thenReturn(List.of(listing_1, listing_2, listing_3));
 
         // Act

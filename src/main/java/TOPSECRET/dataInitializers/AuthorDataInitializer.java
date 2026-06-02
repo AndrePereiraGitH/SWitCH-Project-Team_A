@@ -3,11 +3,13 @@ package TOPSECRET.dataInitializers;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Author.AuthorFactory;
 import TOPSECRET.domain.Author.IAuthorRepository;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -26,6 +28,7 @@ import java.time.LocalDate;
  * for development / demo environments only — disable or remove it for production.
  */
 @Component
+@Order(1)
 public class AuthorDataInitializer implements ApplicationRunner {
 
     private static final Logger log =
@@ -42,34 +45,20 @@ public class AuthorDataInitializer implements ApplicationRunner {
         this.authorFactory = authorFactory;
     }
 
-    // =========================================================================
-    // ApplicationRunner
-    // =========================================================================
-
     @Override
     public void run(ApplicationArguments args) throws InstanceAlreadyExistsException {
-
         log.info("[AuthorDataInitializer] Seeding authors...");
 
         authorRepository.save(buildFantasyAuthor());
-
         authorRepository.save(buildScienceAuthor());
-
         authorRepository.save(buildHistoricalAuthor());
 
         log.info("[AuthorDataInitializer] Done — {} authors seeded.", 3);
     }
 
-    // =========================================================================
-    // Sample Authors
-    // =========================================================================
-
-    /**
-     * Fantasy author example.
-     */
     private Author buildFantasyAuthor() {
-
         return authorFactory.create(
+                new AuthorId("AUTH1"),
                 "J. R. R. Tolkien",
                 new CountryId("UK"),
                 LocalDate.of(1892, 1, 3),
@@ -77,12 +66,9 @@ public class AuthorDataInitializer implements ApplicationRunner {
         );
     }
 
-    /**
-     * Science fiction author example.
-     */
     private Author buildScienceAuthor() {
-
         return authorFactory.create(
+                new AuthorId("AUTH2"),
                 "Isaac Asimov",
                 new CountryId("USA"),
                 LocalDate.of(1920, 1, 2),
@@ -90,12 +76,9 @@ public class AuthorDataInitializer implements ApplicationRunner {
         );
     }
 
-    /**
-     * Historical fiction author example.
-     */
     private Author buildHistoricalAuthor() {
-
         return authorFactory.create(
+                new AuthorId("AUTH3"),
                 "Ken Follett",
                 new CountryId("UK"),
                 LocalDate.of(1949, 6, 5),

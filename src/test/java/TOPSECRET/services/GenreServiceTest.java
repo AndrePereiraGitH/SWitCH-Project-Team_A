@@ -259,30 +259,29 @@ class GenreServiceTest {
         when(genreRepository.findById(genreId)).thenReturn(Optional.of(genre));
 
         // ACT
-        Optional<Genre> result = genreService.findById(genreId);
+        Genre result = genreService.findById(genreId);
 
         // ASSERT
-        assertTrue(result.isPresent());
-        assertEquals(genre, result.get());
+        assertEquals(genre, result);
     }
 
-    @Test
-    void findById_shouldReturnEmpty_whenNotFound() {
-        // ARRANGE
-        GenreId genreId = mock(GenreId.class);
-        when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
-
-        // ACT
-        Optional<Genre> result = genreService.findById(genreId);
-
-        // ASSERT
-        assertTrue(result.isEmpty());
-    }
 
     @Test
     void findById_shouldThrowIllegalArgument_whenIdIsNull() {
         // ACT + ASSERT
         assertThrows(IllegalArgumentException.class,
                 () -> genreService.findById(null));
+    }
+
+    @Test
+    void findById_shouldThrowIllegalArgument_whenGenreNotFound() {
+
+        // ARRANGE
+        GenreId genreId = mock(GenreId.class);
+        when(genreRepository.findById(genreId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> genreService.findById(genreId));
     }
 }

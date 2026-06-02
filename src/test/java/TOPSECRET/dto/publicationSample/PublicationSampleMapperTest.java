@@ -7,10 +7,7 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
-import TOPSECRET.domain.ValueObjects.Code;
-import TOPSECRET.domain.ValueObjects.EditionId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.publicationSample.response.PublicationDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationDetailsDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationReferenceDTO;
@@ -376,6 +373,110 @@ class PublicationSampleMapperTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> toCondition(conditionString));
+    }
+
+    @Test
+    void toUserId_wrapsId() {
+        // Arrange
+        String rawUserId = "user-123";
+
+        // Act
+        UserId id = PublicationSampleMapper.toUserId(rawUserId);
+
+        // Assert
+        assertNotNull(id, "The returned UserId should not be null");
+        assertEquals("user-123", id.getUserId(), "The wrapped ID value should match the input string");
+    }
+
+    // -------------------------------------------------------------------------
+    // toBibliographicalDataIds / toBibliographicalDataId
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toBibliographicalDataIds_returnsListOfIds() {
+        // Arrange
+        List<String> rawIds = List.of("bd-1", "bd-2", "bd-3");
+
+        // Act
+        List<BibliographicalDataId> ids = PublicationSampleMapper.toBibliographicalDataIds(rawIds);
+
+        // Assert
+        assertEquals(3, ids.size(), "Should return exactly 3 BibliographicalDataId objects");
+        assertEquals("bd-1", ids.get(0).getID());
+        assertEquals("bd-2", ids.get(1).getID());
+        assertEquals("bd-3", ids.get(2).getID());
+    }
+
+    @Test
+    void toBibliographicalDataIds_emptyListReturnsEmpty() {
+        // Arrange
+        List<String> rawIds = List.of();
+
+        // Act
+        List<BibliographicalDataId> ids = PublicationSampleMapper.toBibliographicalDataIds(rawIds);
+
+        // Assert
+        assertTrue(ids.isEmpty(), "An empty input list should result in an empty output list");
+    }
+
+    @Test
+    void toBibliographicalDataId_wrapsId() {
+        // Arrange
+        String rawId = "bd-99";
+
+        // Act
+        BibliographicalDataId id = PublicationSampleMapper.toBibliographicalDataId(rawId);
+
+        // Assert
+        assertNotNull(id, "The returned BibliographicalDataId should not be null");
+        assertEquals("bd-99", id.getID(), "The wrapped ID value should match the input string");
+    }
+
+    // -------------------------------------------------------------------------
+    // toEditionIds
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toEditionIds_returnsListOfIds() {
+        // Arrange
+        List<String> rawIds = List.of("ed-10", "ed-20");
+
+        // Act
+        List<EditionId> ids = PublicationSampleMapper.toEditionIds(rawIds);
+
+        // Assert
+        assertEquals(2, ids.size(), "Should return exactly 2 EditionId objects");
+        assertEquals("ed-10", ids.get(0).getID());
+        assertEquals("ed-20", ids.get(1).getID());
+    }
+
+    @Test
+    void toEditionIds_emptyListReturnsEmpty() {
+        // Arrange
+        List<String> rawIds = List.of();
+
+        // Act
+        List<EditionId> ids = PublicationSampleMapper.toEditionIds(rawIds);
+
+        // Assert
+        assertTrue(ids.isEmpty(), "An empty input list should result in an empty output list");
+    }
+
+    // -------------------------------------------------------------------------
+    // toCollectionOfPublicationsId
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toCollectionOfPublicationsId_wrapsId() {
+        // Arrange
+        String rawId = "collection-404";
+
+        // Act
+        CollectionOfPublicationsId id = PublicationSampleMapper.toCollectionOfPublicationsId(rawId);
+
+        // Assert
+        assertNotNull(id, "The returned CollectionOfPublicationsId should not be null");
+        assertEquals("collection-404", id.getId(), "The wrapped ID value should match the input string");
     }
 
 
