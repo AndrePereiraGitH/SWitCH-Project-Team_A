@@ -1,6 +1,8 @@
 package TOPSECRET.dto.PublicationType;
 
 import TOPSECRET.domain.PublicationType.PublicationType;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationType.response.PublicationTypeResponseDTO;
 
 import java.util.ArrayList;
@@ -70,6 +72,28 @@ public final class PublicationTypeMapper {
         }
 
         return dtoList;
+    }
+    /**
+     * Converts a String representation of a user identifier into a {@link UserId}.
+     *
+     * @param userId the user identifier as a String
+     * @return the corresponding {@link UserId}
+     * @throws IllegalArgumentException if the provided identifier is invalid
+     */
+    public static UserId toUserId(String userId) {
+        return new UserId(userId);
+    }
+
+    /**
+     * Converts a String representation of a publication type identifier
+     * into a {@link PublicationTypeId}.
+     *
+     * @param publicationTypeId the publication type identifier as a String
+     * @return the corresponding {@link PublicationTypeId}
+     * @throws IllegalArgumentException if the provided identifier is invalid
+     */
+    public static PublicationTypeId toPublicationTypeId(String publicationTypeId) {
+        return new PublicationTypeId(publicationTypeId);
     }
 
 }

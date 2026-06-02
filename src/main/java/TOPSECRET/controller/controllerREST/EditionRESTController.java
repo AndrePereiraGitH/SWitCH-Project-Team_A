@@ -76,8 +76,11 @@ public class EditionRESTController {
     @PostMapping("")
     public ResponseEntity<EditionDTO> createEdition(
             @RequestBody CreateEditionDTO dto,
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
         try {
+
+            UserId id =  EditionMapper.toUserId(userId);
+
             Edition edition = service.createAndSave(
                     dto.editionNumber(),
                     EditionMapper.toCode(dto),
@@ -88,12 +91,12 @@ public class EditionRESTController {
                     EditionMapper.toEditionLanguage(dto.editionLanguage()),
                     dto.editionDate(),
                     EditionMapper.toTypeOfBinding(dto.typeOfBinding()),
-                    userId
+                    id
             );
 
             EditionDTO result = EditionMapper.toDTO(edition);
 
-            List<Link> links = new ArrayList<>(provider.getLinks(userId));
+            List<Link> links = new ArrayList<>(provider.getLinks(id));
             links.add(linkTo(methodOn(EditionRESTController.class)
                     .createEdition(dto, userId)).withSelfRel());
             links.forEach(result::add);
