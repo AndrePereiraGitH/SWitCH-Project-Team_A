@@ -3,6 +3,7 @@ import { Navbar } from "./components/Navbar";
 import { LandingPage } from "./pages/LandingPage";
 import { Dashboard } from "./pages/Dashboard";
 import { Library } from "./pages/Library";
+import { Explore } from "./pages/Explore";
 import { CartProvider } from "./components/CartContext";
 import { ListsProvider } from "./components/ListsContext";
 import { PublicationsProvider } from "./components/PublicationsContext";
@@ -24,6 +25,7 @@ export default function App() {
                       <Route path="/home" element={<Navigate to="/" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/library" element={<Library />} />
+                      <Route path="/explore" element={<Explore />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   </div>
