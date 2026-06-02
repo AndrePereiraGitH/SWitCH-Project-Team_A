@@ -9,6 +9,8 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.collectionOfPublications.CollectionOfPublicationsMapper;
+import TOPSECRET.dto.collectionOfPublications.response.PublicCollectionOfPublicationsDTO;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -319,5 +321,34 @@ public class CollectionOfPublicationsService {
         Objects.requireNonNull(genreId, "genreId cannot be null");
 
         return collectionOfPublicationsRepository.findPublicCollectionsByGenreId(genreId);
+    }
+
+    /**
+     * Retrieves all collections that are currently public and maps them into
+     * {@link PublicCollectionOfPublicationsDTO}.
+     *
+     * <p>A collection is considered public if it satisfies the domain rule
+     * defined in {@link CollectionOfPublications#isCurrentlyPublic()}.</p>
+     *
+     * <p>This method performs full orchestration:</p>
+     * <ul>
+     *     <li>retrieves all collections from the repository</li>
+     *     <li>filters only currently public collections</li>
+     *     <li>resolves the owner's username</li>
+     *     <li>maps the result into DTOs for API exposure</li>
+     * </ul>
+     *
+     * @return a list of {@link PublicCollectionOfPublicationsDTO}; may be empty
+     * @throws NullPointerException if repository returns null (defensive check)
+     */
+    public List<PublicCollectionOfPublicationsDTO> findAllPublicCollections() {
+        return collectionOfPublicationsRepository.findAll()
+                .stream()
+                .filter(CollectionOfPublications::isCurrentlyPublic)
+                .map(c -> {
+                    String ownerName = getUserName(c.getOwnerId());
+                    return CollectionOfPublicationsMapper.toPublicDTO(c, ownerName);
+                })
+                .toList();
     }
 }

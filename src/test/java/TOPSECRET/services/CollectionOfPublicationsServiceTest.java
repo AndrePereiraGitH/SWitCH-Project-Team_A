@@ -9,6 +9,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.collectionOfPublications.response.PublicCollectionOfPublicationsDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -741,5 +742,99 @@ class CollectionOfPublicationsServiceTest {
 
         // Assert
         assertTrue(result.isEmpty());
+    }
+
+// ==========================================================================
+// ------------------- FIND ALL PUBLIC COLLECTIONS --------------------------
+// ==========================================================================
+
+    @Test
+    void findAllPublicCollections_shouldReturnOnlyPublicDTOs() {
+
+        // ARRANGE
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+
+        UserId owner1 = mock(UserId.class);
+        UserId owner2 = mock(UserId.class);
+
+        User userMock = mock(User.class);
+
+        CollectionOfPublicationsId id1 = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublicationsId id2 = mock(CollectionOfPublicationsId.class);
+
+        when(c1.id()).thenReturn(id1);
+        when(c2.id()).thenReturn(id2);
+
+        when(id1.toString()).thenReturn("col-1");
+        when(id2.toString()).thenReturn("col-2");
+
+        when(c1.isCurrentlyPublic()).thenReturn(true);
+        when(c2.isCurrentlyPublic()).thenReturn(false);
+
+        when(c1.getOwnerId()).thenReturn(owner1);
+        when(c2.getOwnerId()).thenReturn(owner2);
+
+        when(collectionOfPublicationsRepository.findAll())
+                .thenReturn(List.of(c1, c2));
+
+        when(userRepository.findByID(owner1)).thenReturn(Optional.of(userMock));
+        when(userRepository.findByID(owner2)).thenReturn(Optional.of(userMock));
+
+        when(userMock.getUserName()).thenReturn("owner-1");
+
+        CollectionOfPublicationsService service =
+                new CollectionOfPublicationsService(
+                        collectionOfPublicationsRepository,
+                        factory,
+                        policy,
+                        userRepository
+                );
+
+        // ACT
+        List<PublicCollectionOfPublicationsDTO> result =
+                service.findAllPublicCollections();
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertEquals("owner-1", result.get(0).getOwnerName());
+    }
+
+    @Test
+    void findAllPublicCollections_shouldReturnEmptyList_whenNoPublicCollections() {
+
+        when(collectionOfPublicationsRepository.findAll())
+                .thenReturn(List.of());
+
+        CollectionOfPublicationsService service =
+                new CollectionOfPublicationsService(
+                        collectionOfPublicationsRepository,
+                        factory,
+                        policy,
+                        userRepository
+                );
+
+        List<PublicCollectionOfPublicationsDTO> result =
+                service.findAllPublicCollections();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAllPublicCollections_shouldThrow_whenRepositoryReturnsNull() {
+
+        when(collectionOfPublicationsRepository.findAll())
+                .thenReturn(null);
+
+        CollectionOfPublicationsService service =
+                new CollectionOfPublicationsService(
+                        collectionOfPublicationsRepository,
+                        factory,
+                        policy,
+                        userRepository
+                );
+
+        assertThrows(NullPointerException.class,
+                service::findAllPublicCollections);
     }
 }
