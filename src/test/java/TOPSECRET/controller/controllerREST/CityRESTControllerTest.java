@@ -160,13 +160,8 @@ class CityRESTControllerTest {
         CityRESTController sut = new CityRESTController(service, provider);
 
         CityId doubleCityId = mock(CityId.class);
-        when(doubleCityId.getCityID()).thenReturn("1");
         when(city.id()).thenReturn(doubleCityId);
         when(city.getCityName()).thenReturn("Porto");
-
-        CountryId doubleCountryId = mock(CountryId.class);
-        when(doubleCountryId.toString()).thenReturn("PT");
-        when(city.getCityCountryID()).thenReturn(doubleCountryId);
         when(service.findAll()).thenReturn(List.of(city));
 
         // ACT
@@ -192,7 +187,7 @@ class CityRESTControllerTest {
     }
 
     @Test
-    void getCities_shouldReturnBadRequest_whenIllegalArgument() {
+    void getCities_shouldReturnForbidden_whenIllegalArgument() {
         // ARRANGE
         CityRESTController sut = new CityRESTController(service, provider);
         when(service.findAll()).thenThrow(new IllegalArgumentException());
@@ -201,7 +196,7 @@ class CityRESTControllerTest {
         ResponseEntity<List<ResponseCityDTO>> result = sut.getCities();
 
         // ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
         assertNull(result.getBody());
     }
 
@@ -213,6 +208,55 @@ class CityRESTControllerTest {
 
         // ACT
         ResponseEntity<List<ResponseCityDTO>> result = sut.getCities();
+
+        // ASSERT
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    @Test
+    void getCityById_shouldReturnOk_whenCityExists() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+
+        CityId doubleCityId = mock(CityId.class);
+        when(doubleCityId.getCityID()).thenReturn("1");
+        when(city.id()).thenReturn(doubleCityId);
+        when(city.getCityName()).thenReturn("Porto");
+        when(service.findById(any(CityId.class))).thenReturn(city);
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.getCityById("1");
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertTrue(result.getBody().hasLink("self"));
+        assertTrue(result.getBody().hasLink("cities"));
+    }
+
+    @Test
+    void getCityById_shouldReturnBadRequest_whenIllegalArgument() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        when(service.findById(any(CityId.class))).thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.getCityById("1");
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    @Test
+    void getCityById_shouldReturnInternalServerError_whenUnexpectedException() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        when(service.findById(any(CityId.class))).thenThrow(new RuntimeException());
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.getCityById("1");
 
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());

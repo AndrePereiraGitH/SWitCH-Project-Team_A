@@ -73,15 +73,17 @@ class CountryRESTControllerTest {
         when(country.getCountryName()).thenReturn("Portugal");
         when(country.id()).thenReturn(new CountryId("PORTUGAL"));
 
-        when(countryService.createAndSave("Portugal", userId))
-                .thenReturn(country);
+        when(countryService.createAndSave(
+                eq("Portugal"),
+                any(UserId.class)
+        )).thenReturn(country);
 
-        when(linkProvider.getLinks(userId))
+        when(linkProvider.getLinks(any(UserId.class)))
                 .thenReturn(new ArrayList<>());
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.registerCountry(dto, userId);
+                controller.registerCountry(dto, "userId");
 
         // Assert
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -98,19 +100,19 @@ class CountryRESTControllerTest {
         when(country.getCountryName()).thenReturn("Portugal");
         when(country.id()).thenReturn(new CountryId("PORTUGAL"));
 
-        when(countryService.createAndSave("Portugal", userId))
+        when(countryService.createAndSave(eq("Portugal"), any(UserId.class)))
                 .thenReturn(country);
 
         List<Link> links = List.of(
                 Link.of("/countries", "register-country")
         );
 
-        when(linkProvider.getLinks(userId))
+        when(linkProvider.getLinks(any(UserId.class)))
                 .thenReturn(new ArrayList<>(links));
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.registerCountry(dto, userId);
+                controller.registerCountry(dto, "userId");
 
         // Assert
         assertNotNull(response.getBody());
@@ -135,7 +137,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.registerCountry(dto, userId);
+                controller.registerCountry(dto, "userId");
 
         // Assert
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -152,7 +154,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.registerCountry(dto, userId);
+                controller.registerCountry(dto, "userId");
 
         // Assert
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
@@ -169,7 +171,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.registerCountry(dto, userId);
+                controller.registerCountry(dto, "userId");
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -186,7 +188,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.registerCountry(dto, userId);
+                controller.registerCountry(dto, "userId");
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

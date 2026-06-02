@@ -3,6 +3,7 @@ package TOPSECRET.dataInitializers;
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.PublicationType.PublicationTypeFactory;
 import TOPSECRET.domain.PublicationType.IPublicationTypeRepository;
+import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -41,11 +42,11 @@ public class PublicationTypeDataInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         log.info("[PublicationTypeDataInitializer] Seeding publication type data...");
 
-        publicationTypeRepository.save(publicationTypeFactory.create("Book"));
-        publicationTypeRepository.save(publicationTypeFactory.create("Magazine"));
-        publicationTypeRepository.save(publicationTypeFactory.create("AudioBook"));
-        publicationTypeRepository.save(publicationTypeFactory.create("eBook"));
-        publicationTypeRepository.save(publicationTypeFactory.create("Comic"));
+        publicationTypeRepository.save(publicationTypeFactory.create(new PublicationTypeId("pub-type-001"), "Book"));
+        publicationTypeRepository.save(publicationTypeFactory.create(new PublicationTypeId("pub-type-002"), "Magazine"));
+        publicationTypeRepository.save(publicationTypeFactory.create(new PublicationTypeId("pub-type-003"), "AudioBook"));
+        publicationTypeRepository.save(publicationTypeFactory.create(new PublicationTypeId("pub-type-004"), "eBook"));
+        publicationTypeRepository.save(publicationTypeFactory.create(new PublicationTypeId("pub-type-005"), "Comic"));
 
         log.info("[PublicationTypeDataInitializer] Done — {} publication types seeded.", 5);
     }

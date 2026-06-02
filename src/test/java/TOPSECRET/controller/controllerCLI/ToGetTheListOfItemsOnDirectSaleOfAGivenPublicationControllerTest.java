@@ -2,7 +2,6 @@ package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -14,9 +13,7 @@ import TOPSECRET.dto.US023BibliographicalDataMapper;
 import TOPSECRET.dto.US023ListingDTO;
 import TOPSECRET.dto.US023ListingMapper;
 import TOPSECRET.persistence.mem.BibliographicalDataRepositoryMem;
-import TOPSECRET.persistence.mem.ListingRepositoryMem;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import TOPSECRET.services.ListingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +48,6 @@ import static org.mockito.Mockito.when;
  * </p>
  */
 class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
-    private static final Log log = LogFactory.getLog(ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest.class);
 
     // ===========================================
     // ================= Set Up ==================
@@ -59,9 +55,8 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
     private IPublicationSampleRepository pubSampleRepoDouble;
     private PublicationSampleId psId1Double;
-    private PublicationSampleId psId2Double;
 
-    private IListingRepository listingRepoDouble;
+    private ListingService listingService;
     private Listing listing1Double;
     private Listing listing2Double;
     private ListingId listingId1Double;
@@ -94,7 +89,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         when(pubSample1Double.getBibliographicalDataID()).thenReturn(bdId1Double);
 
         PublicationSample pubSample2Double = mock(PublicationSample.class);
-        psId2Double = mock(PublicationSampleId.class);
+        PublicationSampleId psId2Double = mock(PublicationSampleId.class);
         when(pubSample2Double.id()).thenReturn(psId2Double);
         when(pubSample2Double.getBibliographicalDataID()).thenReturn(bdId2Double);
 
@@ -110,7 +105,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         // Repositories
         bdRepoDouble = mock(BibliographicalDataRepositoryMem.class);
-        listingRepoDouble = mock(ListingRepositoryMem.class);
+        listingService = mock(ListingService.class);
         pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
 
         // Mappers
@@ -127,7 +122,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertDoesNotThrow(() ->
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble));
+                        bdRepoDouble, listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble));
     }
 
     @Test
@@ -135,7 +130,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        null, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble));
+                        null, listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble));
     }
 
     @Test
@@ -151,7 +146,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, null, bdMapperDouble, listingMapperDouble));
+                        bdRepoDouble, listingService, null, bdMapperDouble, listingMapperDouble));
     }
 
     @Test
@@ -159,7 +154,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, null, listingMapperDouble));
+                        bdRepoDouble, listingService, pubSampleRepoDouble, null, listingMapperDouble));
     }
 
     @Test
@@ -167,7 +162,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, null));
+                        bdRepoDouble, listingService, pubSampleRepoDouble, bdMapperDouble, null));
     }
 
     // =================================================================================================================
@@ -184,7 +179,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(bdRepoDouble,
-                        listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+                        listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
         List<US023BibliographicalDataDTO> listOfPublicationsDTO = controller.findAllBibliographicalData();
@@ -202,7 +197,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+                        bdRepoDouble, listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
         List<US023BibliographicalDataDTO> listOfPublicationsDTO = controller.findAllBibliographicalData();
@@ -220,13 +215,13 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Arrange
         when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of());
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of());
 
         when(listingMapperDouble.toDTOs(List.of())).thenReturn(List.of());
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+                        bdRepoDouble, listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
         List<US023ListingDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
@@ -241,14 +236,14 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Arrange
         when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of(listing1Double));
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of(listing1Double));
 
         US023ListingDTO dto = mock(US023ListingDTO.class);
         when(listingMapperDouble.toDTOs(List.of(listing1Double))).thenReturn(List.of(dto));
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+                        bdRepoDouble, listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
         List<US023ListingDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
@@ -263,13 +258,13 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Arrange
         when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdId1Double)).thenReturn(List.of(psId1Double));
 
-        when(listingRepoDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of(listing1Double));
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(psId1Double))).thenReturn(List.of(listing1Double));
 
         when(listingMapperDouble.toDTOs(List.of(listing1Double))).thenReturn(List.of());
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+                        bdRepoDouble, listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act
         List<US023ListingDTO> result = controller.findListOfItemsOnDirectSale(bdId1Double);
@@ -283,7 +278,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationControllerTest {
         // Arrange
         ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController controller =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenPublicationController(
-                        bdRepoDouble, listingRepoDouble, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
+                        bdRepoDouble, listingService, pubSampleRepoDouble, bdMapperDouble, listingMapperDouble);
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class,

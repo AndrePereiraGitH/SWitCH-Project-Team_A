@@ -3,7 +3,6 @@ package TOPSECRET.controller.controllerCLI;
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
@@ -13,6 +12,7 @@ import TOPSECRET.dto.US021DirSaleListingDTO;
 import TOPSECRET.dto.US021DirSaleListingMapper;
 import TOPSECRET.dto.US021GenreDTO;
 
+import TOPSECRET.services.ListingService;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureControllerIsCreatedSuccessfully() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -45,7 +45,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                         genreRepositoryMock,
-                        listingRepositoryMock,
+                        listingService,
                         publicationSampleRepositoryMock,
                         bibliographicalDataRepositoryMock,
                         mapperMock
@@ -58,7 +58,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     @Test
     void ensureThrowsExceptionWhenGenreRepositoryIsNull() {
         // Arrange
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -67,7 +67,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                         null,
-                        listingRepositoryMock,
+                        listingService,
                         publicationSampleRepositoryMock,
                         bibliographicalDataRepositoryMock,
                         mapperMock
@@ -97,7 +97,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureThrowsExceptionWhenPublicationSampleRepositoryIsNull() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
@@ -105,7 +105,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                         genreRepositoryMock,
-                        listingRepositoryMock,
+                        listingService,
                         null,
                         bibliographicalDataRepositoryMock,
                         mapperMock
@@ -116,7 +116,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureThrowsExceptionWhenBibliographicalDataRepositoryIsNull() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
@@ -124,7 +124,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                         genreRepositoryMock,
-                        listingRepositoryMock,
+                        listingService,
                         publicationSampleRepositoryMock,
                         null,
                         mapperMock
@@ -135,7 +135,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureThrowsExceptionWhenMapperIsNull() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
 
@@ -143,7 +143,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
         assertThrows(IllegalArgumentException.class, () ->
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
                         genreRepositoryMock,
-                        listingRepositoryMock,
+                        listingService,
                         publicationSampleRepositoryMock,
                         bibliographicalDataRepositoryMock,
                         null
@@ -166,7 +166,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureGetAllGenresReturnsEmptyListWhenRepositoryHasNoGenres() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -175,7 +175,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 
@@ -190,7 +190,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureGetAllGenresReturnsDTOsWhenRepositoryHasGenres() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -208,7 +208,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 
@@ -230,14 +230,14 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureThrowsExceptionWhenSelectedGenreIsNull() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 
@@ -250,7 +250,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureReturnsEmptyListWhenNoDirectSaleListingsExist() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -265,7 +265,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 
@@ -280,7 +280,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureReturnsEmptyListWhenGenreHasNoBibliographicalData() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -295,7 +295,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 
@@ -310,7 +310,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureReturnsListingsWhenGenreMatchesDirectSaleListings() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -329,13 +329,13 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
                 .thenReturn(bdIds);
         when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
-        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn (pubSampleIds))
                 .thenReturn(listings);
         when(mapperMock.toDTOs(listings)).thenReturn(List.of(expectedDTO));
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 
@@ -351,7 +351,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureReturnsMultipleListingsWhenSeveralMatchGenre() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -374,13 +374,13 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
                 .thenReturn(bdIds);
         when(publicationSampleRepositoryMock.findIdsByBibliographicalDataIdIn(bdIds))
                 .thenReturn(pubSampleIds);
-        when(listingRepositoryMock.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds))
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(pubSampleIds))
                 .thenReturn(listings);
         when(mapperMock.toDTOs(listings)).thenReturn(List.of(dto1, dto2));
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 
@@ -395,7 +395,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
     void ensureReturnsEmptyListWhenNoPublicationSamplesFoundForBibliographicalData() {
         // Arrange
         IGenreRepository genreRepositoryMock = mock(IGenreRepository.class);
-        IListingRepository listingRepositoryMock = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         IPublicationSampleRepository publicationSampleRepositoryMock = mock(IPublicationSampleRepository.class);
         IBibliographicalDataRepository bibliographicalDataRepositoryMock = mock(IBibliographicalDataRepository.class);
         US021DirSaleListingMapper mapperMock = mock(US021DirSaleListingMapper.class);
@@ -412,7 +412,7 @@ class ToGetListOfItemsOnDirectSaleOfGivenGenreControllerTest {
 
         ToGetListOfItemsOnDirectSaleOfGivenGenreController controller =
                 new ToGetListOfItemsOnDirectSaleOfGivenGenreController(
-                        genreRepositoryMock, listingRepositoryMock,
+                        genreRepositoryMock, listingService,
                         publicationSampleRepositoryMock, bibliographicalDataRepositoryMock, mapperMock
                 );
 

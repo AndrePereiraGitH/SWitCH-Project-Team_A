@@ -52,7 +52,7 @@ public class UserLinkProvider {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(UserRESTController.class)
-                .getUser(userId))
+                .getUser(userId.getUserId()))
                 .withRel("get-user"));
 
         userRepository.findByID(userId).ifPresent(user -> {

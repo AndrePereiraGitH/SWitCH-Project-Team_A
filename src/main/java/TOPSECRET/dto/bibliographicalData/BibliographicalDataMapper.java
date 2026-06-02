@@ -4,6 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 
 import javax.management.InstanceNotFoundException;
@@ -126,5 +127,13 @@ public final class BibliographicalDataMapper {
         }
         return genreIds;
     }
+
+    /**
+     * Creates a {@link UserId} instance from the given string value.
+     *
+     * @param id the user identifier as a string
+     * @return a new {@link UserId} instance
+     */
+    public static UserId toUserId (String id){ return new UserId(id); }
 
 }

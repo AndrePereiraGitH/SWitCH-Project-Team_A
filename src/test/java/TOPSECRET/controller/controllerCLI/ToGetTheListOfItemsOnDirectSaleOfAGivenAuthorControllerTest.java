@@ -12,6 +12,7 @@ import TOPSECRET.dto.US025AuthorDTO;
 import TOPSECRET.dto.US025DirectSaleDTO;
 import TOPSECRET.dto.US025AuthorMapper;
 import TOPSECRET.dto.US025DirectSaleMapper;
+import TOPSECRET.services.ListingService;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 IllegalArgumentException.class,
                 () -> new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         null,
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         mock(IBibliographicalDataRepository.class),
                         mock(IPublicationSampleRepository.class),
                         mock(US025AuthorMapper.class),
@@ -86,7 +87,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 IllegalArgumentException.class,
                 () -> new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         mock(IAuthorRepository.class),
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         null,
                         mock(IPublicationSampleRepository.class),
                         mock(US025AuthorMapper.class),
@@ -104,7 +105,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 IllegalArgumentException.class,
                 () -> new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         mock(IAuthorRepository.class),
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         mock(IBibliographicalDataRepository.class),
                         null,
                         mock(US025AuthorMapper.class),
@@ -122,7 +123,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 IllegalArgumentException.class,
                 () -> new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         mock(IAuthorRepository.class),
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         mock(IBibliographicalDataRepository.class),
                         mock(IPublicationSampleRepository.class),
                         null,
@@ -140,7 +141,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
                 IllegalArgumentException.class,
                 () -> new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         mock(IAuthorRepository.class),
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         mock(IBibliographicalDataRepository.class),
                         mock(IPublicationSampleRepository.class),
                         mock(US025AuthorMapper.class),
@@ -170,7 +171,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepositoryDouble,
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         mock(IBibliographicalDataRepository.class),
                         mock(IPublicationSampleRepository.class),
                         authorMapperDouble,
@@ -199,7 +200,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepositoryDouble,
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         mock(IBibliographicalDataRepository.class),
                         mock(IPublicationSampleRepository.class),
                         authorMapperDouble,
@@ -226,7 +227,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         mock(IAuthorRepository.class),
-                        mock(IListingRepository.class),
+                        mock(ListingService.class),
                         mock(IBibliographicalDataRepository.class),
                         mock(IPublicationSampleRepository.class),
                         mock(US025AuthorMapper.class),
@@ -247,17 +248,17 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         IAuthorRepository authorRepositoryDouble = mock(IAuthorRepository.class);
         IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
         IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);
-        IListingRepository listingRepositoryDouble = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         AuthorId authorIdDouble = mock(AuthorId.class);
 
         when(bdRepositoryDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of());
         when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of())).thenReturn(List.of());
-        when(listingRepositoryDouble.findAllByDirectSaleAndPublicationSampleIdIn(List.of())).thenReturn(List.of());
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of())).thenReturn(List.of());
 
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepositoryDouble,
-                        listingRepositoryDouble,
+                        listingService,
                         bdRepositoryDouble,
                         pubRepositoryDouble,
                         mock(US025AuthorMapper.class),
@@ -280,7 +281,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         IAuthorRepository authorRepositoryDouble = mock(IAuthorRepository.class);
         IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
         IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);
-        IListingRepository listingRepositoryDouble = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         US025DirectSaleMapper directSaleMapperDouble = mock(US025DirectSaleMapper.class);
 
         AuthorId authorIdDouble = mock(AuthorId.class);
@@ -290,7 +291,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
 
         when(bdRepositoryDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of(bdIdDouble));
         when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of());
-        when(listingRepositoryDouble.findAllByDirectSaleAndPublicationSampleIdIn(anyList()))
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(anyList()))
                 .thenReturn(List.of(listingDouble));
 
         US025DirectSaleDTO dtoBDouble = mock(US025DirectSaleDTO.class);
@@ -305,7 +306,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepositoryDouble,
-                        listingRepositoryDouble,
+                        listingService,
                         bdRepositoryDouble,
                         pubRepositoryDouble,
                         mock(US025AuthorMapper.class),
@@ -330,7 +331,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         IAuthorRepository authorRepositoryDouble = mock(IAuthorRepository.class);
         IBibliographicalDataRepository bdRepositoryDouble = mock(IBibliographicalDataRepository.class);
         IPublicationSampleRepository pubRepositoryDouble = mock(IPublicationSampleRepository.class);
-        IListingRepository listingRepositoryDouble = mock(IListingRepository.class);
+        ListingService listingService = mock(ListingService.class);
         US025DirectSaleMapper directSaleMapperDouble = mock(US025DirectSaleMapper.class);
 
         AuthorId authorIdDouble = mock(AuthorId.class);
@@ -344,7 +345,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         when(pubRepositoryDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble)))
                 .thenReturn(List.of());
         List<Listing> listingsDouble = List.of(mock(Listing.class));
-        when(listingRepositoryDouble.findAllByDirectSaleAndPublicationSampleIdIn(anyList()))
+        when(listingService.findAllDirectSaleAndPublicationSampleIdIn(anyList()))
                 .thenReturn(listingsDouble);
 
         when(directSaleMapperDouble.toDTOList(eq(listingsDouble)))
@@ -353,7 +354,7 @@ class ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorControllerTest {
         ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController sut =
                 new ToGetTheListOfItemsOnDirectSaleOfAGivenAuthorController(
                         authorRepositoryDouble,
-                        listingRepositoryDouble,
+                        listingService,
                         bdRepositoryDouble,
                         pubRepositoryDouble,
                         mock(US025AuthorMapper.class),

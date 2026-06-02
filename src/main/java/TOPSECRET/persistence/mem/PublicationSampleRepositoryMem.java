@@ -119,6 +119,23 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
     /** {@inheritDoc} */
     @Override
+    public List<PublicationSample> findByBibliographicalDataId(BibliographicalDataId bdId) {
+        if (bdId == null) {
+            throw new NullPointerException("PublicationSampleID cannot be null");
+        }
+
+        List<PublicationSample> listOfPubSamples = new ArrayList<>();
+
+        for (PublicationSample pbSample : allPublicationsInSystem) {
+            if (pbSample.getBibliographicalDataID().equals(bdId)) {
+                listOfPubSamples.add(pbSample);
+            }
+        }
+        return listOfPubSamples;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
         if (listOfEditionIds == null) {
             throw new NullPointerException("listOfEditionIds cannot be null");
@@ -134,6 +151,26 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
             }
         }
         return listOfPubSampleIds;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
+        if (listOfEditionIds == null) {
+            throw new NullPointerException("listOfEditionIds cannot be null");
+        }
+
+        List<PublicationSample> listOfPubSamples = new ArrayList<>();
+
+        for (EditionId editionId : listOfEditionIds) {
+            for (PublicationSample pbSample : allPublicationsInSystem) {
+                if (pbSample.getEditionID().equals(editionId)) {
+                    listOfPubSamples.add(pbSample);
+                }
+            }
+        }
+        return listOfPubSamples;
     }
 
     /** {@inheritDoc} */
@@ -157,6 +194,29 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         }
 
         return publicationSampleIds;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
+        if (bdIds == null) {
+            throw new IllegalArgumentException("BibliographicalDataID List cannot be null");
+        }
+
+        List<PublicationSample> publicationSamples = new ArrayList<>();
+
+        for (PublicationSample pbSample : allPublicationsInSystem) {
+            BibliographicalDataId bdId = pbSample.getBibliographicalDataID();
+
+            for (BibliographicalDataId bdId2 : bdIds) {
+                if (bdId.equals(bdId2)) {
+                    publicationSamples.add(pbSample);
+                    break;
+                }
+            }
+        }
+
+        return publicationSamples;
     }
 
     /** {@inheritDoc} */

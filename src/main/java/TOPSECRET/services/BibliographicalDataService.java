@@ -174,17 +174,20 @@ public class BibliographicalDataService {
      */
     public List<BibliographicalData> findAll() { return bibliographicalDataRepository.findAll(); }
 
-    /**
+     /**
      * Retrieves a bibliographical data entity stored in the repository.
      *
      * @return an Optional containing the {@link BibliographicalData} entity;
      * @throws IllegalArgumentException if {@link BibliographicalDataId} is null
      */
-    public Optional<BibliographicalData> findById(BibliographicalDataId bdId) {
+    public BibliographicalData findById(BibliographicalDataId bdId) throws InstanceNotFoundException {
         if(bdId == null){
             throw new IllegalArgumentException("Bibliographical Data Id cannot be null");
         }
-        return bibliographicalDataRepository.findById(bdId);
+
+        return bibliographicalDataRepository.findById(bdId)
+                .orElseThrow(() ->
+                        new InstanceNotFoundException("BibliographicalData was not found:" + bdId));
     }
 
     /**
@@ -206,11 +209,13 @@ public class BibliographicalDataService {
      * @return an Optional containing the {@link BibliographicalDataId} id;
      * @throws IllegalArgumentException if title is null
      */
-    public Optional<BibliographicalDataId> findIdByTitle(String bdTitle) {
+    public BibliographicalDataId findIdByTitle(String bdTitle) throws InstanceNotFoundException {
         if (bdTitle == null){
             throw new IllegalArgumentException("Title cannot be null");
         }
-        return bibliographicalDataRepository.findIdByTitle(bdTitle);
+        return bibliographicalDataRepository.findIdByTitle(bdTitle)
+                .orElseThrow(() ->
+                        new InstanceNotFoundException("Bibliographical Data id was not found:" + bdTitle));
     }
 
     /**

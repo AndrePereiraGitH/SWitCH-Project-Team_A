@@ -70,23 +70,25 @@ public class CountryRESTController {
     @PostMapping("")
     public ResponseEntity<CountryResponseDTO> registerCountry(
             @RequestBody RegisterCountryDTO dto,
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
 
         try {
 
+            UserId user = CountryMapper.toUserId(userId);
+
             Country country = service.createAndSave(
                     dto.countryName(),
-                    userId
+                    user
             );
 
             CountryResponseDTO result = CountryMapper.toDTO(country);
 
-            List<Link> links = provider.getLinks(userId);
+            List<Link> links = provider.getLinks(user);
 
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(CountryRESTController.class)
-                    .registerCountry(dto, userId))
+                    .getCountry(country.id().getCountryID()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);

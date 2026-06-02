@@ -3,6 +3,7 @@ package TOPSECRET.dataInitializers;
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Library.LibraryFactory;
 import TOPSECRET.domain.Library.ILibraryRepository;
+import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,26 +60,29 @@ public class LibraryDataInitializer implements ApplicationRunner {
      * A personal reading library owned by user-001.
      */
     private Library buildPersonalLibrary() {
+        LibraryId id = new LibraryId("library-001");
         UserId userId = new UserId("user-001");
 
-        return libraryFactory.create("Personal Collection", userId);
+        return libraryFactory.create(id, "Personal Collection", userId);
     }
 
     /**
      * A wishlist library for books the user wants to acquire, owned by user-002.
      */
     private Library buildWishlistLibrary() {
+        LibraryId id = new LibraryId("library-002");
         UserId userId = new UserId("user-002");
 
-        return libraryFactory.create("Wishlist", userId);
+        return libraryFactory.create(id, "Wishlist", userId);
     }
 
     /**
      * A research-focused library owned by user-003.
      */
     private Library buildResearchLibrary() {
+        LibraryId id = new LibraryId("library-003");
         UserId userId = new UserId("user-003");
 
-        return libraryFactory.create("Research & Reference", userId);
+        return libraryFactory.create(id, "Research & Reference", userId);
     }
 }

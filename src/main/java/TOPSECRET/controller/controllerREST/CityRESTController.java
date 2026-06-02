@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.CityLinkProvider;
 import TOPSECRET.domain.City.City;
+import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.city.CityMapper;
 import TOPSECRET.dto.city.request.RequestCityDTO;
@@ -77,7 +78,7 @@ public class CityRESTController {
 
             List<Link> links = new ArrayList<>(provider.getLinks(userId));
             links.add(linkTo(methodOn(CityRESTController.class)
-                    .createCity(dto, userId)).withSelfRel());
+                    .getCityById(city.id().toString())).withSelfRel());
             links.forEach(result::add);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -106,7 +107,45 @@ public class CityRESTController {
         try {
             List<City> cities = service.findAll();
 
-            List<ResponseCityDTO> result = CityMapper.toDTOs(cities);
+            List<ResponseCityDTO> result = new ArrayList<>();
+            for (City city : cities) {
+                ResponseCityDTO dto = CityMapper.toDTO(city, city.getCityName());
+                dto.add(linkTo(methodOn(CityRESTController.class)
+                        .getCityById(city.id().toString()))
+                        .withSelfRel());
+                result.add(dto);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves a City by its identifier.
+     *
+     * <p>If the operation succeeds, a response DTO representing
+     * the found City is returned with HTTP status {@code 200 OK}.</p>
+     *
+     * @param id identifier of the City to retrieve
+     * @return response entity containing the found City
+     *         or an error status when the operation fails
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseCityDTO> getCityById(@PathVariable String id) {
+
+        try {
+            City city = service.findById(new CityId(id));
+
+            ResponseCityDTO result = CityMapper.toDTO(city, city.getCityName());
+
+            result.add(linkTo(methodOn(CityRESTController.class)
+                    .getCityById(id)).withSelfRel());
+            result.add(linkTo(methodOn(CityRESTController.class)
+                    .getCities()).withRel("cities"));
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
 

@@ -91,10 +91,13 @@ public class GenreService {
     /**
      * Returns the genre matching the ID.
      */
-    public Optional<Genre> findById(GenreId genreId) {
+    public Genre findById(GenreId genreId) {
         if (genreId == null) {
             throw new IllegalArgumentException("GenreId cannot be null");
         }
-        return repository.findById(genreId);
+        Genre genre = repository.findById(genreId)
+                .orElseThrow(() -> new IllegalArgumentException("Genre not found with id: " + genreId));
+
+        return genre;
     }
 }

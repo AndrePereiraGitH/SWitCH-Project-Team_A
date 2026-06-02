@@ -5,6 +5,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.Email;
 import TOPSECRET.domain.ValueObjects.Profile;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.user.request.RequestUserDTO;
 import TOPSECRET.dto.user.response.ResponseUserDTO;
 
@@ -98,5 +99,16 @@ public final class UserMapper {
                 user.getProfile().getContact().getEmail().getEmail(),
                 user.getUserRoles().iterator().next().name()
         );
+    }
+
+    /**
+     * Converts a String into a {@link UserId} Value Object.
+     *
+     * @param userId the user identifier as a string; must not be {@code null}
+     * @return the corresponding {@link UserId} Value Object
+     */
+    public static UserId toUserId(String userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        return new UserId(userId);
     }
 }

@@ -5,7 +5,6 @@ import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.Genre;
 
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.ListingId;
@@ -15,6 +14,7 @@ import TOPSECRET.dto.US022AuctionMapper;
 import TOPSECRET.dto.US022GenreDTO;
 import TOPSECRET.dto.US022GenreMapper;
 import TOPSECRET.services.AuctionService;
+import TOPSECRET.services.ListingService;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
     private final IGenreRepository genreRepository;
     private final AuctionService auctionService;
-    private final IListingRepository listingRepository;
+    private final ListingService listingService;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
     private final US022GenreMapper genreMapper;
@@ -48,7 +48,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
      *
      * @param auctionService repository of auctions
      * @param genreRepository repository of genres
-     * @param listingRepository repository of listings
+     * @param listingService repository of listings
      * @param bibliographicalDataRepository repository of bibliographical data
      * @param publicationSampleRepository repository of publication samples
      * @param genreMapper mapper for genre DTO conversion
@@ -56,7 +56,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
      */
     public ToGetListOfItemsOnAuctionOfGivenGenreController(
             AuctionService auctionService, IGenreRepository genreRepository,
-            IListingRepository listingRepository, IBibliographicalDataRepository bibliographicalDataRepository,
+            ListingService listingService, IBibliographicalDataRepository bibliographicalDataRepository,
             IPublicationSampleRepository publicationSampleRepository, US022GenreMapper genreMapper, US022AuctionMapper auctionMapper) {
 
         if (auctionService == null) {
@@ -65,7 +65,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
         if (genreRepository == null) {
             throw new IllegalArgumentException("GenreRepository cannot be null");
         }
-        if (listingRepository == null) {
+        if (listingService == null) {
             throw new IllegalArgumentException("ListingRepository cannot be null");
         }
         if (bibliographicalDataRepository == null) {
@@ -83,7 +83,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         this.auctionService = auctionService;
         this.genreRepository = genreRepository;
-        this.listingRepository = listingRepository;
+        this.listingService = listingService;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.publicationSampleRepository = publicationSampleRepository;
         this.genreMapper = genreMapper;
@@ -124,7 +124,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
 
-        List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
+        List<ListingId> listingId = listingService.findIdsByPublicationSampleIdIn(itemsId);
 
         List<Auction> auctions = auctionService.findByListingIdIn(listingId);
 
@@ -153,7 +153,7 @@ public class ToGetListOfItemsOnAuctionOfGivenGenreController {
 
         List<PublicationSampleId> itemsId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdId);
 
-        List<ListingId> listingId = listingRepository.findIdsByPublicationSampleIdIn(itemsId);
+        List<ListingId> listingId = listingService.findIdsByPublicationSampleIdIn(itemsId);
 
         List<Auction> auctions = auctionService.findByListingIdInOrderByAuctionDeadlineAsc(listingId);
 

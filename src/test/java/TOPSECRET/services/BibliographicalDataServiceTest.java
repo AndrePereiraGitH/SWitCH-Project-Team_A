@@ -354,35 +354,42 @@ class BibliographicalDataServiceTest {
     // =============================================================
 
     @Test
-    void findById_shouldReturnBibliographicalDataWhenExists() {
+    void findById_shouldReturnBibliographicalDataWhenExists() throws InstanceNotFoundException {
         // Arrange
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
-        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
 
         when(bibliographicalDataRepo.findById(bdId))
-                .thenReturn(Optional.of(bibliographicalData));
+                .thenReturn(Optional.of(bdDouble));
 
         // Act
-        Optional<BibliographicalData> result = service.findById(bdId);
+        BibliographicalData result = service.findById(bdId);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(bibliographicalData, result.get());
+        assertNotNull(result);
+        assertEquals(bdDouble, result);
     }
 
     @Test
-    void findById_shouldReturnEmptyWhenNotFound() {
-        // Arrange
+    void findById_shouldThrowIllegalArgument_whenIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findById(null));
+    }
+
+    @Test
+    void findById_shouldThrowInstanceNotFoundException_whenNotFound() {
+
+        // ARRANGE
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
 
         when(bibliographicalDataRepo.findById(bdId))
                 .thenReturn(Optional.empty());
 
-        // Act
-        Optional<BibliographicalData> result = service.findById(bdId);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // ACT + ASSERT
+        assertThrows(InstanceNotFoundException.class,
+                () -> service.findById(bdId));
     }
 
     // =============================================================
@@ -413,35 +420,31 @@ class BibliographicalDataServiceTest {
     // =============================================================
 
     @Test
-    void findIdByTitle_shouldReturnIdWhenTitleExists() {
+    void findIdByTitle_shouldReturnIdWhenTitleExists() throws InstanceNotFoundException {
         // Arrange
         String title = "Title test";
-        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId = new BibliographicalDataId("1234");
 
         when(bibliographicalDataRepo.findIdByTitle(title))
                 .thenReturn(Optional.of(bdId));
 
         // Act
-        Optional<BibliographicalDataId> result = service.findIdByTitle(title);
+        BibliographicalDataId result = service.findIdByTitle(title);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(bdId, result.get());
+        assertNotNull(result);
+        assertEquals(bdId.getID(), result.getID());
     }
 
     @Test
-    void findIdByTitle_shouldReturnEmptyWhenTitleDoesNotExist() {
+    void findIdByTitleShouldThrowWhenTitleDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String title = "Unknown Title";
 
-        when(bibliographicalDataRepo.findIdByTitle(title))
-                .thenReturn(Optional.empty());
+        when(bibliographicalDataRepo.findIdByTitle(title)).thenReturn(Optional.empty());
 
-        // Act
-        Optional<BibliographicalDataId> result = service.findIdByTitle(title);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class, () -> service.findIdByTitle(title));
     }
 
     // =============================================================

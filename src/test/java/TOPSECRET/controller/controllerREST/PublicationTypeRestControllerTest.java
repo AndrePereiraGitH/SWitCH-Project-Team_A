@@ -9,7 +9,6 @@ import TOPSECRET.dto.PublicationType.request.CreatePublicationTypeDTO;
 import TOPSECRET.dto.PublicationType.response.PublicationTypeResponseDTO;
 import TOPSECRET.services.PublicationTypeService;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -25,7 +24,6 @@ import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -45,42 +43,38 @@ class PublicationTypeRestControllerTest {
     @InjectMocks
     private PublicationTypeRestController controller;
 
-    private UserId userId;
-
-    @BeforeEach
-    void setup() {
-        userId = mock(UserId.class);
-    }
-
     // =========================================================
     // CREATE SUCCESS
     // =========================================================
 
     @Test
-    void shouldCreatePublicationTypeSuccessfully()
-            throws Exception {
+    void shouldCreatePublicationTypeSuccessfully() throws Exception {
 
         // ARRANGE
+        String userIdStr = "user-001";
         String format = "Book";
 
+        UserId userId = mock(UserId.class);
         PublicationType publicationType = mock(PublicationType.class);
         PublicationTypeResponseDTO responseDTO = mock(PublicationTypeResponseDTO.class);
         Link link = mock(Link.class);
+
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+        when(publicationType.id()).thenReturn(publicationTypeId);
+        when(publicationTypeId.toString()).thenReturn("pt-001");
 
         when(createDTO.mediaFormat()).thenReturn(format);
         when(service.createAndSave(format, userId)).thenReturn(publicationType);
         when(linkProvider.getLinksForPublicationType(userId)).thenReturn(List.of(link));
 
-        try (MockedStatic<PublicationTypeMapper> mapper =
-                     mockStatic(PublicationTypeMapper.class)) {
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-            mapper.when(() ->
-                            PublicationTypeMapper.toDTO(publicationType))
-                    .thenReturn(responseDTO);
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr)).thenReturn(userId);
+            mapper.when(() -> PublicationTypeMapper.toDTO(publicationType)).thenReturn(responseDTO);
 
             // ACT
             ResponseEntity<PublicationTypeResponseDTO> response =
-                    controller.createPublicationType(createDTO, userId);
+                    controller.createPublicationType(createDTO, userIdStr);
 
             // ASSERT
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -93,93 +87,83 @@ class PublicationTypeRestControllerTest {
     // =========================================================
 
     @Test
-    void shouldAddLinksToResponseDTO()
-            throws Exception {
+    void shouldAddLinksToResponseDTO() throws Exception {
 
         // ARRANGE
+        String userIdStr = "user-001";
         String format = "Book";
 
+        UserId userId = mock(UserId.class);
         PublicationType publicationType = mock(PublicationType.class);
+        PublicationTypeResponseDTO responseDTO = new PublicationTypeResponseDTO("1", "Book");
 
-        PublicationTypeResponseDTO responseDTO =
-                new PublicationTypeResponseDTO("1", "Book");
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+        when(publicationType.id()).thenReturn(publicationTypeId);
+        when(publicationTypeId.toString()).thenReturn("pt-001");
 
-        Link providerLink = Link.of(
-                "/publication-types",
-                "create-publication-type"
-        );
+        Link providerLink = Link.of("/publication-types", "create-publication-type");
 
         when(createDTO.mediaFormat()).thenReturn(format);
         when(service.createAndSave(format, userId)).thenReturn(publicationType);
-        when(linkProvider.getLinksForPublicationType(userId))
-                .thenReturn(List.of(providerLink));
+        when(linkProvider.getLinksForPublicationType(userId)).thenReturn(List.of(providerLink));
 
-        try (MockedStatic<PublicationTypeMapper> mapper =
-                     mockStatic(PublicationTypeMapper.class)) {
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-            mapper.when(() ->
-                            PublicationTypeMapper.toDTO(publicationType))
-                    .thenReturn(responseDTO);
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr)).thenReturn(userId);
+            mapper.when(() -> PublicationTypeMapper.toDTO(publicationType)).thenReturn(responseDTO);
 
             // ACT
             ResponseEntity<PublicationTypeResponseDTO> response =
-                    controller.createPublicationType(createDTO, userId);
+                    controller.createPublicationType(createDTO, userIdStr);
 
             // ASSERT
             assertNotNull(response.getBody());
-            assertEquals(
-                    2,
-                    response.getBody().getLinks().toList().size()
-            );
+            assertEquals(2, response.getBody().getLinks().toList().size());
         }
     }
 
     // =========================================================
-    // CREATE — LINK DO PROVIDER PRESENTE E COM REL CORRETO
+    // CREATE — PROVIDER LINK PRESENT WITH CORRECT REL
     // =========================================================
 
     @Test
-    void shouldAddProviderLinkWithCorrectRelToResponseDTO()
-            throws Exception {
+    void shouldAddProviderLinkWithCorrectRelToResponseDTO() throws Exception {
 
         // ARRANGE
+        String userIdStr = "user-001";
         String format = "Book";
 
+        UserId userId = mock(UserId.class);
         PublicationType publicationType = mock(PublicationType.class);
+        PublicationTypeResponseDTO responseDTO = new PublicationTypeResponseDTO("1", "Book");
 
-        PublicationTypeResponseDTO responseDTO =
-                new PublicationTypeResponseDTO("1", "Book");
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+        when(publicationType.id()).thenReturn(publicationTypeId);
+        when(publicationTypeId.toString()).thenReturn("pt-001");
 
-        Link providerLink = Link.of(
-                "/publication-types",
-                "create-publication-type"
-        );
+        Link providerLink = Link.of("/publication-types", "create-publication-type");
 
         when(createDTO.mediaFormat()).thenReturn(format);
         when(service.createAndSave(format, userId)).thenReturn(publicationType);
-        when(linkProvider.getLinksForPublicationType(userId))
-                .thenReturn(List.of(providerLink));
+        when(linkProvider.getLinksForPublicationType(userId)).thenReturn(List.of(providerLink));
 
-        try (MockedStatic<PublicationTypeMapper> mapper =
-                     mockStatic(PublicationTypeMapper.class)) {
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-            mapper.when(() ->
-                            PublicationTypeMapper.toDTO(publicationType))
-                    .thenReturn(responseDTO);
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr)).thenReturn(userId);
+            mapper.when(() -> PublicationTypeMapper.toDTO(publicationType)).thenReturn(responseDTO);
 
             // ACT
             ResponseEntity<PublicationTypeResponseDTO> response =
-                    controller.createPublicationType(createDTO, userId);
+                    controller.createPublicationType(createDTO, userIdStr);
 
-            // ASSERT — o link do provider deve estar presente na lista
+            // ASSERT
             assertNotNull(response.getBody());
 
             boolean hasProviderLink = response.getBody()
                     .getLinks()
                     .toList()
                     .stream()
-                    .anyMatch(l -> l.getRel().value()
-                            .equals("create-publication-type"));
+                    .anyMatch(l -> l.getRel().value().equals("create-publication-type"));
 
             assertTrue(hasProviderLink);
         }
@@ -190,22 +174,28 @@ class PublicationTypeRestControllerTest {
     // =========================================================
 
     @Test
-    void shouldReturnBadRequestWhenIllegalArgumentExceptionOccurs()
-            throws Exception {
+    void shouldReturnBadRequestWhenIllegalArgumentExceptionOccurs() throws Exception {
 
         // ARRANGE
+        String userIdStr = "user-001";
         String format = "Book";
 
+        UserId userId = mock(UserId.class);
+
         when(createDTO.mediaFormat()).thenReturn(format);
-        when(service.createAndSave(format, userId))
-                .thenThrow(new IllegalArgumentException());
+        when(service.createAndSave(format, userId)).thenThrow(new IllegalArgumentException());
 
-        // ACT
-        ResponseEntity<PublicationTypeResponseDTO> response =
-                controller.createPublicationType(createDTO, userId);
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr)).thenReturn(userId);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.createPublicationType(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
     }
 
     // =========================================================
@@ -213,22 +203,28 @@ class PublicationTypeRestControllerTest {
     // =========================================================
 
     @Test
-    void shouldReturnConflictWhenPublicationTypeAlreadyExists()
-            throws Exception {
+    void shouldReturnConflictWhenPublicationTypeAlreadyExists() throws Exception {
 
         // ARRANGE
+        String userIdStr = "user-001";
         String format = "Book";
 
+        UserId userId = mock(UserId.class);
+
         when(createDTO.mediaFormat()).thenReturn(format);
-        when(service.createAndSave(format, userId))
-                .thenThrow(new InstanceAlreadyExistsException());
+        when(service.createAndSave(format, userId)).thenThrow(new InstanceAlreadyExistsException());
 
-        // ACT
-        ResponseEntity<PublicationTypeResponseDTO> response =
-                controller.createPublicationType(createDTO, userId);
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr)).thenReturn(userId);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.createPublicationType(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        }
     }
 
     // =========================================================
@@ -236,22 +232,28 @@ class PublicationTypeRestControllerTest {
     // =========================================================
 
     @Test
-    void shouldReturnForbiddenWhenAccessDeniedOccurs()
-            throws Exception {
+    void shouldReturnForbiddenWhenAccessDeniedOccurs() throws Exception {
 
         // ARRANGE
+        String userIdStr = "user-001";
         String format = "Book";
 
+        UserId userId = mock(UserId.class);
+
         when(createDTO.mediaFormat()).thenReturn(format);
-        when(service.createAndSave(format, userId))
-                .thenThrow(new AccessDeniedException("Denied"));
+        when(service.createAndSave(format, userId)).thenThrow(new AccessDeniedException("Denied"));
 
-        // ACT
-        ResponseEntity<PublicationTypeResponseDTO> response =
-                controller.createPublicationType(createDTO, userId);
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr)).thenReturn(userId);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.createPublicationType(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
     }
 
     // =========================================================
@@ -259,22 +261,28 @@ class PublicationTypeRestControllerTest {
     // =========================================================
 
     @Test
-    void shouldReturnInternalServerErrorOnCreateWhenUnexpectedExceptionOccurs()
-            throws Exception {
+    void shouldReturnInternalServerErrorOnCreateWhenUnexpectedExceptionOccurs() throws Exception {
 
         // ARRANGE
+        String userIdStr = "user-001";
         String format = "Book";
 
+        UserId userId = mock(UserId.class);
+
         when(createDTO.mediaFormat()).thenReturn(format);
-        when(service.createAndSave(format, userId))
-                .thenThrow(new RuntimeException());
+        when(service.createAndSave(format, userId)).thenThrow(new RuntimeException());
 
-        // ACT
-        ResponseEntity<PublicationTypeResponseDTO> response =
-                controller.createPublicationType(createDTO, userId);
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr)).thenReturn(userId);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.createPublicationType(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
     }
 
     // =========================================================
@@ -293,18 +301,15 @@ class PublicationTypeRestControllerTest {
 
         when(pt1.id()).thenReturn(id1);
         when(pt2.id()).thenReturn(id2);
+        when(id1.toString()).thenReturn("pt-001");
+        when(id2.toString()).thenReturn("pt-002");
 
-        PublicationTypeResponseDTO dto1 =
-                new PublicationTypeResponseDTO("1", "Book");
-        PublicationTypeResponseDTO dto2 =
-                new PublicationTypeResponseDTO("2", "Magazine");
+        PublicationTypeResponseDTO dto1 = new PublicationTypeResponseDTO("1", "Book");
+        PublicationTypeResponseDTO dto2 = new PublicationTypeResponseDTO("2", "Magazine");
 
-        List<PublicationType> publicationTypes = List.of(pt1, pt2);
+        when(service.findAll()).thenReturn(List.of(pt1, pt2));
 
-        when(service.findAll()).thenReturn(publicationTypes);
-
-        try (MockedStatic<PublicationTypeMapper> mapper =
-                     mockStatic(PublicationTypeMapper.class)) {
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
             mapper.when(() -> PublicationTypeMapper.toDTO(pt1)).thenReturn(dto1);
             mapper.when(() -> PublicationTypeMapper.toDTO(pt2)).thenReturn(dto2);
@@ -376,7 +381,7 @@ class PublicationTypeRestControllerTest {
     }
 
     // =========================================================
-    // GET ALL — SELF LINK ADICIONADO A CADA DTO
+    // GET ALL — SELF LINK ADDED TO EACH DTO
     // =========================================================
 
     @Test
@@ -384,17 +389,16 @@ class PublicationTypeRestControllerTest {
 
         // ARRANGE
         PublicationType pt1 = mock(PublicationType.class);
-
         PublicationTypeId id1 = mock(PublicationTypeId.class);
-        when(pt1.id()).thenReturn(id1);
 
-        PublicationTypeResponseDTO dto1 =
-                new PublicationTypeResponseDTO("1", "Book");
+        when(pt1.id()).thenReturn(id1);
+        when(id1.toString()).thenReturn("pt-001");
+
+        PublicationTypeResponseDTO dto1 = new PublicationTypeResponseDTO("1", "Book");
 
         when(service.findAll()).thenReturn(List.of(pt1));
 
-        try (MockedStatic<PublicationTypeMapper> mapper =
-                     mockStatic(PublicationTypeMapper.class)) {
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
             mapper.when(() -> PublicationTypeMapper.toDTO(pt1)).thenReturn(dto1);
 
@@ -404,9 +408,7 @@ class PublicationTypeRestControllerTest {
             // ASSERT
             assertFalse(dto1.getLinks().isEmpty());
             assertTrue(
-                    dto1.getLinks()
-                            .toList()
-                            .stream()
+                    dto1.getLinks().toList().stream()
                             .anyMatch(l -> l.getRel().value().equals("self"))
             );
         }
@@ -420,22 +422,24 @@ class PublicationTypeRestControllerTest {
     void shouldReturnPublicationTypeByIdSuccessfully() {
 
         // ARRANGE
-        PublicationTypeId id = mock(PublicationTypeId.class);
+        String idStr = "pt-001";
+
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
         PublicationType publicationType = mock(PublicationType.class);
         PublicationTypeResponseDTO responseDTO = mock(PublicationTypeResponseDTO.class);
 
-        when(service.findById(id)).thenReturn(Optional.of(publicationType));
+        when(service.findById(publicationTypeId)).thenReturn(publicationType);
 
-        try (MockedStatic<PublicationTypeMapper> mapper =
-                     mockStatic(PublicationTypeMapper.class)) {
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-            mapper.when(() ->
-                            PublicationTypeMapper.toDTO(publicationType))
+            mapper.when(() -> PublicationTypeMapper.toPublicationTypeId(idStr))
+                    .thenReturn(publicationTypeId);
+            mapper.when(() -> PublicationTypeMapper.toDTO(publicationType))
                     .thenReturn(responseDTO);
 
             // ACT
             ResponseEntity<PublicationTypeResponseDTO> response =
-                    controller.getPublicationTypeId(id);
+                    controller.getPublicationTypeId(idStr);
 
             // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -451,16 +455,25 @@ class PublicationTypeRestControllerTest {
     void shouldReturnNotFoundWhenPublicationTypeDoesNotExist() {
 
         // ARRANGE
-        PublicationTypeId id = mock(PublicationTypeId.class);
+        String idStr = "pt-001";
 
-        when(service.findById(id)).thenReturn(Optional.empty());
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
 
-        // ACT
-        ResponseEntity<PublicationTypeResponseDTO> response =
-                controller.getPublicationTypeId(id);
+        when(service.findById(publicationTypeId))
+                .thenThrow(new IllegalArgumentException("PublicationType not found"));
 
-        // ASSERT
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
+
+            mapper.when(() -> PublicationTypeMapper.toPublicationTypeId(idStr))
+                    .thenReturn(publicationTypeId);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.getPublicationTypeId(idStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
     }
 
     // =========================================================
@@ -471,43 +484,51 @@ class PublicationTypeRestControllerTest {
     void shouldReturnInternalServerErrorWhenGetByIdThrowsUnexpectedException() {
 
         // ARRANGE
-        PublicationTypeId id = mock(PublicationTypeId.class);
+        String idStr = "pt-001";
 
-        when(service.findById(id)).thenThrow(new RuntimeException());
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
 
-        // ACT
-        ResponseEntity<PublicationTypeResponseDTO> response =
-                controller.getPublicationTypeId(id);
+        when(service.findById(publicationTypeId)).thenThrow(new RuntimeException());
 
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
+
+            mapper.when(() -> PublicationTypeMapper.toPublicationTypeId(idStr))
+                    .thenReturn(publicationTypeId);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.getPublicationTypeId(idStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
     }
 
     // =========================================================
-    // GET BY ID — LINKS COM RELS CORRETOS
+    // GET BY ID — LINKS WITH CORRECT RELS
     // =========================================================
 
     @Test
     void shouldAddSelfRelAndGetAllRelLinksWhenGettingById() {
 
         // ARRANGE
-        PublicationTypeId id = mock(PublicationTypeId.class);
+        String idStr = "pt-001";
+
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
         PublicationType publicationType = mock(PublicationType.class);
+        PublicationTypeResponseDTO responseDTO = new PublicationTypeResponseDTO("1", "Book");
 
-        PublicationTypeResponseDTO responseDTO =
-                new PublicationTypeResponseDTO("1", "Book");
+        when(service.findById(publicationTypeId)).thenReturn(publicationType);
 
-        when(service.findById(id)).thenReturn(Optional.of(publicationType));
+        try (MockedStatic<PublicationTypeMapper> mapper = mockStatic(PublicationTypeMapper.class)) {
 
-        try (MockedStatic<PublicationTypeMapper> mapper =
-                     mockStatic(PublicationTypeMapper.class)) {
-
-            mapper.when(() ->
-                            PublicationTypeMapper.toDTO(publicationType))
+            mapper.when(() -> PublicationTypeMapper.toPublicationTypeId(idStr))
+                    .thenReturn(publicationTypeId);
+            mapper.when(() -> PublicationTypeMapper.toDTO(publicationType))
                     .thenReturn(responseDTO);
 
             // ACT
-            controller.getPublicationTypeId(id);
+            controller.getPublicationTypeId(idStr);
 
             // ASSERT
             List<Link> links = responseDTO.getLinks().toList();
@@ -517,8 +538,7 @@ class PublicationTypeRestControllerTest {
                     .anyMatch(l -> l.getRel().value().equals("self")));
 
             assertTrue(links.stream()
-                    .anyMatch(l -> l.getRel().value()
-                            .equals("get-all-publicationTypes")));
+                    .anyMatch(l -> l.getRel().value().equals("get-all-publicationTypes")));
         }
     }
 }
