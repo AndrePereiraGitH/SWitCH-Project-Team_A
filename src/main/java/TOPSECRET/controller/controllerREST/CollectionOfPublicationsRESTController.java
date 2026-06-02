@@ -137,17 +137,24 @@ public class CollectionOfPublicationsRESTController {
      */
     @PatchMapping("/{collectionId}/make-public")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPublic(
-            @PathVariable CollectionOfPublicationsId collectionId,
-            @RequestParam UserId userId) {
+            @PathVariable String collectionId,
+            @RequestParam String userId) {
 
         try {
-            collectionService.makeCollectionPublic(collectionId, userId);
 
-            CollectionOfPublications collection = collectionService.findById(collectionId);
+            CollectionOfPublicationsId collectionIdVO =
+                    CollectionOfPublicationsMapper.toCollectionId(collectionId);
+
+            UserId userIdVO =
+                    CollectionOfPublicationsMapper.toUserId(userId);
+
+            collectionService.makeCollectionPublic(collectionIdVO, userIdVO);
+
+            CollectionOfPublications collection = collectionService.findById(collectionIdVO);
 
             ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collection);
 
-            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userId);
+            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userIdVO);
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
@@ -188,18 +195,26 @@ public class CollectionOfPublicationsRESTController {
      */
     @PatchMapping("/{collectionId}/make-public-until")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPublicUntil(
-            @PathVariable CollectionOfPublicationsId collectionId,
+            @PathVariable String collectionId,
             @RequestParam LocalDateTime publicUntil,
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
 
         try {
-            collectionService.makeCollectionPublicUntil(collectionId, publicUntil, userId);
 
-            CollectionOfPublications collection = collectionService.findById(collectionId);
+            CollectionOfPublicationsId collectionIdVO =
+                    CollectionOfPublicationsMapper.toCollectionId(collectionId);
+
+            UserId userIdVO =
+                    CollectionOfPublicationsMapper.toUserId(userId);
+
+
+            collectionService.makeCollectionPublicUntil(collectionIdVO, publicUntil, userIdVO);
+
+            CollectionOfPublications collection = collectionService.findById(collectionIdVO);
 
             ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collection);
 
-            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userId);
+            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userIdVO);
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
@@ -255,7 +270,17 @@ public class CollectionOfPublicationsRESTController {
                     collectionService.findPublicCollectionsByGenreId(genreIdVO);
 
             List<PublicCollectionOfPublicationsDTO> response =
-                    CollectionOfPublicationsMapper.toPublicDTOList(collections);
+                    collections.stream()
+                            .map(collection -> {
+                                String ownerName =
+                                        collectionService.getUserName(
+                                                collection.getOwnerId());
+
+                                return CollectionOfPublicationsMapper.toPublicDTO(
+                                        collection,
+                                        ownerName);
+                            })
+                            .toList();
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
 

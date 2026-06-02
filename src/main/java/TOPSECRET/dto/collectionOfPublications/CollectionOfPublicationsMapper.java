@@ -70,34 +70,17 @@ public final class CollectionOfPublicationsMapper {
      * @throws NullPointerException if {@code collection} is {@code null}
      */
     public static PublicCollectionOfPublicationsDTO toPublicDTO(
-            CollectionOfPublications collection) {
+            CollectionOfPublications collection,
+            String ownerName) {
 
         Objects.requireNonNull(collection);
 
         return new PublicCollectionOfPublicationsDTO(
                 collection.id().toString(),
                 collection.getCollectionName(),
-                collection.getOwnerId().toString(),
+                ownerName,
                 collection.getPublicUntil()
         );
-    }
-
-    /**
-     * Maps a list of {@link CollectionOfPublications} domain objects to a list of
-     * {@link PublicCollectionOfPublicationsDTO}.
-     *
-     * @param collections the collections to map; must not be {@code null}
-     * @return an unmodifiable list containing the mapped DTOs
-     * @throws NullPointerException if {@code collections} is {@code null}
-     */
-    public static List<PublicCollectionOfPublicationsDTO> toPublicDTOList(
-            List<CollectionOfPublications> collections) {
-
-        Objects.requireNonNull(collections);
-
-        return collections.stream()
-                .map(CollectionOfPublicationsMapper::toPublicDTO)
-                .toList();
     }
 
     /**

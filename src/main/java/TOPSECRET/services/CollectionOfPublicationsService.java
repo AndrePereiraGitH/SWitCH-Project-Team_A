@@ -100,6 +100,24 @@ public class CollectionOfPublicationsService {
     }
 
     /**
+     * Retrieves the username associated with the given user identifier.
+     *
+     * <p>This method delegates user lookup to the underlying user repository
+     * and returns the username of the matching {@link User}.</p>
+     *
+     * @param userId the identifier of the user whose username is to be retrieved;
+     *               must not be {@code null}
+     * @return the username of the corresponding user
+     * @throws UsernameNotFoundException if no user exists with the given identifier
+     */
+    public String getUserName(UserId userId) {
+
+        Objects.requireNonNull(userId, "userId cannot be null");
+
+        return getUser(userId).getUserName();
+    }
+
+    /**
      * Creates and persists a new {@link CollectionOfPublications}.
      *
      * <p>This method retrieves the user, verifies they are authorized to create

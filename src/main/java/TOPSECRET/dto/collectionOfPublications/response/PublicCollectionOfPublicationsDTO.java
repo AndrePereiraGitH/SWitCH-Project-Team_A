@@ -36,9 +36,9 @@ public class PublicCollectionOfPublicationsDTO extends
     private final String collectionName;
 
     /**
-     * The identifier of the collection owner.
+     * The name of the collection owner.
      */
-    private final String ownerId;
+    private final String ownerName;
 
     /**
      * The date and time until which the collection remains public.

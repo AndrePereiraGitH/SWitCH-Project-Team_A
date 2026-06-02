@@ -648,6 +648,57 @@ class CollectionOfPublicationsServiceTest {
     }
 
 // ==========================================================================
+// ------------------- GET USER NAME -------------------
+// ==========================================================================
+
+    @Test
+    void getUserName_ShouldReturnUserName_WhenUserExists() {
+
+        // ARRANGE
+        UserId userIdDouble = mock(UserId.class);
+
+        User userDouble = mock(User.class);
+
+        when(userRepository.findByID(userIdDouble))
+                .thenReturn(Optional.of(userDouble));
+
+        when(userDouble.getUserName())
+                .thenReturn("john_doe");
+
+        // ACT
+        String result = service.getUserName(userIdDouble);
+
+        // ASSERT
+        assertEquals("john_doe", result);
+    }
+
+    @Test
+    void getUserName_ShouldThrowUsernameNotFoundException_WhenUserDoesNotExist() {
+
+        // ARRANGE
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userRepository.findByID(userIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                UsernameNotFoundException.class,
+                () -> service.getUserName(userIdDouble)
+        );
+    }
+
+    @Test
+    void getUserName_ShouldThrowNullPointerException_WhenUserIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> service.getUserName(null)
+        );
+    }
+
+// ==========================================================================
 // ------------------- FIND PUBLIC COLLECTION BY GENRE ID -------------------
 // ==========================================================================
 
