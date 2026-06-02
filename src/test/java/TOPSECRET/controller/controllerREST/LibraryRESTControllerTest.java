@@ -61,18 +61,25 @@ class LibraryRESTControllerTest {
     @Test
     void createLibrary_shouldReturnCreated_whenValidRequest()
             throws InstanceAlreadyExistsException {
+
         // Arrange
         String expectedId = "id";
         String expectedLibraryName = "libraryName";
         Link links = Link.of("/libraries/provider", "provider-rel");
+
         when(library.id()).thenReturn(libraryId);
+
         Link selfRel = linkTo(methodOn(LibraryRESTController.class)
                 .getLibrary(library.id().toString()))
                 .withSelfRel();
+
         Links expectedLinks = Links.of(links, selfRel);
+
         when(requestDTO.libraryName()).thenReturn(expectedLibraryName);
-        when(libService.createAndSave(expectedLibraryName, USER_ID_DOMAIN)).thenReturn(library);
-        when(libLinkProvider.getLinksForLibraries(USER_ID_DOMAIN)).thenReturn(List.of(links));
+        when(libService.createAndSave(expectedLibraryName, USER_ID_DOMAIN))
+                .thenReturn(library);
+        when(libLinkProvider.getLinksForLibraries(USER_ID_DOMAIN))
+                .thenReturn(List.of(links));
         when(libraryId.getId()).thenReturn(expectedId);
         when(library.getLibraryName()).thenReturn(expectedLibraryName);
 
@@ -87,7 +94,6 @@ class LibraryRESTControllerTest {
         assertEquals(expectedLibraryName, response.getBody().getLibraryName());
         assertEquals(expectedLinks, response.getBody().getLinks());
     }
-
 
     // =========================================================
     // CREATE - BAD REQUEST
@@ -156,8 +162,8 @@ class LibraryRESTControllerTest {
     @Test
     void getAllLibraries_shouldReturnOk_whenExists() {
 
-
         ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
+
         when(libService.findAll()).thenReturn(List.of(library));
         when(library.id()).thenReturn(libraryId);
 
@@ -178,7 +184,6 @@ class LibraryRESTControllerTest {
             assertSame(dto, body.get(0));
         }
     }
-
 
     // =========================================================
     // GET ALL - EMPTY
@@ -237,20 +242,27 @@ class LibraryRESTControllerTest {
     @Test
     void getLibrary_shouldReturnOk_whenFound() {
 
+        // Arrange
+        Library library = mock(Library.class);
+        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
+        LibraryId libraryId = mock(LibraryId.class);
+
         when(libService.findById(any(LibraryId.class)))
                 .thenReturn(library);
 
-        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
 
-        try (MockedStatic<LibraryMapper> mapper =
-                     mockStatic(LibraryMapper.class)) {
+            mapper.when(() ->
+                    LibraryMapper.toLibraryId(LIBRARY_ID)
+            ).thenReturn(libraryId);
 
-            mapper.when(() -> LibraryMapper.toDTO(library))
-                    .thenReturn(dto);
+            mapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(dto);
 
+            // Act
             ResponseEntity<ResponseLibraryDTO> response =
                     controller.getLibrary(LIBRARY_ID);
 
+            // Assert
             assertEquals(OK, response.getStatusCode());
             assertEquals(dto, response.getBody());
         }
@@ -297,20 +309,29 @@ class LibraryRESTControllerTest {
     @Test
     void getLibraryByUserId_shouldReturnOk_whenFound() {
 
+        // Arrange
+        Library library = mock(Library.class);
+        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
+        UserId userId = mock(UserId.class);
+
         when(libService.findByUserId(any(UserId.class)))
                 .thenReturn(library);
 
-        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
 
-        try (MockedStatic<LibraryMapper> mapper =
-                     mockStatic(LibraryMapper.class)) {
+            mapper.when(() ->
+                    LibraryMapper.toUserId(USER_ID)
+            ).thenReturn(userId);
 
-            mapper.when(() -> LibraryMapper.toDTO(library))
-                    .thenReturn(dto);
+            mapper.when(() ->
+                    LibraryMapper.toDTO(library)
+            ).thenReturn(dto);
 
+            // Act
             ResponseEntity<ResponseLibraryDTO> response =
                     controller.getLibraryByUserId(USER_ID);
 
+            // Assert
             assertEquals(OK, response.getStatusCode());
             assertEquals(dto, response.getBody());
         }

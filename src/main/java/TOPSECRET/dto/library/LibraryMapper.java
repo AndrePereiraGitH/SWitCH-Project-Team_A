@@ -1,6 +1,8 @@
 package TOPSECRET.dto.library;
 
 import TOPSECRET.domain.Library.Library;
+import TOPSECRET.domain.ValueObjects.LibraryId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.library.response.ResponseLibraryDTO;
 
 import java.util.List;
@@ -36,5 +38,25 @@ public final class LibraryMapper {
         return libraries.stream()
                 .map(LibraryMapper::toDTO)
                 .toList();
+    }
+
+    /**
+     * Converts a string value into a {@link LibraryId}.
+     *
+     * @param libId the price value as a string
+     * @return a {@link LibraryId} value object
+     */
+    public static LibraryId toLibraryId(String libId) {
+        return new LibraryId(libId);
+    }
+
+    /**
+     * Converts a string value into a {@link UserId}.
+     *
+     * @param userId the price value as a string
+     * @return a {@link UserId} value object
+     */
+    public static UserId toUserId(String userId) {
+        return new UserId(userId);
     }
 }
