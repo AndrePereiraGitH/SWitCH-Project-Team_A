@@ -5,6 +5,7 @@ import { MyPublications } from "./pages/MyPublications";
 import { LandingPage } from "./pages/LandingPage";
 import { Dashboard } from "./pages/Dashboard";
 import { Library } from "./pages/Library";
+import { ManageLists } from "./pages/ManageLists";
 import { Explore } from "./pages/Explore";
 import { CartProvider } from "./components/CartContext";
 import { ListsProvider } from "./components/ListsContext";
@@ -29,6 +30,7 @@ export default function App() {
                       <Route path="/add-publication" element={<AddPublication />} />
                       <Route path="/my-publications" element={<MyPublications />} />
                       <Route path="/library" element={<Library />} />
+                      <Route path="/lists" element={<ManageLists />} />
                       <Route path="/explore" element={<Explore />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
