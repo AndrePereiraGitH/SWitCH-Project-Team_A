@@ -66,8 +66,9 @@ public class BibliographicalDataRESTController {
      */
     @GetMapping
     public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData(
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
         try {
+            UserId idOfUser = new UserId(userId);
 
             List<BibliographicalData> bibliographicalDataList = service.findAll();
 
@@ -88,7 +89,7 @@ public class BibliographicalDataRESTController {
 
             CollectionModel<responseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
 
-            List<Link> links = provider.getLinksForBibliographicalData(userId);
+            List<Link> links = provider.getLinksForBibliographicalData(idOfUser);
             collectionModel.add(links);
 
             return ResponseEntity.ok(collectionModel);
@@ -128,8 +129,9 @@ public class BibliographicalDataRESTController {
     @PostMapping("/bibliographical-data")
     public ResponseEntity<responseBibliographicalDataDTO> createBibliographicalData(
             @RequestBody requestBibliographicalDataDTO requestBibliographicalDataDTO,
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
         try {
+            UserId idOfUser = new UserId(userId);
 
             List<AuthorId> authorIds = BibliographicalDataMapper.toAuthorId(requestBibliographicalDataDTO.authorName());
 
@@ -142,14 +144,14 @@ public class BibliographicalDataRESTController {
                     requestBibliographicalDataDTO.publicationDate(),
                     genreIds,
                     requestBibliographicalDataDTO.chunksOfText(),
-                    userId
+                    idOfUser
             );
 
             responseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
                     bibliographicalData,
                     service.getAuthors(bibliographicalData));
 
-            List<Link> links = provider.getLinksForBibliographicalData(userId);
+            List<Link> links = provider.getLinksForBibliographicalData(idOfUser);
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
@@ -182,7 +184,9 @@ public class BibliographicalDataRESTController {
     @GetMapping("/bibliographical-data/{id}")
     public ResponseEntity<responseBibliographicalDataDTO> getBibliographicalDataById(
             @PathVariable BibliographicalDataId id,
-            @RequestParam UserId userId) throws InstanceNotFoundException {
+            @RequestParam String userId) throws InstanceNotFoundException {
+
+        UserId idOfUser = new UserId(userId);
 
         BibliographicalData bd = service.findById(id);
 
@@ -191,7 +195,7 @@ public class BibliographicalDataRESTController {
                 service.getAuthors(bd)
         );
 
-        provider.getLinksForBibliographicalData(userId).forEach(result::add);
+        provider.getLinksForBibliographicalData(idOfUser).forEach(result::add);
 
         result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
                 .getBibliographicalDataById(id, userId))
