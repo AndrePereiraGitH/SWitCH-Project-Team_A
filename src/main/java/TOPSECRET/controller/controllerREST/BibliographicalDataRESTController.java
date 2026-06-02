@@ -68,7 +68,7 @@ public class BibliographicalDataRESTController {
     public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData(
             @RequestParam String userId) {
         try {
-            UserId idOfUser = new UserId(userId);
+            UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
 
             List<BibliographicalData> bibliographicalDataList = service.findAll();
 
@@ -131,7 +131,7 @@ public class BibliographicalDataRESTController {
             @RequestBody requestBibliographicalDataDTO requestBibliographicalDataDTO,
             @RequestParam String userId) {
         try {
-            UserId idOfUser = new UserId(userId);
+            UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
 
             List<AuthorId> authorIds = BibliographicalDataMapper.toAuthorId(requestBibliographicalDataDTO.authorName());
 
@@ -186,7 +186,7 @@ public class BibliographicalDataRESTController {
             @PathVariable BibliographicalDataId id,
             @RequestParam String userId) throws InstanceNotFoundException {
 
-        UserId idOfUser = new UserId(userId);
+        UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
 
         BibliographicalData bd = service.findById(id);
 
