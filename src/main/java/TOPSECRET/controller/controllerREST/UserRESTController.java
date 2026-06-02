@@ -54,11 +54,16 @@ public class UserRESTController {
      * Registers a new user in the system.
      *
      * <p>Maps the incoming DTO to domain objects, delegates creation to the service,
-     * and enriches the response with HATEOAS links based on the requester's permissions.</p>
+     * and enriches the response with HATEOAS links and a self-link pointing to the
+     * created user resource.</p>
      *
      * @param requestUserDTO the DTO containing the new user's data
      * @param userId         the ID of the user performing the registration
-     * @return HTTP 201 with the created user DTO, or an error status
+     * @return HTTP 201 with the created user DTO and HATEOAS links,
+     *         HTTP 400 if the request contains invalid data,
+     *         HTTP 403 if the requester lacks permission,
+     *         HTTP 409 if a user with the same identity already exists,
+     *         or HTTP 500 for unexpected errors
      */
     @PostMapping
     public ResponseEntity<ResponseUserDTO> registerUser(
@@ -81,7 +86,7 @@ public class UserRESTController {
             List<Link> links = userLinkProvider.getLinksForUsers(userId);
             links.forEach(result::add);
             result.add(linkTo(methodOn(UserRESTController.class)
-                    .registerUser(requestUserDTO, userId)).withSelfRel());
+                    .getUser(user.id())).withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
@@ -109,8 +114,7 @@ public class UserRESTController {
     public ResponseEntity<ResponseUserDTO> getUser(@PathVariable UserId id) {
 
         try {
-            User user = userService.findByID(id)
-                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            User user = userService.findByID(id);
 
             ResponseUserDTO result = UserMapper.toDTO(user);
 

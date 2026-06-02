@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -84,13 +83,15 @@ public class UserService {
      * Finds a user by their unique identifier.
      *
      * @param userId the identifier to search for; must not be {@code null}
-     * @return an {@link Optional} containing the {@link User} if found,
-     *         or {@link Optional#empty()} if not found
-     * @throws NullPointerException if {@code userId} is {@code null}
+     * @return the {@link User} with the given identifier
+     * @throws NullPointerException     if {@code userId} is {@code null}
+     * @throws IllegalArgumentException if no user exists with the given identifier
      */
-    public Optional<User> findByID(UserId userId) {
+    public User findByID(UserId userId) {
         Objects.requireNonNull(userId, "UserId cannot be null.");
-        return userRepository.findByID(userId);
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+        return user;
     }
 
     /**
@@ -109,12 +110,14 @@ public class UserService {
      * Finds the unique identifier of a user by their username.
      *
      * @param username the username to search for; must not be {@code null}
-     * @return an {@link Optional} containing the {@link UserId} if found,
-     *         or {@link Optional#empty()} if not found
-     * @throws NullPointerException if {@code username} is {@code null}
+     * @return the {@link UserId} of the user with the given username
+     * @throws NullPointerException     if {@code username} is {@code null}
+     * @throws IllegalArgumentException if no user exists with the given username
      */
-    public Optional<UserId> findIdByUsername(String username) {
+    public UserId findIdByUsername(String username) {
         Objects.requireNonNull(username, "Username cannot be null.");
-        return userRepository.findIdByUsername(username);
+        return userRepository.findIdByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
     }
+
 }
