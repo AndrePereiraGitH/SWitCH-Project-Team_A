@@ -99,6 +99,21 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
     /** {@inheritDoc} */
     @Override
+    public List<PublicationSample> findByBibliographicalDataId(BibliographicalDataId bdId) {
+
+        Objects.requireNonNull(bdId, "BibliographicalDataId cannot be null");
+
+        List<PublicationSample> allPublicationsWithSpecificBD =
+                publicationSampleRepositoryJpa.findAllByBdId(bdId)
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
+
+        return allPublicationsWithSpecificBD;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
 
         Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
@@ -114,6 +129,21 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
     /** {@inheritDoc} */
     @Override
+    public List<PublicationSample> findByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
+
+        Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
+
+        List<PublicationSample> allPublicationsWithSpecificBDs =
+                publicationSampleRepositoryJpa.findAllByBdIdIn(bdIds)
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
+
+        return allPublicationsWithSpecificBDs;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
 
         Objects.requireNonNull(listOfEditionIds, "EditionIds cannot be null");
@@ -123,6 +153,21 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
                 .stream()
                 .map(PublicationSampleDM::getPubSampleId)
                 .toList();
+
+        return allPublicationsWithSpecificEditions;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
+
+        Objects.requireNonNull(listOfEditionIds, "EditionIds cannot be null");
+
+        List<PublicationSample> allPublicationsWithSpecificEditions =
+                publicationSampleRepositoryJpa.findAllByEditionIdIn(listOfEditionIds)
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
 
         return allPublicationsWithSpecificEditions;
     }

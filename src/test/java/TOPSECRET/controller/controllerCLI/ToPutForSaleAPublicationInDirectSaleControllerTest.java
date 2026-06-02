@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -162,7 +163,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double, pubSample2Double);
-        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn( userIdDouble))
                 .thenReturn(pubSamples);
 
         List<US015PublicationSampleDTO> dtoFromMapper = List.of(
@@ -187,7 +188,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
         when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
-        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))
                 .thenReturn(List.of());
 
         when(mapperDouble.toDTOs(List.of())).thenReturn(List.of());
@@ -209,7 +210,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double);
-        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(libraryIdDouble, userIdDouble))
+        when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))
                 .thenReturn(pubSamples);
 
         List<US015PublicationSampleDTO> dtoList =
@@ -296,7 +297,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     }
 
     @Test
-    void createDirectSaleListing_ShouldReturnListingCreatedByListingService() throws InstanceAlreadyExistsException {
+    void createDirectSaleListing_ShouldReturnListingCreatedByListingService() throws InstanceAlreadyExistsException, AccessDeniedException {
         // Arrange
         Listing expectedListing = mock(Listing.class);
         when(listingServiceDouble.createAndSave("title", List.of(pubSampleId1Double), SaleType.DIRECT_SALE,
