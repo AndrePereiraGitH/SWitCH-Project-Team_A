@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
+import { AddPublication } from "./pages/AddPublication";
+import { MyPublications } from "./pages/MyPublications";
 import { LandingPage } from "./pages/LandingPage";
 import { Dashboard } from "./pages/Dashboard";
 import { Library } from "./pages/Library";
@@ -24,6 +26,8 @@ export default function App() {
                       <Route path="/" element={<LandingPage />} />
                       <Route path="/home" element={<Navigate to="/" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/add-publication" element={<AddPublication />} />
+                      <Route path="/my-publications" element={<MyPublications />} />
                       <Route path="/library" element={<Library />} />
                       <Route path="/explore" element={<Explore />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
