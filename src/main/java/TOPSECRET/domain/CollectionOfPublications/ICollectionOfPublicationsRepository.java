@@ -20,6 +20,17 @@ import java.util.List;
 public interface ICollectionOfPublicationsRepository {
 
     /**
+     * Retrieves all {@link CollectionOfPublications} stored in the repository.
+     *
+     * <p>This method returns all collections regardless of owner, genre, or
+     * visibility status. Filtering (e.g., public-only constraints) is
+     * handled at the service layer.</p>
+     *
+     * @return a list of all collections; may be empty but never {@code null}
+     */
+    List<CollectionOfPublications> findAll();
+
+    /**
      * Saves a new {@link CollectionOfPublications} aggregate.
      *
      * <p>If a collection with the same identity already exists, the
@@ -71,4 +82,11 @@ public interface ICollectionOfPublicationsRepository {
      * @throws IllegalArgumentException if genreId is null
      */
     List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId);
+
+    /**
+     * Returns all currently public collections.
+     *
+     * @return a list of public collections; may be empty if none exist
+     */
+    List<CollectionOfPublications> findAllPublicCollections();
 }

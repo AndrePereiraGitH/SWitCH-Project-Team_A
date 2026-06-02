@@ -48,4 +48,12 @@ public interface ICollectionOfPublicationsRepositoryJpa
      * may be empty if none exist
      */
     List<CollectionOfPublicationsDM> findByGenreIdAndIsPrivateFalse(GenreId genreId);
+
+    /**
+     * Retrieves all non-private {@link CollectionOfPublicationsDM} entities.
+     *
+     * @return a list of collections that are marked as public;
+     * may be empty if none exist
+     */
+    List<CollectionOfPublicationsDM> findByIsPrivateFalse();
 }
