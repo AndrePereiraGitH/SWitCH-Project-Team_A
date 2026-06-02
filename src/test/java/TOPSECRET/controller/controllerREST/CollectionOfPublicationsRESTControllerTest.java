@@ -1193,4 +1193,60 @@ class CollectionOfPublicationsRESTControllerTest {
             assertNull(response.getBody());
         }
     }
+
+// -------------------------------------------------------------------------
+// findAllPublicCollections
+// -------------------------------------------------------------------------
+
+    @Test
+    void findAllPublicCollections_shouldReturnOk_onSuccess() {
+
+        // ARRANGE
+        List<PublicCollectionOfPublicationsDTO> dtoList =
+                List.of(new PublicCollectionOfPublicationsDTO(
+                        "col-1",
+                        "My Collection",
+                        "owner-1",
+                        null
+                ));
+
+        when(collectionService.findAllPublicCollections())
+                .thenReturn(dtoList);
+
+        // ACT
+        ResponseEntity<List<PublicCollectionOfPublicationsDTO>> response =
+                controller.findAllPublicCollections();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertEquals(dtoList, response.getBody());
+    }
+
+    @Test
+    void findAllPublicCollections_shouldReturnOk_withEmptyList() {
+
+        when(collectionService.findAllPublicCollections())
+                .thenReturn(List.of());
+
+        ResponseEntity<List<PublicCollectionOfPublicationsDTO>> response =
+                controller.findAllPublicCollections();
+
+        assertEquals(HttpStatus.OK.value(), response.getStatusCode().value());
+        assertTrue(response.getBody().isEmpty());
+    }
+
+    @Test
+    void findAllPublicCollections_shouldReturnInternalServerError_onException() {
+
+        when(collectionService.findAllPublicCollections())
+                .thenThrow(new RuntimeException());
+
+        ResponseEntity<List<PublicCollectionOfPublicationsDTO>> response =
+                controller.findAllPublicCollections();
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                response.getStatusCode().value());
+
+        assertNull(response.getBody());
+    }
 }

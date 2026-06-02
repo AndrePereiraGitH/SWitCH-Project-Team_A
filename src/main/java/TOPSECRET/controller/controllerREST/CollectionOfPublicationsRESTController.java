@@ -73,15 +73,15 @@ public class CollectionOfPublicationsRESTController {
      *
      * @param requestCollectionDTO the request payload containing the collection
      *                             name and genre identifier; must be valid
-     * @param ownerId the identifier of the user who owns the collection
+     * @param ownerId              the identifier of the user who owns the collection
      * @return a {@link ResponseEntity} containing the created
-     *         {@link ResponseCollectionOfPublicationsDTO} and HTTP status:
-     *         <ul>
-     *             <li>{@code 201 CREATED} if the collection is successfully created</li>
-     *             <li>{@code 400 BAD REQUEST} if the provided data is invalid</li>
-     *             <li>{@code 403 FORBIDDEN} if the user is not authorized to create the collection</li>
-     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
-     *         </ul>
+     * {@link ResponseCollectionOfPublicationsDTO} and HTTP status:
+     * <ul>
+     *     <li>{@code 201 CREATED} if the collection is successfully created</li>
+     *     <li>{@code 400 BAD REQUEST} if the provided data is invalid</li>
+     *     <li>{@code 403 FORBIDDEN} if the user is not authorized to create the collection</li>
+     *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     * </ul>
      */
     @PostMapping("/")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> createCollectionOfPublications(
@@ -250,12 +250,12 @@ public class CollectionOfPublicationsRESTController {
      * @param genreId the identifier of the genre whose public collections are to
      *                be retrieved; must not be {@code null}
      * @return a {@link ResponseEntity} containing a list of
-     *         {@link PublicCollectionOfPublicationsDTO} and:
-     *         <ul>
-     *             <li>{@code 200 OK} if the operation succeeds</li>
-     *             <li>{@code 400 BAD REQUEST} if the provided genre identifier is invalid</li>
-     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
-     *         </ul>
+     * {@link PublicCollectionOfPublicationsDTO} and:
+     * <ul>
+     *     <li>{@code 200 OK} if the operation succeeds</li>
+     *     <li>{@code 400 BAD REQUEST} if the provided genre identifier is invalid</li>
+     *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     * </ul>
      */
     @GetMapping("/public")
     public ResponseEntity<List<PublicCollectionOfPublicationsDTO>>
@@ -306,12 +306,12 @@ public class CollectionOfPublicationsRESTController {
      * @param userId the identifier of the user whose collections are to be
      *               retrieved; must not be {@code null}
      * @return a {@link ResponseEntity} containing a list of
-     *         {@link ResponseCollectionOfPublicationsDTO} and:
-     *         <ul>
-     *             <li>{@code 200 OK} if the operation succeeds</li>
-     *             <li>{@code 400 BAD REQUEST} if the provided user identifier is invalid</li>
-     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
-     *         </ul>
+     * {@link ResponseCollectionOfPublicationsDTO} and:
+     * <ul>
+     *     <li>{@code 200 OK} if the operation succeeds</li>
+     *     <li>{@code 400 BAD REQUEST} if the provided user identifier is invalid</li>
+     *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     * </ul>
      */
     @GetMapping("/owner")
     public ResponseEntity<List<ResponseCollectionOfPublicationsDTO>>
@@ -356,12 +356,12 @@ public class CollectionOfPublicationsRESTController {
      * @param userId       the identifier of the user requesting the resource;
      *                     used to determine which HATEOAS links should be exposed
      * @return a {@link ResponseEntity} containing the
-     *         {@link ResponseCollectionOfPublicationsDTO} and:
-     *         <ul>
-     *             <li>{@code 200 OK} if the collection is successfully retrieved</li>
-     *             <li>{@code 404 NOT FOUND} if no collection exists with the given identifier</li>
-     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
-     *         </ul>
+     * {@link ResponseCollectionOfPublicationsDTO} and:
+     * <ul>
+     *     <li>{@code 200 OK} if the collection is successfully retrieved</li>
+     *     <li>{@code 404 NOT FOUND} if no collection exists with the given identifier</li>
+     *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     * </ul>
      */
     @GetMapping("/{collectionId}")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> getCollectionById(
@@ -385,6 +385,41 @@ public class CollectionOfPublicationsRESTController {
         } catch (InstanceNotFoundException | EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves all collections that are currently public.
+     *
+     * <p>A collection is included if it satisfies the domain rule
+     * defined in {@link CollectionOfPublications#isCurrentlyPublic()}.</p>
+     *
+     * <p>This endpoint does not apply any filtering by genre or owner.
+     * It returns all public collections available in the system,
+     * enriched with owner display information.</p>
+     *
+     * <p>The response includes {@link PublicCollectionOfPublicationsDTO}
+     * objects representing the public view of each collection.</p>
+     *
+     * @return a {@link ResponseEntity} containing a list of
+     * {@link PublicCollectionOfPublicationsDTO}
+     * @return {@code 200 OK} if successful
+     * @return {@code 500 INTERNAL SERVER ERROR} on unexpected failure
+     */
+    @GetMapping("/public/all")
+    public ResponseEntity<List<PublicCollectionOfPublicationsDTO>>
+    findAllPublicCollections() {
+
+        try {
+
+            List<PublicCollectionOfPublicationsDTO> response =
+                    collectionService.findAllPublicCollections();
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (Exception e) {
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
