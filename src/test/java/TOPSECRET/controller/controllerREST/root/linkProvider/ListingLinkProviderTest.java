@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 
 import javax.management.InstanceNotFoundException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -33,56 +32,81 @@ class ListingLinkProviderTest {
     private ListingLinkProvider linkProvider;
 
     @Test
-    void getLinksForListings_shouldReturnCreateListingLink_whenUserCanCreateListing()
+    void getLinksForListings_shouldReturnBaseLinksAndCreateListingLink_whenUserCanCreateListing()
             throws InstanceNotFoundException {
 
-        // arrange
+        // Arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(true);
 
-        // act
+        // Act
         List<Link> result = linkProvider.getLinksForListings(userId);
 
-        // assert
-        assertEquals(1, result.size());
-        assertEquals("create-listing", result.get(0).getRel().value());
+        // Assert
+        assertEquals(5, result.size());
 
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("find-by-id")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("find-all")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("get-all-direct-sale-by-genre")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("get-all-direct-sale-by-publisher")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("create-listing")));
     }
 
     @Test
-    void getLinksForListings_shouldReturnEmptyList_whenUserCannotCreateListing()
+    void getLinksForListings_shouldReturnOnlyBaseLinks_whenUserCannotCreateListing()
             throws InstanceNotFoundException {
 
-        // arrange
+        // Arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(false);
 
-        // act
+        // Act
         List<Link> result = linkProvider.getLinksForListings(userId);
 
-        // assert
-        assertTrue(result.isEmpty());
+        // Assert
+        assertEquals(4, result.size());
 
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("find-by-id")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("find-all")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("get-all-direct-sale-by-genre")));
+
+        assertTrue(result.stream().anyMatch(link ->
+                link.getRel().value().equals("get-all-direct-sale-by-publisher")));
+
+        assertFalse(result.stream().anyMatch(link ->
+                link.getRel().value().equals("create-listing")));
     }
-
     @Test
     void getLinksForListings_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
 
-        //arrange
+        // Arrange
         UserId userId = mock(UserId.class);
+
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
-        // act + assert
+        // Act + Assert
         assertThrows(InstanceNotFoundException.class, () ->
                 linkProvider.getLinksForListings(userId)
         );
-
     }
-
 }

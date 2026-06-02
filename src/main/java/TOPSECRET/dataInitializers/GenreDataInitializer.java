@@ -3,10 +3,12 @@ package TOPSECRET.dataInitializers;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Genre.GenreFactory;
 import TOPSECRET.domain.Genre.IGenreRepository;
+import TOPSECRET.domain.ValueObjects.GenreId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Component;
  * for development / demo environments only — disable or remove it for production.
  */
 @Component
+@Order(1)
 public class GenreDataInitializer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(GenreDataInitializer.class);
@@ -41,16 +44,16 @@ public class GenreDataInitializer implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         log.info("[GenreDataInitializer] Seeding genre data...");
 
-        genreRepository.save(genreFactory.create("Drama"));
-        genreRepository.save(genreFactory.create("Science Fiction"));
-        genreRepository.save(genreFactory.create("Mystery"));
-        genreRepository.save(genreFactory.create("Fantasy"));
-        genreRepository.save(genreFactory.create("Biography"));
-        genreRepository.save(genreFactory.create("Horror"));
-        genreRepository.save(genreFactory.create("Romance"));
-        genreRepository.save(genreFactory.create("Historical Fiction"));
-        genreRepository.save(genreFactory.create("Thriller"));
-        genreRepository.save(genreFactory.create("Non-Fiction"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE1"),  "Drama"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE2"),  "Science Fiction"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE3"),  "Mystery"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE4"),  "Fantasy"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE5"),  "Biography"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE6"),  "Horror"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE7"),  "Romance"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE8"),  "Historical Fiction"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE9"),  "Thriller"));
+        genreRepository.save(genreFactory.create(new GenreId("GENRE10"), "Non-Fiction"));
 
         log.info("[GenreDataInitializer] Done — {} genres seeded.", 10);
     }

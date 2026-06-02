@@ -2,7 +2,6 @@ package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
 import TOPSECRET.domain.Genre.IGenreRepository;
-import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
@@ -12,6 +11,7 @@ import TOPSECRET.dto.US021DirSaleListingDTO;
 import TOPSECRET.dto.US021DirSaleListingMapper;
 import TOPSECRET.dto.US021GenreDTO;
 import TOPSECRET.dto.US021GenreMapper;
+import TOPSECRET.services.ListingService;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ToGetListOfItemsOnDirectSaleOfGivenGenreController {
     private final IGenreRepository genreRepository;
-    private final IListingRepository listingRepository;
+    private final ListingService listingService;
     private final IPublicationSampleRepository publicationSampleRepository;
     private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final US021DirSaleListingMapper mapper;
@@ -29,26 +29,26 @@ public class ToGetListOfItemsOnDirectSaleOfGivenGenreController {
      * Constructor.
      *
      * @param genreRepository genre repository
-     * @param listingRepository listing repository
+     * @param listingService listing repository
      * @param publicationSampleRepository publication sample repository
      * @param bibliographicalDataRepository bibliographical data repository
      * @param mapper mapper to convert Listing to DTO
      */
     public ToGetListOfItemsOnDirectSaleOfGivenGenreController(
             IGenreRepository genreRepository,
-            IListingRepository listingRepository,
+            ListingService listingService,
             IPublicationSampleRepository publicationSampleRepository,
             IBibliographicalDataRepository bibliographicalDataRepository,
             US021DirSaleListingMapper mapper) {
 
-        if (genreRepository == null || listingRepository == null ||
+        if (genreRepository == null || listingService == null ||
                 publicationSampleRepository == null || bibliographicalDataRepository == null ||
                 mapper == null) {
             throw new IllegalArgumentException("Repositories and Mapper cannot be null");
         }
 
         this.genreRepository = genreRepository;
-        this.listingRepository = listingRepository;
+        this.listingService = listingService;
         this.publicationSampleRepository = publicationSampleRepository;
         this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.mapper = mapper;
@@ -83,7 +83,7 @@ public class ToGetListOfItemsOnDirectSaleOfGivenGenreController {
                 publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
         List<Listing> directSaleListings =
-                listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(pubSampleIds);
+                listingService.findAllDirectSaleAndPublicationSampleIdIn(pubSampleIds);
 
         return mapper.toDTOs(directSaleListings);
     }

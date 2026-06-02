@@ -7,6 +7,7 @@ import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.dto.US028ListingMapper;
 import TOPSECRET.dto.US028PublisherDTO;
 import TOPSECRET.dto.US028PublisherMapper;
+import TOPSECRET.services.ListingService;
 import TOPSECRET.services.PublisherService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
     private PublisherService publisherServiceDouble;
     private IEditionRepository editionRepoDouble;
     private IPublicationSampleRepository pubSampleRepoDouble;
-    private IListingRepository listingRepoDouble;
+    private ListingService listingService;
     private US028ListingMapper listingMapperDouble;
     private US028PublisherMapper publisherMapperDouble;
 
@@ -34,7 +35,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
         publisherServiceDouble = mock(PublisherService.class);
         editionRepoDouble = mock(IEditionRepository.class);
         pubSampleRepoDouble = mock(IPublicationSampleRepository.class);
-        listingRepoDouble = mock(IListingRepository.class);
+        listingService = mock(ListingService.class);
         listingMapperDouble = mock(US028ListingMapper.class);
         publisherMapperDouble = mock(US028PublisherMapper.class);
     }
@@ -49,7 +50,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 publisherServiceDouble,
                 editionRepoDouble,
                 pubSampleRepoDouble,
-                listingRepoDouble,
+                listingService,
                 listingMapperDouble,
                 publisherMapperDouble
         );
@@ -79,7 +80,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                 publisherServiceDouble,
                 editionRepoDouble,
                 pubSampleRepoDouble,
-                listingRepoDouble,
+                listingService,
                 listingMapperDouble,
                 publisherMapperDouble
         );
@@ -110,7 +111,7 @@ class ToGetTheListOfItemsOnAuctionOfAGivenPublisherControllerTest {
                         null,
                         editionRepoDouble,
                         pubSampleRepoDouble,
-                        listingRepoDouble,
+                        listingService,
                         listingMapperDouble,
                         publisherMapperDouble
                 )

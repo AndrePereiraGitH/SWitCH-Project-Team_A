@@ -63,7 +63,7 @@ public class ListingService {
                                  List<Picture> pictures
                                  ) throws AccessDeniedException {
 
-        User user = userRepository.findByID(userId).get();
+        User user = userRepository.findByID(userId).orElseThrow(() -> new EntityNotFoundException("User not found id = " + userId));
 
         if (!policy.canCreateListing(user)) {
             throw new AccessDeniedException("You do not have permissions to create Listing");
@@ -82,7 +82,6 @@ public class ListingService {
      * @throws EntityNotFoundException if no listing exists with the given identifier
      */
     public Listing findById(ListingId listingId) {
-
         return listingRepository.findById(listingId).orElseThrow(() -> new EntityNotFoundException("Listing not found"));
     }
 
@@ -125,7 +124,9 @@ public class ListingService {
      *         may be empty if no matching listings exist
      */
     public List<ListingId> findIdsByPublicationSampleIdIn(List<PublicationSampleId> publicationSamplesIds) {
-
+        if (publicationSamplesIds == null || publicationSamplesIds.isEmpty()) {
+            throw new IllegalArgumentException("publicationSamplesIds cannot be null");
+        }
         return listingRepository.findIdsByPublicationSampleIdIn(publicationSamplesIds);
     }
 
@@ -137,6 +138,9 @@ public class ListingService {
      *         may be empty if no matching listings exist
      */
     public List<Listing> findByAuctionAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds) {
+        if (publicationSampleIds == null || publicationSampleIds.isEmpty()) {
+            throw new IllegalArgumentException("publicationSamplesIds cannot be nul or empty");
+        }
         return listingRepository.findAllByAuctionAndPublicationSampleIdIn(publicationSampleIds);
     }
 
@@ -149,17 +153,12 @@ public class ListingService {
      * @return a list of direct-sale listings associated with the given publication samples;
      *         may be empty if no matching listings exist
      */
-    public List<Listing> findAllByDirectSaleAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds) {
+    public List<Listing> findAllDirectSaleAndPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds) {
+        if (publicationSampleIds == null || publicationSampleIds.isEmpty()) {
+            throw new IllegalArgumentException("publicationSamplesIds cannot be nul or empty");
+        }
         return listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(publicationSampleIds);
     }
-
-
-
-
-
-
-
-
 
 
 }
