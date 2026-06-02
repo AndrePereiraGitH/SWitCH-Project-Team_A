@@ -26,16 +26,6 @@ public class PublicationSampleAuthorizationPolicy {
         return result;
     }
 
-    /**
-     * Checks if the user is authorized to find publication samples by a specific library ID.
-     *
-     * @param user The user attempting the operation.
-     * @return {@code true} if the user has the NORMAL_USER role, {@code false} otherwise.
-     */
-    public boolean canFindByLibraryId(User user) {
-        boolean result = user.getUserRoles().contains(UserRole.NORMAL_USER);
-        return result;
-    }
 
     /**
      * Checks if the user is authorized to find publication samples associated with a specific collection.

@@ -7,14 +7,12 @@ import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
-import TOPSECRET.domain.ValueObjects.EditionId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.publicationSample.response.PublicationDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationDetailsDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationReferenceDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -230,6 +228,60 @@ public class PublicationSampleMapper {
      */
     public static UserId toUserId(String userId) {
         UserId id = new UserId(userId);
+        return id;
+    }
+
+    /**
+     * Converts a list of string representations of bibliographical data IDs into a list of
+     * {@link BibliographicalDataId} objects.
+     *
+     * @param bibliographicalDataId the list of string IDs to be converted
+     * @return a list of {@link BibliographicalDataId} objects corresponding to the provided string IDs
+     */
+    public static List<BibliographicalDataId> toBibliographicalDataIds(List<String> bibliographicalDataId) {
+        List<BibliographicalDataId> ids =
+                bibliographicalDataId.stream()
+                        .map(PublicationSampleMapper::toBibliographicalDataId)
+                        .toList();
+
+        return ids;
+    }
+
+    /**
+     * Converts a single string representation of a bibliographical data ID into a
+     * {@link BibliographicalDataId} object.
+     *
+     * @param bibliographicalDataId the string ID to be converted
+     * @return a {@link BibliographicalDataId} wrapper containing the specified ID
+     */
+    public static BibliographicalDataId toBibliographicalDataId(String bibliographicalDataId) {
+        BibliographicalDataId id = new BibliographicalDataId(bibliographicalDataId);
+        return id;
+    }
+
+    /**
+     * Converts a list of string representations of edition IDs into a list of
+     * {@link EditionId} objects.
+     *
+     * @param editionIds the list of string IDs to be converted
+     * @return a list of {@link EditionId} objects corresponding to the provided string IDs
+     */
+    public static List<EditionId> toEditionIds(List<String> editionIds) {
+        List<EditionId> ids =
+                editionIds.stream().map(PublicationSampleMapper::toEditionId).toList();
+
+        return ids;
+    }
+
+    /**
+     * Converts a string representation of a collection of publications ID into a
+     * {@link CollectionOfPublicationsId} object.
+     *
+     * @param collectionOfPublicationsId the string ID to be converted
+     * @return a {@link CollectionOfPublicationsId} wrapper containing the specified ID
+     */
+    public static CollectionOfPublicationsId toCollectionOfPublicationsId(String collectionOfPublicationsId) {
+        CollectionOfPublicationsId id = new CollectionOfPublicationsId(collectionOfPublicationsId);
         return id;
     }
 

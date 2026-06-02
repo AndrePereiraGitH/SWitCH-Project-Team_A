@@ -66,29 +66,6 @@ class PublicationSampleAuthorizationPolicyTest {
         assertFalse(result);
     }
 
-    @Test
-    void canFindByLibraryId_shouldReturnTrue_whenUserIsNormalUser() {
-        // Arrange
-        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
-
-        // Act
-        boolean result = policy.canFindByLibraryId(authorizedUser);
-
-        // Assert
-        assertTrue(result);
-    }
-
-    @Test
-    void canFindByLibraryId_shouldReturnFalse_whenUserIsNotNormalUser() {
-        // Arrange
-        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
-
-        // Act
-        boolean result = policy.canFindByLibraryId(unauthorizedUser);
-
-        // Assert
-        assertFalse(result);
-    }
 
     @Test
     void canFindByCollectionOfPublicationsId_shouldReturnTrue_whenUserIsNormalUser() {

@@ -211,14 +211,16 @@ public class PublicationSampleRESTController {
      */
     @GetMapping("/by-bibliographical-data/{bibliographicalDataId}")
     public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataId(
-            @RequestParam BibliographicalDataId bibliographicalDataId,
+            @RequestParam String bibliographicalDataId,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
+            BibliographicalDataId bdId = PublicationSampleMapper.toBibliographicalDataId(bibliographicalDataId);
+
             List<PublicationSample> pbSampleList =
-                    publicationSampleService.findByBibliographicalDataId(bibliographicalDataId);
+                    publicationSampleService.findByBibliographicalDataId(bdId);
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
@@ -248,14 +250,16 @@ public class PublicationSampleRESTController {
      */
     @GetMapping("/by-bibliographical-data")
     public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataIdIn(
-            @RequestParam List<BibliographicalDataId> bibliographicalDataIds,
+            @RequestParam List<String> bibliographicalDataIds,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
+            List<BibliographicalDataId> bdIds = PublicationSampleMapper.toBibliographicalDataIds(bibliographicalDataIds);
+
             List<PublicationSample> pbSampleList =
-                    publicationSampleService.findByBibliographicalDataIdIn(bibliographicalDataIds);
+                    publicationSampleService.findByBibliographicalDataIdIn(bdIds);
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
@@ -285,14 +289,16 @@ public class PublicationSampleRESTController {
      */
     @GetMapping("/by-edition")
     public ResponseEntity<List<PublicationDTO>> findByEditionIdIn(
-            @RequestParam List<EditionId> editionIds,
+            @RequestParam List<String> editionIds,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
+            List<EditionId> edIds = PublicationSampleMapper.toEditionIds(editionIds);
+
             List<PublicationSample> pbSampleList =
-                    publicationSampleService.findByEditionIdIn(editionIds);
+                    publicationSampleService.findByEditionIdIn(edIds);
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
@@ -324,14 +330,16 @@ public class PublicationSampleRESTController {
      */
     @GetMapping("/{collectionId}/publications")
     public ResponseEntity<List<PublicationDTO>> findByCollectionOfPublicationsId(
-            @PathVariable("collectionId") CollectionOfPublicationsId collectionId,
+            @PathVariable("collectionId") String collectionId,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
+            CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
+
             List<PublicationSample> pbSampleList =
-                    publicationSampleService.findByCollectionOfPublicationsId(collectionId, id);
+                    publicationSampleService.findByCollectionOfPublicationsId(cpId, id);
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
@@ -487,14 +495,16 @@ public class PublicationSampleRESTController {
      */
     @GetMapping("/{collectionId}/available")
     public ResponseEntity<List<PublicationDTO>> findAvailableForCollection(
-            @PathVariable("collectionId") CollectionOfPublicationsId collectionId,
+            @PathVariable("collectionId") String collectionId,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
+            CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
+
             List<PublicationSample> pbSampleList =
-                    publicationSampleService.findAvailableForCollection(id, collectionId);
+                    publicationSampleService.findAvailableForCollection(id, cpId);
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
@@ -532,14 +542,16 @@ public class PublicationSampleRESTController {
      */
     @PatchMapping("/{publicationSampleId}/library")
     public ResponseEntity<PublicationDTO> addPublicationToLibrary(
-            @PathVariable PublicationSampleId publicationSampleId,
+            @PathVariable String publicationSampleId,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
+            PublicationSampleId pbId = PublicationSampleMapper.toPubId(publicationSampleId);
+
             PublicationSample pbSample =
-                    publicationSampleService.addPublicationToLibrary(publicationSampleId, id);
+                    publicationSampleService.addPublicationToLibrary(pbId, id);
 
             PublicationDTO publicationDTO = toPublicationDTO(pbSample, id);
 
@@ -569,15 +581,19 @@ public class PublicationSampleRESTController {
      */
     @PatchMapping("/{publicationSampleId}/collection")
     public ResponseEntity<PublicationDTO> assignPublicationToCollection(
-            @PathVariable PublicationSampleId publicationSampleId,
-            @RequestParam CollectionOfPublicationsId collectionId,
+            @PathVariable String publicationSampleId,
+            @RequestParam String collectionId,
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
+            CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
+
+            PublicationSampleId pbId = PublicationSampleMapper.toPubId(publicationSampleId);
+
             PublicationSample pbSample =
-                    publicationSampleService.assignPublicationToCollection(collectionId, publicationSampleId, id);
+                    publicationSampleService.assignPublicationToCollection(cpId, pbId, id);
 
             PublicationDTO publicationDTO = toPublicationDTO(pbSample, id);
 
