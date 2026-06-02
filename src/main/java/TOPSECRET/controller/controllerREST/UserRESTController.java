@@ -68,9 +68,10 @@ public class UserRESTController {
     @PostMapping
     public ResponseEntity<ResponseUserDTO> registerUser(
             @RequestBody RequestUserDTO requestUserDTO,
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
 
         try {
+            UserId userIdVO = UserMapper.toUserId(userId);
             Profile profile = UserMapper.toProfile(requestUserDTO);
             Set<UserRole> roles = Set.of(UserMapper.toRole(requestUserDTO.role()));
 
@@ -78,15 +79,15 @@ public class UserRESTController {
                     requestUserDTO.username(),
                     profile,
                     roles,
-                    userId
+                    userIdVO
             );
 
             ResponseUserDTO result = UserMapper.toDTO(user);
 
-            List<Link> links = userLinkProvider.getLinksForUsers(userId);
+            List<Link> links = userLinkProvider.getLinksForUsers(userIdVO);
             links.forEach(result::add);
             result.add(linkTo(methodOn(UserRESTController.class)
-                    .getUser(user.id())).withSelfRel());
+                    .getUser(user.id().getUserId())).withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
@@ -111,10 +112,11 @@ public class UserRESTController {
      * @return HTTP 200 with the user DTO, HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseUserDTO> getUser(@PathVariable UserId id) {
+    public ResponseEntity<ResponseUserDTO> getUser(@PathVariable String id) {
 
         try {
-            User user = userService.findByID(id);
+            UserId userId = UserMapper.toUserId(id);
+            User user = userService.findByID(userId);
 
             ResponseUserDTO result = UserMapper.toDTO(user);
 
@@ -122,7 +124,7 @@ public class UserRESTController {
                     .getUser(id))
                     .withSelfRel());
 
-            List<Link> links = userLinkProvider.getLinksForUsers(id);
+            List<Link> links = userLinkProvider.getLinksForUsers(userId);
             links.forEach(result::add);
 
             return ResponseEntity.ok(result);
