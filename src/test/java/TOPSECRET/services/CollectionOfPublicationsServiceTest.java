@@ -61,11 +61,16 @@ class CollectionOfPublicationsServiceTest {
     @Mock
     IUserRepository userRepository;
 
+    @Mock
+    UserId userIdDouble;
+
+    @Mock
+    UserId ownerIdDouble;
+
     @InjectMocks
     CollectionOfPublicationsService service;
 
     private GenreId genreIdDouble;
-    private UserId userIdDouble;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -329,25 +334,24 @@ class CollectionOfPublicationsServiceTest {
     @Test
     void makeCollectionPublic_shouldThrowAccessDenied_whenUserIsNotOwner() throws InstanceNotFoundException {
 
-        // arrange
+        // ARRANGE
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-
-        UserId userId = new UserId("user-1");
-        UserId ownerId = new UserId("owner-1");
 
         User user = mock(User.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
+
         when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
 
         when(collectionOfPublicationsRepository.findById(collectionId))
                 .thenReturn(collection);
 
-        when(collection.getOwnerId()).thenReturn(ownerId);
+        when(collection.getOwnerId()).thenReturn(ownerIdDouble);
 
+        // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
-                () -> service.makeCollectionPublic(collectionId, userId));
+                () -> service.makeCollectionPublic(collectionId, userIdDouble));
     }
 
     // ===========================================================================
@@ -517,26 +521,26 @@ class CollectionOfPublicationsServiceTest {
     @Test
     void makeCollectionPublicUntil_shouldThrowAccessDenied_whenUserIsNotOwner() throws InstanceNotFoundException {
 
+        // ARRANGE
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-
-        UserId userId = new UserId("user-1");
-        UserId ownerId = new UserId("owner-1");
 
         LocalDateTime future = LocalDateTime.now().plusDays(2);
 
         User user = mock(User.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
+
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
 
         when(collectionOfPublicationsRepository.findById(collectionId))
                 .thenReturn(collection);
 
-        when(collection.getOwnerId()).thenReturn(ownerId);
+        when(collection.getOwnerId()).thenReturn(ownerIdDouble);
 
+        // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
-                () -> service.makeCollectionPublicUntil(collectionId, future, userId));
+                () -> service.makeCollectionPublicUntil(collectionId, future, userIdDouble));
     }
 
     // ===============================================================
