@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ import java.util.Set;
  * for development / demo environments only — disable or remove it for production.
  */
 @Component
+@Order(1)
 public class UserDataInitializer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(UserDataInitializer.class);
