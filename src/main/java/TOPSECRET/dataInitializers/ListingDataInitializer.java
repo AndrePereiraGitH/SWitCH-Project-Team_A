@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -25,6 +27,7 @@ import java.util.List;
  * for development / demo environments only — disable or remove it for production.
  */
 @Component
+@Order(4)
 public class ListingDataInitializer implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(ListingDataInitializer.class);
@@ -61,10 +64,9 @@ public class ListingDataInitializer implements ApplicationRunner {
      * A simple direct-sale listing with a single book sample.
      */
     private Listing buildDirectSaleListing() {
+        ListingId id = new ListingId("listing-001");
         UserId seller = new UserId("user-001");
-
         PublicationSampleId pubId = new PublicationSampleId("pub-sample-001");
-
         Price price = new Price(BigDecimal.valueOf(24.99));
 
         List<Picture> pictures = List.of(
@@ -72,13 +74,15 @@ public class ListingDataInitializer implements ApplicationRunner {
         );
 
         return listingFactory.create(
+                id,
                 "Clean Code by Robert C. Martin",
                 List.of(pubId),
                 SaleType.DIRECT_SALE,
                 price,
                 "Paperback edition in excellent condition with minimal signs of use.",
                 seller,
-                pictures
+                pictures,
+                LocalDate.now()
         );
     }
 
@@ -86,6 +90,7 @@ public class ListingDataInitializer implements ApplicationRunner {
      * An auction listing bundling multiple magazine samples.
      */
     private Listing buildAuctionListingMultipleItems() {
+        ListingId id = new ListingId("listing-002");
         UserId seller = new UserId("user-002");
 
         List<PublicationSampleId> pubIds = List.of(
@@ -101,13 +106,15 @@ public class ListingDataInitializer implements ApplicationRunner {
         );
 
         return listingFactory.create(
+                id,
                 "National Geographic Vintage Magazine Bundle",
                 pubIds,
                 SaleType.AUCTION,
                 price,
                 "Collection of rare National Geographic magazines from the 1980s in very good condition.",
                 seller,
-                pictures
+                pictures,
+                LocalDate.now()
         );
     }
 
@@ -115,10 +122,9 @@ public class ListingDataInitializer implements ApplicationRunner {
      * A direct-sale listing with multiple pictures and a collector's edition book.
      */
     private Listing buildDirectSaleListingWithPictures() {
+        ListingId id = new ListingId("listing-003");
         UserId seller = new UserId("user-003");
-
         PublicationSampleId pubId = new PublicationSampleId("pub-sample-004");
-
         Price price = new Price(BigDecimal.valueOf(89.99));
 
         List<Picture> pictures = List.of(
@@ -128,13 +134,15 @@ public class ListingDataInitializer implements ApplicationRunner {
         );
 
         return listingFactory.create(
+                id,
                 "The Lord of the Rings Collector's Edition",
                 List.of(pubId),
                 SaleType.DIRECT_SALE,
                 price,
                 "Hardcover collector's edition with illustrated cover and original slipcase. Excellent condition.",
                 seller,
-                pictures
+                pictures,
+                LocalDate.now()
         );
     }
 }

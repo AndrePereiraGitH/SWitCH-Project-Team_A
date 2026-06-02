@@ -1,11 +1,13 @@
 package TOPSECRET.dataInitializers;
 
 import TOPSECRET.domain.Enum.Condition;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.EditionId;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,69 +63,85 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
 
     /**
      * A brand-new copy of a modern book, owned by user-001.
-     * References the same IDs used in ListingDataInitializer (pub-sample-001).
+     * Referenced by ListingDataInitializer as pub-sample-001.
      */
     private PublicationSample buildNewBookSample() {
+        PublicationSampleId id = new PublicationSampleId("pub-sample-001");
         BibliographicalDataId bdId = new BibliographicalDataId("bd-001");
         UserId ownerId = new UserId("user-001");
         EditionId editionId = new EditionId("edition-001");
 
         return publicationSampleFactory.create(
+                id,
                 bdId,
                 ownerId,
+                PublicationStatus.READ,
                 editionId,
-                Condition.NEW
-        );
+                Condition.POOR,
+                null,
+                null);
     }
 
     /**
      * A good-condition copy of a vintage book, owned by user-002.
-     * References pub-sample-002 from ListingDataInitializer.
+     * Referenced by ListingDataInitializer as pub-sample-002.
      */
     private PublicationSample buildGoodConditionBookSample() {
+        PublicationSampleId id = new PublicationSampleId("pub-sample-002");
         BibliographicalDataId bdId = new BibliographicalDataId("bd-002");
         UserId ownerId = new UserId("user-002");
         EditionId editionId = new EditionId("edition-002");
 
         return publicationSampleFactory.create(
+                id,
                 bdId,
                 ownerId,
+                PublicationStatus.READ,
                 editionId,
-                Condition.GOOD
-        );
+                Condition.POOR,
+                null,
+                null);
     }
 
     /**
      * A worn copy of a magazine, owned by user-002.
-     * References pub-sample-003 from ListingDataInitializer.
+     * Referenced by ListingDataInitializer as pub-sample-003.
      */
     private PublicationSample buildWornMagazineSample() {
+        PublicationSampleId id = new PublicationSampleId("pub-sample-003");
         BibliographicalDataId bdId = new BibliographicalDataId("bd-003");
         UserId ownerId = new UserId("user-002");
         EditionId editionId = new EditionId("edition-003");
 
         return publicationSampleFactory.create(
+                id,
                 bdId,
                 ownerId,
+                PublicationStatus.READ,
                 editionId,
-                Condition.LIKE_NEW
-        );
+                Condition.POOR,
+                null,
+                null);
     }
 
     /**
      * A fair-condition collector's edition book, owned by user-003.
-     * References pub-sample-004 from ListingDataInitializer.
+     * Referenced by ListingDataInitializer as pub-sample-004.
      */
     private PublicationSample buildFairConditionBookSample() {
+        PublicationSampleId id = new PublicationSampleId("pub-sample-004");
         BibliographicalDataId bdId = new BibliographicalDataId("bd-004");
         UserId ownerId = new UserId("user-003");
         EditionId editionId = new EditionId("edition-001");
 
         return publicationSampleFactory.create(
+                id,
                 bdId,
                 ownerId,
+                PublicationStatus.READ,
                 editionId,
-                Condition.POOR
-        );
+                Condition.POOR,
+                null,
+                null);
     }
 }

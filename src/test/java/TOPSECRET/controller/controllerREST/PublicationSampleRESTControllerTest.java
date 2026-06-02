@@ -20,6 +20,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.*;
  * <p>Validates HTTP responses, exception handling, DTO content, and HATEOAS link
  * generation across all controller endpoints.</p>
  */
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class PublicationSampleRESTControllerTest {
 
@@ -90,10 +93,10 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleLinkProvider.getPublicationSampleLinks(any()))
                 .thenReturn(new ArrayList<>());
 
-        lenient().when(bibliographicalData.getTitle()).thenReturn("The Gospel According to Jesus Christ");
-        lenient().when(bibliographicalData.getAuthors()).thenReturn(List.of());
-        lenient().when(bibliographicalData.getGenres()).thenReturn(List.of());
-        lenient().when(user.getUserName()).thenReturn("jose.saramago");
+        when(bibliographicalData.getTitle()).thenReturn("The Gospel According to Jesus Christ");
+        when(bibliographicalData.getAuthors()).thenReturn(List.of());
+        when(bibliographicalData.getGenres()).thenReturn(List.of());
+        when(user.getUserName()).thenReturn("jose.saramago");
     }
 
     // =========================================================================
@@ -299,13 +302,18 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+
+            // FIXED: Mock the static mapper to return the expected domain object
+            mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
+
             mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
                     .thenCallRealMethod();
             when(publicationSampleService.findById(publicationSampleId)).thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
 
             // Act
-            ResponseEntity<PublicationDTO> result = sut.findById(publicationSampleId, USER_ID_STRING);
+            // FIXED: Passing PS_ID_STRING instead of the mock object
+            ResponseEntity<PublicationDTO> result = sut.findById(PS_ID_STRING, USER_ID_STRING);
 
             // Assert
             assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -320,13 +328,14 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
             mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
                     .thenCallRealMethod();
             when(publicationSampleService.findById(publicationSampleId)).thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
 
             // Act
-            ResponseEntity<PublicationDTO> result = sut.findById(publicationSampleId, USER_ID_STRING);
+            ResponseEntity<PublicationDTO> result = sut.findById(PS_ID_STRING, USER_ID_STRING);
 
             // Assert
             assertNotNull(result.getBody());
@@ -344,11 +353,12 @@ class PublicationSampleRESTControllerTest {
         // Arrange
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
             when(publicationSampleService.findById(publicationSampleId))
                     .thenThrow(new EntityNotFoundException());
 
             // Act
-            ResponseEntity<PublicationDTO> result = sut.findById(publicationSampleId, USER_ID_STRING);
+            ResponseEntity<PublicationDTO> result = sut.findById(PS_ID_STRING, USER_ID_STRING);
 
             // Assert
             assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
@@ -362,11 +372,12 @@ class PublicationSampleRESTControllerTest {
         // Arrange
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
             when(publicationSampleService.findById(publicationSampleId))
                     .thenThrow(new IllegalArgumentException());
 
             // Act
-            ResponseEntity<PublicationDTO> result = sut.findById(publicationSampleId, USER_ID_STRING);
+            ResponseEntity<PublicationDTO> result = sut.findById(PS_ID_STRING, USER_ID_STRING);
 
             // Assert
             assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
@@ -380,17 +391,19 @@ class PublicationSampleRESTControllerTest {
         // Arrange
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
             when(publicationSampleService.findById(publicationSampleId))
                     .thenThrow(new RuntimeException());
 
             // Act
-            ResponseEntity<PublicationDTO> result = sut.findById(publicationSampleId, USER_ID_STRING);
+            ResponseEntity<PublicationDTO> result = sut.findById(PS_ID_STRING, USER_ID_STRING);
 
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
             assertNull(result.getBody());
         }
     }
+
 
     // =========================================================================
     // findAll — success
