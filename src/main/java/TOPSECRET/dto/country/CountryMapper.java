@@ -1,6 +1,7 @@
 package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.country.response.CountryResponseDTO;
 
 import java.util.ArrayList;
@@ -68,4 +69,9 @@ public class CountryMapper {
 
             return dtos;
         }
+
+    public static UserId toUserId (String userId){
+
+        return new UserId(userId);
+    }
 }
