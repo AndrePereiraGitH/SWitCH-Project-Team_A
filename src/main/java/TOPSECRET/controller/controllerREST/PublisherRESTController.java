@@ -10,6 +10,8 @@ import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import TOPSECRET.services.PublisherService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -65,8 +67,8 @@ public class PublisherRESTController {
      */
     @PostMapping
     public ResponseEntity<ResponsePublisherDTO> createPublisher(
-            @RequestBody RequestPublisherDTO requestPublisherDTO,
-            @RequestParam String userId) {
+            @Valid @RequestBody RequestPublisherDTO requestPublisherDTO,
+           @NotBlank @RequestParam String userId) {
 
         UserId id = PublisherMapper.toUserId(userId);
         try {
@@ -163,7 +165,7 @@ public class PublisherRESTController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponsePublisherDTO> getPublisher(
-            @PathVariable String id) {
+            @NotBlank @PathVariable String id) {
 
         PublisherID publisherId = PublisherMapper.toPublisherId(id);
 
