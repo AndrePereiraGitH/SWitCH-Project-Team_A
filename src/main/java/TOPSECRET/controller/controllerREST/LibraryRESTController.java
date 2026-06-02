@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -72,6 +73,8 @@ public class LibraryRESTController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
+        } catch (InstanceAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (AccessDeniedException e) {
