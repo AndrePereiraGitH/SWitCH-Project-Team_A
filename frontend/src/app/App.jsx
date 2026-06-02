@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
 import { LandingPage } from "./pages/LandingPage";
 import { Dashboard } from "./pages/Dashboard";
+import { Library } from "./pages/Library";
 import { CartProvider } from "./components/CartContext";
 import { ListsProvider } from "./components/ListsContext";
 import { PublicationsProvider } from "./components/PublicationsContext";
@@ -22,6 +23,7 @@ export default function App() {
                       <Route path="/" element={<LandingPage />} />
                       <Route path="/home" element={<Navigate to="/" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/library" element={<Library />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   </div>
