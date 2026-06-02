@@ -57,9 +57,10 @@ public class LibraryRESTController {
             @Valid @RequestBody RequestLibraryDTO requestLibraryDTO,
             @NotBlank @RequestParam String userId) {
 
-        UserId id = LibraryMapper.toUserId(userId);
 
         try {
+            UserId id = LibraryMapper.toUserId(userId);
+
             Library library = libService.createAndSave(requestLibraryDTO.libraryName(), id);
             ResponseLibraryDTO response = LibraryMapper.toDTO(library);
 
@@ -145,9 +146,9 @@ public class LibraryRESTController {
     public ResponseEntity<ResponseLibraryDTO> getLibrary(
             @PathVariable String id) {
 
-        LibraryId libraryId = LibraryMapper.toLibraryId(id);
 
         try {
+            LibraryId libraryId = LibraryMapper.toLibraryId(id);
 
             Library library = libService.findById(libraryId);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
@@ -188,9 +189,10 @@ public class LibraryRESTController {
     @GetMapping("/user/{id}/library")
     public ResponseEntity<ResponseLibraryDTO> getLibraryByUserId(@PathVariable String id) {
 
-        UserId userId = LibraryMapper.toUserId(id);
 
         try {
+            UserId userId = LibraryMapper.toUserId(id);
+
             Library library = libService.findByUserId(userId);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
