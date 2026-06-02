@@ -3,6 +3,7 @@ package TOPSECRET.dto.author;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.author.response.AuthorDTO;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.dto.author.request.CreateAuthorDTO;
@@ -162,6 +163,42 @@ class AuthorMapperTest {
         // Assert
         assertNotNull(result);
         assertEquals("PORTUGAL", result.getCountryID());
+    }
+
+    // -------------------------------------------------------------------------
+    // toUserId()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toUserIdShouldReturnUserIdWhenStringIsValid() {
+
+        // Arrange
+        String expectedUserId = "user-123e4567-e89b-12d3";
+
+        // Act
+        UserId result = AuthorMapper.toUserId(expectedUserId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedUserId, result.getUserId());
+    }
+
+    // -------------------------------------------------------------------------
+    // toAuthorId()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toAuthorIdShouldReturnAuthorIdWhenStringIsValid() {
+
+        // Arrange
+        String expectedAuthorId = "author-987fcdeb-51a2";
+
+        // Act
+        AuthorId result = AuthorMapper.toAuthorId(expectedAuthorId);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedAuthorId, result.getId());
     }
 
 }

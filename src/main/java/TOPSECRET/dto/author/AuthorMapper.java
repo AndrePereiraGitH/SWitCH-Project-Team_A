@@ -2,7 +2,9 @@ package TOPSECRET.dto.author;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.author.request.CreateAuthorDTO;
 import TOPSECRET.dto.author.response.AuthorDTO;
 
@@ -78,5 +80,27 @@ public class AuthorMapper {
             dtos.add(toDTO(authors.get(i), countries.get(i)));
         }
         return dtos;
+    }
+
+    /**
+     * Converts a raw string identifier into a {@link UserId} value object.
+     *
+     * @param userId the raw string representation of the user ID
+     * @return a {@link UserId} value object wrapping the provided string
+     */
+    public static UserId toUserId(String userId) {
+        UserId id = new UserId(userId);
+        return id;
+    }
+
+    /**
+     * Converts a raw string identifier into an {@link AuthorId} value object.
+     *
+     * @param authorId the raw string representation of the author ID
+     * @return an {@link AuthorId} value object wrapping the provided string
+     */
+    public static AuthorId toAuthorId(String authorId) {
+        AuthorId id = new AuthorId(authorId);
+        return id;
     }
 }
