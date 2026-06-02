@@ -79,7 +79,7 @@ public class ListingLinkProvider {
 
         if (authPolicy.canCreateListing(user)) {
             links.add(linkTo(methodOn(ListingRESTController.class)
-                    .createListing(null, userId))
+                    .createListing(null, null))
                     .withRel("create-listing"));
 
         }

@@ -65,7 +65,8 @@ class ListingRESTControllerTest {
             throws InstanceNotFoundException {
 
         // Arrange
-        UserId userId = mock(UserId.class);
+        String userId = "userId";
+        UserId userId1 = mock(UserId.class);
         ListingRequestDTO request = mock(ListingRequestDTO.class);
 
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
@@ -96,7 +97,7 @@ class ListingRESTControllerTest {
                 eq(SaleType.DIRECT_SALE),
                 eq(price),
                 eq("Short description"),
-                eq(userId),
+                eq(userId1),
                 eq(List.of(picture))
         )).thenReturn(listing);
 
@@ -107,13 +108,15 @@ class ListingRESTControllerTest {
         when(listing.id()).thenReturn(listingId);
         when(listingId.getId()).thenReturn("listing-1");
 
-        when(listingLinkProvider.getLinksForListings(userId)).thenReturn(List.of(providerLink));
+        when(listingLinkProvider.getLinksForListings(userId1)).thenReturn(List.of(providerLink));
         when(dto.add(any(Link.class))).thenAnswer(invocation -> {
             addedLinks.add(invocation.getArgument(0));
             return dto;
         });
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId))
+                            .thenReturn(userId1);
             mockedMapper.when(() -> ListingMapper.toPublicationId("pub-1"))
                     .thenReturn(publicationSampleId);
             mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE"))
@@ -145,7 +148,9 @@ class ListingRESTControllerTest {
     void createListing_shouldReturnForbidden_whenServiceThrowsAccessDeniedException() {
 
         // Arrange
-        UserId userId = mock(UserId.class);
+        String userId = "userId";
+        UserId userId1 = mock(UserId.class);
+
         ListingRequestDTO request = mock(ListingRequestDTO.class);
 
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
@@ -159,6 +164,8 @@ class ListingRESTControllerTest {
         when(request.getShortDescription()).thenReturn("Short description");
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId))
+                    .thenReturn(userId1);
             mockedMapper.when(() -> ListingMapper.toPublicationId("pub-1"))
                     .thenReturn(publicationSampleId);
             mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE"))
@@ -190,7 +197,8 @@ class ListingRESTControllerTest {
     void createListing_shouldReturnNotFound_whenPublicationRelatedDataDoesNotExist() {
 
         // Arrange
-        UserId userId = mock(UserId.class);
+        UserId userId1 = mock(UserId.class);
+        String userId = "userId";
         ListingRequestDTO request = mock(ListingRequestDTO.class);
 
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
@@ -205,6 +213,8 @@ class ListingRESTControllerTest {
         when(request.getShortDescription()).thenReturn("Short description");
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId))
+                    .thenReturn(userId1);
             mockedMapper.when(() -> ListingMapper.toPublicationId("pub-1"))
                     .thenReturn(publicationSampleId);
             mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE"))
@@ -231,7 +241,9 @@ class ListingRESTControllerTest {
     void createListing_shouldReturnBadRequest_whenServiceThrowsIllegalArgumentException() {
 
         // Arrange
-        UserId userId = mock(UserId.class);
+        UserId userId1 = mock(UserId.class);
+        String userId = "userId";
+
         ListingRequestDTO request = mock(ListingRequestDTO.class);
 
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
@@ -245,6 +257,7 @@ class ListingRESTControllerTest {
         when(request.getShortDescription()).thenReturn("Short description");
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userId1);
             mockedMapper.when(() -> ListingMapper.toPublicationId("11111111")).thenReturn(publicationSampleId);
             mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE")).thenReturn(SaleType.DIRECT_SALE);
             mockedMapper.when(() -> ListingMapper.toPrice("10.00")).thenReturn(price);
@@ -265,7 +278,9 @@ class ListingRESTControllerTest {
     void createListing_shouldReturnInternalServerError_whenServiceThrowsUnexpectedException() {
 
         // Arrange
-        UserId userId = mock(UserId.class);
+        UserId userId1 = mock(UserId.class);
+        String userId = "userId";
+
         ListingRequestDTO request = mock(ListingRequestDTO.class);
 
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
@@ -279,6 +294,7 @@ class ListingRESTControllerTest {
         when(request.getShortDescription()).thenReturn("Short description");
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userId1);
             mockedMapper.when(() -> ListingMapper.toPublicationId("11111111")).thenReturn(publicationSampleId);
             mockedMapper.when(() -> ListingMapper.toSaleType("DIRECT_SALE")).thenReturn(SaleType.DIRECT_SALE);
             mockedMapper.when(() -> ListingMapper.toPrice("10.00")).thenReturn(price);
