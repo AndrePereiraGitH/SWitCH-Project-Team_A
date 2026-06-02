@@ -468,6 +468,7 @@ class ListingRESTControllerTest {
         // Arrange
         String id = "listing-1";
         UserId userId = mock(UserId.class);
+        String userId1 = "userid";
 
         ListingId listingId = mock(ListingId.class);
         Listing listing = mock(Listing.class);
@@ -485,6 +486,8 @@ class ListingRESTControllerTest {
         when(listingLinkProvider.getLinksForListings(userId)).thenReturn(List.of());
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId1))
+                    .thenReturn(userId);
             mockedMapper.when(() -> ListingMapper.toListingId(id))
                     .thenReturn(listingId);
             mockedMapper.when(() -> ListingMapper.toResponseDTO(
@@ -495,7 +498,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<ListingResponseDTO> response =
-                    controller.findById(id, userId);
+                    controller.findById(id, userId1);
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -509,9 +512,12 @@ class ListingRESTControllerTest {
         // Arrange
         String id = "listing-1";
         UserId userId = mock(UserId.class);
+        String userId1 = "userId";
         ListingId listingId = mock(ListingId.class);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId1))
+                    .thenReturn(userId);
             mockedMapper.when(() -> ListingMapper.toListingId(id))
                     .thenReturn(listingId);
 
@@ -520,7 +526,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<ListingResponseDTO> response =
-                    controller.findById(id, userId);
+                    controller.findById(id, userId1);
 
             // Assert
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -533,7 +539,8 @@ class ListingRESTControllerTest {
 
         // Arrange
         String id = "";
-        UserId userId = mock(UserId.class);
+
+        String userId = "userId";
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -547,9 +554,12 @@ class ListingRESTControllerTest {
         // Arrange
         String id = "listing-1";
         UserId userId = mock(UserId.class);
+        String userId1 = "userId";
         ListingId listingId = mock(ListingId.class);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId1))
+                    .thenReturn(userId);
             mockedMapper.when(() -> ListingMapper.toListingId(id))
                     .thenReturn(listingId);
 
@@ -558,7 +568,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<ListingResponseDTO> response =
-                    controller.findById(id, userId);
+                    controller.findById(id, userId1);
 
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
