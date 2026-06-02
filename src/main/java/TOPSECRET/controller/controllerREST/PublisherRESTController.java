@@ -70,8 +70,9 @@ public class PublisherRESTController {
             @Valid @RequestBody RequestPublisherDTO requestPublisherDTO,
            @NotBlank @RequestParam String userId) {
 
-        UserId id = PublisherMapper.toUserId(userId);
         try {
+            UserId id = PublisherMapper.toUserId(userId);
+
             Contact contact = PublisherMapper.toContact(requestPublisherDTO);
 
             Publisher publisher = publisherService.createAndSave(
@@ -167,9 +168,9 @@ public class PublisherRESTController {
     public ResponseEntity<ResponsePublisherDTO> getPublisher(
             @NotBlank @PathVariable String id) {
 
-        PublisherID publisherId = PublisherMapper.toPublisherId(id);
 
         try {
+            PublisherID publisherId = PublisherMapper.toPublisherId(id);
             Publisher publisher = publisherService.findById(publisherId);
             ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
