@@ -128,4 +128,31 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
                 .filter(CollectionOfPublications::isCurrentlyPublic)
                 .toList();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findAllPublicCollections() {
+
+        List<CollectionOfPublicationsDM> publicCollections =
+                collectionRepositoryJpa.findByIsPrivateFalse();
+
+        return publicCollections.stream()
+                .map(collectionOfPublicationsAssembler::toDomain)
+                .filter(CollectionOfPublications::isCurrentlyPublic)
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findAll() {
+
+        return collectionRepositoryJpa.findAll()
+                .stream()
+                .map(collectionOfPublicationsAssembler::toDomain)
+                .toList();
+    }
 }

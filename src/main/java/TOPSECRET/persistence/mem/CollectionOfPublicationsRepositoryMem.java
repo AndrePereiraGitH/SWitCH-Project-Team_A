@@ -136,4 +136,29 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
         }
         return collections;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findAllPublicCollections() {
+
+        List<CollectionOfPublications> publicCollections = new ArrayList<>();
+
+        for (CollectionOfPublications c : _collectionOfPublicationsList) {
+            if (c.isCurrentlyPublic()) {
+                publicCollections.add(c);
+            }
+        }
+
+        return publicCollections;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findAll() {
+        return new ArrayList<>(_collectionOfPublicationsList);
+    }
 }
