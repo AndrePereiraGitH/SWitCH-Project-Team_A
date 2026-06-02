@@ -295,6 +295,52 @@ public class CollectionOfPublicationsRESTController {
     }
 
     /**
+     * Retrieves all collections owned by the specified user.
+     *
+     * <p>The provided user identifier is converted into a {@link UserId}
+     * value object and used to retrieve all collections associated with
+     * that user. The resulting domain objects are mapped into
+     * {@link ResponseCollectionOfPublicationsDTO} instances before being
+     * returned.</p>
+     *
+     * @param userId the identifier of the user whose collections are to be
+     *               retrieved; must not be {@code null}
+     * @return a {@link ResponseEntity} containing a list of
+     *         {@link ResponseCollectionOfPublicationsDTO} and:
+     *         <ul>
+     *             <li>{@code 200 OK} if the operation succeeds</li>
+     *             <li>{@code 400 BAD REQUEST} if the provided user identifier is invalid</li>
+     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     *         </ul>
+     */
+    @GetMapping("/owner")
+    public ResponseEntity<List<ResponseCollectionOfPublicationsDTO>>
+    findCollectionsByOwnerId(@RequestParam String userId) {
+
+        try {
+
+            UserId userIdVO =
+                    CollectionOfPublicationsMapper.toUserId(userId);
+
+            List<CollectionOfPublications> collections =
+                    collectionService.findAllByOwnerId(userIdVO);
+
+            List<ResponseCollectionOfPublicationsDTO> response =
+                    CollectionOfPublicationsMapper.toDTOList(collections);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Retrieves a collection of publications by its unique identifier.
      *
      * <p>This endpoint retrieves the requested

@@ -938,6 +938,122 @@ class CollectionOfPublicationsRESTControllerTest {
     }
 
 // -------------------------------------------------------------------------
+// findCollectionsByOwnerId
+// -------------------------------------------------------------------------
+
+    @Test
+    void findCollectionsByOwnerId_shouldReturnOk_onSuccess() {
+
+        // ARRANGE
+        String userId = "user-123";
+
+        UserId userIdDouble =
+                mock(UserId.class);
+
+        CollectionOfPublications collectionDouble =
+                mock(CollectionOfPublications.class);
+
+        ResponseCollectionOfPublicationsDTO dto =
+                new ResponseCollectionOfPublicationsDTO(
+                        "My Collection",
+                        "collection-123"
+                );
+
+        List<CollectionOfPublications> collections =
+                List.of(collectionDouble);
+
+        List<ResponseCollectionOfPublicationsDTO> responseDTOs =
+                List.of(dto);
+
+        when(collectionService.findAllByOwnerId(userIdDouble))
+                .thenReturn(collections);
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenReturn(userIdDouble);
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toDTOList(any()))
+                    .thenReturn(responseDTOs);
+
+            // ACT
+            ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> response =
+                    controller.findCollectionsByOwnerId(userId);
+
+            // ASSERT
+            assertEquals(
+                    HttpStatus.OK.value(),
+                    response.getStatusCode().value()
+            );
+
+            assertEquals(responseDTOs, response.getBody());
+        }
+    }
+
+    @Test
+    void findCollectionsByOwnerId_shouldReturnBadRequest_onIllegalArgument() {
+
+        // ARRANGE
+        String userId = "invalid-user";
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException());
+
+            // ACT
+            ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> response =
+                    controller.findCollectionsByOwnerId(userId);
+
+            // ASSERT
+            assertEquals(
+                    HttpStatus.BAD_REQUEST.value(),
+                    response.getStatusCode().value()
+            );
+
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void findCollectionsByOwnerId_shouldReturnInternalServerError_onException() {
+
+        // ARRANGE
+        String userId = "user-123";
+
+        UserId userIdDouble =
+                mock(UserId.class);
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenReturn(userIdDouble);
+
+            when(collectionService.findAllByOwnerId(userIdDouble))
+                    .thenThrow(new RuntimeException());
+
+            // ACT
+            ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> response =
+                    controller.findCollectionsByOwnerId(userId);
+
+            // ASSERT
+            assertEquals(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    response.getStatusCode().value()
+            );
+
+            assertNull(response.getBody());
+        }
+    }
+
+// -------------------------------------------------------------------------
 // getCollectionById
 // -------------------------------------------------------------------------
 
