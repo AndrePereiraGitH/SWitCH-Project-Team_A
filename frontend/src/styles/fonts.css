@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300..700&family=Playfair+Display:wght@700;900&display=swap");
+
+:root {
+  --font-serif: "Crimson Text", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Playfair Display", serif;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-serif);
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  color: #000000;
+}
