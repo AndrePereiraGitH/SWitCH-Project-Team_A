@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.InstanceNotFoundException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
@@ -76,13 +77,16 @@ public class BibliographicalDataRESTController {
                     bibliographicalDataList,
                     authorNamesMap);
 
-            CollectionModel<responseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
+            for (responseBibliographicalDataDTO dto : responseList) {
 
-            collectionModel.add(
-                    linkTo(methodOn(BibliographicalDataRESTController.class)
-                            .getAllBibliographicalData(userId))
-                            .withSelfRel()
-            );
+                BibliographicalDataId bdId = new BibliographicalDataId(dto.getBdId());
+
+                dto.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                        .getBibliographicalDataById(bdId, userId))
+                        .withSelfRel());
+            }
+
+            CollectionModel<responseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
 
             List<Link> links = provider.getLinksForBibliographicalData(userId);
             collectionModel.add(links);
@@ -147,8 +151,10 @@ public class BibliographicalDataRESTController {
 
             List<Link> links = provider.getLinksForBibliographicalData(userId);
             links.forEach(result::add);
+
             result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                    .createBibliographicalData(requestBibliographicalDataDTO, userId)).withSelfRel());
+                    .getBibliographicalDataById(bibliographicalData.id(), userId))
+                    .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
@@ -159,5 +165,38 @@ public class BibliographicalDataRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+
+    /**
+     * Retrieves bibliographical data by its identifier.
+     *
+     * <p>The returned DTO includes the bibliographical data, its authors, HATEOAS links
+     * available for the given user, and a self link pointing to this endpoint.</p>
+     *
+     * @param id the identifier of the bibliographical data to retrieve
+     * @param userId the identifier of the user requesting the resource, used to resolve available links
+     * @return a {@link ResponseEntity} containing the bibliographical data DTO
+     * @throws InstanceNotFoundException if no bibliographical data exists for the given {@code id}
+     */
+    @GetMapping("/bibliographical-data/{id}")
+    public ResponseEntity<responseBibliographicalDataDTO> getBibliographicalDataById(
+            @PathVariable BibliographicalDataId id,
+            @RequestParam UserId userId) throws InstanceNotFoundException {
+
+        BibliographicalData bd = service.findById(id);
+
+        responseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
+                bd,
+                service.getAuthors(bd)
+        );
+
+        provider.getLinksForBibliographicalData(userId).forEach(result::add);
+
+        result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                .getBibliographicalDataById(id, userId))
+                .withSelfRel());
+
+        return ResponseEntity.ok(result);
     }
 }
