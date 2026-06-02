@@ -194,4 +194,47 @@ class CollectionOfPublicationsAuthorizationPolicyTest {
         // ASSERT
         assertFalse(result);
     }
+
+    // -------------------------------------------------------------------------
+    // canViewAllCollections
+    // -------------------------------------------------------------------------
+
+    @Test
+    void canViewAllCollections_shouldReturnTrue_whenUserHasAdminRole() {
+        // ARRANGE
+        User user = mock(User.class);
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        // ACT
+        boolean result = policy.canViewAllCollections(user);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewAllCollections_shouldReturnFalse_whenUserHasNormalUserRole() {
+        // ARRANGE
+        User user = mock(User.class);
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // ACT
+        boolean result = policy.canViewAllCollections(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canViewAllCollections_shouldReturnFalse_whenUserHasNoRoles() {
+        // ARRANGE
+        User user = mock(User.class);
+        when(user.getUserRoles()).thenReturn(Set.of());
+
+        // ACT
+        boolean result = policy.canViewAllCollections(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
 }

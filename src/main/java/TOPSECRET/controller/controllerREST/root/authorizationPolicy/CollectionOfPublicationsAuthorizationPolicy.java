@@ -63,4 +63,16 @@ public class CollectionOfPublicationsAuthorizationPolicy {
     public boolean canViewCollectionOfPublications(User user) {
         return user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
+
+    /**
+     * Determines whether the given user is authorized to view all collection of publications.
+     *
+     * @param user the user requesting the operation; must not be {@code null}
+     * @return {@code true} if the user holds the {@link UserRole#ADMIN} role,
+     *         {@code false} otherwise
+     * @throws NullPointerException if {@code user} is {@code null}
+     */
+    public boolean canViewAllCollections(User user) {
+        return user.getUserRoles().contains(UserRole.ADMIN);
+    }
 }
