@@ -351,4 +351,30 @@ public class CollectionOfPublicationsService {
                 })
                 .toList();
     }
+
+    /**
+     * Retrieves all {@link CollectionOfPublications} in the system.
+     *
+     * <p>This operation is restricted to administrative users only. Authorization
+     * is enforced via {@link CollectionOfPublicationsAuthorizationPolicy#canViewAllCollections(User)}.</p>
+     *
+     * <p>No filtering is applied; all persisted collections are returned.</p>
+     *
+     * @param requesterId the identifier of the user requesting the operation; must not be {@code null}
+     * @return a list of all collections in the system; may be empty
+     * @throws NullPointerException if {@code requesterId} is {@code null}
+     * @throws AccessDeniedException if the user is not authorized to view all collections
+     */
+    public List<CollectionOfPublications> findAllCollections(UserId requesterId) {
+
+        Objects.requireNonNull(requesterId, "requesterId cannot be null");
+
+        User user = getUser(requesterId);
+
+        if (!policy.canViewAllCollections(user)) {
+            throw new AccessDeniedException("User not authorized to view all collections");
+        }
+
+        return collectionOfPublicationsRepository.findAll();
+    }
 }

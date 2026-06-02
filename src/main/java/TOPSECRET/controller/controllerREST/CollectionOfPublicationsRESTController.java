@@ -423,4 +423,54 @@ public class CollectionOfPublicationsRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /**
+     * Retrieves all collections in the system.
+     *
+     * <p>This endpoint is restricted to administrative users only. The
+     * requesting user is validated against the authorization policy before
+     * any data is returned.</p>
+     *
+     * <p>No filtering is applied. All collections stored in the system are
+     * returned as {@link ResponseCollectionOfPublicationsDTO} objects.</p>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a {@link ResponseEntity} containing a list of all collections and:
+     *         <ul>
+     *             <li>{@code 200 OK} if the operation succeeds</li>
+     *             <li>{@code 400 BAD REQUEST} if the user identifier is invalid</li>
+     *             <li>{@code 403 FORBIDDEN} if the user is not authorized</li>
+     *             <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     *         </ul>
+     */
+    @GetMapping("/admin/all")
+    public ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> findAllCollections(
+            @RequestParam String userId) {
+
+        try {
+
+            UserId userIdVO =
+                    CollectionOfPublicationsMapper.toUserId(userId);
+
+            List<CollectionOfPublications> collections =
+                    collectionService.findAllCollections(userIdVO);
+
+            List<ResponseCollectionOfPublicationsDTO> response =
+                    CollectionOfPublicationsMapper.toDTOList(collections);
+
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        } catch (AccessDeniedException e) {
+
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        } catch (Exception e) {
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

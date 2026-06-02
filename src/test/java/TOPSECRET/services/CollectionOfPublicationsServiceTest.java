@@ -4,6 +4,7 @@ import TOPSECRET.controller.controllerREST.root.authorizationPolicy.CollectionOf
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
 import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory;
 import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
+import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
@@ -25,6 +26,7 @@ import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -836,5 +838,79 @@ class CollectionOfPublicationsServiceTest {
 
         assertThrows(NullPointerException.class,
                 service::findAllPublicCollections);
+    }
+
+// ==========================================================================
+// ------------------- FIND ALL COLLECTIONS ---------------------------------
+// ==========================================================================
+
+    @Test
+    void findAllCollections_shouldReturnAllCollections_whenUserIsAdmin() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        when(policy.canViewAllCollections(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findAll())
+                .thenReturn(List.of(collection));
+
+        // ACT
+        List<CollectionOfPublications> result =
+                service.findAllCollections(userId);
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertTrue(result.contains(collection));
+    }
+
+    @Test
+    void findAllCollections_shouldThrowAccessDeniedException_whenUserIsNotAdmin() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        when(policy.canViewAllCollections(user)).thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(AccessDeniedException.class,
+                () -> service.findAllCollections(userId));
+    }
+
+    @Test
+    void findAllCollections_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        assertThrows(NullPointerException.class,
+                () -> service.findAllCollections(null));
+    }
+
+    @Test
+    void findAllCollections_shouldReturnEmptyList_whenNoCollectionsExist() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        when(policy.canViewAllCollections(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findAll())
+                .thenReturn(List.of());
+
+        // ACT
+        List<CollectionOfPublications> result =
+                service.findAllCollections(userId);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
     }
 }

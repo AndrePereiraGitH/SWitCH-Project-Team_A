@@ -1249,4 +1249,139 @@ class CollectionOfPublicationsRESTControllerTest {
 
         assertNull(response.getBody());
     }
+
+// -------------------------------------------------------------------------
+// findAllCollections
+// -------------------------------------------------------------------------
+
+    @Test
+    void findAllCollections_shouldReturnOk_whenUserIsAdmin() {
+
+        // ARRANGE
+        String userId = "user-123";
+
+        UserId userIdVO = mock(UserId.class);
+
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        ResponseCollectionOfPublicationsDTO dto =
+                new ResponseCollectionOfPublicationsDTO(
+                        "My Collection",
+                        "collection-123"
+                );
+
+        List<CollectionOfPublications> collections =
+                List.of(collection);
+
+        List<ResponseCollectionOfPublicationsDTO> responseDTOs =
+                List.of(dto);
+
+        when(collectionService.findAllCollections(userIdVO))
+                .thenReturn(collections);
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenReturn(userIdVO);
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toDTOList(any()))
+                    .thenReturn(responseDTOs);
+
+            // ACT
+            ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> response =
+                    controller.findAllCollections(userId);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK.value(),
+                    response.getStatusCode().value());
+
+            assertEquals(responseDTOs, response.getBody());
+        }
+    }
+
+    @Test
+    void findAllCollections_shouldReturnForbidden_whenUserIsNotAdmin() {
+
+        // ARRANGE
+        String userId = "user-123";
+        UserId userIdVO = mock(UserId.class);
+
+        when(collectionService.findAllCollections(userIdVO))
+                .thenThrow(new AccessDeniedException("denied"));
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenReturn(userIdVO);
+
+            // ACT
+            ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> response =
+                    controller.findAllCollections(userId);
+
+            // ASSERT
+            assertEquals(HttpStatus.FORBIDDEN.value(),
+                    response.getStatusCode().value());
+
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void findAllCollections_shouldReturnBadRequest_whenIllegalArgument() {
+
+        // ARRANGE
+        String userId = "invalid";
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(userId))
+                    .thenThrow(new IllegalArgumentException());
+
+            // ACT
+            ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> response =
+                    controller.findAllCollections(userId);
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST.value(),
+                    response.getStatusCode().value());
+
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void findAllCollections_shouldReturnInternalServerError_whenExceptionOccurs() {
+
+        // ARRANGE
+        String userId = "user-123";
+        UserId userIdVO = mock(UserId.class);
+
+        when(collectionService.findAllCollections(userIdVO))
+                .thenThrow(new RuntimeException());
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenReturn(userIdVO);
+
+            // ACT
+            ResponseEntity<List<ResponseCollectionOfPublicationsDTO>> response =
+                    controller.findAllCollections(userId);
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    response.getStatusCode().value());
+
+            assertNull(response.getBody());
+        }
+    }
 }
