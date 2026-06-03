@@ -156,10 +156,10 @@ public class Code {
      */
     @Override
     public String toString() {
-        if (this.isbn10 != null) return this.isbn10;
-        if (this.isbn13 != null) return this.isbn13;
-        if (this.issn != null) return this.issn;
-        return "No Code";
+        if (isbn13 != null && !isbn13.isBlank()) return isbn13;
+        if (isbn10 != null && !isbn10.isBlank()) return isbn10;
+        if (issn   != null && !issn.isBlank())   return issn;
+        return "";
     }
 
     /**
@@ -179,5 +179,9 @@ public class Code {
     @Override
     public int hashCode() {
         return Objects.hash(isbn10, isbn13, issn);
+    }
+
+    public static Code empty() {
+        return new Code("", "", "");
     }
 }

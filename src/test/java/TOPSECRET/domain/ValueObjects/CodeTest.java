@@ -322,10 +322,10 @@ class CodeTest {
     }
 
     @Test
-    void toString_shouldReturnNoCode_whenAllFieldsAreNull() {
-        // Act & Assert — constructor with all nulls hits the "No Code" fallback
+    void toString_shouldReturnEmptyString_whenAllFieldsAreNull() {
+        // Act & Assert — constructor with all nulls returns an empty string
         Code code = new Code(null, null, null);
-        assertEquals("No Code", code.toString());
+        assertEquals("", code.toString());
     }
 
 

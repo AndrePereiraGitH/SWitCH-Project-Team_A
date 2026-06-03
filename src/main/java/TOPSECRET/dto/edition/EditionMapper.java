@@ -7,7 +7,6 @@ import TOPSECRET.dto.edition.request.CreateEditionDTO;
 import TOPSECRET.dto.edition.response.EditionDTO;
 import TOPSECRET.dto.edition.response.EditionIdResponseDTO;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -31,14 +30,15 @@ public class EditionMapper {
 
     private EditionMapper() {}
 
+
     /**
      * Extracts and converts the {@link Code} value object from a {@link CreateEditionDTO}.
      *
      * <p>Only one of isbn10, isbn13, or issn will be used — whichever is non-blank.
-     * If none are provided, {@code null} is returned and domain validation will enforce the rule.</p>
+     * If none are provided, an empty {@link Code} is returned and domain validation will enforce the rule.</p>
      *
      * @param dto the request DTO; must not be {@code null}
-     * @return a {@link Code} value object, or {@code null} if no code is provided
+     * @return a {@link Code} value object, or an empty {@link Code} (via {@code Code.empty()}) if no code is provided
      */
     public static Code toCode(CreateEditionDTO dto) {
         if (dto.isbn13() != null && !dto.isbn13().isBlank()) {
@@ -48,7 +48,7 @@ public class EditionMapper {
         } else if (dto.issn() != null && !dto.issn().isBlank()) {
             return Code.fromIssn(dto.issn());
         }
-        return null;
+        return Code.empty();
     }
 
     /**
