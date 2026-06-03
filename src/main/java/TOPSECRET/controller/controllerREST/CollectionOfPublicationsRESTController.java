@@ -175,7 +175,7 @@ public class CollectionOfPublicationsRESTController {
     }
 
     /**
-     * Makes the specified collection of publications public until the given date and time.
+     * Makes the specified collection of publications public until the given date.
      *
      * <p>Delegates the operation to {@link CollectionOfPublicationsService}, then retrieves
      * the updated collection and returns it as a {@link ResponseCollectionOfPublicationsDTO},
@@ -257,7 +257,7 @@ public class CollectionOfPublicationsRESTController {
      *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
      * </ul>
      */
-    @GetMapping("/genre/{genreId}")
+    @GetMapping("public/genre/{genreId}")
     public ResponseEntity<List<PublicCollectionOfPublicationsDTO>>
     findPublicCollectionsByGenreId(@RequestParam String genreId) {
 
