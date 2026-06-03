@@ -6,6 +6,8 @@ import { LandingPage } from "./pages/LandingPage";
 import { Dashboard } from "./pages/Dashboard";
 import { Library } from "./pages/Library";
 import { ManageLists } from "./pages/ManageLists";
+import { ListDetail } from "./pages/ListDetail";
+import { SellPublication } from "./pages/SellPublication";
 import { Explore } from "./pages/Explore";
 import { CartProvider } from "./components/CartContext";
 import { ListsProvider } from "./components/ListsContext";
@@ -31,6 +33,8 @@ export default function App() {
                       <Route path="/my-publications" element={<MyPublications />} />
                       <Route path="/library" element={<Library />} />
                       <Route path="/lists" element={<ManageLists />} />
+                      <Route path="/lists/:listId" element={<ListDetail />} />
+                      <Route path="/sell/:bookId" element={<SellPublication />} />
                       <Route path="/explore" element={<Explore />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
