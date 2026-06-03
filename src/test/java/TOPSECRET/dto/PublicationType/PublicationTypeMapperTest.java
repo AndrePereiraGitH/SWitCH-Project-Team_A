@@ -2,6 +2,7 @@ package TOPSECRET.dto.PublicationType;
 
 import TOPSECRET.domain.PublicationType.PublicationType;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.PublicationType.response.PublicationTypeResponseDTO;
 import org.junit.jupiter.api.Test;
 
@@ -131,5 +132,121 @@ class PublicationTypeMapperTest {
         assertEquals("Book", result.get(0).getMediaFormat());
         assertEquals("2", result.get(1).getId());
         assertEquals("Magazine", result.get(1).getMediaFormat());
+    }
+
+    // =========================================================
+    // toUserId — SUCCESS
+    // =========================================================
+
+    @Test
+    void shouldReturnUserIdWhenValidStringIsProvided() {
+
+        // ARRANGE
+        String rawUserId = "user-001";
+
+        // ACT
+        UserId result = PublicationTypeMapper.toUserId(rawUserId);
+
+        // ASSERT
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldReturnUserIdWithMatchingValueWhenValidStringIsProvided() {
+
+        // ARRANGE
+        String rawUserId = "user-001";
+
+        // ACT
+        UserId result = PublicationTypeMapper.toUserId(rawUserId);
+
+        // ASSERT
+        assertEquals(rawUserId, result.getUserId());
+    }
+
+    // =========================================================
+    // toUserId — INVALID INPUT
+    // =========================================================
+
+    @Test
+    void shouldThrowWhenUserIdIsNull() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationTypeMapper.toUserId(null));
+    }
+
+    @Test
+    void shouldThrowWhenUserIdIsBlank() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationTypeMapper.toUserId("   "));
+    }
+
+    @Test
+    void shouldThrowWhenUserIdIsEmpty() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationTypeMapper.toUserId(""));
+    }
+
+    // =========================================================
+    // toPublicationTypeId — SUCCESS
+    // =========================================================
+
+    @Test
+    void shouldReturnPublicationTypeIdWhenValidStringIsProvided() {
+
+        // ARRANGE
+        String rawId = "pt-001";
+
+        // ACT
+        PublicationTypeId result = PublicationTypeMapper.toPublicationTypeId(rawId);
+
+        // ASSERT
+        assertNotNull(result);
+    }
+
+    @Test
+    void shouldReturnPublicationTypeIdWithMatchingValueWhenValidStringIsProvided() {
+
+        // ARRANGE
+        String rawId = "pt-001";
+
+        // ACT
+        PublicationTypeId result = PublicationTypeMapper.toPublicationTypeId(rawId);
+
+        // ASSERT
+        assertEquals(rawId, result.getId());
+    }
+
+    // =========================================================
+    // toPublicationTypeId — INVALID INPUT
+    // =========================================================
+
+    @Test
+    void shouldThrowWhenPublicationTypeIdIsNull() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationTypeMapper.toPublicationTypeId(null));
+    }
+
+    @Test
+    void shouldThrowWhenPublicationTypeIdIsBlank() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationTypeMapper.toPublicationTypeId("   "));
+    }
+
+    @Test
+    void shouldThrowWhenPublicationTypeIdIsEmpty() {
+
+        // ACT & ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> PublicationTypeMapper.toPublicationTypeId(""));
     }
 }

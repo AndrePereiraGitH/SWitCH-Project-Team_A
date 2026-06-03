@@ -2,6 +2,7 @@ package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.CountryId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.country.response.CountryResponseDTO;
 import org.junit.jupiter.api.Test;
 
@@ -137,5 +138,43 @@ class CountryMapperTest {
         // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> mapper.toDTOs(null));
+    }
+
+    @Test
+    void toUserId_validString_returnsUserId() {
+        // Arrange
+        String input = "user123";
+
+        // Act
+        UserId result = CountryMapper.toUserId(input);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(new UserId("user123"), result);
+    }
+
+    @Test
+    void toUserId_emptyString_returnsUserIdOrThrows() {
+
+        //Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                CountryMapper.toUserId("")
+        );
+    }
+
+    @Test
+    void toUserId_null_throwsException() {
+
+        //Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> CountryMapper.toUserId(null));
+    }
+
+    @Test
+    void toUserId_blank_throwsException() {
+
+        //Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> CountryMapper.toUserId("   "));
     }
 }

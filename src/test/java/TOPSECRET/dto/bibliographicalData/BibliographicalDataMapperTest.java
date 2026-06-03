@@ -4,6 +4,7 @@ import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
+import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -269,5 +270,21 @@ class BibliographicalDataMapperTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    // =============================================================
+    // ====================== toUserId Tests =======================
+    // =============================================================
+
+    @Test
+    void shouldCreateUserIdWhenInputIsValid() {
+        // Arrange
+        String id = "id";
+
+        // Act
+        UserId result = BibliographicalDataMapper.toUserId(id);
+
+        // Assert
+        assertSame(id, result.getUserId());
     }
 }

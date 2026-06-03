@@ -10,6 +10,8 @@ import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
 import TOPSECRET.services.PublisherService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -59,32 +61,34 @@ public class PublisherRESTController {
      * </ul>
      *
      * @param requestPublisherDTO the publisher data to create
-     * @param userId the identifier of the user performing the operation
+     * @param userId              the identifier of the user performing the operation
      * @return a {@link ResponseEntity} containing the created {@link ResponsePublisherDTO}
-     *         or an appropriate HTTP error status
+     * or an appropriate HTTP error status
      */
     @PostMapping
     public ResponseEntity<ResponsePublisherDTO> createPublisher(
-            @RequestBody RequestPublisherDTO requestPublisherDTO,
-            @RequestParam UserId userId) {
+            @Valid @RequestBody RequestPublisherDTO requestPublisherDTO,
+           @NotBlank @RequestParam String userId) {
 
         try {
+            UserId id = PublisherMapper.toUserId(userId);
+
             Contact contact = PublisherMapper.toContact(requestPublisherDTO);
 
             Publisher publisher = publisherService.createAndSave(
                     requestPublisherDTO.name(),
                     requestPublisherDTO.vatNumber(),
                     contact,
-                    userId
+                    id
             );
 
             ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
-            List<Link> links = publisherLinkProvider.getLinksForPublisher(userId);
+            List<Link> links = publisherLinkProvider.getLinksForPublisher(id);
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(PublisherRESTController.class)
-                    .getPublisher(publisher.id()))
+                    .getPublisher(publisher.id().getPublisherId()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -112,7 +116,7 @@ public class PublisherRESTController {
      * </ul>
      *
      * @return a {@link ResponseEntity} containing a list of {@link ResponsePublisherDTO}
-     *         or an appropriate HTTP status if none exist or an error occurs
+     * or an appropriate HTTP status if none exist or an error occurs
      */
     @GetMapping
     public ResponseEntity<List<ResponsePublisherDTO>> getAllPublishers() {
@@ -124,7 +128,7 @@ public class PublisherRESTController {
                     .map(publisher -> {
                         ResponsePublisherDTO dto = PublisherMapper.toDTO(publisher);
                         dto.add(linkTo(methodOn(PublisherRESTController.class)
-                                .getPublisher(publisher.id()))
+                                .getPublisher(publisher.id().getId()))
                                 .withSelfRel());
                         return dto;
                     })
@@ -158,18 +162,20 @@ public class PublisherRESTController {
      *
      * @param id the {@link PublisherID} of the publisher to retrieve
      * @return a {@link ResponseEntity} containing the {@link ResponsePublisherDTO}
-     *         or an appropriate HTTP error status
+     * or an appropriate HTTP error status
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponsePublisherDTO> getPublisher(
-            @PathVariable PublisherID id) {
+            @NotBlank @PathVariable String id) {
+
 
         try {
-            Publisher publisher = publisherService.findById(id);
+            PublisherID publisherId = PublisherMapper.toPublisherId(id);
+            Publisher publisher = publisherService.findById(publisherId);
             ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
             result.add(linkTo(methodOn(PublisherRESTController.class)
-                    .getPublisher(id))
+                    .getPublisher(publisherId.getPublisherId()))
                     .withSelfRel());
 
             result.add(linkTo(methodOn(PublisherRESTController.class)
