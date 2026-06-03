@@ -354,20 +354,20 @@ class BibliographicalDataServiceTest {
     // =============================================================
 
     @Test
-    void findById_shouldReturnBibliographicalData_whenExists() throws InstanceNotFoundException {
-
-        // ARRANGE
+    void findById_shouldReturnBibliographicalDataWhenExists() throws InstanceNotFoundException {
+        // Arrange
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
-        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+        BibliographicalData bdDouble = mock(BibliographicalData.class);
 
         when(bibliographicalDataRepo.findById(bdId))
-                .thenReturn(Optional.of(bibliographicalData));
+                .thenReturn(Optional.of(bdDouble));
 
-        // ACT
+        // Act
         BibliographicalData result = service.findById(bdId);
 
-        // ASSERT
-        assertSame(bibliographicalData, result);
+        // Assert
+        assertNotNull(result);
+        assertEquals(bdDouble, result);
     }
 
     @Test
@@ -391,7 +391,6 @@ class BibliographicalDataServiceTest {
         assertThrows(InstanceNotFoundException.class,
                 () -> service.findById(bdId));
     }
-
 
     // =============================================================
     // ================== findAllByGenreId Tests ===================
@@ -421,35 +420,31 @@ class BibliographicalDataServiceTest {
     // =============================================================
 
     @Test
-    void findIdByTitle_shouldReturnIdWhenTitleExists() {
+    void findIdByTitle_shouldReturnIdWhenTitleExists() throws InstanceNotFoundException {
         // Arrange
         String title = "Title test";
-        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        BibliographicalDataId bdId = new BibliographicalDataId("1234");
 
         when(bibliographicalDataRepo.findIdByTitle(title))
                 .thenReturn(Optional.of(bdId));
 
         // Act
-        Optional<BibliographicalDataId> result = service.findIdByTitle(title);
+        BibliographicalDataId result = service.findIdByTitle(title);
 
         // Assert
-        assertTrue(result.isPresent());
-        assertEquals(bdId, result.get());
+        assertNotNull(result);
+        assertEquals(bdId.getID(), result.getID());
     }
 
     @Test
-    void findIdByTitle_shouldReturnEmptyWhenTitleDoesNotExist() {
+    void findIdByTitleShouldThrowWhenTitleDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String title = "Unknown Title";
 
-        when(bibliographicalDataRepo.findIdByTitle(title))
-                .thenReturn(Optional.empty());
+        when(bibliographicalDataRepo.findIdByTitle(title)).thenReturn(Optional.empty());
 
-        // Act
-        Optional<BibliographicalDataId> result = service.findIdByTitle(title);
-
-        // Assert
-        assertTrue(result.isEmpty());
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class, () -> service.findIdByTitle(title));
     }
 
     // =============================================================

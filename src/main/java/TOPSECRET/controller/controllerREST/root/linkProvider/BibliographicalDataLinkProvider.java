@@ -65,7 +65,7 @@ public class BibliographicalDataLinkProvider {
 
         // Public / universally available action
         links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                .getAllBibliographicalData(userId))
+                .getAllBibliographicalData(null))
                 .withRel("get-bibliographical-data"));
 
         userRepo.findByID(userId).ifPresent(user -> {
