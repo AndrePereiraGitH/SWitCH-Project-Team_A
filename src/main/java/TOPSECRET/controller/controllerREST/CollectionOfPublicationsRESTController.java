@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -114,6 +114,7 @@ public class CollectionOfPublicationsRESTController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -170,6 +171,7 @@ public class CollectionOfPublicationsRESTController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -196,7 +198,7 @@ public class CollectionOfPublicationsRESTController {
     @PatchMapping("/{collectionId}/make-public-until")
     public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPublicUntil(
             @PathVariable String collectionId,
-            @RequestParam LocalDateTime publicUntil,
+            @RequestParam LocalDate publicUntil,
             @RequestParam String userId) {
 
         try {
@@ -225,6 +227,7 @@ public class CollectionOfPublicationsRESTController {
 
 
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         } catch (AccessDeniedException e) {
@@ -257,7 +260,7 @@ public class CollectionOfPublicationsRESTController {
      *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
      * </ul>
      */
-    @GetMapping("/public")
+    @GetMapping("/genre/{genreId}")
     public ResponseEntity<List<PublicCollectionOfPublicationsDTO>>
     findPublicCollectionsByGenreId(@RequestParam String genreId) {
 

@@ -50,10 +50,6 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
 
         Objects.requireNonNull(collectionOfPublications, "collectionOfPublications cannot be null");
 
-        if (collectionRepositoryJpa.existsById(collectionOfPublications.id())) {
-            throw new IllegalArgumentException("CollectionOfPublications already exists");
-        }
-
         CollectionOfPublicationsDM collectionDM =
                 collectionOfPublicationsAssembler.toDM(collectionOfPublications);
 

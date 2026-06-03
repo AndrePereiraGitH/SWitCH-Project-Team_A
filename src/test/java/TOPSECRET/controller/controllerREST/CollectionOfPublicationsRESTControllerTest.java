@@ -22,7 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -545,8 +545,7 @@ class CollectionOfPublicationsRESTControllerTest {
         UserId userIdVO =
                 mock(UserId.class);
 
-        LocalDateTime publicUntil =
-                LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         CollectionOfPublications collectionDouble =
                 mock(CollectionOfPublications.class);
@@ -621,8 +620,7 @@ class CollectionOfPublicationsRESTControllerTest {
         UserId userIdVO =
                 mock(UserId.class);
 
-        LocalDateTime publicUntil =
-                LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         CollectionOfPublications collectionDouble =
                 mock(CollectionOfPublications.class);
@@ -689,8 +687,7 @@ class CollectionOfPublicationsRESTControllerTest {
         UserId userIdVO =
                 mock(UserId.class);
 
-        LocalDateTime publicUntil =
-                LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {
@@ -737,8 +734,7 @@ class CollectionOfPublicationsRESTControllerTest {
         UserId userIdVO =
                 mock(UserId.class);
 
-        LocalDateTime publicUntil =
-                LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {
@@ -785,8 +781,7 @@ class CollectionOfPublicationsRESTControllerTest {
         UserId userIdVO =
                 mock(UserId.class);
 
-        LocalDateTime publicUntil =
-                LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
                      mockStatic(CollectionOfPublicationsMapper.class)) {

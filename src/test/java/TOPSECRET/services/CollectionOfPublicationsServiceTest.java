@@ -23,7 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -364,7 +364,7 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         User user = mock(User.class);
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
@@ -384,8 +384,7 @@ class CollectionOfPublicationsServiceTest {
     void makeCollectionPublicUntil_shouldThrowIllegalArgumentException_whenPublicUntilIsNotInFuture() {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-        LocalDateTime publicUntil = LocalDateTime.now().minusDays(1);
-
+        LocalDate publicUntil = LocalDate.now().minusDays(5);
         // Act + Assert
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                 () -> service.makeCollectionPublicUntil(collectionId, publicUntil, userIdDouble));
@@ -398,8 +397,7 @@ class CollectionOfPublicationsServiceTest {
             throws InstanceNotFoundException {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
-        User user = mock(User.class);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);        User user = mock(User.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         UserId ownerIdDouble = mock(UserId.class);
 
@@ -420,8 +418,7 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
-        User user = mock(User.class);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);        User user = mock(User.class);
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
@@ -443,7 +440,7 @@ class CollectionOfPublicationsServiceTest {
     void makeCollectionPublicUntil_shouldThrowException_whenPublicUntilIsNull() {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-        LocalDateTime publicUntil = null;
+        LocalDate publicUntil = null;
 
         // Act
         NullPointerException exception = assertThrows(
@@ -459,8 +456,7 @@ class CollectionOfPublicationsServiceTest {
     void makeCollectionPublicUntil_shouldThrowException_whenCollectionIdIsNull() {
         // Arrange
         CollectionOfPublicationsId collectionId = null;
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
-
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         // Act
         NullPointerException exception = assertThrows(
                 NullPointerException.class,
@@ -475,7 +471,7 @@ class CollectionOfPublicationsServiceTest {
     void makeCollectionPublicUntilShouldThrowUsernameNotFoundExceptionWhenUserNotFound() {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
@@ -487,7 +483,7 @@ class CollectionOfPublicationsServiceTest {
     void makeCollectionPublicUntil_shouldThrowAccessDeniedException_whenUserLacksPermission() {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         User user = mock(User.class);
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(false);
@@ -503,8 +499,7 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
-        User user = mock(User.class);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);        User user = mock(User.class);
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
@@ -524,8 +519,7 @@ class CollectionOfPublicationsServiceTest {
         // ARRANGE
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
 
-        LocalDateTime future = LocalDateTime.now().plusDays(2);
-
+        LocalDate future = LocalDate.now().plusDays(5);
         User user = mock(User.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 

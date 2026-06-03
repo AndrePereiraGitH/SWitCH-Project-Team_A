@@ -6,12 +6,11 @@ import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.collectionOfPublications.response.PublicCollectionOfPublicationsDTO;
 import TOPSECRET.dto.collectionOfPublications.response.ResponseCollectionOfPublicationsDTO;
-import org.hibernate.annotations.CollectionId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -176,8 +175,8 @@ class CollectionOfPublicationsMapperTest {
         UserId ownerIdDouble =
                 mock(UserId.class);
 
-        LocalDateTime publicUntil =
-                LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil =
+                LocalDate.now().plusDays(5);
 
         when(collectionDouble.id()).thenReturn(collectionIdDouble);
         when(collectionDouble.getCollectionName()).thenReturn("My Collection");

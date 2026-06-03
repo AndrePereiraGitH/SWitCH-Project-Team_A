@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 /**
@@ -72,7 +72,7 @@ public class CollectionOfPublicationsDM {
     private boolean isPrivate;
 
     @AttributeOverride(name = "publicUntil", column = @Column(name = "publicUntil"))
-    private LocalDateTime publicUntil;
+    private LocalDate publicUntil;
 
 
 
@@ -91,7 +91,7 @@ public class CollectionOfPublicationsDM {
      */
     public CollectionOfPublicationsDM(CollectionOfPublicationsId collectionOfPub_id,
                                       String collectionName, GenreId genreID,
-                                      UserId ownerId, boolean isPrivate, LocalDateTime publicUntil) {
+                                      UserId ownerId, boolean isPrivate, LocalDate publicUntil) {
 
         this.id = Objects.requireNonNull(collectionOfPub_id,
                 "collectionOfPublicationsId cannot be null");

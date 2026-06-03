@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * Data Transfer Object representing a publicly visible collection of publications.
@@ -45,5 +45,5 @@ public class PublicCollectionOfPublicationsDTO extends
      *
      * <p>A {@code null} value indicates that the collection is permanently public.</p>
      */
-    private final LocalDateTime publicUntil;
+    private final LocalDate publicUntil;
 }

@@ -13,6 +13,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -78,7 +79,7 @@ public class CollectionOfPublicationsDataInitializer implements ApplicationRunne
                 new GenreId("GENRE4"),   // Fantasy
                 new UserId("user-001"),
                 true,
-                LocalDateTime.now()
+                LocalDate.now()
         );
     }
 
@@ -94,7 +95,7 @@ public class CollectionOfPublicationsDataInitializer implements ApplicationRunne
                 new GenreId("GENRE2"),   // Science Fiction
                 new UserId("user-002"),
                 true,
-                LocalDateTime.now()
+                LocalDate.now()
         );
     }
 
@@ -110,7 +111,7 @@ public class CollectionOfPublicationsDataInitializer implements ApplicationRunne
                 new GenreId("GENRE8"),   // Historical Fiction
                 new UserId("user-003"),
                 true,
-                LocalDateTime.now()
+                LocalDate.now()
         );
     }
 }

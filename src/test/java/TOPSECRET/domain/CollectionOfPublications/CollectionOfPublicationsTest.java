@@ -7,7 +7,7 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -106,7 +106,7 @@ class CollectionOfPublicationsTest {
         GenreId genreDouble = mock(GenreId.class);
         UserId userDouble = mock(UserId.class);
         boolean isPrivate = true;
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         // Act
         CollectionOfPublications result =
@@ -152,7 +152,7 @@ class CollectionOfPublicationsTest {
     void makePublicUntil_ShouldThrowException_WhenPublicUntilIsInThePast() {
         // Arrange
         CollectionOfPublications collection = createValidCollection();
-        LocalDateTime publicUntil = LocalDateTime.now().minusDays(1);
+        LocalDate publicUntil = LocalDate.now().minusDays(1);
 
         // Act
         IllegalArgumentException exception = assertThrows(
@@ -168,7 +168,7 @@ class CollectionOfPublicationsTest {
     void makePublicUntil_ShouldThrowException_WhenPublicUntilIsNow() {
         // Arrange
         CollectionOfPublications collection = createValidCollection();
-        LocalDateTime publicUntil = LocalDateTime.now();
+        LocalDate publicUntil = LocalDate.now();
 
         // Act
         IllegalArgumentException exception = assertThrows(
@@ -184,7 +184,7 @@ class CollectionOfPublicationsTest {
     void makePublicUntil_ShouldMakeCollectionPublicAndReturnTrue_WhenDateIsValid() {
         // Arrange
         CollectionOfPublications collection = createValidCollection();
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(7);
+        LocalDate publicUntil = LocalDate.now().plusDays(7);
 
         // Act
         boolean result = collection.makePublicUntil(publicUntil);
@@ -199,7 +199,7 @@ class CollectionOfPublicationsTest {
     void makePublicUntil_ShouldReturnFalse_WhenCollectionIsAlreadyPublicUntilSameDate() {
         // Arrange
         CollectionOfPublications collection = createValidCollection();
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(7);
+        LocalDate publicUntil = LocalDate.now().plusDays(7);
 
         collection.makePublicUntil(publicUntil);
 
@@ -217,8 +217,8 @@ class CollectionOfPublicationsTest {
         // Arrange
         CollectionOfPublications collection = createValidCollection();
 
-        LocalDateTime firstPublicUntil = LocalDateTime.now().plusDays(7);
-        LocalDateTime secondPublicUntil = LocalDateTime.now().plusDays(14);
+        LocalDate firstPublicUntil = LocalDate.now().plusDays(7);
+        LocalDate secondPublicUntil = LocalDate.now().plusDays(14);
 
         collection.makePublicUntil(firstPublicUntil);
 
@@ -404,7 +404,7 @@ class CollectionOfPublicationsTest {
         CollectionOfPublications collection =
                 new CollectionOfPublications("Cool books", genre, user);
 
-        collection.makePublicUntil(LocalDateTime.now().plusDays(1));
+        collection.makePublicUntil(LocalDate.now().plusDays(1));
 
         // act
         boolean result = collection.isCurrentlyPublic();
@@ -429,7 +429,7 @@ class CollectionOfPublicationsTest {
                         genre,
                         user,
                         false,
-                        LocalDateTime.now().minusDays(1)
+                        LocalDate.now().minusDays(1)
                 );
 
         // act

@@ -120,20 +120,6 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         assertSame(collection, result);
     }
 
-    @Test
-    void save_shouldThrowWhenCollectionAlreadyExists() {
-
-        // Arrange
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(collection.id()).thenReturn(id);
-        when(jpa.existsById(id)).thenReturn(true);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.save(collection));
-    }
 
     @Test
     void save_shouldThrowExceptionWhenCollectionIsNull() {

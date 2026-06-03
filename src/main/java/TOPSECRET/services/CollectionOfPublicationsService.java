@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -225,7 +225,7 @@ public class CollectionOfPublicationsService {
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
      */
     public boolean makeCollectionPublicUntil(
-            CollectionOfPublicationsId collectionId, LocalDateTime publicUntil, UserId userId)
+            CollectionOfPublicationsId collectionId, LocalDate publicUntil, UserId userId)
             throws InstanceNotFoundException, AccessDeniedException {
 
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
@@ -233,7 +233,7 @@ public class CollectionOfPublicationsService {
         Objects.requireNonNull(userId, "userId cannot be null");
 
 
-        if (!publicUntil.isAfter(LocalDateTime.now())) {
+        if (!publicUntil.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Public until date must be in the future");
         }
 
