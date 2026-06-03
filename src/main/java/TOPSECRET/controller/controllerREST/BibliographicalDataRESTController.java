@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.InstanceNotFoundException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -137,10 +138,12 @@ public class BibliographicalDataRESTController {
 
             List<GenreId> genreIds = BibliographicalDataMapper.toGenreId(requestBibliographicalDataDTO.genreName());
 
+            Locale originalLanguage = BibliographicalDataMapper.toLocale(requestBibliographicalDataDTO.originalLanguage());
+
             BibliographicalData bibliographicalData = service.createAndSave(
                     requestBibliographicalDataDTO.title(),
                     authorIds,
-                    requestBibliographicalDataDTO.originalLanguage(),
+                    originalLanguage,
                     requestBibliographicalDataDTO.publicationDate(),
                     genreIds,
                     requestBibliographicalDataDTO.chunksOfText(),
@@ -179,7 +182,6 @@ public class BibliographicalDataRESTController {
      * @param id the identifier of the bibliographical data to retrieve
      * @param userId the identifier of the user requesting the resource, used to resolve available links
      * @return a {@link ResponseEntity} containing the bibliographical data DTO
-     * @throws InstanceNotFoundException if no bibliographical data exists for the given {@code id}
      */
     @GetMapping("/bibliographical-data/{id}")
     public ResponseEntity<responseBibliographicalDataDTO> getBibliographicalDataById(

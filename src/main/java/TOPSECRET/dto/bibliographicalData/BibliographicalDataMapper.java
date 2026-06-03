@@ -8,10 +8,7 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 
 import javax.management.InstanceNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Utility class responsible for mapping {@link BibliographicalData}
@@ -136,4 +133,24 @@ public final class BibliographicalDataMapper {
      */
     public static UserId toUserId (String id){ return new UserId(id); }
 
+<<<<<<< Updated upstream
+=======
+    /**
+     * Creates a {@link BibliographicalDataId} instance from the given string value.
+     *
+     * @param id the user identifier as a string
+     * @return a new {@link BibliographicalDataId} instance
+     */
+    public static BibliographicalDataId toBibliographicalDataId (String id){ return new BibliographicalDataId(id); }
+
+    /**
+     * Creates a {@link Locale} instance from the given string value.
+     *
+     * @param originalLanguage the language identifier as a string
+     * @return a new {@link Locale} instance
+     */
+    public static Locale toLocale (String originalLanguage){
+        return Locale.forLanguageTag(originalLanguage.toLowerCase());
+    }
+>>>>>>> Stashed changes
 }

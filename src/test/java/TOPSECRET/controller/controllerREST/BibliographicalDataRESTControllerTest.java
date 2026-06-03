@@ -128,6 +128,8 @@ class BibliographicalDataRESTControllerTest {
         BibliographicalData bibliographicalData = mock(BibliographicalData.class);
         BibliographicalDataId bdId = mock(BibliographicalDataId.class);
 
+        Locale originalLanguageDouble = mock(Locale.class);
+
         List<AuthorId> authorIds = List.of(mock(AuthorId.class));
         List<GenreId> genreIds = List.of(mock(GenreId.class));
         responseBibliographicalDataDTO responseDto = new responseBibliographicalDataDTO("bdId", "Title", List.of("Author One"));
@@ -135,7 +137,7 @@ class BibliographicalDataRESTControllerTest {
         when(bibliographicalData.id()).thenReturn(bdId);
         when(request.title()).thenReturn("Title");
         when(request.authorName()).thenReturn(List.of("Author One"));
-        when(request.originalLanguage()).thenReturn(Locale.ENGLISH);
+        when(request.originalLanguage()).thenReturn("English");
         when(request.publicationDate()).thenReturn(LocalDate.of(2025, 1, 1));
         when(request.genreName()).thenReturn(List.of("Drama"));
         when(request.chunksOfText()).thenReturn("Chunks of text");
@@ -161,10 +163,14 @@ class BibliographicalDataRESTControllerTest {
                     )
             ).thenReturn(responseDto);
 
+            mockedMapper.when(() ->
+                    BibliographicalDataMapper.toLocale("English")
+            ).thenReturn(originalLanguageDouble);
+
             when(service.createAndSave(
                     eq("Title"),
                     anyList(),
-                    eq(Locale.ENGLISH),
+                    eq(originalLanguageDouble),
                     eq(LocalDate.of(2025, 1, 1)),
                     anyList(),
                     eq("Chunks of text"),
@@ -194,7 +200,7 @@ class BibliographicalDataRESTControllerTest {
 
         when(request.title()).thenReturn("Title");
         when(request.authorName()).thenReturn(List.of("Author One"));
-        when(request.originalLanguage()).thenReturn(Locale.ENGLISH);
+        when(request.originalLanguage()).thenReturn("English");
         when(request.publicationDate()).thenReturn(LocalDate.of(2025, 1, 1));
         when(request.genreName()).thenReturn(List.of("Drama"));
         when(request.chunksOfText()).thenReturn("Chunks of text");
@@ -234,7 +240,7 @@ class BibliographicalDataRESTControllerTest {
 
         when(request.title()).thenReturn("Title");
         when(request.authorName()).thenReturn(List.of("Author One"));
-        when(request.originalLanguage()).thenReturn(Locale.ENGLISH);
+        when(request.originalLanguage()).thenReturn("English");
         when(request.publicationDate()).thenReturn(LocalDate.of(2025, 1, 1));
         when(request.genreName()).thenReturn(List.of("Drama"));
         when(request.chunksOfText()).thenReturn("Chunks of text");
@@ -275,7 +281,7 @@ class BibliographicalDataRESTControllerTest {
 
         when(request.title()).thenReturn("Title");
         when(request.authorName()).thenReturn(List.of("Author One"));
-        when(request.originalLanguage()).thenReturn(Locale.ENGLISH);
+        when(request.originalLanguage()).thenReturn("English");
         when(request.publicationDate()).thenReturn(LocalDate.of(2025, 1, 1));
         when(request.genreName()).thenReturn(List.of("Drama"));
         when(request.chunksOfText()).thenReturn("Chunks of text");
@@ -313,6 +319,8 @@ class BibliographicalDataRESTControllerTest {
         List<GenreId> genreIds = List.of(mock(GenreId.class));
         List<String> authors = List.of("Author 1");
 
+        Locale originalLanguageDouble = mock(Locale.class);
+
         responseBibliographicalDataDTO resultDto =
                 new responseBibliographicalDataDTO("1234", "Title", List.of("Author 1", "Author 2"));
 
@@ -321,14 +329,14 @@ class BibliographicalDataRESTControllerTest {
         when(request.authorName()).thenReturn(List.of("Author 1"));
         when(request.genreName()).thenReturn(List.of("Genre 1"));
         when(request.title()).thenReturn("Title");
-        when(request.originalLanguage()).thenReturn(Locale.ENGLISH);
+        when(request.originalLanguage()).thenReturn("English");
         when(request.publicationDate()).thenReturn(LocalDate.of(2024, 1, 1));
         when(request.chunksOfText()).thenReturn(("Chunk 1"));
 
         when(service.createAndSave(
                 eq("Title"),
                 eq(authorIds),
-                eq(Locale.ENGLISH),
+                eq(originalLanguageDouble),
                 eq(LocalDate.of(2024, 1, 1)),
                 eq(genreIds),
                 eq(("Chunk 1")),
@@ -357,6 +365,10 @@ class BibliographicalDataRESTControllerTest {
             mockedMapper.when(() ->
                     BibliographicalDataMapper.toUserId(id)
             ).thenReturn(userIdDouble);
+
+            mockedMapper.when(() ->
+                    BibliographicalDataMapper.toLocale("English")
+            ).thenReturn(originalLanguageDouble);
 
             // Act
             ResponseEntity<responseBibliographicalDataDTO> response =
