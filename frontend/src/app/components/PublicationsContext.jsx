@@ -12,6 +12,7 @@ export function PublicationsProvider({ children }) {
       forSale: false,
     };
     setPublications((prev) => [...prev, newPublication]);
+    return newPublication
   };
 
   const setPublicationForSale = (id, price) => {
