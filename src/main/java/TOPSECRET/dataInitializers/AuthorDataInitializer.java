@@ -41,12 +41,8 @@ public class AuthorDataInitializer implements ApplicationRunner {
     private Author buildFantasyAuthor() {
         return authorFactory.create(
                 new AuthorId("AUTH1"),
-                "J. R. R. Tolkien",
-<<<<<<< Updated upstream
+                "J. R. R. Tolkien", // Restored the missing author name
                 new CountryId("UNITED_KINGDOM"),
-=======
-                new CountryId("UNITED_KINGDOM"), // Reverted back to full string
->>>>>>> Stashed changes
                 LocalDate.of(1892, 1, 3),
                 "English writer, poet, philologist, and academic, best known for The Lord of the Rings."
         );
