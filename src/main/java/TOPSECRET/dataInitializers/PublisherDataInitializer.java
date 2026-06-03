@@ -50,7 +50,12 @@ public class PublisherDataInitializer implements ApplicationRunner {
         publisherRepository.save(buildHarperCollins());
         publisherRepository.save(buildNationalGeographicSociety());
 
-        log.info("[PublisherDataInitializer] Done — {} publishers seeded.", 3);
+        // Added European Publishers to match CityDataInitializer
+        publisherRepository.save(buildPortoEditora());
+        publisherRepository.save(buildLeya());
+        publisherRepository.save(buildBloomsbury());
+
+        log.info("[PublisherDataInitializer] Done — {} publishers seeded.", 6);
     }
 
     // =========================================================================
@@ -91,5 +96,41 @@ public class PublisherDataInitializer implements ApplicationRunner {
         Contact contact = new Contact("2027754000", "1", email, address);
 
         return publisherFactory.create(id, "National Geographic Society", "500345678", contact);
+    }
+
+    /**
+     * Porto Editora — a major Portuguese publisher (matches "Porto" CityId).
+     */
+    private Publisher buildPortoEditora() {
+        PublisherID id = new PublisherID("publisher-004");
+        Email email = new Email("geral", "portoeditora.pt");
+        Address address = new Address("Rua da Restauração", "365", "4099-023", new CityId("Porto"));
+        Contact contact = new Contact("226088300", "351", email, address);
+
+        return publisherFactory.create(id, "Porto Editora", "500456789", contact);
+    }
+
+    /**
+     * Leya — a major Portuguese publisher (matches "Lisbon" CityId).
+     */
+    private Publisher buildLeya() {
+        PublisherID id = new PublisherID("publisher-005");
+        Email email = new Email("info", "leya.com");
+        Address address = new Address("Rua Cidade de Córdova", "2", "2610-038", new CityId("Lisbon"));
+        Contact contact = new Contact("214128500", "351", email, address);
+
+        return publisherFactory.create(id, "Leya", "500567890", contact);
+    }
+
+    /**
+     * Bloomsbury — the British publisher of Harry Potter (matches "London" CityId).
+     */
+    private Publisher buildBloomsbury() {
+        PublisherID id = new PublisherID("publisher-006");
+        Email email = new Email("contact", "bloomsbury.com");
+        Address address = new Address("50 Bedford Square", "1", "WC1B 3DP", new CityId("London"));
+        Contact contact = new Contact("2076315600", "44", email, address);
+
+        return publisherFactory.create(id, "Bloomsbury", "500678901", contact);
     }
 }

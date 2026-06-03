@@ -128,8 +128,9 @@ class EditionMapperTest {
         assertEquals("03178471", result.getIssn());
     }
 
+
     @Test
-    void toCode_shouldReturnNull_whenNoCodeIsProvided() {
+    void toCode_shouldReturnEmptyCode_whenNoCodeIsProvided() {
         CreateEditionDTO dto = new CreateEditionDTO(
                 "1st Edition",
                 null,
@@ -147,7 +148,45 @@ class EditionMapperTest {
 
         Code result = EditionMapper.toCode(dto);
 
-        assertNull(result);
+        assertNotNull(result, "Code should not be null; expected Code.empty()");
+
+        // Approach 1: If your Code object has a proper equals() method (standard for Value Objects)
+        assertEquals(Code.empty(), result);
+
+        // Approach 2: If equals() is not implemented, check for empty/blank strings instead of strict null
+        assertTrue(result.getIsbn13() == null || result.getIsbn13().isBlank(), "ISBN-13 should be empty");
+        assertTrue(result.getIsbn10() == null || result.getIsbn10().isBlank(), "ISBN-10 should be empty");
+        assertTrue(result.getIssn() == null || result.getIssn().isBlank(), "ISSN should be empty");
+    }
+
+    @Test
+    void toCode_shouldReturnEmptyCode_whenCodesAreBlank() {
+        CreateEditionDTO dto = new CreateEditionDTO(
+                "1st Edition",
+                "   ",  // Blank ISBN10
+                "",     // Empty ISBN13
+                " ",    // Blank ISSN
+                20.0, 15.0, 3.0,
+                500.0, 300,
+                "pub-type-1",
+                "publisher-1",
+                "Book",
+                "en",
+                LocalDate.of(1990, 10, 10),
+                "HARDBACK"
+        );
+
+        Code result = EditionMapper.toCode(dto);
+
+        assertNotNull(result, "Code should not be null when inputs are blank; expected Code.empty()");
+
+        // Approach 1: Check equality against Code.empty()
+        assertEquals(Code.empty(), result);
+
+        // Approach 2: Check for empty/blank strings
+        assertTrue(result.getIsbn13() == null || result.getIsbn13().isBlank(), "ISBN-13 should be empty");
+        assertTrue(result.getIsbn10() == null || result.getIsbn10().isBlank(), "ISBN-10 should be empty");
+        assertTrue(result.getIssn() == null || result.getIssn().isBlank(), "ISSN should be empty");
     }
 
     @Test
@@ -282,15 +321,12 @@ class EditionMapperTest {
 
     @Test
     void shouldConvertEditionIdToEditionIdResponseDTO() {
-
         // Arrange
         EditionId editionId = mock(EditionId.class);
-
         when(editionId.getID()).thenReturn("edition-123");
 
         // Act
-        EditionIdResponseDTO result =
-                EditionMapper.toEditionIdDTO(editionId);
+        EditionIdResponseDTO result = EditionMapper.toEditionIdDTO(editionId);
 
         // Assert
         assertNotNull(result);
@@ -299,7 +335,6 @@ class EditionMapperTest {
 
     @Test
     void shouldThrowExceptionWhenEditionIdIsNull() {
-
         // Act + Assert
         NullPointerException exception =
                 assertThrows(
@@ -307,9 +342,6 @@ class EditionMapperTest {
                         () -> EditionMapper.toEditionIdDTO(null)
                 );
 
-        assertEquals(
-                "EditionId cannot be null",
-                exception.getMessage()
-        );
+        assertEquals("EditionId cannot be null", exception.getMessage());
     }
 }

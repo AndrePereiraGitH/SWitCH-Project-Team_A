@@ -133,8 +133,6 @@ public final class BibliographicalDataMapper {
      */
     public static UserId toUserId (String id){ return new UserId(id); }
 
-<<<<<<< Updated upstream
-=======
     /**
      * Creates a {@link BibliographicalDataId} instance from the given string value.
      *
@@ -152,5 +150,4 @@ public final class BibliographicalDataMapper {
     public static Locale toLocale (String originalLanguage){
         return Locale.forLanguageTag(originalLanguage.toLowerCase());
     }
->>>>>>> Stashed changes
 }

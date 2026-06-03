@@ -15,32 +15,16 @@ import org.springframework.stereotype.Component;
 import javax.management.InstanceAlreadyExistsException;
 import java.time.LocalDate;
 
-/**
- * Data initializer that populates the database with sample Author
- * entries on application startup.
- *
- * <p>Implements {@link ApplicationRunner} so it runs after the Spring context
- * is fully loaded. Authors are built via {@link AuthorFactory}
- * to respect domain invariants, and persisted through
- * {@link IAuthorRepository}.
- *
- * <p><b>Note:</b> This initializer always inserts on startup. It is intended
- * for development / demo environments only — disable or remove it for production.
- */
 @Component
 @Order(1)
 public class AuthorDataInitializer implements ApplicationRunner {
 
-    private static final Logger log =
-            LoggerFactory.getLogger(AuthorDataInitializer.class);
+    private static final Logger log = LoggerFactory.getLogger(AuthorDataInitializer.class);
 
     private final IAuthorRepository authorRepository;
     private final AuthorFactory authorFactory;
 
-    public AuthorDataInitializer(
-            IAuthorRepository authorRepository,
-            AuthorFactory authorFactory) {
-
+    public AuthorDataInitializer(IAuthorRepository authorRepository, AuthorFactory authorFactory) {
         this.authorRepository = authorRepository;
         this.authorFactory = authorFactory;
     }
@@ -48,18 +32,16 @@ public class AuthorDataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws InstanceAlreadyExistsException {
         log.info("[AuthorDataInitializer] Seeding authors...");
-
         authorRepository.save(buildFantasyAuthor());
         authorRepository.save(buildScienceAuthor());
         authorRepository.save(buildHistoricalAuthor());
-
         log.info("[AuthorDataInitializer] Done — {} authors seeded.", 3);
     }
 
     private Author buildFantasyAuthor() {
         return authorFactory.create(
                 new AuthorId("AUTH1"),
-                "J. R. R. Tolkien",
+                "J. R. R. Tolkien", // Restored the missing author name
                 new CountryId("UNITED_KINGDOM"),
                 LocalDate.of(1892, 1, 3),
                 "English writer, poet, philologist, and academic, best known for The Lord of the Rings."
