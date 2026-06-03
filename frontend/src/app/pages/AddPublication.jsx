@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, BookOpen, Plus, X } from "lucide-react";
 import { SuccessModal } from "../components/SuccessModal";
 import { usePublications } from "../components/PublicationsContext";
+import { API_BASE_URL } from "../../api/constants";
 
 
 const PUBLICATION_STATUSES = [
@@ -38,13 +39,15 @@ export function AddPublication() {
     const [genres, setGenres] = useState([]);
     const [loadingOptions, setLoadingOptions] = useState(true);
 
+console.log("API_BASE_URL:", API_BASE_URL);
+
 
 useEffect(() => {
     async function fetchOptions() {
         try {
             const [publishersRes, genresRes] = await Promise.all([
-                fetch("http://localhost:8081/publishers"),
-                fetch("http://localhost:8081/genres")
+                fetch(`${API_BASE_URL}/publishers`),
+                fetch(`${API_BASE_URL}/genres`)
             ]);
 
             if (!publishersRes.ok || !genresRes.ok) {
