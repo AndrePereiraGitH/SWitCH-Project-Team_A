@@ -1,10 +1,36 @@
-import { describe, test, expect } from "vitest";
-import { render, screen, fireEvent, renderWithProviders } from "../../test-utils";
-import { PublicationsProvider, usePublications } from "./PublicationsContext";
+import { describe, test, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "../../test-utils";
+import { usePublications } from "./PublicationsContext";
+
+// Provide minimal valid payloads that match what addPublication expects
+const mockBookA = {
+    title: "Book A",
+    authorNames: ["AUTH1"],
+    genreNames: ["GENRE1"],
+    authorDisplayNames: ["Author A"],
+    genreDisplayNames: ["Fiction"],
+    mediaFormat: "Book",
+    condition: "New",
+    publisherName: "Pub A",
+    originalLanguage: "en",
+    publishedDate: "2024-01-01",
+    editionNumber: "1",
+    height: 10, width: 10, depth: 10, weight: 100, numberOfPages: 100,
+    publicationTypeId: "pt-1",
+    publisherId: "pub-1",
+    editionLanguage: "en",
+    typeOfBinding: "Paperback"
+};
+
+const mockBookB = {
+    ...mockBookA,
+    title: "Book B"
+};
 
 // Helper component that exposes publications context state to the screen
 function TestPublications() {
-    const { publications, addPublication, removePublication, setPublicationForSale, getPublicationsForSale, getAllPublications } = usePublications();
+    const { publications, addPublication, getPublicationsForSale, getAllPublications } = usePublications();
     return (
         <div>
             <p data-testid="count">{publications.length}</p>
@@ -16,10 +42,10 @@ function TestPublications() {
                     </li>
                 ))}
             </ul>
-            <button onClick={() => addPublication({ title: "Book A", author: "Author A", genre: "Fiction" })}>
+            <button onClick={() => addPublication(mockBookA)}>
                 Add Book A
             </button>
-            <button onClick={() => addPublication({ title: "Book B", author: "Author B", genre: "Science" })}>
+            <button onClick={() => addPublication(mockBookB)}>
                 Add Book B
             </button>
             <p data-testid="all-count">{getAllPublications().length}</p>
@@ -28,9 +54,9 @@ function TestPublications() {
     );
 }
 
-// Helper that also exposes remove and sell actions, needs a publication id
+// Helper that also exposes sell actions, needs a publication id
 function TestPublicationsWithActions() {
-    const { publications, addPublication, removePublication, setPublicationForSale } = usePublications();
+    const { publications, addPublication, setPublicationForSale } = usePublications();
     const first = publications[0];
     return (
         <div>
@@ -39,11 +65,10 @@ function TestPublicationsWithActions() {
                 <>
                     <span data-testid="first-title">{first.title}</span>
                     <span data-testid="first-forsale">{first.forSale ? "for-sale" : "not-for-sale"}</span>
-                    <button onClick={() => removePublication(first.id)}>Remove First</button>
                     <button onClick={() => setPublicationForSale(first.id, 15)}>Sell First</button>
                 </>
             )}
-            <button onClick={() => addPublication({ title: "Book A", author: "Author A", genre: "Fiction" })}>
+            <button onClick={() => addPublication(mockBookA)}>
                 Add Book A
             </button>
         </div>
@@ -58,104 +83,122 @@ function renderPublicationsWithActions() {
     return renderWithProviders(<TestPublicationsWithActions />);
 }
 
-// ── Initial State ──────────────────────────────────────────────────────────────
+describe("PublicationsContext", () => {
 
-describe("PublicationsContext — Initial State", () => {
+    // Globally mock the fetch calls made by the PublicationsProvider
+    beforeEach(() => {
+        vi.clearAllMocks();
 
-    test("publications list starts empty", () => {
-        renderPublications();
-        expect(screen.getByTestId("count").textContent).toBe("0");
+        global.fetch = vi.fn(async (url, options) => {
+            if (url.includes("/publicationSamples") && (!options || options.method === "GET")) {
+                return { ok: true, json: async () => [] };
+            }
+            // FIXED: Matches the URL currently being called in PublicationsContext.jsx
+            if (url.includes("/bibliographicalDatas") || url.includes("/bibliographicalData/bibliographical-data")) {
+                return { ok: true, json: async () => ({ bdId: "bd-mock" }) };
+            }
+            if (url.includes("/editions")) {
+                return { ok: true, json: async () => ({ editionId: "ed-mock" }) };
+            }
+            if (url.includes("/publicationSamples") && options?.method === "POST") {
+                return { ok: true, json: async () => ({ id: Math.random().toString() }) };
+            }
+            return { ok: false, status: 404, text: async () => "Not found" };
+        });
     });
 
-    test("getAllPublications returns empty array by default", () => {
-        renderPublications();
-        expect(screen.getByTestId("all-count").textContent).toBe("0");
+    // ── Initial State ──────────────────────────────────────────────────────────────
+
+    describe("Initial State", () => {
+        test("publications list starts empty", async () => {
+            renderPublications();
+            await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("0"));
+        });
+
+        test("getAllPublications returns empty array by default", async () => {
+            renderPublications();
+            await waitFor(() => expect(screen.getByTestId("all-count").textContent).toBe("0"));
+        });
+
+        test("getPublicationsForSale returns empty array by default", async () => {
+            renderPublications();
+            await waitFor(() => expect(screen.getByTestId("sale-count").textContent).toBe("0"));
+        });
     });
 
-    test("getPublicationsForSale returns empty array by default", () => {
-        renderPublications();
-        expect(screen.getByTestId("sale-count").textContent).toBe("0");
+    // ── Add Publication ────────────────────────────────────────────────────────────
+
+    describe("Add Publication", () => {
+        test("adding a publication increments the count to 1", async () => {
+            renderPublications();
+            fireEvent.click(screen.getByText("Add Book A"));
+            await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
+        });
+
+        test("added publication appears with correct title", async () => {
+            renderPublications();
+            fireEvent.click(screen.getByText("Add Book A"));
+            expect(await screen.findByText("Book A")).toBeInTheDocument();
+        });
+
+        test("added publication is not for sale by default", async () => {
+            renderPublications();
+            fireEvent.click(screen.getByText("Add Book A"));
+            const pub = await screen.findAllByText("not-for-sale");
+            expect(pub.length).toBeGreaterThan(0);
+        });
+
+        test("adding two publications increments count to 2", async () => {
+            renderPublications();
+            fireEvent.click(screen.getByText("Add Book A"));
+            fireEvent.click(screen.getByText("Add Book B"));
+            await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("2"));
+        });
+
+        test("getAllPublications reflects the added publications", async () => {
+            renderPublications();
+            fireEvent.click(screen.getByText("Add Book A"));
+            fireEvent.click(screen.getByText("Add Book B"));
+            await waitFor(() => expect(screen.getByTestId("all-count").textContent).toBe("2"));
+        });
     });
 
-});
+    // ── Set For Sale ───────────────────────────────────────────────────────────────
 
-// ── Add Publication ────────────────────────────────────────────────────────────
+    describe("Set For Sale", () => {
+        test("setPublicationForSale marks the publication as for sale", async () => {
+            renderPublicationsWithActions();
+            fireEvent.click(screen.getByText("Add Book A"));
 
-describe("PublicationsContext — Add Publication", () => {
+            // Wait for the async save to finish and render the "Sell First" button
+            const sellButton = await screen.findByText("Sell First");
+            fireEvent.click(sellButton);
 
-    test("adding a publication increments the count to 1", () => {
-        renderPublications();
-        fireEvent.click(screen.getByText("Add Book A"));
-        expect(screen.getByTestId("count").textContent).toBe("1");
+            await waitFor(() => expect(screen.getByTestId("first-forsale").textContent).toBe("for-sale"));
+        });
+
+        test("getPublicationsForSale count increases after setting for sale", async () => {
+            renderPublications();
+            await waitFor(() => expect(screen.getByTestId("sale-count").textContent).toBe("0"));
+        });
     });
 
-    test("added publication appears with correct title", () => {
-        renderPublications();
-        fireEvent.click(screen.getByText("Add Book A"));
-        expect(screen.getByText("Book A")).toBeInTheDocument();
+    // ── Error Handling ─────────────────────────────────────────────────────────────
+
+    describe("Error Handling", () => {
+        test("usePublications throws when used outside PublicationsProvider", () => {
+            const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+            function ComponentWithoutProvider() {
+                usePublications();
+                return null;
+            }
+
+            expect(() => render(<ComponentWithoutProvider />)).toThrow(
+                "usePublications must be used within PublicationsProvider"
+            );
+
+            consoleSpy.mockRestore();
+        });
     });
-
-    test("added publication is not for sale by default", () => {
-        renderPublications();
-        fireEvent.click(screen.getByText("Add Book A"));
-        const pub = screen.getAllByText("not-for-sale");
-        expect(pub.length).toBeGreaterThan(0);
-    });
-
-    test("adding two publications increments count to 2", () => {
-        renderPublications();
-        fireEvent.click(screen.getByText("Add Book A"));
-        fireEvent.click(screen.getByText("Add Book B"));
-        expect(screen.getByTestId("count").textContent).toBe("2");
-    });
-
-    test("getAllPublications reflects the added publications", () => {
-        renderPublications();
-        fireEvent.click(screen.getByText("Add Book A"));
-        fireEvent.click(screen.getByText("Add Book B"));
-        expect(screen.getByTestId("all-count").textContent).toBe("2");
-    });
-
-});
-
-// ── Set For Sale ───────────────────────────────────────────────────────────────
-
-describe("PublicationsContext — Set For Sale", () => {
-
-    test("setPublicationForSale marks the publication as for sale", () => {
-        renderPublicationsWithActions();
-        fireEvent.click(screen.getByText("Add Book A"));
-        fireEvent.click(screen.getByText("Sell First"));
-        expect(screen.getByTestId("first-forsale").textContent).toBe("for-sale");
-    });
-
-    test("getPublicationsForSale count increases after setting for sale", () => {
-        renderPublications();
-        // Add and sell via the actions component is tested separately above
-        // Here we verify the initial state remains 0
-        expect(screen.getByTestId("sale-count").textContent).toBe("0");
-    });
-
-});
-
-// ── Error Handling ─────────────────────────────────────────────────────────────
-
-describe("PublicationsContext — Error Handling", () => {
-
-    test("usePublications throws when used outside PublicationsProvider", () => {
-        const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
-        function ComponentWithoutProvider() {
-            usePublications();
-            return null;
-        }
-
-        // render directly (no providers) to test the missing context error
-        expect(() => render(<ComponentWithoutProvider />)).toThrow(
-            "usePublications must be used within a PublicationsProvider"
-        );
-
-        consoleSpy.mockRestore();
-    });
-
 });

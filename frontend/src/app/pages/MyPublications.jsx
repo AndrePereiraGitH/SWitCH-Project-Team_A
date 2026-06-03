@@ -14,25 +14,23 @@ export function MyPublications() {
     const [addToListModalOpen, setAddToListModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
 
-    // Be defensive: the backend may return PublicationDTO without flat title/author/genre.
-    // Normalize each publication into the shape this page expects.
+    // Normalize each publication reading directly from the populated objects
     const normalized = (publications ?? []).map(p => ({
         id: p.id,
-        title: p.title ?? p.bibliographicalData?.title ?? "(untitled)",
-        author: p.author
-            ?? p.authorNames?.join(", ")
-            ?? p.bibliographicalData?.authors?.map(a => a.name).join(", ")
-            ?? "",
-        genre: p.genre ?? p.bibliographicalData?.genre?.genreName ?? "",
-        isbn: p.isbn ?? p.edition?.isbn ?? "",
-        type: p.type ?? p.publicationType ?? "book",
+        title: p.title && p.title !== "(untitled)" ? p.title : "(untitled)",
+        author: p.authors?.join(", ") ?? "",
+        genre:  p.genres?.join(", ")  ?? "",
+        isbn: p.isbn ?? p.code ?? "",
+        type: p.type ?? p.mediaFormat?.toLowerCase() ?? "book",
         condition: p.condition ?? "",
         price: p.price ?? null,
     }));
 
     const genres = ["all", ...Array.from(new Set(normalized.map(b => b.genre).filter(Boolean)))];
     const filteredBooks = normalized.filter(b => {
-        const matchesGenre = filterGenre === "all" || b.genre === filterGenre;
+        // If there are multiple genres mapped as a string, doing exact match might be tricky,
+        // but this keeps the existing logic intact for your dropdown.
+        const matchesGenre = filterGenre === "all" || b.genre.includes(filterGenre);
         const matchesType = filterType === "all" || b.type === filterType;
         return matchesGenre && matchesType;
     });
@@ -74,7 +72,7 @@ export function MyPublications() {
                     </div>
                 )}
 
-                {/* Filters (unchanged) */}
+                {/* Filters */}
                 <div className="bg-white border-2 border-border rounded-2xl p-6 mb-8 shadow-sm">
                     <div className="flex items-center gap-3 mb-6">
                         <Filter className="w-5 h-5 text-primary" />

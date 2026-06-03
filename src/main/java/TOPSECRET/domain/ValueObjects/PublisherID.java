@@ -1,6 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PublisherID implements DomainID {
 
+    @JsonValue
     private String _publisherID;
 
     /**

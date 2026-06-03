@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 import { AddPublication } from "../pages/AddPublication";
@@ -13,7 +13,6 @@ vi.mock("react-router-dom", async (importOriginal) => {
     };
 });
 
-// Fixed: Added mockResolvedValue so the async submit handler can complete
 const mockAddPublication = vi.fn().mockResolvedValue({});
 
 vi.mock("../components/PublicationsContext", () => ({
@@ -29,16 +28,24 @@ const mockGenres = [
 ];
 
 const mockPublishers = [
-    { id: "PUB1", name: "Cambridge University Press", links: [] },
-    { id: "PUB2", name: "Penguin Random House", links: [] },
+    { publisherId: "PUB1", name: "Cambridge University Press", links: [] },
+    { publisherId: "PUB2", name: "Penguin Random House", links: [] },
 ];
 
-function renderAddPublication() {
-    return render(
+const mockAuthors = [
+    { id: "AUTH1", name: "John Doe", links: [] },
+    { id: "AUTH2", name: "Jane Smith", links: [] },
+];
+
+// Helper to render and wait for the initial fetches to complete, preventing act() warnings
+async function renderAndWait() {
+    render(
         <MemoryRouter>
             <AddPublication />
         </MemoryRouter>
     );
+    // Wait until the authors are loaded into the checkboxes
+    await screen.findByRole("checkbox", { name: "John Doe" });
 }
 
 async function fillRequiredFields() {
@@ -46,11 +53,9 @@ async function fillRequiredFields() {
         target: { value: "Test Book" },
     });
 
-    fireEvent.change(screen.getByPlaceholderText("Author name"), {
-        target: { value: "John Doe" },
-    });
+    fireEvent.click(screen.getByRole("checkbox", { name: "John Doe" }));
 
-    fireEvent.click(await screen.findByRole("checkbox", { name: "Drama" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Drama" }));
 
     fireEvent.change(screen.getByLabelText(/Publisher/), {
         target: { value: "PUB1" },
@@ -70,6 +75,14 @@ async function fillRequiredFields() {
 
     fireEvent.change(screen.getByLabelText(/Dimensions/), {
         target: { value: "20 x 15 x 3" },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Number of Pages/), {
+        target: { value: "350" },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Weight/), {
+        target: { value: "350" },
     });
 }
 
@@ -92,12 +105,19 @@ describe("AddPublication", () => {
                 });
             }
 
-            return Promise.reject(new Error("Unknown endpoint"));
+            if (url.includes("/authors")) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockAuthors),
+                });
+            }
+
+            return Promise.reject(new Error("Unknown endpoint: " + url));
         });
     });
 
-    test("renders all form sections", () => {
-        renderAddPublication();
+    test("renders all form sections", async () => {
+        await renderAndWait();
 
         expect(screen.getByText("Add Publication")).toBeInTheDocument();
         expect(screen.getByText("Identification")).toBeInTheDocument();
@@ -105,8 +125,8 @@ describe("AddPublication", () => {
         expect(screen.getByText("Physical Details")).toBeInTheDocument();
     });
 
-    test("renders all required fields with asterisk", () => {
-        renderAddPublication();
+    test("renders all required fields with asterisk", async () => {
+        await renderAndWait();
 
         expect(screen.getByText(/Publication Type \*/)).toBeInTheDocument();
         expect(screen.getByText("Genre *")).toBeInTheDocument();
@@ -121,41 +141,16 @@ describe("AddPublication", () => {
         expect(screen.getByText(/Dimensions.*\*/)).toBeInTheDocument();
     });
 
-    test("loads genres and publishers from API", async () => {
-        renderAddPublication();
+    test("loads genres, authors, and publishers from API", async () => {
+        await renderAndWait();
 
-        expect(await screen.findByRole("checkbox", { name: "Drama" })).toBeInTheDocument();
-        expect(await screen.findByRole("option", { name: "Cambridge University Press" })).toBeInTheDocument();
+        expect(screen.getByRole("checkbox", { name: "Drama" })).toBeInTheDocument();
+        expect(screen.getByRole("checkbox", { name: "John Doe" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Cambridge University Press" })).toBeInTheDocument();
     });
 
-    test("adds a new author field when clicking Add Author", () => {
-        renderAddPublication();
-
-        fireEvent.click(screen.getByText("Add Author"));
-
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(2);
-    });
-
-    test("removes an author field when clicking remove button", () => {
-        renderAddPublication();
-
-        fireEvent.click(screen.getByText("Add Author"));
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(2);
-
-        fireEvent.click(screen.getAllByLabelText("Remove author")[0]);
-
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(1);
-    });
-
-    test("does not show remove button when only one author exists", () => {
-        renderAddPublication();
-
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(1);
-        expect(screen.queryByLabelText("Remove author")).not.toBeInTheDocument();
-    });
-
-    test("shows ISBN as required for publications after 1976", () => {
-        renderAddPublication();
+    test("shows ISBN as required for publications after 1976", async () => {
+        await renderAndWait();
 
         fireEvent.change(screen.getByLabelText(/Published Date/), {
             target: { value: "1990-01-01" },
@@ -164,9 +159,9 @@ describe("AddPublication", () => {
         expect(screen.getByText(/ISBN \/ ISSN \*/)).toBeInTheDocument();
     });
 
-    test("shows alert when ISBN is missing for post-1976 publication", () => {
+    test("shows alert when ISBN is missing for post-1976 publication", async () => {
         const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
-        renderAddPublication();
+        await renderAndWait();
 
         fireEvent.change(screen.getByLabelText(/Published Date/), {
             target: { value: "1990-01-01" },
@@ -181,9 +176,13 @@ describe("AddPublication", () => {
         alertMock.mockRestore();
     });
 
-    test("shows alert when ISBN format is invalid", () => {
+    test("shows alert when ISBN format is invalid", async () => {
         const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
-        renderAddPublication();
+        await renderAndWait();
+
+        // Check required fields that validate before ISBN to prevent early exit
+        fireEvent.click(screen.getByRole("checkbox", { name: "John Doe" }));
+        fireEvent.click(screen.getByRole("checkbox", { name: "Drama" }));
 
         fireEvent.change(screen.getByLabelText(/ISBN/), {
             target: { value: "123" },
@@ -192,14 +191,14 @@ describe("AddPublication", () => {
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
 
         expect(alertMock).toHaveBeenCalledWith(
-            "ISBN must have 10 or 13 characters, or ISSN must have 8 characters"
+            "ISBN must be 10 or 13 chars, or ISSN 8 chars"
         );
 
         alertMock.mockRestore();
     });
 
     test("calls addPublication with correct data on valid submit", async () => {
-        renderAddPublication();
+        await renderAndWait();
         await fillRequiredFields();
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
@@ -207,27 +206,24 @@ describe("AddPublication", () => {
         expect(mockAddPublication).toHaveBeenCalledWith(
             expect.objectContaining({
                 title: "Test Book",
-                author: "John Doe",
-                // Fixed: Payload uses genreIds instead of genres
-                genreIds: ["GENRE1"],
-                // Fixed: Payload uses publisherId instead of publisher
+                authorNames: ["AUTH1"],
+                genreNames: ["GENRE1"],
                 publisherId: "PUB1",
             })
         );
     });
 
     test("shows success modal after valid submission", async () => {
-        renderAddPublication();
+        await renderAndWait();
         await fillRequiredFields();
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
 
-        // Fixed: Use `findByText` because the modal renders asynchronously after the promise resolves
         expect(await screen.findByText("Publication registered successfully!")).toBeInTheDocument();
     });
 
-    test("navigates back when Cancel is clicked", () => {
-        renderAddPublication();
+    test("navigates back when Cancel is clicked", async () => {
+        await renderAndWait();
 
         fireEvent.click(screen.getByText("Cancel"));
 
@@ -235,27 +231,26 @@ describe("AddPublication", () => {
     });
 
     test("navigates to /my-publications after closing success modal", async () => {
-        renderAddPublication();
+        await renderAndWait();
         await fillRequiredFields();
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
 
-        // Fixed: Await the OK button appearing after the state updates
         const okButton = await screen.findByText("OK");
         fireEvent.click(okButton);
 
         expect(mockNavigate).toHaveBeenCalledWith("/my-publications");
     });
 
-    test("renders Publication Status field with CREATED as default", () => {
-        renderAddPublication();
+    test("renders Publication Status field with CREATED as default", async () => {
+        await renderAndWait();
 
         expect(screen.getByText(/Publication Status \*/)).toBeInTheDocument();
         expect(screen.getByLabelText(/Publication Status/)).toHaveValue("CREATED");
     });
 
     test("calls addPublication with status and publisher on valid submit", async () => {
-        renderAddPublication();
+        await renderAndWait();
         await fillRequiredFields();
 
         fireEvent.change(screen.getByLabelText(/Publication Status/), {
@@ -266,8 +261,6 @@ describe("AddPublication", () => {
 
         expect(mockAddPublication).toHaveBeenCalledWith(
             expect.objectContaining({
-                status: "READING",
-                // Fixed: Payload uses publisherId instead of publisher
                 publisherId: "PUB1",
             })
         );

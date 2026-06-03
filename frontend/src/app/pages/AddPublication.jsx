@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save, BookOpen, Plus, X } from "lucide-react";
+import { ArrowLeft, Save, BookOpen } from "lucide-react";
 import { SuccessModal } from "../components/SuccessModal";
 import { usePublications } from "../components/PublicationsContext";
 import { API_BASE_URL } from "../../api/constants";
 
+const CURRENT_USER_ID = "user-001";
 
 const PUBLICATION_STATUSES = [
     { value: "CREATED", label: "Created" },
@@ -13,6 +14,7 @@ const PUBLICATION_STATUSES = [
 ];
 
 const CONDITION_MAP = {
+    New:        "New",
     likeNew:    "Like New",
     veryGood:   "Very Good",
     good:       "Good",
@@ -20,14 +22,44 @@ const CONDITION_MAP = {
     poor:       "Poor",
 };
 
+const BINDING_MAP = {
+    hardcover: "HARDBACK",
+    paperback: "PAPERBACK",
+};
+
+const LANGUAGE_MAP = {
+    English:    "en",
+    Portuguese: "pt",
+    Spanish:    "es",
+    French:     "fr",
+    German:     "de",
+};
+
+// TODO: fetch from /publication-types instead of hardcoding
+const PUBLICATION_TYPE_IDS = {
+    book:     "pub-type-001",
+    magazine: "pub-type-002",
+};
+
+const MEDIA_FORMAT_MAP = {
+    book:     "Book",
+    magazine: "Magazine",
+};
+
 export function AddPublication() {
     const navigate = useNavigate();
     const { addPublication } = usePublications();
+
     const [showSuccessModal, setShowSuccessModal] = useState(false);
-    const [authors, setAuthors] = useState([""]);
+    const [publishers, setPublishers] = useState([]);
+    const [genres, setGenres] = useState([]);
+    const [authorsList, setAuthorsList] = useState([]);
+    const [loadingOptions, setLoadingOptions] = useState(true);
+
     const [formData, setFormData] = useState({
         isbn: "",
         title: "",
+        authors: [],
         genres: [],
         publicationType: "book",
         publisher: "",
@@ -40,66 +72,54 @@ export function AddPublication() {
         status: "CREATED",
         description: "",
         dimensions: "",
-        weight: ""
+        weight: "",
     });
-    
-    const [publishers, setPublishers] = useState([]);
-    const [genres, setGenres] = useState([]);
-    const [loadingOptions, setLoadingOptions] = useState(true);
 
-
-
-useEffect(() => {
-    async function fetchOptions() {
-        try {
-            const [publishersRes, genresRes] = await Promise.all([
-                fetch(`${API_BASE_URL}/publishers`),
-                fetch(`${API_BASE_URL}/genres`)
-            ]);
-
-            if (!publishersRes.ok || !genresRes.ok) {
-                throw new Error("Failed to fetch options");
+    useEffect(() => {
+        async function fetchOptions() {
+            try {
+                const [publishersRes, genresRes, authorsRes] = await Promise.all([
+                    fetch(`${API_BASE_URL}/publishers`),
+                    fetch(`${API_BASE_URL}/genres`),
+                    fetch(`${API_BASE_URL}/authors?userId=${CURRENT_USER_ID}`),
+                ]);
+                if (!publishersRes.ok || !genresRes.ok || !authorsRes.ok) {
+                    throw new Error("Failed to fetch options");
+                }
+                const publishersData = await publishersRes.json();
+                const genresData     = await genresRes.json();
+                const authorsData    = await authorsRes.json();
+                console.log("publisher sample:", publishersData[0]);
+                console.log("genre sample:", genresData[0]);
+                console.log("author sample:", authorsData[0]);
+                setPublishers(publishersData);
+                setGenres(genresData);
+                setAuthorsList(authorsData);
+            } catch (error) {
+                console.error("Error loading options:", error);
+            } finally {
+                setLoadingOptions(false);
             }
-
-            const publishersData = await publishersRes.json();
-            const genresData = await genresRes.json();
-
-            setPublishers(publishersData);
-            setGenres(genresData);
-        } catch (error) {
-            console.error("Error loading publishers/genres:", error);
-        } finally {
-            setLoadingOptions(false);
         }
-    }
-
-    fetchOptions();
-}, []);
+        fetchOptions();
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("[submit] fired");
-        console.log("[submit] formData:", formData);
-        console.log("[submit] authors:", authors);
-        console.log("[submit] addPublication is:", typeof addPublication);
 
         // ── Validation ───────────────────────────────────────────────
         const pubYear = formData.publishedDate
             ? new Date(formData.publishedDate).getFullYear()
             : null;
-
         if (pubYear && pubYear > 1976 && !formData.isbn) {
             alert("ISBN/ISSN is required for publications after 1976");
             return;
         }
 
-        if (formData.isbn) {
-            const cleanIsbn = formData.isbn.replace(/[-\s]/g, "");
-            const validLengths = [8, 10, 13]; // ISSN, ISBN-10, ISBN-13
-            if (!validLengths.includes(cleanIsbn.length)) {
-                alert("ISBN must have 10 or 13 characters, or ISSN must have 8 characters");
-                return;
-            }
+        if (formData.authors.length === 0) {
+            alert("Please select at least one author");
+            return;
         }
 
         if (formData.genres.length === 0) {
@@ -107,86 +127,110 @@ useEffect(() => {
             return;
         }
 
-        if (!CONDITION_MAP[formData.condition]) {
-            alert(`Unknown condition: ${formData.condition}`);
-            return;
+        const cleanIsbn = formData.isbn ? formData.isbn.replace(/[-\s]/g, "") : "";
+        let isbn10 = null, isbn13 = null, issn = null;
+        if (cleanIsbn) {
+            if (cleanIsbn.length === 8)       issn   = cleanIsbn;
+            else if (cleanIsbn.length === 10) isbn10 = cleanIsbn;
+            else if (cleanIsbn.length === 13) isbn13 = cleanIsbn;
+            else { alert("ISBN must be 10 or 13 chars, or ISSN 8 chars"); return; }
         }
 
-        // ── Resolve display-only labels ──────────────────────────────
-        const selectedPublisher = publishers.find(p => p.id === formData.publisher);
-        const selectedGenres = genres.filter(g => formData.genres.includes(g.id));
+        if (!CONDITION_MAP[formData.condition]) {
+            alert(`Unknown condition: ${formData.condition}`); return;
+        }
+        if (!BINDING_MAP[formData.binding]) {
+            alert("Please select a binding type"); return;
+        }
+
+        // Parse dimensions "20 x 15 x 3" → width / height / depth
+        const dims = formData.dimensions
+            .split(/\s*x\s*/i)
+            .map((s) => parseFloat(s));
+        if (dims.length !== 3 || dims.some(isNaN) || dims.some((d) => d <= 0)) {
+            alert('Dimensions must be in format "W x H x D" with positive numbers, e.g. "20 x 15 x 3"');
+            return;
+        }
+        const [width, height, depth] = dims;
+
+        const numberOfPages = parseInt(formData.pages, 10);
+        if (!numberOfPages || numberOfPages <= 0) {
+            alert("Number of pages is required and must be positive"); return;
+        }
+        const weight = parseFloat(formData.weight);
+        if (!weight || weight <= 0) {
+            alert("Weight is required and must be positive"); return;
+        }
+
+        // ── Resolve display labels ───────────────────────────────────
+        const selectedPublisher = publishers.find(p => p.publisherId === formData.publisher);
+        const selectedAuthors   = authorsList.filter(a => formData.authors.includes(a.id));
+        const selectedGenres    = genres.filter(g => formData.genres.includes(g.id));
+        const editionLanguage   = LANGUAGE_MAP[formData.language] || "en";
 
         // ── Build payload ────────────────────────────────────────────
         const payload = {
-            // Backend-required (RegisterPublicationSampleDTO)
-            // TODO: replace defaults once the form has BD / edition pickers
-            bibliographicalDataId: "bd-001",
-            editionId: "edition-001",
+            // BD — IDs sent in *Names fields (backend wraps as AuthorId/GenreId
+            // and looks up directly). TODO: backend bug.
+            title: formData.title,
+            authorNames: formData.authors,
+            genreNames:  formData.genres,
+            originalLanguage: editionLanguage,
+            publishedDate: formData.publishedDate,
+
+            // Edition
+            editionNumber: formData.edition,
+            isbn10, isbn13, issn,
+            height, width, depth, weight, numberOfPages,
+            publicationTypeId: PUBLICATION_TYPE_IDS[formData.publicationType],
+            publisherId: formData.publisher,
+            mediaFormat: MEDIA_FORMAT_MAP[formData.publicationType],
+            editionLanguage,
+            typeOfBinding: BINDING_MAP[formData.binding],
+
+            // Sample
             condition: CONDITION_MAP[formData.condition],
 
-            // Display-only, merged into local state by the context
-            title: formData.title,
-            author: authors.filter(a => a.trim()).join(", "),
-            authorNames: authors.filter(a => a.trim()),
-            genre: selectedGenres.map(g => g.genreName).join(", "),
-            genreIds: formData.genres,
-            isbn: formData.isbn,
-            publisher: selectedPublisher?.name ?? "",
-            publisherId: formData.publisher,
-            type: formData.publicationType,
-            status: formData.status,
-            edition: formData.edition,
-            language: formData.language,
-            pages: formData.pages ? Number(formData.pages) : null,
-            binding: formData.binding,
-            dimensions: formData.dimensions,
-            weight: formData.weight ? Number(formData.weight) : null,
-            description: formData.description,
+            // Display-only (used by MyPublications)
+            publisherName: selectedPublisher?.name ?? "",
+            authorDisplayNames: selectedAuthors.map(a => a.name),
+            genreDisplayNames:  selectedGenres.map(g => g.genreName),
         };
 
-        console.log("[submit] payload going to addPublication:", payload);
+        console.log("[submit] payload:", payload);
 
-        // ── Submit ───────────────────────────────────────────────────
         try {
-            const result = await addPublication(payload);
-            console.log("[submit] addPublication returned:", result);
+            await addPublication(payload);
             setShowSuccessModal(true);
         } catch (err) {
-            console.error("[submit] addPublication threw:", err);
+            console.error("[submit] failed:", err);
             alert("Failed to create publication: " + err.message);
         }
     };
 
-    const handleGenreToggle = (genre) => {
+    const handleAuthorToggle = (authorId) => {
         setFormData(prev => ({
             ...prev,
-            genres: prev.genres.includes(genre)
-                ? prev.genres.filter(g => g !== genre)
-                : [...prev.genres, genre]
+            authors: prev.authors.includes(authorId)
+                ? prev.authors.filter(a => a !== authorId)
+                : [...prev.authors, authorId],
+        }));
+    };
+
+    const handleGenreToggle = (genreId) => {
+        setFormData(prev => ({
+            ...prev,
+            genres: prev.genres.includes(genreId)
+                ? prev.genres.filter(g => g !== genreId)
+                : [...prev.genres, genreId],
         }));
     };
 
     const handleChange = (e) => {
         setFormData(prev => ({
             ...prev,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         }));
-    };
-
-    const addAuthor = () => {
-        setAuthors([...authors, ""]);
-    };
-
-    const removeAuthor = (index) => {
-        if (authors.length > 1) {
-            setAuthors(authors.filter((_, i) => i !== index));
-        }
-    };
-
-    const handleAuthorChange = (index, value) => {
-        const newAuthors = [...authors];
-        newAuthors[index] = value;
-        setAuthors(newAuthors);
     };
 
     return (
@@ -212,7 +256,7 @@ useEffect(() => {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
-                        {/* Identification Section */}
+                        {/* Identification */}
                         <div>
                             <h2 className="font-serif text-2xl mb-6 pb-3 border-b-2 border-border text-foreground">
                                 Identification
@@ -290,7 +334,6 @@ useEffect(() => {
                             </div>
                         </div>
 
-
                         {/* Basic Info */}
                         <div>
                             <h2 className="font-serif text-2xl mb-6 pb-3 border-b-2 border-border text-foreground">
@@ -313,38 +356,22 @@ useEffect(() => {
 
                                 <div>
                                     <label className="block mb-2 font-semibold text-foreground">Author(s) *</label>
-                                    <div className="space-y-3">
-                                        {authors.map((author, index) => (
-                                            <div key={index} className="flex gap-2">
+                                    <div className="grid grid-cols-2 gap-2 p-4 bg-input-background border-2 border-border rounded-xl max-h-64 overflow-y-auto">
+                                        {authorsList.map(a => (
+                                            <label key={a.id} className="flex items-center gap-2 cursor-pointer">
                                                 <input
-                                                    type="text"
-                                                    value={author}
-                                                    onChange={(e) => handleAuthorChange(index, e.target.value)}
-                                                    placeholder="Author name"
-                                                    className="flex-1 px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                                                    required
+                                                    type="checkbox"
+                                                    checked={formData.authors.includes(a.id)}
+                                                    onChange={() => handleAuthorToggle(a.id)}
+                                                    className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary"
                                                 />
-                                                {authors.length > 1 && (
-                                                    <button
-                                                        type="button"
-                                                        aria-label="Remove author"
-                                                        onClick={() => removeAuthor(index)}
-                                                        className="px-3 py-3 bg-destructive/10 text-destructive rounded-xl hover:bg-destructive/20 transition-colors"
-                                                    >
-                                                        <X className="w-5 h-5" />
-                                                    </button>
-                                                )}
-                                            </div>
+                                                <span className="text-sm">{a.name}</span>
+                                            </label>
                                         ))}
-                                        <button
-                                            type="button"
-                                            onClick={addAuthor}
-                                            className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition-colors font-medium"
-                                        >
-                                            <Plus className="w-4 h-4" />
-                                            Add Author
-                                        </button>
                                     </div>
+                                    {formData.authors.length === 0 && (
+                                        <p className="text-xs text-destructive mt-1">Please select at least one author</p>
+                                    )}
                                 </div>
 
                                 <div className="grid md:grid-cols-2 gap-6">
@@ -360,11 +387,9 @@ useEffect(() => {
                                         >
                                             <option value="">Select publisher</option>
                                             {publishers.map(pub => (
-                                                <option key={pub.id} value={pub.id}>{pub.name}</option>
+                                                <option key={pub.publisherId} value={pub.publisherId}>{pub.name}</option>
                                             ))}
                                         </select>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                        </p>
                                     </div>
                                 </div>
 
@@ -419,7 +444,7 @@ useEffect(() => {
                             </h2>
                             <div className="grid md:grid-cols-3 gap-6 mb-6">
                                 <div>
-                                    <label htmlFor="pages" className="block mb-2 font-semibold text-foreground">Number of Pages</label>
+                                    <label htmlFor="pages" className="block mb-2 font-semibold text-foreground">Number of Pages *</label>
                                     <input
                                         id="pages"
                                         type="number"
@@ -428,6 +453,7 @@ useEffect(() => {
                                         onChange={handleChange}
                                         placeholder="350"
                                         className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                        required
                                     />
                                 </div>
 
@@ -442,7 +468,6 @@ useEffect(() => {
                                         required
                                     >
                                         <option value="">Select binding type</option>
-                                        <option value="softcover">Softcover</option>
                                         <option value="hardcover">Hardcover</option>
                                         <option value="paperback">Paperback</option>
                                     </select>
@@ -458,6 +483,7 @@ useEffect(() => {
                                         className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                                         required
                                     >
+                                        <option value="New">New</option>
                                         <option value="likeNew">Like New</option>
                                         <option value="veryGood">Very Good</option>
                                         <option value="good">Good</option>
@@ -484,7 +510,7 @@ useEffect(() => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="weight" className="block mb-2 font-semibold text-foreground">Weight (g)</label>
+                                    <label htmlFor="weight" className="block mb-2 font-semibold text-foreground">Weight (g) *</label>
                                     <input
                                         id="weight"
                                         type="number"
@@ -493,6 +519,7 @@ useEffect(() => {
                                         onChange={handleChange}
                                         placeholder="350"
                                         className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                        required
                                     />
                                 </div>
                             </div>
@@ -516,7 +543,8 @@ useEffect(() => {
                         <div className="flex gap-4 pt-6">
                             <button
                                 type="submit"
-                                className="flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold shadow-lg"
+                                disabled={loadingOptions}
+                                className="flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Save className="w-5 h-5" />
                                 Create Publication

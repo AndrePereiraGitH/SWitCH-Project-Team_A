@@ -44,8 +44,8 @@ const mockPublications = [
     {
         id: "1",
         title: "The Lord of the Rings",
-        author: "J.R.R. Tolkien",
-        genre: "Fantasy",
+        authors: ["J.R.R. Tolkien"], // Updated to match component expecting array
+        genres: ["Fantasy"],         // Updated to match component expecting array
         type: "book",
         isbn: "9780261103573",
         condition: "good",
@@ -54,8 +54,8 @@ const mockPublications = [
     {
         id: "2",
         title: "Dune",
-        author: "Frank Herbert",
-        genre: "Science Fiction",
+        authors: ["Frank Herbert"],   // Updated to match component expecting array
+        genres: ["Science Fiction"],  // Updated to match component expecting array
         type: "book",
         isbn: "9780441013593",
         condition: "veryGood",
@@ -140,8 +140,8 @@ describe("MyPublications", () => {
                 {
                     id: "3",
                     title: "National Geographic",
-                    author: "Various",
-                    genre: "Science",
+                    authors: ["Various"], // Updated to match component expecting array
+                    genres: ["Science"],  // Updated to match component expecting array
                     type: "magazine",
                     isbn: "12345678",
                     condition: "good",
