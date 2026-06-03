@@ -16,19 +16,23 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link AuthorLinkProvider}.
  *
- * <p>Validates link generation based on user authorization rules.</p>
+ * <p>The provider always returns find-author and find-all links.
+ * It conditionally adds create-author based on user permissions.</p>
  */
 class AuthorLinkProviderTest {
 
     private final AuthorAuthorizationPolicy policy = mock(AuthorAuthorizationPolicy.class);
     private final IUserRepository repository = mock(IUserRepository.class);
 
+    // =========================================================================
+    // canCreateAuthor = true  →  3 links: create-author + find-author + find-all
+    // =========================================================================
+
     @Test
-    void getLinks_shouldReturnLink_whenUserCanCreateAuthor() {
+    void getLinks_shouldReturnThreeLinks_whenUserCanCreateAuthor() {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
-
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
@@ -39,16 +43,14 @@ class AuthorLinkProviderTest {
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertEquals(1, result.size());
-        assertEquals("create-author", result.get(0).getRel().value());
+        assertEquals(3, result.size());
     }
 
     @Test
-    void getLinks_shouldReturnHref_whenUserCanCreateAuthor() {
+    void getLinks_shouldIncludeCreateAuthorLink_whenUserCanCreateAuthor() {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
-
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
@@ -59,16 +61,72 @@ class AuthorLinkProviderTest {
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertFalse(result.isEmpty());
-        assertNotNull(result.get(0).getHref());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("create-author")));
     }
 
     @Test
-    void getLinks_shouldReturnEmptyList_whenUserCannotCreateAuthor() {
+    void getLinks_shouldIncludeFindAuthorLink_whenUserCanCreateAuthor() {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
 
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-author")));
+    }
+
+    @Test
+    void getLinks_shouldIncludeFindAllLink_whenUserCanCreateAuthor() {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+    }
+
+    @Test
+    void getLinks_shouldReturnNonNullHrefs_whenUserCanCreateAuthor() {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        result.forEach(link -> assertNotNull(link.getHref()));
+    }
+
+    // =========================================================================
+    // canCreateAuthor = false  →  2 links: find-author + find-all
+    // =========================================================================
+
+    @Test
+    void getLinks_shouldReturnTwoLinks_whenUserCannotCreateAuthor() {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
@@ -79,9 +137,66 @@ class AuthorLinkProviderTest {
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(2, result.size());
     }
+
+    @Test
+    void getLinks_shouldNotIncludeCreateAuthorLink_whenUserCannotCreateAuthor() {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.stream().noneMatch(l -> l.getRel().value().equals("create-author")));
+    }
+
+    @Test
+    void getLinks_shouldIncludeFindAuthorLink_whenUserCannotCreateAuthor() {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-author")));
+    }
+
+    @Test
+    void getLinks_shouldIncludeFindAllLink_whenUserCannotCreateAuthor() {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+    }
+
+    // =========================================================================
+    // user not found
+    // =========================================================================
 
     @Test
     void getLinks_shouldThrowException_whenUserDoesNotExist() {
@@ -100,24 +215,5 @@ class AuthorLinkProviderTest {
                 );
 
         assertEquals("User not found", ex.getMessage());
-    }
-
-    @Test
-    void getLinks_shouldReturnNonNullList_whenUserCannotCreateAuthor() {
-
-        // ARRANGE
-        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
-
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreateAuthor(user)).thenReturn(false);
-
-        // ACT
-        List<Link> result = sut.getLinks(userId);
-
-        // ASSERT
-        assertNotNull(result);
     }
 }

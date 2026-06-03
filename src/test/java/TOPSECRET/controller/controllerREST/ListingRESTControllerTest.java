@@ -1,7 +1,9 @@
 package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.ListingLinkProvider;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -9,10 +11,8 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
-import TOPSECRET.services.BibliographicalDataService;
-import TOPSECRET.services.EditionService;
-import TOPSECRET.services.ListingService;
-import TOPSECRET.services.PublicationSampleService;
+import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
+import TOPSECRET.services.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +49,9 @@ class ListingRESTControllerTest {
 
     @Mock
     private EditionService editionService;
+
+    @Mock
+    private AuthorService authorService;
 
     @Mock
     private ListingLinkProvider listingLinkProvider;
@@ -319,42 +322,58 @@ class ListingRESTControllerTest {
     void findAll_shouldReturnOkWithDtos_whenListingsExist()
             throws InstanceNotFoundException {
 
-        // Arrange
         String userId = "11111111";
 
         UserId userIdObject = mock(UserId.class);
         Listing listing = mock(Listing.class);
         ListingId listingId = mock(ListingId.class);
+
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
         PublicationSample publicationSample = mock(PublicationSample.class);
+
         BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
         BibliographicalData bibliographicalData = mock(BibliographicalData.class);
-        ListingResponseDTO dto = mock(ListingResponseDTO.class);
+
+        AuthorId authorId = mock(AuthorId.class);
+        Author author = mock(Author.class);
+
+        Condition condition = mock(Condition.class);
+
+        ListingResponseExploreDTO dto = mock(ListingResponseExploreDTO.class);
 
         when(listingService.findAll()).thenReturn(List.of(listing));
         when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
         when(publicationService.findById(publicationSampleId)).thenReturn(publicationSample);
+
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getCondition()).thenReturn(condition);
+
         when(biblioDataService.findById(bibliographicalDataId)).thenReturn(bibliographicalData);
+
+        when(bibliographicalData.getAuthors()).thenReturn(List.of(authorId));
+        when(authorService.findById(authorId)).thenReturn(author);
+        when(author.getName()).thenReturn("Author Name");
+
         when(listing.id()).thenReturn(listingId);
         when(listingId.getId()).thenReturn("22222222-2222-2222-2222-222222222222");
+
         when(listingLinkProvider.getLinksForListings(any(UserId.class))).thenReturn(List.of());
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
             mockedMapper.when(() -> ListingMapper.toUserId(userId))
                     .thenReturn(userIdObject);
 
-            mockedMapper.when(() -> ListingMapper.toResponseDTO(
+            mockedMapper.when(() -> ListingMapper.toResponseExploreDTO(
                             eq(listing),
-                            eq(List.of(bibliographicalData))
+                            eq(List.of(bibliographicalData)),
+                            eq(List.of("Author Name")),
+                            eq(condition)
                     ))
                     .thenReturn(dto);
 
-            // Act
-            ResponseEntity<List<ListingResponseDTO>> response =
+            ResponseEntity<List<ListingResponseExploreDTO>> response =
                     controller.findAll(userId);
 
-            // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertEquals(1, response.getBody().size());
@@ -371,7 +390,7 @@ class ListingRESTControllerTest {
         when(listingService.findAll()).thenReturn(List.of());
 
         // Act
-        ResponseEntity<List<ListingResponseDTO>> response =
+        ResponseEntity<List<ListingResponseExploreDTO>> response =
                 controller.findAll(userId);
 
         // Assert
@@ -387,7 +406,7 @@ class ListingRESTControllerTest {
         String userId = "";
 
         // Act
-        ResponseEntity<List<ListingResponseDTO>> response =
+        ResponseEntity<List<ListingResponseExploreDTO>> response =
                 controller.findAll(userId);
 
         // Assert
@@ -404,7 +423,7 @@ class ListingRESTControllerTest {
         when(listingService.findAll()).thenThrow(new EntityNotFoundException());
 
         // Act
-        ResponseEntity<List<ListingResponseDTO>> response =
+        ResponseEntity<List<ListingResponseExploreDTO>> response =
                 controller.findAll(userId);
 
         // Assert
@@ -432,7 +451,7 @@ class ListingRESTControllerTest {
                 .thenThrow(new InstanceNotFoundException());
 
         // Act
-        ResponseEntity<List<ListingResponseDTO>> response =
+        ResponseEntity<List<ListingResponseExploreDTO>> response =
                 controller.findAll(userId);
 
         // Assert
@@ -449,12 +468,53 @@ class ListingRESTControllerTest {
         when(listingService.findAll()).thenThrow(new RuntimeException());
 
         // Act
-        ResponseEntity<List<ListingResponseDTO>> response =
+        ResponseEntity<List<ListingResponseExploreDTO>> response =
                 controller.findAll(userId);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
+    }
+
+    @Test
+    void findAll_shouldIgnoreNullAuthors_whenBibliographicalDataAuthorsIsNull() throws Exception {
+        UserId userId = new UserId("user-001");
+
+        Listing listing = mock(Listing.class);
+        ListingId listingId = new ListingId("listing-1");
+        PublicationSampleId publicationSampleId = new PublicationSampleId("pub-1");
+
+        PublicationSample publicationSample = mock(PublicationSample.class);
+        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+
+        when(listing.id()).thenReturn(listingId);
+        when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
+        when(listing.getListingTitle()).thenReturn("Listing title");
+        when(listing.getPrice()).thenReturn(new Price(new BigDecimal("10.00")));
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        when(listingService.findAll()).thenReturn(List.of(listing));
+        when(publicationService.findById(publicationSampleId)).thenReturn(publicationSample);
+        when(publicationSample.getBibliographicalDataID())
+                .thenReturn(new BibliographicalDataId("bd-1"));
+        when(publicationSample.getCondition()).thenReturn(Condition.GOOD);
+
+        when(biblioDataService.findById(new BibliographicalDataId("bd-1")))
+                .thenReturn(bibliographicalData);
+
+        when(bibliographicalData.getAuthors()).thenReturn(null);
+        when(bibliographicalData.getGenres()).thenReturn(List.of(new GenreId("genre-1")));
+
+        when(listingLinkProvider.getLinksForListings(userId)).thenReturn(List.of());
+
+        ResponseEntity<List<ListingResponseExploreDTO>> response =
+                controller.findAll("user-001");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertTrue(response.getBody().get(0).getAuthors().isEmpty());
+
     }
 
     // ============================================================
@@ -534,19 +594,7 @@ class ListingRESTControllerTest {
         }
     }
 
-    @Test
-    void findById_shouldThrowIllegalArgumentException_whenListingIdIsInvalid() {
 
-        // Arrange
-        String id = "";
-
-        String userId = "userId";
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.findById(id, userId)
-        );
-    }
 
     @Test
     void findById_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
@@ -575,9 +623,28 @@ class ListingRESTControllerTest {
             assertNull(response.getBody());
         }
     }
+
+    @Test
+    void findById_shouldReturnBadRequest_whenListingIdIsInvalid() {
+        ResponseEntity<ListingResponseDTO> response =
+                controller.findById(null, "user-001");
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
     // ============================================================
     // --------------  getAllDirectSaleByGenre  -------------------
     // ============================================================
+
+    @Test
+    void getAllDirectSaleByGenre_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+        when(biblioDataService.findAllByGenreId(any()))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        ResponseEntity<List<ListingResponseDTO>> response =
+                controller.getAllDirectSaleByGenre("genre-1", "user-001");
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
 
     @Test
     void getAllDirectSaleByGenre_shouldReturnOkWithDtos_whenListingsExist()
@@ -757,6 +824,17 @@ class ListingRESTControllerTest {
     // ============================================================
     // --------------  getAllDirectSaleByPublisher  ---------------
     // ============================================================
+
+    @Test
+    void getAllDirectSaleByPublisher_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() throws Exception {
+        when(editionService.findIdsByPublisherId(any()))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        ResponseEntity<List<ListingResponseDTO>> response =
+                controller.getAllDirectSaleByPublisher("publisher-1", "user-001");
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
 
     @Test
     void getAllDirectSaleByPublisher_shouldReturnOkWithDtos_whenListingsExist()

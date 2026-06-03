@@ -22,15 +22,9 @@ import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-/**
- * REST controller responsible for managing Author resources.
- *
- * <p>This controller exposes endpoints for creating Author resources
- * and coordinates the interaction between DTOs, domain objects
- * and application services.</p>
- */
 @RestController
 @Tag(name = "Authors", description = "Authors management endpoint")
 @RequestMapping(path = "/authors")
@@ -46,40 +40,33 @@ public class AuthorRESTController {
         this.countryService = countryService;
     }
 
-
-    /**
-     * Creates and stores a new Author.
-     *
-     * @param dto    request data used to create the Author
-     * @param userId identifier of the user performing the operation
-     * @return response entity containing the created Author
-     *         or an error status when the operation fails
-     */
     @PostMapping("")
     public ResponseEntity<AuthorDTO> createAuthor(
             @RequestBody CreateAuthorDTO dto,
-            @RequestParam UserId userId) {
-
+            @RequestParam String userId) {
 
         try {
+            UserId id = AuthorMapper.toUserId(userId);
+
             Author author = service.createAndSave(
                     dto.name(),
                     AuthorMapper.toCountryId(dto),
                     dto.dateOfBirth(),
                     dto.biography(),
-                    userId
+                    id
             );
 
             Country country = countryService.findById(author.getCountryID());
-
             AuthorDTO result = AuthorMapper.toDTO(author, country);
 
-            List<Link> links = provider.getLinks(userId);
+            List<Link> links = provider.getLinks(id);
 
             links.add(linkTo(methodOn(AuthorRESTController.class)
-                    .findById(author.id())).withSelfRel());
+                    .findById(author.id().toString(), userId))
+                    .withSelfRel());
 
             links.forEach(result::add);
+
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -92,19 +79,12 @@ public class AuthorRESTController {
         }
     }
 
-    /**
-     * Retrieves all persisted {@link Author} resources.
-     *
-     * <p>Each author in the response includes a link to its individual
-     * resource endpoint.</p>
-     *
-     * @return response entity containing the list of all authors,
-     *         or an error status when the operation fails
-     */
     @GetMapping
-    public ResponseEntity<List<AuthorDTO>> findAll() {
+    public ResponseEntity<List<AuthorDTO>> findAll(@RequestParam String userId) {
 
         try {
+            UserId id = AuthorMapper.toUserId(userId);
+
             List<Author> authors = service.findAll();
             List<AuthorDTO> authorsDTO = new ArrayList<>();
 
@@ -112,56 +92,51 @@ public class AuthorRESTController {
                 CountryId countryId = author.getCountryID();
                 Country country = countryService.findById(countryId);
 
-                AuthorDTO authorDTO = AuthorMapper.toDTO(author, country);
+                AuthorDTO result = AuthorMapper.toDTO(author, country);
 
-                Link selfLink = linkTo(methodOn(AuthorRESTController.class)
-                        .findById(author.id()))
-                        .withRel("find-by-id");
+                List<Link> links = provider.getLinks(id);
+                links.add(linkTo(methodOn(AuthorRESTController.class)
+                        .findById(author.id().toString(), userId))
+                        .withSelfRel());
 
-                authorDTO.add(selfLink);
+                links.forEach(result::add);
 
-                authorsDTO.add(authorDTO);
+                authorsDTO.add(result);
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(authorsDTO);
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    /**
-     * Retrieves a single {@link Author} by its identifier.
-     *
-     * <p>The response includes a self link and a find-by-id link
-     * for HATEOAS navigation.</p>
-     *
-     * @param authorId the identifier of the author to retrieve
-     * @return response entity containing the author,
-     *         or an error status when the operation fails
-     */
     @GetMapping("/{authorId}")
-    public ResponseEntity<AuthorDTO> findById(@PathVariable("authorId") AuthorId authorId) {
+    public ResponseEntity<AuthorDTO> findById(
+            @PathVariable("authorId") String authorId,
+            @RequestParam String userId) {
 
         try {
-            Author author = service.findById(authorId);
+            AuthorId id = AuthorMapper.toAuthorId(authorId);
+            UserId uId = AuthorMapper.toUserId(userId);
+
+            Author author = service.findById(id);
             CountryId countryId = author.getCountryID();
             Country country = countryService.findById(countryId);
 
-            AuthorDTO authorDTO = AuthorMapper.toDTO(author, country);
+            AuthorDTO result = AuthorMapper.toDTO(author, country);
 
-            Link selfLink = linkTo(methodOn(AuthorRESTController.class)
-                    .findById(authorId)).withSelfRel();
+            List<Link> links = provider.getLinks(uId);
 
-            Link withRel = linkTo(methodOn(AuthorRESTController.class)
-                    .findById(authorId)).withRel("find-by-id");
+            links.add(linkTo(methodOn(AuthorRESTController.class)
+                    .findById(author.id().toString(), userId))
+                    .withSelfRel());
 
-            authorDTO.add(selfLink);
-            authorDTO.add(withRel);
+            links.forEach(result::add);
 
-            return ResponseEntity.status(HttpStatus.OK).body(authorDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {

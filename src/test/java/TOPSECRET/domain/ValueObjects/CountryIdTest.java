@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * <p>Validates construction rules and equality behavior.</p>
  */
-class CountryIDTest {
+class CountryIdTest {
 
     // -------------------------------------------------------------------------
     // Constructor tests

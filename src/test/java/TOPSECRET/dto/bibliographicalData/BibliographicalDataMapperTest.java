@@ -15,6 +15,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -285,6 +286,43 @@ class BibliographicalDataMapperTest {
         UserId result = BibliographicalDataMapper.toUserId(id);
 
         // Assert
-        assertSame(id, result.getUserId());
+        assertEquals(id, result.getUserId());
+    }
+
+    // =============================================================
+    // =============== toBibliographicalDataId Tests ===============
+    // =============================================================
+
+    @Test
+    void shouldCreateBibliographicalDataIdWhenInputIsValid() {
+        // Arrange
+        String id = "id";
+
+        // Act
+        BibliographicalDataId result = BibliographicalDataMapper.toBibliographicalDataId(id);
+
+        // Assert
+        assertEquals(id, result.getID());
+    }
+
+
+    // =============================================================
+    // ====================== toLocale Tests =======================
+    // =============================================================
+
+    @Test
+    void shouldNormalizeInputAndCreateLocaleWhenInputIsValid() {
+        // Arrange
+        String language = "english";
+
+        // Act
+        Locale result1 = BibliographicalDataMapper.toLocale("english");
+        Locale result2 = BibliographicalDataMapper.toLocale("English");
+        Locale result3 = BibliographicalDataMapper.toLocale("ENGLISH");
+
+        // Assert
+        assertEquals(language, result1.getLanguage());
+        assertEquals(language, result2.getLanguage());
+        assertEquals(language, result3.getLanguage());
     }
 }

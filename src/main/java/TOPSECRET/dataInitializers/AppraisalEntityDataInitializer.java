@@ -12,143 +12,71 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/**
- * Data initializer that populates the database with sample AppraisalEntity
- * entries on application startup.
- *
- * <p>Implements {@link ApplicationRunner} so it runs after the Spring context
- * is fully loaded. Entities are built via {@link AppraisalEntityFactory}
- * to respect domain invariants, and persisted through
- * {@link IAppraisalEntityRepository}.
- *
- * <p><b>Note:</b> This initializer always inserts on startup. It is intended
- * for development / demo environments only — disable or remove it for production.
- */
 @Component
 public class AppraisalEntityDataInitializer implements ApplicationRunner {
 
-    private static final Logger log =
-            LoggerFactory.getLogger(AppraisalEntityDataInitializer.class);
+    private static final Logger log = LoggerFactory.getLogger(AppraisalEntityDataInitializer.class);
 
     private final IAppraisalEntityRepository appraisalEntityRepository;
     private final AppraisalEntityFactory appraisalEntityFactory;
 
-    public AppraisalEntityDataInitializer(
-            IAppraisalEntityRepository appraisalEntityRepository,
-            AppraisalEntityFactory appraisalEntityFactory) {
-
+    public AppraisalEntityDataInitializer(IAppraisalEntityRepository appraisalEntityRepository, AppraisalEntityFactory appraisalEntityFactory) {
         this.appraisalEntityRepository = appraisalEntityRepository;
         this.appraisalEntityFactory = appraisalEntityFactory;
     }
 
-    // =========================================================================
-    // ApplicationRunner
-    // =========================================================================
-
     @Override
     public void run(ApplicationArguments args) {
-
         log.info("[AppraisalEntityDataInitializer] Seeding appraisal entities...");
-
         appraisalEntityRepository.save(buildBookReviewEntity());
-
         appraisalEntityRepository.save(buildMagazineReviewEntity());
-
         appraisalEntityRepository.save(buildMixedPublicationEntity());
-
         log.info("[AppraisalEntityDataInitializer] Done — {} appraisal entities seeded.", 3);
     }
 
-    // =========================================================================
-    // Sample Appraisal Entities
-    // =========================================================================
-
-    /**
-     * Book-focused appraisal entity.
-     */
     private AppraisalEntity buildBookReviewEntity() {
+        Contact contact = new Contact("960293849", "351", new Email("antonia", "gmail.com"),
+                new Address("Rua Firmeza", "147", "4500", new CityId("Porto"))); // Fixed CityId
 
-        Contact contact = new Contact(
-                "960293849",
-                "351",
-                new Email("antonia", "gmail.com"),
-                new Address("Rua Firmeza", "147", "4500", new CityId("PORTO")));
-
-        List<PublicationTypeId> publicationTypes = List.of(
-                new PublicationTypeId("BOOK")
-        );
+        List<PublicationTypeId> publicationTypes = List.of(new PublicationTypeId("pub-type-001")); // Fixed PubType
 
         List<GenreId> genres = List.of(
-                new GenreId("FANTASY"),
-                new GenreId("SCIENCE_FICTION"),
-                new GenreId("DRAMA")
-        );
+                new GenreId("GENRE4"), // Fantasy
+                new GenreId("GENRE2"), // Science Fiction
+                new GenreId("GENRE1")  // Drama
+        ); // Fixed Genre IDs
 
-        return appraisalEntityFactory.create(
-                "Book Review Hub",
-                contact,
-                publicationTypes,
-                genres
-        );
+        return appraisalEntityFactory.create("Book Review Hub", contact, publicationTypes, genres);
     }
 
-    /**
-     * Magazine-focused appraisal entity.
-     */
     private AppraisalEntity buildMagazineReviewEntity() {
+        Contact contact = new Contact("910293849", "351", new Email("paulo", "gmail.com"),
+                new Address("Rua Santa Catarina", "147", "4500", new CityId("Porto"))); // Fixed CityId
 
-        Contact contact = new Contact(
-                "910293849",
-                "351",
-                new Email("paulo", "gmail.com"),
-                new Address("Rua Santa Catarina", "147", "4500", new CityId("PORTO")));
-
-        List<PublicationTypeId> publicationTypes = List.of(
-                new PublicationTypeId("MAGAZINE")
-        );
+        List<PublicationTypeId> publicationTypes = List.of(new PublicationTypeId("pub-type-002")); // Fixed PubType
 
         List<GenreId> genres = List.of(
-                new GenreId("HISTORY"),
-                new GenreId("SCIENCE"),
-                new GenreId("TECHNOLOGY")
-        );
+                new GenreId("GENRE8"), // Historical Fiction
+                new GenreId("GENRE10") // Non-Fiction (replacing Science/Tech to map correctly)
+        ); // Fixed Genre IDs
 
-        return appraisalEntityFactory.create(
-                "Magazine Media Review",
-                contact,
-                publicationTypes,
-                genres
-        );
+        return appraisalEntityFactory.create("Magazine Media Review", contact, publicationTypes, genres);
     }
 
-    /**
-     * Mixed publication appraisal entity.
-     */
     private AppraisalEntity buildMixedPublicationEntity() {
-
-        Contact contact = new Contact(
-                "930293849",
-                "351",
-                new Email("judite", "gmail.com"),
-                new Address("Rua Fernandes Tomás", "147", "4500", new CityId("PORTO")));
+        Contact contact = new Contact("930293849", "351", new Email("judite", "gmail.com"),
+                new Address("Rua Fernandes Tomás", "147", "4500", new CityId("Porto"))); // Fixed CityId
 
         List<PublicationTypeId> publicationTypes = List.of(
-                new PublicationTypeId("BOOK"),
-                new PublicationTypeId("MAGAZINE"),
-                new PublicationTypeId("NEWSPAPER")
-        );
+                new PublicationTypeId("pub-type-001"), // Book
+                new PublicationTypeId("pub-type-002")  // Magazine
+        ); // Fixed PubType IDs
 
         List<GenreId> genres = List.of(
-                new GenreId("BIOGRAPHY"),
-                new GenreId("POLITICS"),
-                new GenreId("ECONOMY")
-        );
+                new GenreId("GENRE5"), // Biography
+                new GenreId("GENRE10") // Non-fiction (replacing Politics/Economy)
+        ); // Fixed Genre IDs
 
-        return appraisalEntityFactory.create(
-                "Global Critics Editorial",
-                contact,
-                publicationTypes,
-                genres
-        );
+        return appraisalEntityFactory.create("Global Critics Editorial", contact, publicationTypes, genres);
     }
 }
