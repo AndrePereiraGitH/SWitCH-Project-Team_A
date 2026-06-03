@@ -114,7 +114,6 @@ public class CollectionOfPublicationsRESTController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -171,7 +170,6 @@ public class CollectionOfPublicationsRESTController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -227,7 +225,6 @@ public class CollectionOfPublicationsRESTController {
 
 
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         } catch (AccessDeniedException e) {
