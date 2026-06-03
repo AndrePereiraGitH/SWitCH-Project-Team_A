@@ -4,6 +4,31 @@ import { ArrowLeft, Save, BookOpen, Plus, X } from "lucide-react";
 import { SuccessModal } from "../components/SuccessModal";
 import { usePublications } from "../components/PublicationsContext";
 
+const DUMMY_PUBLISHERS = [
+    "Penguin Random House",
+    "HarperCollins",
+    "Simon & Schuster",
+    "Hachette Book Group",
+    "Macmillan Publishers",
+    "Oxford University Press",
+    "Cambridge University Press",
+    "Bloomsbury Publishing",
+    "Scholastic",
+    "Wiley",
+    "Other",
+];
+
+const GENRES = [
+    "Fiction", "Romance", "Mystery", "Thriller", "Fantasy", "Science Fiction",
+    "Biography", "History", "Science", "Philosophy", "Poetry", "Drama", "Other"
+];
+
+const PUBLICATION_STATUSES = [
+    { value: "CREATED", label: "Created" },
+    { value: "READING", label: "Reading" },
+    { value: "READ", label: "Read" },
+];
+
 export function AddPublication() {
     const navigate = useNavigate();
     const { addPublication } = usePublications();
@@ -21,15 +46,11 @@ export function AddPublication() {
         pages: "",
         binding: "",
         condition: "good",
+        status: "CREATED",
         description: "",
         dimensions: "",
         weight: ""
     });
-
-    const genres = [
-        "Fiction", "Romance", "Mystery", "Thriller", "Fantasy", "Science Fiction",
-        "Biography", "History", "Science", "Philosophy", "Poetry", "Drama", "Other"
-    ];
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -59,6 +80,8 @@ export function AddPublication() {
             isbn: formData.isbn,
             condition: formData.condition,
             type: formData.publicationType,
+            publisher: formData.publisher,
+            status: formData.status,
         });
 
         setShowSuccessModal(true);
@@ -161,13 +184,30 @@ export function AddPublication() {
                                         required
                                     >
                                         <option value="">Select genre</option>
-                                        {genres.map(genre => (
+                                        {GENRES.map(genre => (
                                             <option key={genre} value={genre}>{genre}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="status" className="block mb-2 font-semibold text-foreground">Publication Status *</label>
+                                    <select
+                                        id="status"
+                                        name="status"
+                                        value={formData.status}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                        required
+                                    >
+                                        {PUBLICATION_STATUSES.map(s => (
+                                            <option key={s.value} value={s.value}>{s.label}</option>
                                         ))}
                                     </select>
                                 </div>
                             </div>
                         </div>
+
 
                         {/* Basic Info */}
                         <div>
@@ -228,16 +268,21 @@ export function AddPublication() {
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div>
                                         <label htmlFor="publisher" className="block mb-2 font-semibold text-foreground">Publisher *</label>
-                                        <input
+                                        <select
                                             id="publisher"
-                                            type="text"
                                             name="publisher"
                                             value={formData.publisher}
                                             onChange={handleChange}
-                                            placeholder="Publisher name"
                                             className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                                             required
-                                        />
+                                        >
+                                            <option value="">Select publisher</option>
+                                            {DUMMY_PUBLISHERS.map(pub => (
+                                                <option key={pub} value={pub}>{pub}</option>
+                                            ))}
+                                        </select>
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                        </p>
                                     </div>
                                 </div>
 

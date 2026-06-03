@@ -38,7 +38,7 @@ function fillRequiredFields() {
         target: { value: "Fiction" },
     });
     fireEvent.change(screen.getByLabelText(/Publisher/), {
-        target: { value: "Test Publisher" },
+        target: { value: "Cambridge University Press" },
     });
     fireEvent.change(screen.getByLabelText(/Published Date/), {
         target: { value: "1960-01-01" },
@@ -192,5 +192,30 @@ describe("AddPublication", () => {
         fireEvent.click(screen.getByText("OK"));
 
         expect(mockNavigate).toHaveBeenCalledWith("/my-publications");
+    });
+
+    test("renders Publication Status field with CREATED as default", () => {
+        renderAddPublication();
+
+        expect(screen.getByText(/Publication Status \*/)).toBeInTheDocument();
+        expect(screen.getByLabelText(/Publication Status/)).toHaveValue("CREATED");
+    });
+
+    test("calls addPublication with status and publisher on valid submit", () => {
+        renderAddPublication();
+        fillRequiredFields();
+
+        fireEvent.change(screen.getByLabelText(/Publication Status/), {
+            target: { value: "READING" },
+        });
+
+        fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
+
+        expect(mockAddPublication).toHaveBeenCalledWith(
+            expect.objectContaining({
+                status: "READING",
+                publisher: "Cambridge University Press",
+            })
+        );
     });
 });
