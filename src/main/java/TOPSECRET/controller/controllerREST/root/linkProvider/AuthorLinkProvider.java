@@ -14,42 +14,26 @@ import java.util.List;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-/**
- * Provides HATEOAS links related to Author operations.
- *
- * <p>This class generates links dynamically according to the permissions
- * of the authenticated user. The available links depend on the
- * authorization rules defined in {@link AuthorAuthorizationPolicy}.</p>
- */
 @Component
 public class AuthorLinkProvider {
 
     private final AuthorAuthorizationPolicy policy;
     private final IUserRepository repository;
 
-    /**
-     * Creates a new Author link provider.
-     *
-     * @param policy     authorization policy used to validate user permissions
-     * @param repository repository used to retrieve users
-     */
     public AuthorLinkProvider(AuthorAuthorizationPolicy policy, IUserRepository repository) {
         this.policy = policy;
         this.repository = repository;
     }
 
     /**
-     * Returns the HATEOAS links available for a given user.
-     *
-     * <p>If the user has permission to add an Author,
-     * a link to the addition endpoint is added.</p>
-     *
-     * @param id identifier of the user whose permissions are evaluated
-     * @return list of links available for the user
+     * Returns HATEOAS links for a response about a specific author.
+     * Always includes a self link to that author. Conditionally includes
+     * a create-author link based on user permissions.
      */
-    public List<Link> getLinks(UserId id) {
+    public List<Link> getLinks(UserId userId) {
         List<Link> links = new ArrayList<>();
-        User user = repository.findByID(id)
+
+        User user = repository.findByID(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (policy.canCreateAuthor(user)) {
@@ -57,6 +41,15 @@ public class AuthorLinkProvider {
                     .createAuthor(null, null))
                     .withRel("create-author"));
         }
+
+        links.add(linkTo(methodOn(AuthorRESTController.class)
+                .findById(null, null))
+                .withRel("find-author"));
+
+        links.add(linkTo(methodOn(AuthorRESTController.class)
+                .findAll(null))
+                .withRel("find-all"));
+
         return links;
     }
 }

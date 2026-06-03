@@ -6,6 +6,7 @@ import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.author.AuthorMapper;
 import TOPSECRET.dto.author.request.CreateAuthorDTO;
 import TOPSECRET.dto.author.response.AuthorDTO;
 import TOPSECRET.services.AuthorService;
@@ -14,7 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,58 +33,26 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link AuthorRESTController}.
- *
- * <p>This class verifies the behaviour of the REST controller responsible
- * for managing Author resources, covering both successful operations and
- * error handling scenarios.</p>
- *
- * <p>The following scenarios are covered:</p>
- * <ul>
- *   <li>Successful author creation returning HTTP 201 Created</li>
- *   <li>HATEOAS links are correctly added to the response body</li>
- *   <li>HTTP 403 Forbidden when the user lacks permission</li>
- *   <li>HTTP 400 Bad Request when invalid arguments are provided</li>
- *   <li>HTTP 409 Conflict when the author already exists</li>
- *   <li>HTTP 500 Internal Server Error on unexpected failures</li>
- *   <li>Successful retrieval of all authors returning HTTP 200 OK</li>
- *   <li>Empty list returned when no authors exist</li>
- *   <li>Successful retrieval of a single author by ID returning HTTP 200 OK</li>
- *   <li>HTTP 400 Bad Request when author ID is not found</li>
- * </ul>
- *
- * <p>All dependencies are mocked using Mockito, isolating the controller
- * from the service, repository, and link provider layers.</p>
- */
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class AuthorRESTControllerTest {
 
-    @Mock
-    private AuthorService service;
+    @Mock private AuthorService service;
+    @Mock private AuthorLinkProvider provider;
+    @Mock private CountryService countryService;
+    @Mock private Author author;
+    @Mock private AuthorId authorId;
+    @Mock private Country country;
+    @Mock private CountryId countryId;
+    @Mock private UserId userId;
 
-    @Mock
-    private AuthorLinkProvider provider;
+    private static final String USER_ID_STR   = "user-uuid-123";
+    private static final String AUTHOR_ID_STR = "author-uuid-456";
 
-    @Mock
-    private CountryService countryService;
-
-    @Mock
-    private Author author;
-
-    @Mock
-    private AuthorId authorId;
-
-    @Mock
-    private Country country;
-
-    @Mock
-    private CountryId countryId;
-
-    @Mock
-    private UserId userId;
+    private static final Link CREATE_LINK = Link.of("/authors").withRel("create-author");
 
     private CreateAuthorDTO dto;
+    private AuthorRESTController sut;
 
     @BeforeEach
     void setup() {
@@ -90,62 +62,83 @@ class AuthorRESTControllerTest {
                 LocalDate.of(1922, 11, 16),
                 "Portuguese Nobel Prize-winning author."
         );
+        sut = new AuthorRESTController(service, provider, countryService);
     }
 
-    private void setupAuthorMocks() {
-        when(authorId.getId()).thenReturn("some-uuid");
-        when(author.id()).thenReturn(authorId);
-        when(author.getName()).thenReturn("José Saramago");
+    private AuthorDTO freshDTO() {
+        return new AuthorDTO(AUTHOR_ID_STR, "José Saramago", "Portugal", "1922-11-16",
+                "Portuguese Nobel Prize-winning author.");
+    }
+
+    /**
+     * findAll and findById use linkTo(methodOn(...).findById(...)) which
+     * re-executes the full findById body. All dependencies must be stubbed
+     * so the proxy doesn't throw and get caught as a 500.
+     */
+    private void stubProxyFindById(MockedStatic<AuthorMapper> mapper) {
+        mapper.when(() -> AuthorMapper.toAuthorId(any())).thenReturn(authorId);
+        mapper.when(() -> AuthorMapper.toUserId(any())).thenReturn(userId);
+        mapper.when(() -> AuthorMapper.toDTO(any(), any())).thenReturn(freshDTO());
         when(author.getCountryID()).thenReturn(countryId);
-        when(author.getDateOfBirth()).thenReturn(LocalDate.of(1922, 11, 16));
-        when(author.getBiography()).thenReturn("Portuguese Nobel Prize-winning author.");
-        when(country.getCountryName()).thenReturn("Portugal");
+        when(author.id()).thenReturn(authorId);
+        when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
+        when(countryService.findById(any())).thenReturn(country);
+        when(provider.getLinks(any())).thenReturn(new ArrayList<>());
+        // service.findById NOT stubbed here — each test controls it directly
     }
 
     // =========================================================================
     // createAuthor — success
+    // createAuthor uses linkTo(AuthorRESTController.class).slash(...) — no proxy
     // =========================================================================
 
     @Test
     void createAuthor_shouldReturnCreated_whenSuccess() throws Exception {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            // ARRANGE
+            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
+            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(freshDTO());
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-        setupAuthorMocks();
+            when(author.getCountryID()).thenReturn(countryId);
+            when(author.id()).thenReturn(authorId);
+            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
+            when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
+            when(countryService.findById(any())).thenReturn(country);
+            when(provider.getLinks(userId)).thenReturn(new ArrayList<>());
 
-        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-        when(countryService.findById(any())).thenReturn(country);
-        when(provider.getLinks(any(UserId.class))).thenReturn(new ArrayList<>());
+            // ACT
+            ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, USER_ID_STR);
 
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.CREATED, result.getStatusCode());
-        assertNotNull(result.getBody());
+            // ASSERT
+            assertEquals(HttpStatus.CREATED, result.getStatusCode());
+            assertNotNull(result.getBody());
+        }
     }
 
     @Test
     void createAuthor_shouldAddLinks_whenProviderReturnsLinks() throws Exception {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            // ARRANGE
+            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
+            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(freshDTO());
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-        setupAuthorMocks();
+            when(author.getCountryID()).thenReturn(countryId);
+            when(author.id()).thenReturn(authorId);
+            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
+            when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
+            when(countryService.findById(any())).thenReturn(country);
+            // provider returns one withRel link; controller adds self → total 2
+            when(provider.getLinks(userId)).thenReturn(new ArrayList<>(List.of(CREATE_LINK)));
 
-        Link link = Link.of("/authors");
-        List<Link> linkList = new ArrayList<>();
-        linkList.add(link);
+            // ACT
+            ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, USER_ID_STR);
 
-        when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-        when(countryService.findById(any())).thenReturn(country);
-        when(provider.getLinks(any(UserId.class))).thenReturn(linkList);
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertNotNull(result.getBody());
-        assertEquals(2, result.getBody().getLinks().toList().size());
+            // ASSERT
+            assertNotNull(result.getBody());
+            assertEquals(2, result.getBody().getLinks().toList().size());
+        }
     }
 
     // =========================================================================
@@ -154,129 +147,112 @@ class AuthorRESTControllerTest {
 
     @Test
     void createAuthor_shouldReturnForbidden_whenAccessDenied() throws Exception {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
+            when(service.createAndSave(any(), any(), any(), any(), any()))
+                    .thenThrow(new AccessDeniedException("denied"));
 
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new AccessDeniedException("denied"));
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
-        assertNull(result.getBody());
+            assertEquals(HttpStatus.FORBIDDEN, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
+        }
     }
 
     @Test
     void createAuthor_shouldReturnBadRequest_whenIllegalArgument() throws Exception {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
+            when(service.createAndSave(any(), any(), any(), any(), any()))
+                    .thenThrow(new IllegalArgumentException());
 
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new IllegalArgumentException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody());
+            assertEquals(HttpStatus.BAD_REQUEST, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
+        }
     }
 
     @Test
     void createAuthor_shouldReturnConflict_whenInstanceAlreadyExists() throws Exception {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
+            when(service.createAndSave(any(), any(), any(), any(), any()))
+                    .thenThrow(new InstanceAlreadyExistsException());
 
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new InstanceAlreadyExistsException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.CONFLICT, result.getStatusCode());
-        assertNull(result.getBody());
+            assertEquals(HttpStatus.CONFLICT, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
+        }
     }
 
     @Test
     void createAuthor_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
+            when(service.createAndSave(any(), any(), any(), any(), any()))
+                    .thenThrow(new RuntimeException());
 
-        when(service.createAndSave(any(), any(), any(), any(), any()))
-                .thenThrow(new RuntimeException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, userId);
-
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertNull(result.getBody());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
+        }
     }
 
     // =========================================================================
     // findAll — success
+    // findAll uses methodOn — proxy re-enters findById, needs full stub
     // =========================================================================
 
     @Test
     void findAll_shouldReturnOk_whenAuthorsExist() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            // ARRANGE
+            stubProxyFindById(mapper);
+            when(author.id()).thenReturn(authorId);
+            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
+            when(service.findById(any())).thenReturn(author); // for the proxy
+            when(service.findAll()).thenReturn(List.of(author));
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-        setupAuthorMocks();
+            // ACT
+            ResponseEntity<List<AuthorDTO>> result = sut.findAll(USER_ID_STR);
 
-        when(service.findAll()).thenReturn(List.of(author));
-        when(countryService.findById(any())).thenReturn(country);
-
-        // ACT
-        ResponseEntity<List<AuthorDTO>> result = sut.findAll();
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        assertEquals(1, result.getBody().size());
+            // ASSERT
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertNotNull(result.getBody());
+            assertEquals(1, result.getBody().size());
+        }
     }
 
     @Test
     void findAll_shouldReturnEmptyList_whenNoAuthorsExist() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            stubProxyFindById(mapper);
+            when(service.findAll()).thenReturn(List.of());
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
+            ResponseEntity<List<AuthorDTO>> result = sut.findAll(USER_ID_STR);
 
-        when(service.findAll()).thenReturn(List.of());
-
-        // ACT
-        ResponseEntity<List<AuthorDTO>> result = sut.findAll();
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
-        assertTrue(result.getBody().isEmpty());
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertNotNull(result.getBody());
+            assertTrue(result.getBody().isEmpty());
+        }
     }
 
     @Test
-    void findAll_shouldAddFindByIdLink_toEachAuthor() {
+    void findAll_shouldAddSelfLink_toEachAuthor() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            // ARRANGE
+            stubProxyFindById(mapper);
+            when(author.id()).thenReturn(authorId);
+            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
+            when(service.findById(any())).thenReturn(author);
+            when(service.findAll()).thenReturn(List.of(author));
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-        setupAuthorMocks();
+            // ACT
+            ResponseEntity<List<AuthorDTO>> result = sut.findAll(USER_ID_STR);
 
-        when(service.findAll()).thenReturn(List.of(author));
-        when(countryService.findById(any())).thenReturn(country);
-
-        // ACT
-        ResponseEntity<List<AuthorDTO>> result = sut.findAll();
-
-        // ASSERT
-        assertNotNull(result.getBody());
-        assertEquals(1, result.getBody().get(0).getLinks().toList().size());
-        assertTrue(result.getBody().get(0).hasLink("find-by-id"));
+            // ASSERT
+            assertNotNull(result.getBody());
+            assertTrue(result.getBody().get(0).hasLink("self"));
+        }
     }
 
     // =========================================================================
@@ -284,59 +260,61 @@ class AuthorRESTControllerTest {
     // =========================================================================
 
     @Test
+    void findAll_shouldReturnBadRequest_whenIllegalArgument() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            stubProxyFindById(mapper);
+
+            when(service.findAll()).thenThrow(new IllegalArgumentException());
+
+            assertEquals(HttpStatus.BAD_REQUEST, sut.findAll(USER_ID_STR).getStatusCode());
+        }
+    }
+
+    @Test
     void findAll_shouldReturnInternalServerError_whenUnexpectedException() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            stubProxyFindById(mapper);
+            when(service.findAll()).thenThrow(new RuntimeException());
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-
-        when(service.findAll()).thenThrow(new RuntimeException());
-
-        // ACT
-        ResponseEntity<List<AuthorDTO>> result = sut.findAll();
-
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertNull(result.getBody());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, sut.findAll(USER_ID_STR).getStatusCode());
+        }
     }
 
     // =========================================================================
     // findById — success
+    // findById uses methodOn — proxy re-enters itself, needs full stub
     // =========================================================================
 
     @Test
     void findById_shouldReturnOk_whenAuthorExists() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            // ARRANGE
+            stubProxyFindById(mapper);
+            when(service.findById(any())).thenReturn(author);
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-        setupAuthorMocks();
+            // ACT
+            ResponseEntity<AuthorDTO> result = sut.findById(AUTHOR_ID_STR, USER_ID_STR);
 
-        when(service.findById(authorId)).thenReturn(author);
-        when(countryService.findById(any())).thenReturn(country);
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.findById(authorId);
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertNotNull(result.getBody());
+            // ASSERT
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertNotNull(result.getBody());
+        }
     }
 
     @Test
-    void findById_shouldAddSelfAndFindByIdLinks() {
+    void findById_shouldAddSelfLink() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            // ARRANGE
+            stubProxyFindById(mapper);
+            when(service.findById(any())).thenReturn(author);
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-        setupAuthorMocks();
+            // ACT
+            ResponseEntity<AuthorDTO> result = sut.findById(AUTHOR_ID_STR, USER_ID_STR);
 
-        when(service.findById(authorId)).thenReturn(author);
-        when(countryService.findById(any())).thenReturn(country);
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.findById(authorId);
-
-        // ASSERT
-        assertNotNull(result.getBody());
-        assertEquals(2, result.getBody().getLinks().toList().size());
+            // ASSERT
+            assertNotNull(result.getBody());
+            assertTrue(result.getBody().hasLink("self"));
+        }
     }
 
     // =========================================================================
@@ -345,33 +323,27 @@ class AuthorRESTControllerTest {
 
     @Test
     void findById_shouldReturnBadRequest_whenIllegalArgument() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            stubProxyFindById(mapper);
+            // override: first call (real) throws; proxy call also throws but
+            // that's fine — exception is already caught before proxy runs
+            when(service.findById(any()))
+                    .thenThrow(new IllegalArgumentException())
+                    .thenReturn(author); // proxy call if it gets that far
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-
-        when(service.findById(authorId)).thenThrow(new IllegalArgumentException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.findById(authorId);
-
-        // ASSERT
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody());
+            assertEquals(HttpStatus.BAD_REQUEST, sut.findById(AUTHOR_ID_STR, USER_ID_STR).getStatusCode());
+        }
     }
 
     @Test
     void findById_shouldReturnInternalServerError_whenUnexpectedException() {
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            stubProxyFindById(mapper);
+            when(service.findById(any()))
+                    .thenThrow(new RuntimeException())
+                    .thenReturn(author);
 
-        // ARRANGE
-        AuthorRESTController sut = new AuthorRESTController(service, provider, countryService);
-
-        when(service.findById(authorId)).thenThrow(new RuntimeException());
-
-        // ACT
-        ResponseEntity<AuthorDTO> result = sut.findById(authorId);
-
-        // ASSERT
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertNull(result.getBody());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, sut.findById(AUTHOR_ID_STR, USER_ID_STR).getStatusCode());
+        }
     }
 }

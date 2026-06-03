@@ -27,6 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Tag(name = "Libraries", description = "Library management endpoints")
+@RequestMapping("/libraries")
 public class LibraryRESTController {
 
     private final LibraryLinkProvider libLinkProvider;
@@ -53,7 +54,7 @@ public class LibraryRESTController {
      *     <li>500 Internal Server Error – for unexpected failures</li>
      * </ul>
      */
-    @PostMapping("/libraries")
+    @PostMapping
     public ResponseEntity<ResponseLibraryDTO> createLibrary(
             @Valid @RequestBody RequestLibraryDTO requestLibraryDTO,
             @NotBlank @RequestParam String userId) {
@@ -98,7 +99,7 @@ public class LibraryRESTController {
      *     <li>500 Internal Server Error – for unexpected failures</li>
      * </ul>
      */
-    @GetMapping("/libraries")
+    @GetMapping
     public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries() {
 
         try {
@@ -135,7 +136,7 @@ public class LibraryRESTController {
      *     <li>self link</li>
      * </ul>
      *
-     * @param id the unique identifier of the library to retrieve.
+     * @param libraryId the unique identifier of the library to retrieve.
      * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO} if found,
      * or an error status:
      * <ul>
@@ -145,19 +146,19 @@ public class LibraryRESTController {
      *     <li>500 Internal Server Error – for unexpected failures</li>
      * </ul>
      */
-    @GetMapping("/libraries/{id}")
+    @GetMapping("/{libraryId}")
     public ResponseEntity<ResponseLibraryDTO> getLibrary(
-            @PathVariable String id) {
+            @PathVariable String libraryId) {
 
 
         try {
-            LibraryId libraryId = LibraryMapper.toLibraryId(id);
+            LibraryId libId = LibraryMapper.toLibraryId(libraryId);
 
-            Library library = libService.findById(libraryId);
+            Library library = libService.findById(libId);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibrary(libraryId.toString()))
+                    .getLibrary(libId.toString()))
                     .withSelfRel());
 
             return ResponseEntity.ok(result);
@@ -179,7 +180,7 @@ public class LibraryRESTController {
      *     <li>self link</li>
      * </ul>
      *
-     * @param id the unique identifier of the user whose library is to be retrieved.
+     * @param userId the unique identifier of the user whose library is to be retrieved.
      * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO} if found,
      * or an error status:
      * <ul>
@@ -189,18 +190,18 @@ public class LibraryRESTController {
      *     <li>500 Internal Server Error – for unexpected failures</li>
      * </ul>
      */
-    @GetMapping("/user/{id}/library")
-    public ResponseEntity<ResponseLibraryDTO> getLibraryByUserId(@PathVariable String id) {
+    @GetMapping("/by-user/{userId}")
+    public ResponseEntity<ResponseLibraryDTO> getLibraryByUserId(@PathVariable String userId) {
 
 
         try {
-            UserId userId = LibraryMapper.toUserId(id);
+            UserId userId2 = LibraryMapper.toUserId(userId);
 
-            Library library = libService.findByUserId(userId);
+            Library library = libService.findByUserId(userId2);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibraryByUserId(id))
+                    .getLibraryByUserId(userId))
                     .withSelfRel());
 
             return ResponseEntity.ok(result);

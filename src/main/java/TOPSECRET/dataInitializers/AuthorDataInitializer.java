@@ -60,7 +60,7 @@ public class AuthorDataInitializer implements ApplicationRunner {
         return authorFactory.create(
                 new AuthorId("AUTH1"),
                 "J. R. R. Tolkien",
-                new CountryId("UK"),
+                new CountryId("UNITED_KINGDOM"),
                 LocalDate.of(1892, 1, 3),
                 "English writer, poet, philologist, and academic, best known for The Lord of the Rings."
         );
@@ -70,7 +70,7 @@ public class AuthorDataInitializer implements ApplicationRunner {
         return authorFactory.create(
                 new AuthorId("AUTH2"),
                 "Isaac Asimov",
-                new CountryId("USA"),
+                new CountryId("UNITED_STATES"),
                 LocalDate.of(1920, 1, 2),
                 "American writer and professor of biochemistry, famous for his works of hard science fiction."
         );
@@ -80,7 +80,7 @@ public class AuthorDataInitializer implements ApplicationRunner {
         return authorFactory.create(
                 new AuthorId("AUTH3"),
                 "Ken Follett",
-                new CountryId("UK"),
+                new CountryId("UNITED_KINGDOM"),
                 LocalDate.of(1949, 6, 5),
                 "Welsh author known for thrillers and historical novels, including The Pillars of the Earth."
         );
