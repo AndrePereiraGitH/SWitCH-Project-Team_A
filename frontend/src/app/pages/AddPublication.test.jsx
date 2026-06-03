@@ -34,9 +34,7 @@ function fillRequiredFields() {
     fireEvent.change(screen.getByPlaceholderText("Author name"), {
         target: { value: "John Doe" },
     });
-    fireEvent.change(screen.getByLabelText(/Genre/), {
-        target: { value: "Fiction" },
-    });
+    fireEvent.click(screen.getByRole("checkbox", { name: "Fiction" }))
     fireEvent.change(screen.getByLabelText(/Publisher/), {
         target: { value: "Cambridge University Press" },
     });
@@ -72,7 +70,7 @@ describe("AddPublication", () => {
         renderAddPublication();
 
         expect(screen.getByText(/Publication Type \*/)).toBeInTheDocument();
-        expect(screen.getByText(/Genre \*/)).toBeInTheDocument();
+        expect(screen.getByText("Genre *")).toBeInTheDocument();
         expect(screen.getByText(/Title \*/)).toBeInTheDocument();
         expect(screen.getByText(/Author\(s\) \*/)).toBeInTheDocument();
         expect(screen.getByText(/Publisher \*/)).toBeInTheDocument();
@@ -162,7 +160,8 @@ describe("AddPublication", () => {
             expect.objectContaining({
                 title: "Test Book",
                 author: "John Doe",
-                genre: "Fiction",
+                genres: ["Fiction"],
+                publisher: "Cambridge University Press"
             })
         );
     });

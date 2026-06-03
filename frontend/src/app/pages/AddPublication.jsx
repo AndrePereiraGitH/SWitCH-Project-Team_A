@@ -37,7 +37,7 @@ export function AddPublication() {
     const [formData, setFormData] = useState({
         isbn: "",
         title: "",
-        genre: "",
+        genres: [],
         publicationType: "book",
         publisher: "",
         publishedDate: "",
@@ -76,7 +76,7 @@ export function AddPublication() {
         addPublication({
             title: formData.title,
             author: authors.filter(a => a.trim()).join(", "),
-            genre: formData.genre,
+            genres: formData.genres,
             isbn: formData.isbn,
             condition: formData.condition,
             type: formData.publicationType,
@@ -85,6 +85,15 @@ export function AddPublication() {
         });
 
         setShowSuccessModal(true);
+    };
+
+    const handleGenreToggle = (genre) => {
+        setFormData(prev => ({
+            ...prev,
+            genres: prev.genres.includes(genre)
+                ? prev.genres.filter(g => g !== genre)
+                : [...prev.genres, genre]
+        }));
     };
 
     const handleChange = (e) => {
@@ -174,20 +183,23 @@ export function AddPublication() {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="genre" className="block mb-2 font-semibold text-foreground">Genre *</label>
-                                    <select
-                                        id="genre"
-                                        name="genre"
-                                        value={formData.genre}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                                        required
-                                    >
-                                        <option value="">Select genre</option>
+                                    <label className="block mb-2 font-semibold text-foreground">Genre *</label>
+                                    <div className="grid grid-cols-2 gap-2 p-4 bg-input-background border-2 border-border rounded-xl">
                                         {GENRES.map(genre => (
-                                            <option key={genre} value={genre}>{genre}</option>
+                                            <label key={genre} className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.genres.includes(genre)}
+                                                    onChange={() => handleGenreToggle(genre)}
+                                                    className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary"
+                                                />
+                                                <span className="text-sm">{genre}</span>
+                                            </label>
                                         ))}
-                                    </select>
+                                    </div>
+                                    {formData.genres.length === 0 && (
+                                        <p className="text-xs text-destructive mt-1">Please select at least one genre</p>
+                                    )}
                                 </div>
 
                                 <div>
