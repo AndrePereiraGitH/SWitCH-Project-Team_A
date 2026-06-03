@@ -136,4 +136,11 @@ public final class BibliographicalDataMapper {
      */
     public static UserId toUserId (String id){ return new UserId(id); }
 
+    /**
+     * Creates a {@link BibliographicalDataId} instance from the given string value.
+     *
+     * @param id the user identifier as a string
+     * @return a new {@link BibliographicalDataId} instance
+     */
+    public static BibliographicalDataId toBibliographicalDataId (String id){ return new BibliographicalDataId(id); }
 }
