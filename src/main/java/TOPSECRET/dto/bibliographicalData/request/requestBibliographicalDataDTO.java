@@ -22,7 +22,7 @@ public record requestBibliographicalDataDTO(
         @NotEmpty(message = "Authors must not be blank")
         List<String> authorName,
 
-        Locale originalLanguage,
+        String originalLanguage,
 
         LocalDate publicationDate,
 

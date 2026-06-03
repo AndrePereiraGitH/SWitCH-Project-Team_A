@@ -1,18 +1,19 @@
 package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.ListingLinkProvider;
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
-import TOPSECRET.services.BibliographicalDataService;
-import TOPSECRET.services.EditionService;
-import TOPSECRET.services.ListingService;
-import TOPSECRET.services.PublicationSampleService;
+import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
+import TOPSECRET.services.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class ListingRESTController {
     private final PublicationSampleService publicationService;
     private final ListingService listingService;
     private final EditionService editionService;
+    private final AuthorService authorService;
+    private final GenreService genreService;
     private final ListingLinkProvider listingLinkProvider;
 
     /**
@@ -59,11 +62,13 @@ public class ListingRESTController {
      * @param listingLinkProvider the provider used to generate listing HATEOAS links
      */
     @Autowired
-    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, ListingLinkProvider listingLinkProvider) {
+    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider) {
         this.biblioDataService = biblioDataService;
         this.publicationService = publicationService;
         this.listingService = listingService;
         this.editionService = editionService;
+        this.authorService = authorService;
+        this.genreService = genreService;
         this.listingLinkProvider = listingLinkProvider;
 
     }
@@ -140,10 +145,10 @@ public class ListingRESTController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ListingResponseDTO> findById(@PathVariable String id, @RequestParam String userId) {
-        ListingId listingId = ListingMapper.toListingId(id);
-        UserId userIdVO = ListingMapper.toUserId(userId);
 
         try {
+            ListingId listingId = ListingMapper.toListingId(id);
+            UserId userIdVO = ListingMapper.toUserId(userId);
             Listing listing = listingService.findById(listingId);
 
             List<PublicationSample> pubSamples = listing.getItemsId().stream()
@@ -185,21 +190,30 @@ public class ListingRESTController {
      *         or {@code 500_INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("")
-    public ResponseEntity<List<ListingResponseDTO>> findAll(@RequestParam String userId) {
+    public ResponseEntity<List<ListingResponseExploreDTO>> findAll(@RequestParam String userId) {
 
         try {
             UserId userId1 = ListingMapper.toUserId(userId);
 
             List<Listing> allListings = listingService.findAll();
 
-            List<ListingResponseDTO> allDTO = new ArrayList<>();
+            List<ListingResponseExploreDTO> allDTO = new ArrayList<>();
 
             for (Listing listing : allListings) {
                 List<PublicationSample> pubSamples = getPublicationSamples(listing);
 
                 List<BibliographicalData> biblioDataList = getBibliographicalData(pubSamples);
 
-                ListingResponseDTO dto = ListingMapper.toResponseDTO(listing, biblioDataList);
+                List<String> authorNames = biblioDataList.stream()
+                        .filter(bd -> bd.getAuthors() != null)
+                        .flatMap(bd -> bd.getAuthors().stream())
+                        .map(authorService::findById)
+                        .map(Author::getName)
+                        .distinct()
+                        .toList();
+
+                Condition condition = pubSamples.isEmpty() ? null : pubSamples.get(0).getCondition();
+                ListingResponseExploreDTO dto = ListingMapper.toResponseExploreDTO(listing, biblioDataList, authorNames, condition);
 
                 List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userId1));
                 links.add(linkTo(methodOn(ListingRESTController.class).findById(listing.id().getId(), userId)).withSelfRel());

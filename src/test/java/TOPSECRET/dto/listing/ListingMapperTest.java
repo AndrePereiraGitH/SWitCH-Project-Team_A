@@ -1,10 +1,12 @@
 package TOPSECRET.dto.listing;
 
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
+import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -121,6 +123,50 @@ class ListingMapperTest {
         // Assert
         assertNotNull(result);
         assertEquals("id1", result.getId());
+    }
+
+    // ============================================================
+    // --------------  toResponseExploreDTO  -----------------------------
+    // ============================================================
+
+    @Test
+    void toResponseExploreDTO_shouldMapListingToExploreResponseDTO() {
+        // Arrange
+        Listing listing = mock(Listing.class);
+        ListingId listingId = mock(ListingId.class);
+        Price price = mock(Price.class);
+        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+        GenreId genreId = mock(GenreId.class);
+
+        when(listing.id()).thenReturn(listingId);
+        when(listingId.getId()).thenReturn("listing-1");
+
+        when(listing.getListingTitle()).thenReturn("Clean Code");
+
+        when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
+        when(genreId.getID()).thenReturn("genre-1");
+
+        when(listing.getPrice()).thenReturn(price);
+        when(price.getPrice()).thenReturn(new BigDecimal("25.00"));
+
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        List<BibliographicalData> bd = List.of(bibliographicalData);
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result =
+                ListingMapper.toResponseExploreDTO(listing, bd, authors, condition);
+
+        // Assert
+        assertEquals("listing-1", result.getId());
+        assertEquals("Clean Code", result.getListingTitle());
+        assertEquals(List.of("Robert C. Martin"), result.getAuthors());
+        assertEquals(List.of("genre-1"), result.getGenre());
+        assertEquals("25.00", result.getPrice());
+        assertEquals(Condition.GOOD.getDescription(), result.getCondition());
+        assertEquals(SaleType.DIRECT_SALE.toString(), result.getSaleType());
     }
 
     // ============================================================

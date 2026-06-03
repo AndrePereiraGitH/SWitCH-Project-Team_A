@@ -1,10 +1,13 @@
 package TOPSECRET.dto.listing;
 
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
+import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -40,6 +43,33 @@ public class ListingMapper {
                 listing.getPublicationDate()
         );
     }
+
+    /**
+     * Converts a {@link Listing} domain object and its related bibliographical data
+     * into a {@link ListingResponseExploreDTO}, used by the frontend Explore page.
+     *
+     * <p>This DTO contains the listing information required to display and filter
+     * sale items in the Explore page, including listing title, authors, genres,
+     * price, condition and sale type.</p>
+     *
+     * @param listing the listing domain object to be converted
+     * @param bd the bibliographical data associated with the listed publication
+     * @param authors the list of author names associated with the publication
+     * @param condition the condition of the listed publication sample
+     * @return a {@link ListingResponseExploreDTO} containing the data required by the Explore page
+     */
+    public static ListingResponseExploreDTO toResponseExploreDTO(Listing listing, List<BibliographicalData> bd, List<String> authors, Condition condition) {
+        return new ListingResponseExploreDTO(
+                listing.id().getId(),
+                listing.getListingTitle(),
+                authors,
+                bd.get(0).getGenres().stream().map(GenreId::getID).toList(),
+                listing.getPrice().getPrice().toString(),
+                condition.getDescription(),
+                listing.getSaleType().toString()
+        );
+    }
+
 
     /**
      * Converts a string identifier into a {@link ListingId}.
