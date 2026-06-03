@@ -1,27 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Save, BookOpen, Plus, X } from "lucide-react";
 import { SuccessModal } from "../components/SuccessModal";
 import { usePublications } from "../components/PublicationsContext";
 
-const DUMMY_PUBLISHERS = [
-    "Penguin Random House",
-    "HarperCollins",
-    "Simon & Schuster",
-    "Hachette Book Group",
-    "Macmillan Publishers",
-    "Oxford University Press",
-    "Cambridge University Press",
-    "Bloomsbury Publishing",
-    "Scholastic",
-    "Wiley",
-    "Other",
-];
-
-const GENRES = [
-    "Fiction", "Romance", "Mystery", "Thriller", "Fantasy", "Science Fiction",
-    "Biography", "History", "Science", "Philosophy", "Poetry", "Drama", "Other"
-];
 
 const PUBLICATION_STATUSES = [
     { value: "CREATED", label: "Created" },
@@ -51,7 +33,38 @@ export function AddPublication() {
         dimensions: "",
         weight: ""
     });
+    
+    const [publishers, setPublishers] = useState([]);
+    const [genres, setGenres] = useState([]);
+    const [loadingOptions, setLoadingOptions] = useState(true);
 
+
+useEffect(() => {
+    async function fetchOptions() {
+        try {
+            const [publishersRes, genresRes] = await Promise.all([
+                fetch("http://localhost:8081/publishers"),
+                fetch("http://localhost:8081/genres")
+            ]);
+
+            if (!publishersRes.ok || !genresRes.ok) {
+                throw new Error("Failed to fetch options");
+            }
+
+            const publishersData = await publishersRes.json();
+            const genresData = await genresRes.json();
+
+            setPublishers(publishersData);
+            setGenres(genresData);
+        } catch (error) {
+            console.error("Error loading publishers/genres:", error);
+        } finally {
+            setLoadingOptions(false);
+        }
+    }
+
+    fetchOptions();
+}, []);
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -185,15 +198,15 @@ export function AddPublication() {
                                 <div>
                                     <label className="block mb-2 font-semibold text-foreground">Genre *</label>
                                     <div className="grid grid-cols-2 gap-2 p-4 bg-input-background border-2 border-border rounded-xl">
-                                        {GENRES.map(genre => (
-                                            <label key={genre} className="flex items-center gap-2 cursor-pointer">
+                                        {genres.map(genre => (
+                                            <label key={genre.id} className="flex items-center gap-2 cursor-pointer">
                                                 <input
                                                     type="checkbox"
-                                                    checked={formData.genres.includes(genre)}
-                                                    onChange={() => handleGenreToggle(genre)}
+                                                    checked={formData.genres.includes(genre.id)}
+                                                    onChange={() => handleGenreToggle(genre.id)}
                                                     className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary"
                                                 />
-                                                <span className="text-sm">{genre}</span>
+                                                <span className="text-sm">{genre.genreName}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -289,8 +302,8 @@ export function AddPublication() {
                                             required
                                         >
                                             <option value="">Select publisher</option>
-                                            {DUMMY_PUBLISHERS.map(pub => (
-                                                <option key={pub} value={pub}>{pub}</option>
+                                            {publishers.map(pub => (
+                                                <option key={pub.id} value={pub.id}>{pub.name}</option>
                                             ))}
                                         </select>
                                         <p className="text-xs text-muted-foreground mt-1">
