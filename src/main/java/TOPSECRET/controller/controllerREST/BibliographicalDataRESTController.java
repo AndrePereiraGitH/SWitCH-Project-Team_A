@@ -11,6 +11,7 @@ import TOPSECRET.dto.bibliographicalData.request.requestBibliographicalDataDTO;
 import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 import TOPSECRET.services.BibliographicalDataService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
@@ -64,7 +65,7 @@ public class BibliographicalDataRESTController {
      *         {@code responseBibliographicalDataDTO} objects with HATEOAS links,
      *         or an appropriate HTTP error status if the request fails
      */
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData(
             @RequestParam String userId) {
         try {
@@ -83,7 +84,7 @@ public class BibliographicalDataRESTController {
                 BibliographicalDataId bdId = new BibliographicalDataId(dto.getBdId());
 
                 dto.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                        .getBibliographicalDataById(bdId, userId))
+                        .getBibliographicalDataById(bdId.getID(), userId))
                         .withSelfRel());
             }
 
@@ -126,7 +127,7 @@ public class BibliographicalDataRESTController {
      *
      * @throws IllegalArgumentException if the provided request data is invalid
      */
-    @PostMapping("/bibliographical-data")
+    @PostMapping("/")
     public ResponseEntity<responseBibliographicalDataDTO> createBibliographicalData(
             @RequestBody requestBibliographicalDataDTO requestBibliographicalDataDTO,
             @RequestParam String userId) {
@@ -155,16 +156,19 @@ public class BibliographicalDataRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                    .getBibliographicalDataById(bibliographicalData.id(), userId))
+                    .getBibliographicalDataById(bibliographicalData.id().getID(), userId))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
         } catch (IllegalArgumentException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (AccessDeniedException e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -181,26 +185,37 @@ public class BibliographicalDataRESTController {
      * @return a {@link ResponseEntity} containing the bibliographical data DTO
      * @throws InstanceNotFoundException if no bibliographical data exists for the given {@code id}
      */
-    @GetMapping("/bibliographical-data/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<responseBibliographicalDataDTO> getBibliographicalDataById(
-            @PathVariable BibliographicalDataId id,
-            @RequestParam String userId) throws InstanceNotFoundException {
+            @PathVariable String id,
+            @RequestParam String userId) {
 
-        UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
+        try{
+            BibliographicalDataId bdId = BibliographicalDataMapper.toBibliographicalDataId(id);
 
-        BibliographicalData bd = service.findById(id);
+            UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
 
-        responseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
-                bd,
-                service.getAuthors(bd)
-        );
+            BibliographicalData bd = service.findById(bdId);
 
-        provider.getLinksForBibliographicalData(idOfUser).forEach(result::add);
+            responseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
+                    bd,
+                    service.getAuthors(bd)
+            );
 
-        result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                .getBibliographicalDataById(id, userId))
-                .withSelfRel());
+            provider.getLinksForBibliographicalData(idOfUser).forEach(result::add);
 
-        return ResponseEntity.ok(result);
+            result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                    .getBibliographicalDataById(id, userId))
+                    .withSelfRel());
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
