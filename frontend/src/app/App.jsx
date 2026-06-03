@@ -9,6 +9,7 @@ import { ManageLists } from "./pages/ManageLists";
 import { ListDetail } from "./pages/ListDetail";
 import { SellPublication } from "./pages/SellPublication";
 import { Explore } from "./pages/Explore";
+import { ProductDetail } from "./pages/ProductDetail";
 import { CartProvider } from "./components/CartContext";
 import { ListsProvider } from "./components/ListsContext";
 import { PublicationsProvider } from "./components/PublicationsContext";
@@ -36,6 +37,7 @@ export default function App() {
                       <Route path="/lists/:listId" element={<ListDetail />} />
                       <Route path="/sell/:bookId" element={<SellPublication />} />
                       <Route path="/explore" element={<Explore />} />
+                      <Route path="/product/:productId" element={<ProductDetail />} />
                       <Route path="*" element={<Navigate to="/" replace />} />
                     </Routes>
                   </div>
