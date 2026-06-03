@@ -31,8 +31,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * REST controller responsible for managing bibliographical data resources.
  */
 @RestController
-@Tag(name = "Bibliographical Data", description = "Bibliographical Data management endpoint")
-@RequestMapping(path = "/bibliographicalData")
+@Tag(name = "Bibliographical Datas", description = "Bibliographical Data management endpoint")
+@RequestMapping(path = "/bibliographicalDatas")
 public class BibliographicalDataRESTController {
 
     private final BibliographicalDataService service;
@@ -65,7 +65,7 @@ public class BibliographicalDataRESTController {
      *         {@code responseBibliographicalDataDTO} objects with HATEOAS links,
      *         or an appropriate HTTP error status if the request fails
      */
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData(
             @RequestParam String userId) {
         try {
@@ -81,7 +81,7 @@ public class BibliographicalDataRESTController {
 
             for (responseBibliographicalDataDTO dto : responseList) {
 
-                BibliographicalDataId bdId = new BibliographicalDataId(dto.getBdId());
+                BibliographicalDataId bdId = BibliographicalDataMapper.toBibliographicalDataId(dto.getBdId());
 
                 dto.add(linkTo(methodOn(BibliographicalDataRESTController.class)
                         .getBibliographicalDataById(bdId.getID(), userId))
@@ -127,7 +127,7 @@ public class BibliographicalDataRESTController {
      *
      * @throws IllegalArgumentException if the provided request data is invalid
      */
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<responseBibliographicalDataDTO> createBibliographicalData(
             @RequestBody requestBibliographicalDataDTO requestBibliographicalDataDTO,
             @RequestParam String userId) {

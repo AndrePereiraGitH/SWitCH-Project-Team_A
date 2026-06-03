@@ -53,7 +53,9 @@ class BibliographicalDataRESTControllerTest {
         // Arrange
         String userId = "id1";
         BibliographicalData bdDouble = mock(BibliographicalData.class);
-        BibliographicalDataId bdId = new BibliographicalDataId("1234");
+
+        String bdId = "bdId1";
+        BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
 
         List<BibliographicalData> bibliographicalDataList = List.of(bdDouble);
 
@@ -62,7 +64,7 @@ class BibliographicalDataRESTControllerTest {
         List<responseBibliographicalDataDTO> responseList = List.of(dto);
 
         Map<BibliographicalDataId, List<String>> authorNamesMap =
-                Map.of(bdId, List.of("Author 1", "Author 2"));
+                Map.of(bdIdDouble, List.of("Author 1", "Author 2"));
 
         try (MockedStatic<BibliographicalDataMapper> mockedMapper =
                      mockStatic(BibliographicalDataMapper.class)) {
@@ -71,10 +73,15 @@ class BibliographicalDataRESTControllerTest {
                     BibliographicalDataMapper.toDTOs(bibliographicalDataList, authorNamesMap)
             ).thenReturn(responseList);
 
+            mockedMapper.when(() ->
+                    BibliographicalDataMapper.toBibliographicalDataId(bdId)
+            ).thenReturn(bdIdDouble);
+
             when(service.findAll()).thenReturn(bibliographicalDataList);
             when(service.buildAuthorNamesMap(bibliographicalDataList)).thenReturn(authorNamesMap);
             when(BibliographicalDataMapper.toDTOs(bibliographicalDataList, authorNamesMap)).thenReturn(responseList);
-            when(dto.getBdId()).thenReturn(bdId.getID());
+            when(dto.getBdId()).thenReturn(bdId);
+
 
             // Act
             ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData(userId);
