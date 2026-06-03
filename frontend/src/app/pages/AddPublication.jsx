@@ -12,6 +12,14 @@ const PUBLICATION_STATUSES = [
     { value: "READ", label: "Read" },
 ];
 
+const CONDITION_MAP = {
+    likeNew:    "Like New",
+    veryGood:   "Very Good",
+    good:       "Good",
+    acceptable: "Acceptable",
+    poor:       "Poor",
+};
+
 export function AddPublication() {
     const navigate = useNavigate();
     const { addPublication } = usePublications();
@@ -39,7 +47,6 @@ export function AddPublication() {
     const [genres, setGenres] = useState([]);
     const [loadingOptions, setLoadingOptions] = useState(true);
 
-console.log("API_BASE_URL:", API_BASE_URL);
 
 
 useEffect(() => {
@@ -68,39 +75,86 @@ useEffect(() => {
 
     fetchOptions();
 }, []);
-    const handleSubmit = (e) => {
-        e.preventDefault();
 
-        const pubYear = formData.publishedDate ? new Date(formData.publishedDate).getFullYear() : null;
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log("[submit] fired");
+        console.log("[submit] formData:", formData);
+        console.log("[submit] authors:", authors);
+        console.log("[submit] addPublication is:", typeof addPublication);
+
+        // ── Validation ───────────────────────────────────────────────
+        const pubYear = formData.publishedDate
+            ? new Date(formData.publishedDate).getFullYear()
+            : null;
+
         if (pubYear && pubYear > 1976 && !formData.isbn) {
             alert("ISBN/ISSN is required for publications after 1976");
             return;
         }
 
         if (formData.isbn) {
-            const cleanIsbn = formData.isbn.replace(/[-\s]/g, '');
-            const isIsbn10 = cleanIsbn.length === 10;
-            const isIsbn13 = cleanIsbn.length === 13;
-            const isIssn = cleanIsbn.length === 8;
-
-            if (!isIsbn10 && !isIsbn13 && !isIssn) {
+            const cleanIsbn = formData.isbn.replace(/[-\s]/g, "");
+            const validLengths = [8, 10, 13]; // ISSN, ISBN-10, ISBN-13
+            if (!validLengths.includes(cleanIsbn.length)) {
                 alert("ISBN must have 10 or 13 characters, or ISSN must have 8 characters");
                 return;
             }
         }
 
-        addPublication({
+        if (formData.genres.length === 0) {
+            alert("Please select at least one genre");
+            return;
+        }
+
+        if (!CONDITION_MAP[formData.condition]) {
+            alert(`Unknown condition: ${formData.condition}`);
+            return;
+        }
+
+        // ── Resolve display-only labels ──────────────────────────────
+        const selectedPublisher = publishers.find(p => p.id === formData.publisher);
+        const selectedGenres = genres.filter(g => formData.genres.includes(g.id));
+
+        // ── Build payload ────────────────────────────────────────────
+        const payload = {
+            // Backend-required (RegisterPublicationSampleDTO)
+            // TODO: replace defaults once the form has BD / edition pickers
+            bibliographicalDataId: "bd-001",
+            editionId: "edition-001",
+            condition: CONDITION_MAP[formData.condition],
+
+            // Display-only, merged into local state by the context
             title: formData.title,
             author: authors.filter(a => a.trim()).join(", "),
-            genres: formData.genres,
+            authorNames: authors.filter(a => a.trim()),
+            genre: selectedGenres.map(g => g.genreName).join(", "),
+            genreIds: formData.genres,
             isbn: formData.isbn,
-            condition: formData.condition,
+            publisher: selectedPublisher?.name ?? "",
+            publisherId: formData.publisher,
             type: formData.publicationType,
-            publisher: formData.publisher,
             status: formData.status,
-        });
+            edition: formData.edition,
+            language: formData.language,
+            pages: formData.pages ? Number(formData.pages) : null,
+            binding: formData.binding,
+            dimensions: formData.dimensions,
+            weight: formData.weight ? Number(formData.weight) : null,
+            description: formData.description,
+        };
 
-        setShowSuccessModal(true);
+        console.log("[submit] payload going to addPublication:", payload);
+
+        // ── Submit ───────────────────────────────────────────────────
+        try {
+            const result = await addPublication(payload);
+            console.log("[submit] addPublication returned:", result);
+            setShowSuccessModal(true);
+        } catch (err) {
+            console.error("[submit] addPublication threw:", err);
+            alert("Failed to create publication: " + err.message);
+        }
     };
 
     const handleGenreToggle = (genre) => {

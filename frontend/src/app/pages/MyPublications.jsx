@@ -7,16 +7,31 @@ import { usePublications } from "../components/PublicationsContext";
 
 export function MyPublications() {
     const navigate = useNavigate();
-    const { getAllPublications } = usePublications();
+    const { publications, loading, error } = usePublications();
     const [viewMode, setViewMode] = useState("grid");
     const [filterGenre, setFilterGenre] = useState("all");
     const [filterType, setFilterType] = useState("all");
     const [addToListModalOpen, setAddToListModalOpen] = useState(false);
     const [selectedBook, setSelectedBook] = useState(null);
 
-    const allPublications = getAllPublications();
-    const genres = ["all", ...Array.from(new Set(allPublications.map(b => b.genre)))];
-    const filteredBooks = allPublications.filter(b => {
+    // Be defensive: the backend may return PublicationDTO without flat title/author/genre.
+    // Normalize each publication into the shape this page expects.
+    const normalized = (publications ?? []).map(p => ({
+        id: p.id,
+        title: p.title ?? p.bibliographicalData?.title ?? "(untitled)",
+        author: p.author
+            ?? p.authorNames?.join(", ")
+            ?? p.bibliographicalData?.authors?.map(a => a.name).join(", ")
+            ?? "",
+        genre: p.genre ?? p.bibliographicalData?.genre?.genreName ?? "",
+        isbn: p.isbn ?? p.edition?.isbn ?? "",
+        type: p.type ?? p.publicationType ?? "book",
+        condition: p.condition ?? "",
+        price: p.price ?? null,
+    }));
+
+    const genres = ["all", ...Array.from(new Set(normalized.map(b => b.genre).filter(Boolean)))];
+    const filteredBooks = normalized.filter(b => {
         const matchesGenre = filterGenre === "all" || b.genre === filterGenre;
         const matchesType = filterType === "all" || b.type === filterType;
         return matchesGenre && matchesType;
@@ -53,13 +68,18 @@ export function MyPublications() {
                     </button>
                 </div>
 
-                {/* Filters */}
+                {error && (
+                    <div className="bg-destructive/10 border-2 border-destructive text-destructive rounded-2xl p-4 mb-6">
+                        Could not load publications: {error}
+                    </div>
+                )}
+
+                {/* Filters (unchanged) */}
                 <div className="bg-white border-2 border-border rounded-2xl p-6 mb-8 shadow-sm">
                     <div className="flex items-center gap-3 mb-6">
                         <Filter className="w-5 h-5 text-primary" />
                         <h3 className="font-semibold text-lg">Filters</h3>
                     </div>
-
                     <div className="flex items-center gap-6">
                         <div className="flex-1">
                             <label className="block mb-2 font-semibold text-foreground">Filter by Genre</label>
@@ -74,7 +94,6 @@ export function MyPublications() {
                                 ))}
                             </select>
                         </div>
-
                         <div className="flex-1">
                             <label className="block mb-2 font-semibold text-foreground">Filter by Type</label>
                             <select
@@ -87,7 +106,6 @@ export function MyPublications() {
                                 <option value="magazine">Magazine</option>
                             </select>
                         </div>
-
                         <div className="flex items-center gap-2 pt-7">
                             <button
                                 onClick={() => setViewMode("grid")}
@@ -111,10 +129,14 @@ export function MyPublications() {
                     </div>
                 </div>
 
-                {/* Books Display */}
-                {filteredBooks.length === 0 ? (
+                {/* Books display */}
+                {loading ? (
                     <div className="bg-white border-2 border-border rounded-2xl p-12 text-center shadow-sm">
-                        <p className="text-muted-foreground mb-4">No books found</p>
+                        <p className="text-muted-foreground">Loading publications…</p>
+                    </div>
+                ) : filteredBooks.length === 0 ? (
+                    <div className="bg-white border-2 border-border rounded-2xl p-12 text-center shadow-sm">
+                        <p className="text-muted-foreground mb-4">No publications found</p>
                         <button
                             onClick={() => navigate("/add-publication")}
                             className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
@@ -164,14 +186,16 @@ export function MyPublications() {
                                         <h3 className="font-serif text-xl mb-1 text-foreground">{book.title}</h3>
                                         <p className="text-muted-foreground mb-2">{book.author}</p>
                                         <div className="flex gap-4 text-sm flex-wrap">
-                                            <span className="text-muted-foreground">ISBN: {book.isbn}</span>
-                                            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                        {book.genre}
-                      </span>
+                                            {book.isbn && <span className="text-muted-foreground">ISBN: {book.isbn}</span>}
+                                            {book.genre && (
+                                                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                                                    {book.genre}
+                                                </span>
+                                            )}
                                             <span className="px-3 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium">
-                        {book.type === "book" ? "Book" : "Magazine"}
-                      </span>
-                                            <span className="text-muted-foreground">€{book.price}</span>
+                                                {book.type === "book" ? "Book" : "Magazine"}
+                                            </span>
+                                            {book.price != null && <span className="text-muted-foreground">€{book.price}</span>}
                                         </div>
                                     </div>
                                     <div className="flex gap-2">
@@ -195,7 +219,6 @@ export function MyPublications() {
                     </div>
                 )}
 
-                {/* Add to List Modal */}
                 {selectedBook && (
                     <AddToListModal
                         isOpen={addToListModalOpen}
@@ -207,7 +230,6 @@ export function MyPublications() {
                         publicationId={selectedBook.id}
                     />
                 )}
-
             </div>
         </div>
     );

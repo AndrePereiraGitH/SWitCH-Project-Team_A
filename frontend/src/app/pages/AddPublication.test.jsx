@@ -13,7 +13,8 @@ vi.mock("react-router-dom", async (importOriginal) => {
     };
 });
 
-const mockAddPublication = vi.fn();
+// Fixed: Added mockResolvedValue so the async submit handler can complete
+const mockAddPublication = vi.fn().mockResolvedValue({});
 
 vi.mock("../components/PublicationsContext", () => ({
     usePublications: () => ({
@@ -207,8 +208,10 @@ describe("AddPublication", () => {
             expect.objectContaining({
                 title: "Test Book",
                 author: "John Doe",
-                genres: ["GENRE1"],
-                publisher: "PUB1",
+                // Fixed: Payload uses genreIds instead of genres
+                genreIds: ["GENRE1"],
+                // Fixed: Payload uses publisherId instead of publisher
+                publisherId: "PUB1",
             })
         );
     });
@@ -219,7 +222,8 @@ describe("AddPublication", () => {
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
 
-        expect(screen.getByText("Publication registered successfully!")).toBeInTheDocument();
+        // Fixed: Use `findByText` because the modal renders asynchronously after the promise resolves
+        expect(await screen.findByText("Publication registered successfully!")).toBeInTheDocument();
     });
 
     test("navigates back when Cancel is clicked", () => {
@@ -235,7 +239,10 @@ describe("AddPublication", () => {
         await fillRequiredFields();
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
-        fireEvent.click(screen.getByText("OK"));
+
+        // Fixed: Await the OK button appearing after the state updates
+        const okButton = await screen.findByText("OK");
+        fireEvent.click(okButton);
 
         expect(mockNavigate).toHaveBeenCalledWith("/my-publications");
     });
@@ -260,7 +267,8 @@ describe("AddPublication", () => {
         expect(mockAddPublication).toHaveBeenCalledWith(
             expect.objectContaining({
                 status: "READING",
-                publisher: "PUB1",
+                // Fixed: Payload uses publisherId instead of publisher
+                publisherId: "PUB1",
             })
         );
     });
