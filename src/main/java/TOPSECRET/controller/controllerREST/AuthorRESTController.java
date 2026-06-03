@@ -60,9 +60,11 @@ public class AuthorRESTController {
             AuthorDTO result = AuthorMapper.toDTO(author, country);
 
             List<Link> links = provider.getLinks(id);
-            links.add(linkTo(AuthorRESTController.class)
-                    .slash(author.id().toString())
+
+            links.add(linkTo(methodOn(AuthorRESTController.class)
+                    .findById(author.id().toString(), userId))
                     .withSelfRel());
+
             links.forEach(result::add);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
