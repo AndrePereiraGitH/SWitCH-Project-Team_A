@@ -33,7 +33,7 @@ public class ListingMapper {
                 listing.getListingTitle(),
                 bibliographicalDatas.stream().map(BibliographicalData::getTitle).toList(),
                 listing.getSaleType().toString(),
-                listing.getPrice().toString(),
+                listing.getPrice().getPrice().toString(),
                 listing.getShortDescription(),
                 listing.getSellerId().getUserId(),
                 listing.getPictures().stream().map(Picture::getPicture).toList(),
