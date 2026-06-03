@@ -9,4 +9,7 @@ public class LibraryAuthorizationPolicy {
     public boolean canCreateLibrary(User user) {
         return user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
+    public boolean canGetAllLibrary(User user) {
+        return user.getUserRoles().contains(UserRole.ADMIN);
+    }
 }

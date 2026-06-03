@@ -244,4 +244,56 @@ class PublisherMapperTest {
                 () -> PublisherMapper.toContact(pubDTO)
         );
     }
+
+    @Test
+    void toPublisherId_shouldReturnPublisherID_whenValidString() {
+
+        // ARRANGE
+        String raw = "pub-123";
+
+        // ACT
+        PublisherID result = PublisherMapper.toPublisherId(raw);
+
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(raw, result.getPublisherId());
+    }
+
+    @Test
+    void toPublisherId_shouldThrow_whenNull() {
+
+        assertThrows(Exception.class, () -> PublisherMapper.toPublisherId(null));
+    }
+
+    @Test
+    void toPublisherId_shouldThrow_whenBlank() {
+
+        assertThrows(Exception.class, () -> PublisherMapper.toPublisherId("  "));
+    }
+
+    @Test
+    void toUserId_shouldReturnUserId_whenValidString() {
+
+        // ARRANGE
+        String raw = "user-456";
+
+        // ACT
+        UserId result = PublisherMapper.toUserId(raw);
+
+        // ASSERT
+        assertNotNull(result);
+        assertEquals(raw, result.getUserId());
+    }
+
+    @Test
+    void toUserId_shouldThrow_whenNull() {
+
+        assertThrows(Exception.class, () -> PublisherMapper.toUserId(null));
+    }
+
+    @Test
+    void toUserId_shouldThrow_whenBlank() {
+
+        assertThrows(Exception.class, () -> PublisherMapper.toUserId("  "));
+    }
 }

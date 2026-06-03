@@ -42,17 +42,29 @@ public class LibraryLinkProvider {
     public List<Link> getLinksForLibraries(UserId userId) {
         List<Link> links = new ArrayList<>();
 
-        links.add(linkTo(methodOn(LibraryRESTController.class)
-                .getAllLibraries())
-                .withRel("get-all-libraries"));
+        userRepo.findByID(userId).ifPresent(userGetAll -> {
+            if (authPolicy.canGetAllLibrary(userGetAll)) {
 
-        userRepo.findByID(userId).ifPresent(user -> {
-            if (authPolicy.canCreateLibrary(user)) {
                 links.add(linkTo(methodOn(LibraryRESTController.class)
-                        .createLibrary(null, null))
-                        .withRel("create-library"));
+                        .getAllLibraries())
+                        .withRel("get-all-libraries"));
             }
         });
+
+        userRepo.findByID(userId).filter(authPolicy::canCreateLibrary).ifPresent(user ->
+                links.add(linkTo(methodOn(LibraryRESTController.class)
+                        .createLibrary(null, null))
+                        .withRel("create-library"))
+
+        );
+
+        links.add(linkTo(methodOn(LibraryRESTController.class)
+                .getLibrary(null))
+                .withRel("get-library"));
+
+        links.add(linkTo(methodOn(LibraryRESTController.class)
+                .getLibraryByUserId(null))
+                .withRel("get-library-by-user"));
 
         return links;
     }
