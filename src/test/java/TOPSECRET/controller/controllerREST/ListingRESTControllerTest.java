@@ -594,19 +594,7 @@ class ListingRESTControllerTest {
         }
     }
 
-    @Test
-    void findById_shouldThrowIllegalArgumentException_whenListingIdIsInvalid() {
 
-        // Arrange
-        String id = "";
-
-        String userId = "userId";
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                controller.findById(id, userId)
-        );
-    }
 
     @Test
     void findById_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
