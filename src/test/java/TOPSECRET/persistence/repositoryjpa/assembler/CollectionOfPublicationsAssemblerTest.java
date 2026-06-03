@@ -9,7 +9,7 @@ import TOPSECRET.persistence.repositoryjpa.datamodel.CollectionOfPublicationsDM;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import java.util.List;
 
@@ -84,7 +84,7 @@ class CollectionOfPublicationsAssemblerTest {
     @Test
     void toDomainShouldReturnAValidDomainObject() {
         // Arrange
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         String collectionName = "Fantasy Collection";
         boolean isPrivate = false;
 
@@ -135,7 +135,7 @@ class CollectionOfPublicationsAssemblerTest {
         // Arrange
         String collectionName = "Fantasy Collection";
         boolean isPrivate = false;
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         CollectionOfPublicationsDM collectionDM =
                 new CollectionOfPublicationsDM(
@@ -174,7 +174,7 @@ class CollectionOfPublicationsAssemblerTest {
     void toDomainListShouldReturnCorrectSize() {
 
         // Arrange
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         String collectionName = "Fantasy Collection";
         boolean isPrivate = false;
 

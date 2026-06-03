@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -265,7 +265,7 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
                 mock(CollectionOfPublicationsId.class);
         UserId userIdDouble = mock(UserId.class);
 
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
         when(collectionService.makeCollectionPublicUntil(
@@ -290,7 +290,7 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
                 mock(CollectionOfPublicationsId.class);
         UserId userIdDouble = mock(UserId.class);
 
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
         when(collectionService.makeCollectionPublicUntil(
@@ -309,7 +309,7 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
         // Arrange
         US019CollectionOfPublicationsDTO selectedCollectionDto = null;
         UserId userIdDouble = mock(UserId.class);
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         // Act
         NullPointerException exception = assertThrows(
@@ -348,7 +348,7 @@ class ToPubliclyShareCollectionOfPublicationsControllerTest {
                 mock(CollectionOfPublicationsId.class);
         UserId userIdDouble = mock(UserId.class);
 
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         when(selectedCollectionDto.id()).thenReturn(selectedCollectionId);
         when(collectionService.makeCollectionPublicUntil(

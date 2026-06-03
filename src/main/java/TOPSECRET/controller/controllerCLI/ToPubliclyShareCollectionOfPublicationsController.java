@@ -9,7 +9,8 @@ import TOPSECRET.services.CollectionOfPublicationsService;
 
 import javax.management.InstanceNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -122,7 +123,7 @@ public class ToPubliclyShareCollectionOfPublicationsController {
      *                                   the collection
      * @throws InstanceNotFoundException if no collection is found with the given identifier
      */
-    public boolean shareCollectionUntil(US019CollectionOfPublicationsDTO selectedCollectionDTO, LocalDateTime publicUntil,
+    public boolean shareCollectionUntil(US019CollectionOfPublicationsDTO selectedCollectionDTO, LocalDate publicUntil,
     UserId userId) throws InstanceNotFoundException, AccessDeniedException {
 
         Objects.requireNonNull(selectedCollectionDTO, "selected collection Id cannot be null");

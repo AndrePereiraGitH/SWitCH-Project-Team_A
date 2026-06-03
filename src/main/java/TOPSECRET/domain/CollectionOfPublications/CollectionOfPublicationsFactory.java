@@ -5,7 +5,7 @@ import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * Factory for creating {@link CollectionOfPublications} domain objects.
@@ -81,7 +81,7 @@ public class CollectionOfPublicationsFactory {
      GenreId genreId,
      UserId userId,
      boolean isPrivate,
-     LocalDateTime publicUntil) {
+     LocalDate publicUntil) {
 
         return new CollectionOfPublications(
                 collectionOfPublicationsId, name, genreId, userId, isPrivate, publicUntil);
