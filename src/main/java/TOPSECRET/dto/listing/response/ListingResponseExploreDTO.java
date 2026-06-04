@@ -20,4 +20,5 @@ public class ListingResponseExploreDTO extends RepresentationModel<ListingRespon
     private String price;
     private String condition;
     private String saleType;
+    private String picture;
 }
