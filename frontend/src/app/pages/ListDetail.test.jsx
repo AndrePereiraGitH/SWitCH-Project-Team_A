@@ -134,6 +134,64 @@ describe("ListDetail", () => {
         });
     });
 
+    // ── Populated list & Detail Modal ──
+    describe("Populated List & Detail Modal", () => {
+        beforeEach(() => {
+            mockUsePublications.mockReturnValue({
+                publications: [
+                    {
+                        id: "pub-2",
+                        title: "Book in List",
+                        author: "Some Author",
+                        collectionId: "list-1",
+                        libraryId: "lib-1",
+                        condition: "New",
+                        language: "en",
+                        isbn: "1234567890",
+                        type: "book",
+                        price: 15.99
+                    }
+                ],
+                refresh: vi.fn()
+            });
+        });
+
+        test("renders publications inside the list", () => {
+            renderWithRealList();
+            expect(screen.getByTestId("book-card")).toBeInTheDocument();
+            expect(screen.getByText("Book in List")).toBeInTheDocument();
+            expect(screen.getByText("1 publication")).toBeInTheDocument();
+        });
+
+        test("clicking a book card opens the detail modal", () => {
+            renderWithRealList();
+            fireEvent.click(screen.getByTestId("book-card"));
+
+            // Verify detail modal contents
+            expect(screen.getByRole("heading", { name: "Book in List" })).toBeInTheDocument();
+            expect(screen.getByText("Some Author")).toBeInTheDocument();
+            expect(screen.getByText("Condition")).toBeInTheDocument();
+            expect(screen.getByText("New")).toBeInTheDocument();
+            expect(screen.getByText("Language")).toBeInTheDocument();
+            expect(screen.getByText("English")).toBeInTheDocument();
+            expect(screen.getByText("Price")).toBeInTheDocument();
+            expect(screen.getByText("€15.99")).toBeInTheDocument();
+        });
+
+        test("closes the detail modal when clicking the Close button", () => {
+            renderWithRealList();
+            fireEvent.click(screen.getByTestId("book-card"));
+
+            // Modal is open
+            expect(screen.getByRole("heading", { name: "Book in List" })).toBeInTheDocument();
+
+            fireEvent.click(screen.getByRole("button", { name: "Close" }));
+
+            // Modal is closed
+            expect(screen.queryByRole("heading", { name: "Book in List" })).not.toBeInTheDocument();
+        });
+    });
+
     // ── Manage Publications Modal ──
     describe("Manage Publications Modal", () => {
         test("clicking Add Publication opens the modal", () => {
@@ -147,7 +205,7 @@ describe("ListDetail", () => {
         test("modal shows empty message when there are no available publications in library", () => {
             renderWithRealList();
             fireEvent.click(screen.getByRole("button", { name: "Add Publication" }));
-            expect(screen.getByText("All your publications are already in this list.")).toBeInTheDocument();
+            expect(screen.getByText("No publications available. Publications must be in your library and not already in a list.")).toBeInTheDocument();
         });
 
         test("modal shows available publications to add", () => {

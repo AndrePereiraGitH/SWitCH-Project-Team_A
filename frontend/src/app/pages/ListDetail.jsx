@@ -1,9 +1,20 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, X } from "lucide-react";
 import { useLists } from "../components/ListsContext";
 import { usePublications } from "../components/PublicationsContext";
 import { BookCard } from "../components/BookCard";
+
+const LANGUAGE_DISPLAY = {
+    en: "English", pt: "Portuguese", es: "Spanish",
+    fr: "French", de: "German", it: "Italian",
+};
+
+const getType = (type) => {
+    if (type === "book") return "Book";
+    if (type === "magazine") return "Magazine";
+    return "Book";
+};
 
 export function ListDetail() {
     const navigate = useNavigate();
@@ -11,6 +22,7 @@ export function ListDetail() {
     const { getListById, addPublicationToList } = useLists();
     const { publications, refresh } = usePublications();
     const [showManageModal, setShowManageModal] = useState(false);
+    const [detailPub, setDetailPub] = useState(null);
 
     const list = listId ? getListById(listId) : undefined;
 
@@ -24,16 +36,13 @@ export function ListDetail() {
         );
     }
 
-    // Publications in this collection — matched by collectionId on the publication
     const publicationsInList = publications.filter(p => p.collectionId === list.collectionId);
-    const notInList = publications.filter(
-        p => p.collectionId == null && p.libraryId != null
-    );
+    const notInList = publications.filter(p => p.collectionId == null && p.libraryId != null);
 
     const handleAddPublication = async (publicationId) => {
         try {
             await addPublicationToList(list.collectionId, publicationId);
-            await refresh(); // re-fetch so collectionId is updated on the publication
+            await refresh();
         } catch (e) {
             alert("Failed to add: " + e.message);
         }
@@ -52,9 +61,7 @@ export function ListDetail() {
 
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
-                        <h1 className="font-serif text-4xl mb-2 text-foreground">
-                            {list.collectionName}
-                        </h1>
+                        <h1 className="font-serif text-4xl mb-2 text-foreground">{list.collectionName}</h1>
                         <div className="flex items-center gap-4 text-muted-foreground">
                             <span>
                                 {publicationsInList.length}{" "}
@@ -88,18 +95,20 @@ export function ListDetail() {
                 ) : (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {publicationsInList.map(pub => (
-                            <BookCard
-                                key={pub.id}
-                                title={pub.title}
-                                author={pub.author}
-                                genre={pub.genre}
-                                condition={pub.condition}
-                                price={pub.price}
-                            />
+                            <div key={pub.id} onClick={() => setDetailPub(pub)} className="cursor-pointer">
+                                <BookCard
+                                    title={pub.title}
+                                    author={pub.author}
+                                    genre={pub.genre}
+                                    condition={pub.condition}
+                                    price={pub.price}
+                                />
+                            </div>
                         ))}
                     </div>
                 )}
 
+                {/* Add Publications Modal */}
                 {showManageModal && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                         <div className="bg-white rounded-2xl max-w-4xl w-full p-8 shadow-2xl max-h-[80vh] overflow-y-auto">
@@ -107,10 +116,9 @@ export function ListDetail() {
                             <p className="text-muted-foreground mb-6">
                                 Select publications from your library to add to this list
                             </p>
-
                             {notInList.length === 0 ? (
                                 <p className="text-center text-muted-foreground py-8">
-                                    All your publications are already in this list.
+                                    No publications available. Publications must be in your library and not already in a list.
                                 </p>
                             ) : (
                                 <div className="space-y-3 mb-6">
@@ -136,12 +144,48 @@ export function ListDetail() {
                                     ))}
                                 </div>
                             )}
-
                             <button
                                 onClick={() => setShowManageModal(false)}
                                 className="w-full px-6 py-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors font-semibold"
                             >
                                 Done
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Publication Detail Modal */}
+                {detailPub && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl">
+                            <div className="flex justify-between items-start mb-6">
+                                <h2 className="font-serif text-2xl text-foreground">{detailPub.title}</h2>
+                                <button onClick={() => setDetailPub(null)} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <div className="space-y-1 text-sm">
+                                {[
+                                    ["Author", detailPub.authors?.join(", ") ?? detailPub.author],
+                                    ["Genre", detailPub.genres?.join(", ") ?? detailPub.genre],
+                                    ["Condition", detailPub.condition],
+                                    ["Language", LANGUAGE_DISPLAY[detailPub.language] ?? detailPub.language],
+                                    ["ISBN", detailPub.isbn],
+                                    ["Type", getType(detailPub.type)],
+                                    ["List", list.collectionName],
+                                    detailPub.price != null && ["Price", `€${detailPub.price}`],
+                                ].filter(Boolean).map(([label, value]) => value ? (
+                                    <div key={label} className="flex justify-between py-2 border-b border-border">
+                                        <span className="text-muted-foreground font-medium">{label}</span>
+                                        <span className="text-foreground">{value}</span>
+                                    </div>
+                                ) : null)}
+                            </div>
+                            <button
+                                onClick={() => setDetailPub(null)}
+                                className="w-full mt-6 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
+                            >
+                                Close
                             </button>
                         </div>
                     </div>

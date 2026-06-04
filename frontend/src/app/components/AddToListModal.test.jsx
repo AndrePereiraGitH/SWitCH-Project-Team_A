@@ -1,22 +1,30 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
-import { vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { vi, describe, beforeEach, test, expect } from "vitest";
 import { AddToListModal } from "./AddToListModal";
 
-const mockAddPublicationToList = vi.fn();
-const mockIsPublicationInList = vi.fn();
+// ── Mocks ─────────────────────────────────────────────────────────────
 
-let mockListsData = [
-    { id: "1", name: "Favourites", publicationIds: [] },
-    { id: "2", name: "To Read", publicationIds: ["pub-1"] },
-];
+const mockAddPublicationToList = vi.fn();
+const mockRefresh = vi.fn();
+
+let mockListsData = [];
+let mockPublicationsData = [];
 
 vi.mock("./ListsContext", () => ({
     useLists: () => ({
         lists: mockListsData,
         addPublicationToList: mockAddPublicationToList,
-        isPublicationInList: mockIsPublicationInList,
     }),
 }));
+
+vi.mock("./PublicationsContext", () => ({
+    usePublications: () => ({
+        publications: mockPublicationsData,
+        refresh: mockRefresh,
+    }),
+}));
+
+// ── Setup ─────────────────────────────────────────────────────────────
 
 const defaultProps = {
     isOpen: true,
@@ -32,10 +40,14 @@ function renderModal(props = {}) {
 describe("AddToListModal", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockIsPublicationInList.mockReturnValue(false);
+
         mockListsData = [
-            { id: "1", name: "Favourites", publicationIds: [] },
-            { id: "2", name: "To Read", publicationIds: ["pub-1"] },
+            { collectionId: "1", collectionName: "Favourites" },
+            { collectionId: "2", collectionName: "To Read" },
+        ];
+
+        mockPublicationsData = [
+            { id: "pub-1", title: "The Lord of the Rings", libraryId: "lib-1", collectionId: null }
         ];
     });
 
@@ -50,7 +62,29 @@ describe("AddToListModal", () => {
         expect(screen.getByText("The Lord of the Rings")).toBeInTheDocument();
     });
 
-    test("renders all lists", () => {
+    test("shows warning if publication is not in the library", () => {
+        // Set libraryId to null to simulate a book not in the library
+        mockPublicationsData = [{ id: "pub-1", libraryId: null, collectionId: null }];
+        renderModal();
+
+        expect(
+            screen.getByText("Add this publication to your library first before adding it to a list.")
+        ).toBeInTheDocument();
+        // Ensure lists are NOT rendered
+        expect(screen.queryByText("Favourites")).not.toBeInTheDocument();
+    });
+
+    test("shows warning if publication is already in a list", () => {
+        // Set collectionId to simulate a book already in a list
+        mockPublicationsData = [{ id: "pub-1", libraryId: "lib-1", collectionId: "1" }];
+        renderModal();
+
+        expect(
+            screen.getByText("This publication is already in a list. Remove it from there first.")
+        ).toBeInTheDocument();
+    });
+
+    test("renders all lists if available to add", () => {
         renderModal();
         expect(screen.getByText("Favourites")).toBeInTheDocument();
         expect(screen.getByText("To Read")).toBeInTheDocument();
@@ -62,81 +96,65 @@ describe("AddToListModal", () => {
         expect(screen.getByText("No lists created yet.")).toBeInTheDocument();
     });
 
-    test("shows checkbox as checked and disabled when publication is already in list", () => {
-        mockIsPublicationInList.mockImplementation((listId) => listId === "1");
+    test("does not call addPublicationToList if already in a list and another list is clicked", () => {
+        mockPublicationsData = [{ id: "pub-1", libraryId: "lib-1", collectionId: "1" }];
         renderModal();
 
-        const checkboxes = screen.getAllByRole("checkbox");
-        expect(checkboxes[0]).toBeChecked();
-        expect(checkboxes[0]).toBeDisabled();
-    });
-
-    test("shows checkbox as unchecked and enabled when publication is not in list", () => {
-        mockIsPublicationInList.mockReturnValue(false);
-        renderModal();
-
-        const checkboxes = screen.getAllByRole("checkbox");
-        expect(checkboxes[0]).not.toBeChecked();
-        expect(checkboxes[0]).not.toBeDisabled();
-    });
-
-    test("calls addPublicationToList when checking an unchecked list", () => {
-        mockIsPublicationInList.mockReturnValue(false);
-        renderModal();
-
-        const checkboxes = screen.getAllByRole("checkbox");
-        fireEvent.click(checkboxes[0]);
-
-        expect(mockAddPublicationToList).toHaveBeenCalledWith("1", "pub-1");
-    });
-
-    test("does not call addPublicationToList when publication is already in list", () => {
-        mockIsPublicationInList.mockReturnValue(true);
-        renderModal();
-
-        const checkboxes = screen.getAllByRole("checkbox");
-        fireEvent.click(checkboxes[0]);
+        // Clicking "To Read" (collection 2) should be disabled
+        fireEvent.click(screen.getByText("To Read"));
 
         expect(mockAddPublicationToList).not.toHaveBeenCalled();
     });
 
-    test("shows success state after clicking Done", () => {
+    test("calls addPublicationToList and shows success state when clicking a list", async () => {
         renderModal();
 
-        fireEvent.click(screen.getByText("Done"));
+        // Click "Favourites" list
+        fireEvent.click(screen.getByText("Favourites"));
 
-        expect(screen.getByText("Lists Updated!")).toBeInTheDocument();
-    });
+        // API calls should be made
+        expect(mockAddPublicationToList).toHaveBeenCalledWith("1", "pub-1");
 
-    test("calls onClose after success timeout", async () => {
-        vi.useFakeTimers();
-        const onClose = vi.fn();
-        renderModal({ onClose });
-
-        fireEvent.click(screen.getByText("Done"));
-        expect(screen.getByText("Lists Updated!")).toBeInTheDocument();
-
-        await act(async () => {
-            vi.advanceTimersByTime(1500);
+        await waitFor(() => {
+            expect(mockRefresh).toHaveBeenCalled();
         });
 
-        expect(onClose).toHaveBeenCalledTimes(1);
-        vi.useRealTimers();
+        // Success UI should appear
+        expect(await screen.findByText("Added to List!")).toBeInTheDocument();
     });
 
-    test("calls onClose when clicking the Close button", () => {
-        const onClose = vi.fn();
-        renderModal({ onClose });
+    test("calls onClose automatically after success timeout", async () => {
+        const onCloseMock = vi.fn();
+        renderModal({ onClose: onCloseMock });
 
-        fireEvent.click(screen.getByRole("button", { name: "Close" }));
+        fireEvent.click(screen.getByText("Favourites"));
 
-        expect(onClose).toHaveBeenCalledTimes(1);
+        // Wait for success screen to render
+        expect(await screen.findByText("Added to List!")).toBeInTheDocument();
+
+        // Wait for onClose to be called automatically
+        // We set timeout to 2500ms to safely cover the component's internal 1500ms delay
+        await waitFor(() => {
+            expect(onCloseMock).toHaveBeenCalledTimes(1);
+        }, { timeout: 2500 });
     });
 
-    test("displays correct item count for each list", () => {
-        renderModal();
+    test("calls onClose when clicking the Cancel button", () => {
+        const onCloseMock = vi.fn();
+        renderModal({ onClose: onCloseMock });
 
-        expect(screen.getByText("0 items")).toBeInTheDocument();
-        expect(screen.getByText("1 item")).toBeInTheDocument();
+        fireEvent.click(screen.getByText("Cancel"));
+
+        expect(onCloseMock).toHaveBeenCalledTimes(1);
+    });
+
+    test("calls onClose when clicking the X icon", () => {
+        const onCloseMock = vi.fn();
+        renderModal({ onClose: onCloseMock });
+
+        // Target the button containing the X icon
+        fireEvent.click(screen.getByLabelText("Close"));
+
+        expect(onCloseMock).toHaveBeenCalledTimes(1);
     });
 });
