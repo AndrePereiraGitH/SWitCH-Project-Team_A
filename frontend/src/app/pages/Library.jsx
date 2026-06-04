@@ -1,47 +1,40 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Filter, Grid3x3, List as ListIcon, Library as LibraryIcon, Settings } from "lucide-react";
+import { ArrowLeft, Plus, Filter, Grid3x3, List as ListIcon, Library as LibraryIcon } from "lucide-react";
 import { BookCard } from "../components/BookCard";
 import { usePublications } from "../components/PublicationsContext";
 import { useLibrary } from "../components/LibraryContext";
 
 export function Library() {
   const navigate = useNavigate();
-  const { getAllPublications } = usePublications();
-  const { library, createLibrary, addPublicationToLibrary } = useLibrary();
+  const { publications, addToLibrary } = usePublications();
+  const { library, loading, error } = useLibrary();
 
   const [viewMode, setViewMode] = useState("grid");
   const [filterGenre, setFilterGenre] = useState("all");
   const [filterType, setFilterType] = useState("all");
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showManageModal, setShowManageModal] = useState(false);
-  const [libraryName, setLibraryName] = useState("");
 
-  const allPublications = getAllPublications();
-  const libraryPublications = library
-      ? allPublications.filter(pub => library.publicationIds.includes(pub.id))
-      : [];
+  // Publications in library = those with a libraryId set
+  const libraryPublications = publications.filter(p => p.libraryId != null);
+  const notInLibrary = publications.filter(p => p.libraryId == null);
 
-  const genres = ["all", ...Array.from(new Set(libraryPublications.map(b => b.genre)))];
+  const genres = ["all", ...Array.from(new Set(libraryPublications.map(b => b.genre).filter(Boolean)))];
   const filteredBooks = libraryPublications.filter(b => {
     const matchesGenre = filterGenre === "all" || b.genre === filterGenre;
     const matchesType = filterType === "all" || b.type === filterType;
     return matchesGenre && matchesType;
   });
 
-  const handleCreateLibrary = () => {
-    if (libraryName.trim()) {
-      createLibrary(libraryName.trim());
-      setLibraryName("");
-      setShowCreateModal(false);
-    }
-  };
+  if (loading) {
+    return (
+        <div className="min-h-screen bg-background pt-24 pb-12 flex items-center justify-center">
+          <p className="text-muted-foreground">Loading library…</p>
+        </div>
+    );
+  }
 
-  const handleAddPublication = (publicationId) => {
-    addPublicationToLibrary(publicationId);
-  };
-
-  // No library created yet
+  // No library exists for this user
   if (!library) {
     return (
         <div className="min-h-screen bg-background pt-24 pb-12">
@@ -53,73 +46,24 @@ export function Library() {
               <ArrowLeft className="w-4 h-4" />
               My Dashboard
             </button>
-
             <div className="max-w-2xl mx-auto">
               <div className="bg-white border-2 border-border rounded-2xl p-12 text-center shadow-lg">
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                   <LibraryIcon className="w-10 h-10 text-primary" />
                 </div>
-                <h1 className="font-serif text-3xl mb-3 text-foreground">
-                  No Library Created
-                </h1>
+                <h1 className="font-serif text-3xl mb-3 text-foreground">No Library Found</h1>
                 <p className="text-muted-foreground mb-8 text-lg">
-                  Create your personal library to organize your favorite publications
+                  You don't have a library yet. Add a publication to your library from My Publications.
                 </p>
                 <button
-                    onClick={() => setShowCreateModal(true)}
+                    onClick={() => navigate("/my-publications")}
                     className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold shadow-lg text-lg"
                 >
-                  <Plus className="w-5 h-5" />
-                  Create Library
+                  Go to My Publications
                 </button>
               </div>
             </div>
           </div>
-
-          {/* Create Library Modal */}
-          {showCreateModal && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl max-w-md w-full p-8 shadow-2xl">
-                  <h2 className="font-serif text-2xl mb-4 text-foreground">
-                    Create New Library
-                  </h2>
-                  <p className="text-muted-foreground mb-6">
-                    Choose a name for your personal library
-                  </p>
-                  <div className="mb-6">
-                    <label className="block mb-2 font-semibold text-foreground">
-                      Library Name *
-                    </label>
-                    <input
-                        type="text"
-                        value={libraryName}
-                        onChange={(e) => setLibraryName(e.target.value)}
-                        placeholder="Ex: My Collection"
-                        className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
-                        autoFocus
-                    />
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                        onClick={handleCreateLibrary}
-                        disabled={!libraryName.trim()}
-                        className="flex-1 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Create Library
-                    </button>
-                    <button
-                        onClick={() => {
-                          setShowCreateModal(false);
-                          setLibraryName("");
-                        }}
-                        className="flex-1 px-6 py-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors font-semibold"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-          )}
         </div>
     );
   }
@@ -141,21 +85,27 @@ export function Library() {
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <LibraryIcon className="w-8 h-8 text-primary" />
-                <h1 className="font-serif text-4xl text-foreground">{library.name}</h1>
+                <h1 className="font-serif text-4xl text-foreground">{library.libraryName}</h1>
               </div>
               <p className="text-muted-foreground">
-                {library.publicationIds.length}{" "}
-                {library.publicationIds.length === 1 ? "publication" : "publications"}
+                {libraryPublications.length}{" "}
+                {libraryPublications.length === 1 ? "publication" : "publications"}
               </p>
             </div>
             <button
                 onClick={() => setShowManageModal(true)}
                 className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold shadow-lg"
             >
-              <Settings className="w-5 h-5" />
-              Manage Publications
+              <Plus className="w-5 h-5" />
+              Add Publications
             </button>
           </div>
+
+          {error && (
+              <div className="bg-destructive/10 border-2 border-destructive text-destructive rounded-2xl p-4 mb-6">
+                {error}
+              </div>
+          )}
 
           {/* Filters */}
           {libraryPublications.length > 0 && (
@@ -166,9 +116,7 @@ export function Library() {
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="flex-1">
-                    <label className="block mb-2 font-semibold text-foreground">
-                      Filter by Genre
-                    </label>
+                    <label className="block mb-2 font-semibold text-foreground">Filter by Genre</label>
                     <select
                         value={filterGenre}
                         onChange={(e) => setFilterGenre(e.target.value)}
@@ -181,9 +129,7 @@ export function Library() {
                     </select>
                   </div>
                   <div className="flex-1">
-                    <label className="block mb-2 font-semibold text-foreground">
-                      Filter by Type
-                    </label>
+                    <label className="block mb-2 font-semibold text-foreground">Filter by Type</label>
                     <select
                         value={filterType}
                         onChange={(e) => setFilterType(e.target.value)}
@@ -198,22 +144,16 @@ export function Library() {
                     <button
                         onClick={() => setViewMode("grid")}
                         className={`p-2 rounded-lg transition-colors ${
-                            viewMode === "grid"
-                                ? "text-primary"
-                                : "text-muted-foreground hover:text-primary hover:bg-gray-100"
+                            viewMode === "grid" ? "text-primary" : "text-muted-foreground hover:text-primary hover:bg-gray-100"
                         }`}
-                        title="Grid view"
                     >
                       <Grid3x3 className="w-5 h-5" />
                     </button>
                     <button
                         onClick={() => setViewMode("list")}
                         className={`p-2 rounded-lg transition-colors ${
-                            viewMode === "list"
-                                ? "text-primary"
-                                : "text-muted-foreground hover:text-primary hover:bg-gray-100"
+                            viewMode === "list" ? "text-primary" : "text-muted-foreground hover:text-primary hover:bg-gray-100"
                         }`}
-                        title="List view"
                     >
                       <ListIcon className="w-5 h-5" />
                     </button>
@@ -228,8 +168,8 @@ export function Library() {
                 <LibraryIcon className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
                 <p className="text-muted-foreground mb-4">
                   {libraryPublications.length === 0
-                      ? "No publications in library"
-                      : "No publications found with these filters"}
+                      ? "No publications in library yet"
+                      : "No publications match these filters"}
                 </p>
                 {libraryPublications.length === 0 && (
                     <button
@@ -266,13 +206,15 @@ export function Library() {
                           <h3 className="font-serif text-xl mb-1 text-foreground">{book.title}</h3>
                           <p className="text-muted-foreground mb-2">{book.author}</p>
                           <div className="flex gap-4 text-sm flex-wrap">
-                            <span className="text-muted-foreground">ISBN: {book.isbn}</span>
-                            <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
-                        {book.genre}
-                      </span>
+                            {book.isbn && <span className="text-muted-foreground">ISBN: {book.isbn}</span>}
+                            {book.genre && (
+                                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                                                    {book.genre}
+                                                </span>
+                            )}
                             <span className="px-3 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium">
-                        {book.type === "book" ? "Book" : "Magazine"}
-                      </span>
+                                                {book.type === "book" ? "Book" : "Magazine"}
+                                            </span>
                           </div>
                         </div>
                       </div>
@@ -281,64 +223,59 @@ export function Library() {
               </div>
           )}
 
-          {/* Manage Publications Modal — Add only */}
+          {/* Add Publications Modal */}
           {showManageModal && (
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-2xl max-w-4xl w-full p-8 shadow-2xl max-h-[80vh] overflow-y-auto">
-                  <h2 className="font-serif text-2xl mb-4 text-foreground">
-                    Add Publications to Library
-                  </h2>
+                  <h2 className="font-serif text-2xl mb-4 text-foreground">Add Publications to Library</h2>
                   <p className="text-muted-foreground mb-6">
-                    Select publications from 'My Publications' to add to your library
+                    Select publications to add to your library
                   </p>
 
-                  {allPublications.length === 0 ? (
+                  {notInLibrary.length === 0 ? (
                       <div className="text-center py-8">
-                        <p className="text-muted-foreground mb-4">No books found</p>
-                        <button
-                            onClick={() => {
-                              setShowManageModal(false);
-                              navigate("/add-publication");
-                            }}
-                            className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
-                        >
-                          Add First Publication
-                        </button>
+                        <p className="text-muted-foreground mb-4">
+                          All your publications are already in the library.
+                        </p>
                       </div>
                   ) : (
-                      <>
-                        <div className="space-y-3 mb-6">
-                          {allPublications
-                              .filter(pub => !library.publicationIds.includes(pub.id))
-                              .map(pub => (
-                                  <div
-                                      key={pub.id}
-                                      className="flex justify-between items-center p-4 border-2 border-border rounded-xl hover:border-primary/50 transition-all"
-                                  >
-                                    <div>
-                                      <h3 className="font-semibold text-foreground">{pub.title}</h3>
-                                      <p className="text-sm text-muted-foreground">{pub.author}</p>
-                                      <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
-                              {pub.genre}
-                            </span>
-                                    </div>
-                                    <button
-                                        onClick={() => handleAddPublication(pub.id)}
-                                        className="px-6 py-2 rounded-xl transition-colors font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
-                                    >
-                                      Add
-                                    </button>
-                                  </div>
-                              ))}
-                        </div>
-                        <button
-                            onClick={() => setShowManageModal(false)}
-                            className="w-full px-6 py-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors font-semibold"
-                        >
-                          Done
-                        </button>
-                      </>
+                      <div className="space-y-3 mb-6">
+                        {notInLibrary.map(pub => (
+                            <div
+                                key={pub.id}
+                                className="flex justify-between items-center p-4 border-2 border-border rounded-xl hover:border-primary/50 transition-all"
+                            >
+                              <div>
+                                <h3 className="font-semibold text-foreground">{pub.title}</h3>
+                                <p className="text-sm text-muted-foreground">{pub.author}</p>
+                                {pub.genre && (
+                                    <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                                                        {pub.genre}
+                                                    </span>
+                                )}
+                              </div>
+                              <button
+                                  onClick={async () => {
+                                    try {
+                                      await addToLibrary(pub.id);
+                                    } catch (e) {
+                                      alert("Failed: " + e.message);
+                                    }
+                                  }}
+                                  className="px-6 py-2 rounded-xl transition-colors font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
+                              >
+                                Add
+                              </button>
+                            </div>
+                        ))}
+                      </div>
                   )}
+                  <button
+                      onClick={() => setShowManageModal(false)}
+                      className="w-full px-6 py-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors font-semibold"
+                  >
+                    Done
+                  </button>
                 </div>
               </div>
           )}

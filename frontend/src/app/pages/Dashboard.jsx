@@ -17,10 +17,12 @@ export function Dashboard() {
     login();
   }, [login]);
 
+  const { publications } = usePublications();
+
   const stats = {
-    booksInLibrary: library ? library.publicationIds.length : 0,
-    activeLists: lists.length,
-    itemsForSale: getPublicationsForSale().length
+    booksInLibrary: publications.filter(p => p.libraryId != null).length,
+    activeLists: lists?.length ?? 0,
+    itemsForSale: getPublicationsForSale().length,
   };
 
   return (

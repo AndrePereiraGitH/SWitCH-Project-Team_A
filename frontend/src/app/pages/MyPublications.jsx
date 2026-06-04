@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Filter, Grid3x3, List as ListIcon, ListPlus } from "lucide-react";
+import { ArrowLeft, Plus, Filter, Grid3x3, List as ListIcon, ListPlus, Library } from "lucide-react";
 import { BookCard } from "../components/BookCard";
 import { AddToListModal } from "../components/AddToListModal";
 import { usePublications } from "../components/PublicationsContext";
 
 export function MyPublications() {
     const navigate = useNavigate();
-    const { publications, loading, error } = usePublications();
+    const { publications, loading, error, addToLibrary } = usePublications();
     const [viewMode, setViewMode] = useState("grid");
     const [filterGenre, setFilterGenre] = useState("all");
     const [filterType, setFilterType] = useState("all");
@@ -24,12 +24,11 @@ export function MyPublications() {
         type: p.type ?? p.mediaFormat?.toLowerCase() ?? "book",
         condition: p.condition ?? "",
         price: p.price ?? null,
+        inLibrary: p.libraryId != null || p.inLibrary === true, // Evaluates to boolean for UI check
     }));
 
     const genres = ["all", ...Array.from(new Set(normalized.map(b => b.genre).filter(Boolean)))];
     const filteredBooks = normalized.filter(b => {
-        // If there are multiple genres mapped as a string, doing exact match might be tricky,
-        // but this keeps the existing logic intact for your dropdown.
         const matchesGenre = filterGenre === "all" || b.genre.includes(filterGenre);
         const matchesType = filterType === "all" || b.type === filterType;
         return matchesGenre && matchesType;
@@ -154,7 +153,7 @@ export function MyPublications() {
                                     condition={book.condition}
                                     price={book.price}
                                 />
-                                <div className="flex gap-2 mt-3">
+                                <div className="flex gap-2 mt-3 flex-wrap items-center text-center">
                                     <button
                                         onClick={() => navigate(`/sell/${book.id}`)}
                                         className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
@@ -168,6 +167,26 @@ export function MyPublications() {
                                     >
                                         <ListPlus className="w-5 h-5" />
                                     </button>
+
+                                    {book.inLibrary ? (
+                                        <span className="flex-1 px-4 py-2 bg-green-100 text-green-700 rounded-xl text-sm font-medium">
+                                            ✓ In Library
+                                        </span>
+                                    ) : (
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    await addToLibrary(book.id);
+                                                } catch (e) {
+                                                    console.error("Add to library error:", e.message);
+                                                    alert("Failed: " + e.message);
+                                                }
+                                            }}
+                                            className="flex-1 px-4 py-2 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition-colors font-medium"
+                                        >
+                                            Add to Library
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -196,7 +215,7 @@ export function MyPublications() {
                                             {book.price != null && <span className="text-muted-foreground">€{book.price}</span>}
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 flex-wrap items-center justify-end">
                                         <button
                                             onClick={() => navigate(`/sell/${book.id}`)}
                                             className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
@@ -210,6 +229,26 @@ export function MyPublications() {
                                         >
                                             <ListPlus className="w-5 h-5" />
                                         </button>
+
+                                        {book.inLibrary ? (
+                                            <span className="px-4 py-2 bg-green-100 text-green-700 rounded-xl text-sm font-medium">
+                                                ✓ In Library
+                                            </span>
+                                        ) : (
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        await addToLibrary(book.id);
+                                                    } catch (e) {
+                                                        console.error("Add to library error:", e.message);
+                                                        alert("Failed: " + e.message);
+                                                    }
+                                                }}
+                                                className="px-4 py-3 bg-primary/10 text-primary rounded-xl hover:bg-primary/20 transition-colors font-medium"
+                                            >
+                                                Add to Library
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
