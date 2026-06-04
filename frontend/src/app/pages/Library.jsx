@@ -305,7 +305,7 @@ export function Library() {
                       ["Genre", detailPub.genres?.join(", ") ?? detailPub.genre],
                       ["Condition", detailPub.condition],
                       ["Language", LANGUAGE_DISPLAY[detailPub.language] ?? detailPub.language],
-                      ["ISBN", detailPub.isbn],
+                      ["Code", detailPub.isbn ?? detailPub.code ?? null],
                       ["Type", getType(detailPub.type)],
                       detailPub.collectionId && ["List", getCollectionName(detailPub.collectionId)],
                       detailPub.price != null && ["Price", `€${detailPub.price}`],
