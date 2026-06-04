@@ -31,5 +31,6 @@ public class PublicationDTO extends RepresentationModel<PublicationDTO> {
     private String libraryId;
     private String condition;
     private String collectionId;
+    private String code;
 
 }
