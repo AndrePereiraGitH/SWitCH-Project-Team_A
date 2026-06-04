@@ -522,8 +522,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
-                        );
+                                null,
+                                "NEW",
+                                null);
                     });
 
             // Act
@@ -565,7 +566,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
+                                null,
+                                "NEW",
+                                null
                         );
                     });
 
@@ -653,7 +656,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
+                                null,
+                                "NEW",
+                                null
                         );
                     });
 
@@ -700,7 +705,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
+                                null,
+                                "NEW",
+                                null
                         );
                     });
 
@@ -1991,7 +1998,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
+                                null,
+                                "NEW",
+                                null
                         );
                     });
 
@@ -2037,7 +2046,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
+                                null,
+                                "NEW",
+                                null
                         );
                     });
 
@@ -2222,7 +2233,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
+                                null,
+                                "NEW",
+                                null
                         );
                     });
 
@@ -2271,7 +2284,9 @@ class PublicationSampleRESTControllerTest {
                                 "en",
                                 genres.stream().map(Genre::getGenreType).toList(),
                                 "jose.saramago",
-                                "NEW"
+                                null,
+                                "NEW",
+                                null
                         );
                     });
 
