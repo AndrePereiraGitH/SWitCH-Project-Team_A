@@ -20,7 +20,7 @@ export function PublicationsProvider({ children }) {
         setLoading(true);
         setError(null);
         try {
-            const pubsRes = await fetch(`${BASE_URL}/publicationSamples?userId=${CURRENT_USER_ID}`);
+            const pubsRes = await fetch(`${BASE_URL}/publicationSamples/not-in-library?userId=${CURRENT_USER_ID}`);
             if (!pubsRes.ok) throw new Error(`GET publications failed: ${pubsRes.status}`);
 
             const pubs = await pubsRes.json();
