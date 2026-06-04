@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save, BookOpen } from "lucide-react";
+import { ArrowLeft, Save, BookOpen, X } from "lucide-react";
 import { SuccessModal } from "../components/SuccessModal";
 import { usePublications } from "../components/PublicationsContext";
 import { API_BASE_URL } from "../../api/constants";
@@ -56,6 +56,9 @@ export function AddPublication() {
     const [authorsList, setAuthorsList] = useState([]);
     const [loadingOptions, setLoadingOptions] = useState(true);
 
+    const [authorsDropdownOpen, setAuthorsDropdownOpen] = useState(false);
+    const authorsDropdownRef = useRef(null);
+
     const [formData, setFormData] = useState({
         isbn: "",
         title: "",
@@ -76,6 +79,16 @@ export function AddPublication() {
     });
 
     useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (authorsDropdownRef.current && !authorsDropdownRef.current.contains(e.target)) {
+                setAuthorsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
         async function fetchOptions() {
             try {
                 const [publishersRes, genresRes, authorsRes] = await Promise.all([
@@ -89,9 +102,6 @@ export function AddPublication() {
                 const publishersData = await publishersRes.json();
                 const genresData     = await genresRes.json();
                 const authorsData    = await authorsRes.json();
-                console.log("publisher sample:", publishersData[0]);
-                console.log("genre sample:", genresData[0]);
-                console.log("author sample:", authorsData[0]);
                 setPublishers(publishersData);
                 setGenres(genresData);
                 setAuthorsList(authorsData);
@@ -106,7 +116,6 @@ export function AddPublication() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("[submit] fired");
 
         // ── Validation ───────────────────────────────────────────────
         const pubYear = formData.publishedDate
@@ -170,8 +179,6 @@ export function AddPublication() {
 
         // ── Build payload ────────────────────────────────────────────
         const payload = {
-            // BD — IDs sent in *Names fields (backend wraps as AuthorId/GenreId
-            // and looks up directly). TODO: backend bug.
             title: formData.title,
             authorNames: formData.authors,
             genreNames:  formData.genres,
@@ -196,8 +203,6 @@ export function AddPublication() {
             authorDisplayNames: selectedAuthors.map(a => a.name),
             genreDisplayNames:  selectedGenres.map(g => g.genreName),
         };
-
-        console.log("[submit] payload:", payload);
 
         try {
             await addPublication(payload);
@@ -356,19 +361,82 @@ export function AddPublication() {
 
                                 <div>
                                     <label className="block mb-2 font-semibold text-foreground">Author(s) *</label>
-                                    <div className="grid grid-cols-2 gap-2 p-4 bg-input-background border-2 border-border rounded-xl max-h-64 overflow-y-auto">
-                                        {authorsList.map(a => (
-                                            <label key={a.id} className="flex items-center gap-2 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={formData.authors.includes(a.id)}
-                                                    onChange={() => handleAuthorToggle(a.id)}
-                                                    className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary"
-                                                />
-                                                <span className="text-sm">{a.name}</span>
-                                            </label>
-                                        ))}
+                                    <div className="relative" ref={authorsDropdownRef}>
+                                        {/* Trigger */}
+                                        <button
+                                            type="button"
+                                            onClick={() => setAuthorsDropdownOpen(prev => !prev)}
+                                            className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary text-left flex justify-between items-center transition-all"
+                                        >
+                                            <span className={formData.authors.length === 0 ? "text-muted-foreground" : "text-foreground"}>
+                                                {formData.authors.length === 0
+                                                    ? "Select author(s)"
+                                                    : authorsList
+                                                        .filter(a => formData.authors.includes(a.id))
+                                                        .map(a => a.name)
+                                                        .join(", ")
+                                                }
+                                            </span>
+                                            <svg
+                                                className={`w-4 h-4 text-muted-foreground transition-transform ${authorsDropdownOpen ? "rotate-180" : ""}`}
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+
+                                        {/* Dropdown */}
+                                        {authorsDropdownOpen && (
+                                            <div className="absolute z-10 w-full mt-1 bg-white border-2 border-border rounded-xl shadow-lg max-h-64 overflow-y-auto">
+                                                {authorsList.map(a => (
+                                                    <label
+                                                        key={a.id}
+                                                        className={`flex items-center gap-3 px-4 py-3 hover:bg-primary/5 cursor-pointer transition-colors ${
+                                                            formData.authors.includes(a.id) ? "bg-primary/10" : ""
+                                                        }`}
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={formData.authors.includes(a.id)}
+                                                            onChange={() => handleAuthorToggle(a.id)}
+                                                            className="w-4 h-4 text-primary rounded focus:ring-2 focus:ring-primary"
+                                                        />
+                                                        <div>
+                                                            <p className="text-sm font-medium text-foreground">{a.name}</p>
+                                                            {a.dateOfBirth && (
+                                                                <p className="text-xs text-muted-foreground">{a.dateOfBirth.slice(0, 4)}</p>
+                                                            )}
+                                                        </div>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
+
+                                    {/* Selected tags */}
+                                    {formData.authors.length > 0 && (
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            {authorsList
+                                                .filter(a => formData.authors.includes(a.id))
+                                                .map(a => (
+                                                    <span
+                                                        key={a.id}
+                                                        className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                                                    >
+                                                        {a.name}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleAuthorToggle(a.id)}
+                                                            className="hover:text-destructive transition-colors ml-1"
+                                                        >
+                                                            <X className="w-3 h-3" />
+                                                        </button>
+                                                    </span>
+                                                ))
+                                            }
+                                        </div>
+                                    )}
+
                                     {formData.authors.length === 0 && (
                                         <p className="text-xs text-destructive mt-1">Please select at least one author</p>
                                     )}

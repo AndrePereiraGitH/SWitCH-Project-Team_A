@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { vi } from "vitest";
+import { vi, beforeEach, describe, test, expect } from "vitest";
 import { AddPublication } from "../pages/AddPublication";
 
 const mockNavigate = vi.fn();
@@ -37,15 +37,15 @@ const mockAuthors = [
     { id: "AUTH2", name: "Jane Smith", links: [] },
 ];
 
-// Helper to render and wait for the initial fetches to complete, preventing act() warnings
+// Helper to render and wait for options to load completely
 async function renderAndWait() {
     render(
         <MemoryRouter>
             <AddPublication />
         </MemoryRouter>
     );
-    // Wait until the authors are loaded into the checkboxes
-    await screen.findByRole("checkbox", { name: "John Doe" });
+    // Wait until loading state resolves by ensuring options have completed loading
+    await screen.findByRole("option", { name: "Cambridge University Press" });
 }
 
 async function fillRequiredFields() {
@@ -53,8 +53,14 @@ async function fillRequiredFields() {
         target: { value: "Test Book" },
     });
 
+    // Open Custom Dropdown for Authors first to reveal the checkboxes
+    const authorDropdownTrigger = screen.getByRole("button", { name: /Select author\(s\)/i });
+    fireEvent.click(authorDropdownTrigger);
+
+    // Click the now revealed checkbox option
     fireEvent.click(screen.getByRole("checkbox", { name: "John Doe" }));
 
+    // Click Genre checkbox
     fireEvent.click(screen.getByRole("checkbox", { name: "Drama" }));
 
     fireEvent.change(screen.getByLabelText(/Publisher/), {
@@ -145,8 +151,14 @@ describe("AddPublication", () => {
         await renderAndWait();
 
         expect(screen.getByRole("checkbox", { name: "Drama" })).toBeInTheDocument();
-        expect(screen.getByRole("checkbox", { name: "John Doe" })).toBeInTheDocument();
         expect(screen.getByRole("option", { name: "Cambridge University Press" })).toBeInTheDocument();
+
+        // Authors are hidden inside custom selection dropdown trigger initially
+        const authorDropdownTrigger = screen.getByRole("button", { name: /Select author\(s\)/i });
+        fireEvent.click(authorDropdownTrigger);
+
+        // Checkbox is now attached to DOM
+        expect(screen.getByRole("checkbox", { name: "John Doe" })).toBeInTheDocument();
     });
 
     test("shows ISBN as required for publications after 1976", async () => {
@@ -180,8 +192,11 @@ describe("AddPublication", () => {
         const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
         await renderAndWait();
 
-        // Check required fields that validate before ISBN to prevent early exit
+        // Open Dropdown and choose author to fulfill early validation criteria
+        const authorDropdownTrigger = screen.getByRole("button", { name: /Select author\(s\)/i });
+        fireEvent.click(authorDropdownTrigger);
         fireEvent.click(screen.getByRole("checkbox", { name: "John Doe" }));
+
         fireEvent.click(screen.getByRole("checkbox", { name: "Drama" }));
 
         fireEvent.change(screen.getByLabelText(/ISBN/), {
