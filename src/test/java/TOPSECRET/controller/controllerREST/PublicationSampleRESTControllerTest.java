@@ -1,6 +1,7 @@
 package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.PublicationSampleLinkProvider;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
 import TOPSECRET.domain.Enum.Condition;
@@ -61,6 +62,10 @@ class PublicationSampleRESTControllerTest {
     @Mock private UserId userId;
     @Mock private User user;
 
+    @Mock private EditionService editionService;
+    @Mock private EditionId editionId;
+    @Mock private Edition edition;
+
     @Mock private GenreId genreId;
     @Mock private AuthorId authorId;
     @Mock private Genre genre;
@@ -86,10 +91,12 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
         when(publicationSample.getCondition()).thenReturn(Condition.NEW);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getOriginalLanguage()).thenReturn(Locale.ENGLISH);
         when(userService.findByID(any())).thenReturn(user);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSampleLinkProvider.getPublicationSampleLinks(any()))
                 .thenReturn(new ArrayList<>());
 
@@ -113,8 +120,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toBdId(any())).thenReturn(bibliographicalDataId);
             mapper.when(() -> PublicationSampleMapper.toEditionId(any())).thenReturn(mock(EditionId.class));
             mapper.when(() -> PublicationSampleMapper.toCondition(any())).thenReturn(Condition.NEW);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.createAndSave(any(), any(), any(), any()))
                     .thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -138,8 +145,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toBdId(any())).thenReturn(bibliographicalDataId);
             mapper.when(() -> PublicationSampleMapper.toEditionId(any())).thenReturn(mock(EditionId.class));
             mapper.when(() -> PublicationSampleMapper.toCondition(any())).thenReturn(Condition.NEW);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.createAndSave(any(), any(), any(), any()))
                     .thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -166,8 +173,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toBdId(any())).thenReturn(bibliographicalDataId);
             mapper.when(() -> PublicationSampleMapper.toEditionId(any())).thenReturn(mock(EditionId.class));
             mapper.when(() -> PublicationSampleMapper.toCondition(any())).thenReturn(Condition.NEW);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.createAndSave(any(), any(), any(), any()))
                     .thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -306,8 +313,8 @@ class PublicationSampleRESTControllerTest {
             // FIXED: Mock the static mapper to return the expected domain object
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
 
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findById(publicationSampleId)).thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
 
@@ -329,8 +336,8 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findById(publicationSampleId)).thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
 
@@ -416,8 +423,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findAll()).thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
 
@@ -456,8 +463,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findAll()).thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
 
@@ -499,6 +506,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getAuthors()).thenReturn(List.of(authorId));
         when(bibliographicalData.getGenres()).thenReturn(List.of());
@@ -511,10 +520,10 @@ class PublicationSampleRESTControllerTest {
 
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -524,6 +533,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null);
                     });
 
@@ -543,6 +553,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
         when(bibliographicalData.getAuthors()).thenReturn(List.of());
@@ -555,10 +567,10 @@ class PublicationSampleRESTControllerTest {
 
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -568,6 +580,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null
                         );
                     });
@@ -630,6 +643,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getAuthors()).thenReturn(List.of(authorId));
         when(bibliographicalData.getGenres()).thenReturn(List.of());
@@ -645,10 +660,10 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toBibliographicalDataId(any()))
                     .thenReturn(bibliographicalDataId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -658,6 +673,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null
                         );
                     });
@@ -679,6 +695,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
         when(bibliographicalData.getAuthors()).thenReturn(List.of());
@@ -694,10 +712,10 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toBibliographicalDataId(any()))
                     .thenReturn(bibliographicalDataId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -707,6 +725,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null
                         );
                     });
@@ -730,8 +749,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toBibliographicalDataId(any()))
                     .thenReturn(bibliographicalDataId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findByBibliographicalDataId(bibliographicalDataId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -778,8 +797,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toBibliographicalDataId(any()))
                     .thenReturn(bibliographicalDataId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findByBibliographicalDataId(bibliographicalDataId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -875,8 +894,8 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toBibliographicalDataIds(any())).thenReturn(bdIds);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findByBibliographicalDataIdIn(bdIds))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -924,8 +943,8 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toBibliographicalDataIds(any())).thenReturn(bdIds);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findByBibliographicalDataIdIn(bdIds))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1025,8 +1044,8 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toEditionIds(any())).thenReturn(editionIds);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findByEditionIdIn(editionIds))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1076,8 +1095,8 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toEditionIds(any())).thenReturn(editionIds);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findByEditionIdIn(editionIds))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1179,8 +1198,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findByCollectionOfPublicationsId(collectionId, userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1229,8 +1248,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findByCollectionOfPublicationsId(collectionId, userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1348,8 +1367,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findByUserIdAndLibraryIdIsNotNull(userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1392,8 +1411,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findByUserIdAndLibraryIdIsNotNull(userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1499,8 +1518,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findByUserIdAndLibraryIdIsNull(userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1543,8 +1562,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findByUserIdAndLibraryIdIsNull(userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1650,8 +1669,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findByLibraryIdAndPublicationStatusNotIn(userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1694,8 +1713,8 @@ class PublicationSampleRESTControllerTest {
         setupPublicationSampleMocks();
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findByLibraryIdAndPublicationStatusNotIn(userId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1804,8 +1823,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.findAvailableForCollection(userId, collectionId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1854,8 +1873,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findAvailableForCollection(userId, collectionId))
                     .thenReturn(List.of(publicationSample));
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -1973,6 +1992,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getAuthors()).thenReturn(List.of(authorId));
         when(bibliographicalData.getGenres()).thenReturn(List.of());
@@ -1987,10 +2008,10 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -2000,6 +2021,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null
                         );
                     });
@@ -2021,6 +2043,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
         when(bibliographicalData.getAuthors()).thenReturn(List.of());
@@ -2035,10 +2059,10 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -2048,6 +2072,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null
                         );
                     });
@@ -2070,8 +2095,8 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.addPublicationToLibrary(publicationSampleId, userId))
                     .thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -2094,8 +2119,8 @@ class PublicationSampleRESTControllerTest {
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.addPublicationToLibrary(publicationSampleId, userId))
                     .thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -2206,6 +2231,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getAuthors()).thenReturn(List.of(authorId));
         when(bibliographicalData.getGenres()).thenReturn(List.of());
@@ -2222,10 +2249,10 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -2235,6 +2262,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null
                         );
                     });
@@ -2257,6 +2285,8 @@ class PublicationSampleRESTControllerTest {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(any())).thenReturn(edition);
         when(publicationSample.getOwnerID()).thenReturn(userId);
         when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
         when(bibliographicalData.getAuthors()).thenReturn(List.of());
@@ -2273,10 +2303,10 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenAnswer(invocation -> {
-                        List<Genre> genres = invocation.getArgument(3);
-                        List<Author> authors = invocation.getArgument(2);
+                        List<Genre> genres = invocation.getArgument(4);
+                        List<Author> authors = invocation.getArgument(3);
                         return new PublicationDTO(
                                 "ps-001",
                                 "The Gospel According to Jesus Christ",
@@ -2286,6 +2316,7 @@ class PublicationSampleRESTControllerTest {
                                 "jose.saramago",
                                 null,
                                 "NEW",
+                                null,
                                 null
                         );
                     });
@@ -2311,8 +2342,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
             when(publicationSampleService.assignPublicationToCollection(collectionId, publicationSampleId, userId))
                     .thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
@@ -2338,8 +2369,8 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any()))
                     .thenReturn(collectionId);
             mapper.when(() -> PublicationSampleMapper.toPubId(any())).thenReturn(publicationSampleId);
-            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any()))
-                    .thenCallRealMethod();
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.assignPublicationToCollection(collectionId, publicationSampleId, userId))
                     .thenReturn(publicationSample);
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);

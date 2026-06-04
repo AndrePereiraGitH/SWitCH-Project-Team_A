@@ -1,6 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import com.fasterxml.jackson.annotation.JsonValue;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -63,7 +64,13 @@ public class UserId implements DomainID {
      *
      * @return the user identifier string
      */
+    @JsonValue
     public String getUserId() {
+        return userId;
+    }
+
+    @Override
+    public String toString() {
         return userId;
     }
 

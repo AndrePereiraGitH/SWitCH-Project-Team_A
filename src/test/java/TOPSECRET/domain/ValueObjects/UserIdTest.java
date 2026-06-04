@@ -128,4 +128,28 @@ class UserIdTest {
         // Assert
         assertEquals("david123", result);
     }
+
+    @Test
+    void toString_shouldReturnTheUserIdString() {
+        // Arrange
+        String expectedId = "user-123";
+        UserId userId = new UserId(expectedId);
+
+        // Act
+        String result = userId.toString();
+
+        // Assert
+        assertEquals(expectedId, result);
+    }
+
+    @Test
+    void toString_shouldHandleDifferentIds() {
+        // Arrange
+        String id1 = "admin";
+        String id2 = "guest-99";
+
+        // Act & Assert
+        assertEquals(id1, new UserId(id1).toString());
+        assertEquals(id2, new UserId(id2).toString());
+    }
 }

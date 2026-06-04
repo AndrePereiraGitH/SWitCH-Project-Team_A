@@ -1,21 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Filter, Grid3x3, List as ListIcon, Library as LibraryIcon } from "lucide-react";
+import { ArrowLeft, Plus, Filter, Grid3x3, List as ListIcon, Library as LibraryIcon, X } from "lucide-react";
 import { BookCard } from "../components/BookCard";
 import { usePublications } from "../components/PublicationsContext";
 import { useLibrary } from "../components/LibraryContext";
+import { useLists } from "../components/ListsContext";
+
+const LANGUAGE_DISPLAY = {
+  en: "English", pt: "Portuguese", es: "Spanish",
+  fr: "French", de: "German", it: "Italian",
+};
 
 export function Library() {
   const navigate = useNavigate();
   const { publications, addToLibrary } = usePublications();
   const { library, loading, error } = useLibrary();
+  const { lists } = useLists();
 
   const [viewMode, setViewMode] = useState("grid");
   const [filterGenre, setFilterGenre] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const [showManageModal, setShowManageModal] = useState(false);
+  const [detailPub, setDetailPub] = useState(null);
 
-  // Publications in library = those with a libraryId set
   const libraryPublications = publications.filter(p => p.libraryId != null);
   const notInLibrary = publications.filter(p => p.libraryId == null);
 
@@ -26,6 +33,17 @@ export function Library() {
     return matchesGenre && matchesType;
   });
 
+  const getCollectionName = (collectionId) => {
+    if (!collectionId) return null;
+    return lists.find(l => l.collectionId === collectionId)?.collectionName ?? collectionId;
+  };
+
+  const getType = (type) => {
+    if (type === "book") return "Book";
+    if (type === "magazine") return "Magazine";
+    return "Book"; // default
+  };
+
   if (loading) {
     return (
         <div className="min-h-screen bg-background pt-24 pb-12 flex items-center justify-center">
@@ -34,7 +52,6 @@ export function Library() {
     );
   }
 
-  // No library exists for this user
   if (!library) {
     return (
         <div className="min-h-screen bg-background pt-24 pb-12">
@@ -68,7 +85,6 @@ export function Library() {
     );
   }
 
-  // Library exists
   return (
       <div className="min-h-screen bg-background pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -80,7 +96,6 @@ export function Library() {
             My Dashboard
           </button>
 
-          {/* Library Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
@@ -184,14 +199,15 @@ export function Library() {
           ) : viewMode === "grid" ? (
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredBooks.map(book => (
-                    <BookCard
-                        key={book.id}
-                        title={book.title}
-                        author={book.author}
-                        genre={book.genre}
-                        condition={book.condition}
-                        price={book.price}
-                    />
+                    <div key={book.id} onClick={() => setDetailPub(book)} className="cursor-pointer">
+                      <BookCard
+                          title={book.title}
+                          author={book.author}
+                          genre={book.genre}
+                          condition={book.condition}
+                          price={book.price}
+                      />
+                    </div>
                 ))}
               </div>
           ) : (
@@ -199,7 +215,8 @@ export function Library() {
                 {filteredBooks.map(book => (
                     <div
                         key={book.id}
-                        className="bg-white border-2 border-border rounded-2xl p-6 hover:shadow-lg transition-shadow"
+                        onClick={() => setDetailPub(book)}
+                        className="bg-white border-2 border-border rounded-2xl p-6 hover:shadow-lg transition-shadow cursor-pointer"
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
@@ -213,7 +230,7 @@ export function Library() {
                                                 </span>
                             )}
                             <span className="px-3 py-1 bg-accent/10 text-accent rounded-full text-xs font-medium">
-                                                {book.type === "book" ? "Book" : "Magazine"}
+                                                {getType(book.type)}
                                             </span>
                           </div>
                         </div>
@@ -228,15 +245,10 @@ export function Library() {
               <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-2xl max-w-4xl w-full p-8 shadow-2xl max-h-[80vh] overflow-y-auto">
                   <h2 className="font-serif text-2xl mb-4 text-foreground">Add Publications to Library</h2>
-                  <p className="text-muted-foreground mb-6">
-                    Select publications to add to your library
-                  </p>
-
+                  <p className="text-muted-foreground mb-6">Select publications to add to your library</p>
                   {notInLibrary.length === 0 ? (
                       <div className="text-center py-8">
-                        <p className="text-muted-foreground mb-4">
-                          All your publications are already in the library.
-                        </p>
+                        <p className="text-muted-foreground">All your publications are already in the library.</p>
                       </div>
                   ) : (
                       <div className="space-y-3 mb-6">
@@ -256,11 +268,8 @@ export function Library() {
                               </div>
                               <button
                                   onClick={async () => {
-                                    try {
-                                      await addToLibrary(pub.id);
-                                    } catch (e) {
-                                      alert("Failed: " + e.message);
-                                    }
+                                    try { await addToLibrary(pub.id); }
+                                    catch (e) { alert("Failed: " + e.message); }
                                   }}
                                   className="px-6 py-2 rounded-xl transition-colors font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
                               >
@@ -275,6 +284,43 @@ export function Library() {
                       className="w-full px-6 py-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors font-semibold"
                   >
                     Done
+                  </button>
+                </div>
+              </div>
+          )}
+
+          {/* Publication Detail Modal */}
+          {detailPub && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl">
+                  <div className="flex justify-between items-start mb-6">
+                    <h2 className="font-serif text-2xl text-foreground">{detailPub.title}</h2>
+                    <button onClick={() => setDetailPub(null)} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    {[
+                      ["Author", detailPub.authors?.join(", ") ?? detailPub.author],
+                      ["Genre", detailPub.genres?.join(", ") ?? detailPub.genre],
+                      ["Condition", detailPub.condition],
+                      ["Language", LANGUAGE_DISPLAY[detailPub.language] ?? detailPub.language],
+                      ["Code", detailPub.isbn ?? detailPub.code ?? null],
+                      ["Type", getType(detailPub.type)],
+                      detailPub.collectionId && ["List", getCollectionName(detailPub.collectionId)],
+                      detailPub.price != null && ["Price", `€${detailPub.price}`],
+                    ].filter(Boolean).map(([label, value]) => value ? (
+                        <div key={label} className="flex justify-between py-2 border-b border-border">
+                          <span className="text-muted-foreground font-medium">{label}</span>
+                          <span className="text-foreground">{value}</span>
+                        </div>
+                    ) : null)}
+                  </div>
+                  <button
+                      onClick={() => setDetailPub(null)}
+                      className="w-full mt-6 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
+                  >
+                    Close
                   </button>
                 </div>
               </div>

@@ -63,7 +63,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 mock(CollectionOfPublicationsId.class);
 
         ResponseCollectionOfPublicationsDTO responseDTO =
-                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123",true);
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
         when(requestDouble.genreId()).thenReturn("genre-123");
@@ -118,7 +118,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 mock(CollectionOfPublicationsId.class);
 
         ResponseCollectionOfPublicationsDTO responseDTO =
-                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123", true);
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
         when(requestDouble.genreId()).thenReturn("genre-123");
@@ -280,7 +280,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         Link providerLink =
@@ -351,7 +352,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         when(collectionService.makeCollectionPublic(
@@ -551,7 +553,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        false
                 );
 
         Link providerLink =
@@ -760,7 +763,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         Link providerLink =
@@ -835,7 +839,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         when(collectionService.makeCollectionPublicUntil(
@@ -1158,7 +1163,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO dto =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         List<CollectionOfPublications> collections =
@@ -1278,7 +1284,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         when(collectionService.findById(collectionIdVO))
@@ -1469,7 +1476,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO dto =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         List<CollectionOfPublications> collections =

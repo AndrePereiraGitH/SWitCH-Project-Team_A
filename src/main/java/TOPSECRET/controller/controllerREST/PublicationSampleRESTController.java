@@ -3,6 +3,7 @@ package TOPSECRET.controller.controllerREST;
 import TOPSECRET.controller.controllerREST.root.linkProvider.PublicationSampleLinkProvider;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -53,6 +54,7 @@ public class PublicationSampleRESTController {
     private final BibliographicalDataService bibliographicalDataService;
     private final AuthorService authorService;
     private final UserService userService;
+    private final EditionService editionService;
     private final PublicationSampleLinkProvider publicationSampleLinkProvider;
 
     /**
@@ -71,11 +73,13 @@ public class PublicationSampleRESTController {
                                            GenreService genreService,
                                            BibliographicalDataService bibliographicalDataService,
                                            AuthorService authorService,
+                                           EditionService editionService,
                                            PublicationSampleLinkProvider publicationSampleLinkProvider) {
         this.publicationSampleService = publicationSampleService;
         this.genreService = genreService;
         this.bibliographicalDataService = bibliographicalDataService;
         this.authorService = authorService;
+        this.editionService = editionService;
         this.publicationSampleLinkProvider = publicationSampleLinkProvider;
         this.userService = userService;
     }
@@ -636,6 +640,7 @@ public class PublicationSampleRESTController {
         PublicationDTO result = PublicationSampleMapper.toPublicationDTO(
                 pbSample,
                 bd,
+                getEdition(pbSample),
                 getAuthors(bd),
                 getGenres(bd),
                 getOwner(pbSample));
@@ -682,5 +687,19 @@ public class PublicationSampleRESTController {
      */
     private User getOwner(PublicationSample publicationSample) {
         return userService.findByID(publicationSample.getOwnerID());
+    }
+
+    /**
+     * Retrieves the {@link Edition} associated with the given {@link PublicationSample}.
+     *
+     * <p>This helper method extracts the edition identifier from the provided publication
+     * sample and delegates to the edition service to fetch the corresponding entity.</p>
+     *
+     * @param publicationSample the publication sample from which to extract the edition ID;
+     * should not be null
+     * @return the {@link Edition} corresponding to the publication sample's edition ID
+     */
+    private Edition getEdition(PublicationSample publicationSample) {
+        return editionService.findById(publicationSample.getEditionID());
     }
 }

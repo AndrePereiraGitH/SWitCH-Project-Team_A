@@ -35,7 +35,8 @@ public final class CollectionOfPublicationsMapper {
 
         return new ResponseCollectionOfPublicationsDTO(
                 collectionOfPublications.getCollectionName(),
-                collectionOfPublications.id().toString()
+                collectionOfPublications.id().toString(),
+                collectionOfPublications.getIsPrivate()
         );
     }
 

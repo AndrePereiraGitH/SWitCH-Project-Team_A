@@ -13,22 +13,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-/**
- * Data initializer that populates the database with sample
- * CollectionOfPublications entries on application startup.
- *
- * <p>Implements {@link ApplicationRunner} so it runs after the Spring context
- * is fully loaded. Collections are built via
- * {@link CollectionOfPublicationsFactory}
- * to respect domain invariants, and persisted through
- * {@link ICollectionOfPublicationsRepository}.
- *
- * <p><b>Note:</b> This initializer always inserts on startup. It is intended
- * for development / demo environments only — disable or remove it for production.
- */
 @Component
 @Order(2)
 public class CollectionOfPublicationsDataInitializer implements ApplicationRunner {
@@ -42,18 +26,12 @@ public class CollectionOfPublicationsDataInitializer implements ApplicationRunne
     public CollectionOfPublicationsDataInitializer(
             ICollectionOfPublicationsRepository collectionRepository,
             CollectionOfPublicationsFactory collectionFactory) {
-
         this.collectionRepository = collectionRepository;
         this.collectionFactory = collectionFactory;
     }
 
-    // =========================================================================
-    // ApplicationRunner
-    // =========================================================================
-
     @Override
     public void run(ApplicationArguments args) {
-
         log.info("[CollectionOfPublicationsDataInitializer] Seeding collections...");
 
         collectionRepository.save(buildFantasyCollection());
@@ -63,55 +41,45 @@ public class CollectionOfPublicationsDataInitializer implements ApplicationRunne
         log.info("[CollectionOfPublicationsDataInitializer] Done — {} collections seeded.", 3);
     }
 
-    // =========================================================================
-    // Sample Collections
-    // =========================================================================
-
     /**
-     * Fantasy publications collection, owned by user-001.
+     * Fantasy publications collection, owned by user-001. Private, no expiry.
      */
     private CollectionOfPublications buildFantasyCollection() {
-        CollectionOfPublicationsId id = new CollectionOfPublicationsId("collection-001");
-
         return collectionFactory.create(
-                id,
+                new CollectionOfPublicationsId("collection-001"),
                 "Epic Fantasy Collection",
                 new GenreId("GENRE4"),   // Fantasy
                 new UserId("user-001"),
-                true,
-                LocalDate.now()
+                true,   // private
+                null    // no expiry
         );
     }
 
     /**
-     * Science publications collection, owned by user-002.
+     * Science publications collection, owned by user-002. Private, no expiry.
      */
     private CollectionOfPublications buildScienceCollection() {
-        CollectionOfPublicationsId id = new CollectionOfPublicationsId("collection-002");
-
         return collectionFactory.create(
-                id,
+                new CollectionOfPublicationsId("collection-002"),
                 "Science Essentials",
                 new GenreId("GENRE2"),   // Science Fiction
                 new UserId("user-002"),
                 true,
-                LocalDate.now()
+                null
         );
     }
 
     /**
-     * Historical publications collection, owned by user-003.
+     * Historical publications collection, owned by user-003. Private, no expiry.
      */
     private CollectionOfPublications buildHistoricalCollection() {
-        CollectionOfPublicationsId id = new CollectionOfPublicationsId("collection-003");
-
         return collectionFactory.create(
-                id,
+                new CollectionOfPublicationsId("collection-003"),
                 "Historical Masterpieces",
                 new GenreId("GENRE8"),   // Historical Fiction
                 new UserId("user-003"),
                 true,
-                LocalDate.now()
+                null
         );
     }
 }

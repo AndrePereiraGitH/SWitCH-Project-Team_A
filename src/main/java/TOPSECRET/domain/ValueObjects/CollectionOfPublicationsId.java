@@ -67,6 +67,11 @@ public class CollectionOfPublicationsId implements DomainID {
         return false;
     }
 
+    @Override
+    public String toString() {
+        return collectionOfPub_id;
+    }
+
     /**
      * Returns the string representation of this collection identifier.
      *
