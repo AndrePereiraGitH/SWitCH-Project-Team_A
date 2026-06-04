@@ -127,7 +127,7 @@ public class ListingMapper {
                         .map(Picture::getPicture)
                         .orElse(""),
                 listing.getShortDescription(),
-                listing.getSellerId().toString(),
+                listing.getSellerId().getUserId(),
                 publisher != null
                         ? publisher.getName()
                         : "N/A",
