@@ -414,7 +414,7 @@ class ListingMapperTest {
         when(listing.getShortDescription()).thenReturn("A book about clean code.");
 
         when(listing.getSellerId()).thenReturn(sellerId);
-        when(sellerId.toString()).thenReturn("user-1");
+        when(sellerId.getUserId()).thenReturn("user-1");
 
         when(publisher.getName()).thenReturn("Prentice Hall");
 
@@ -479,7 +479,7 @@ class ListingMapperTest {
         when(listing.getShortDescription()).thenReturn("Short description");
 
         when(listing.getSellerId()).thenReturn(sellerId);
-        when(sellerId.toString()).thenReturn("seller-1");
+        when(sellerId.getUserId()).thenReturn("seller-1");
 
         // Act
         ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
