@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -41,7 +41,7 @@ class CollectionOfPublicationsDMTest {
     private GenreId genreId;
     private UserId userId;
     private boolean isPrivate;
-    private LocalDateTime publicUntil;
+    private LocalDate publicUntil;
 
     @BeforeEach
     void setup() {
@@ -50,7 +50,7 @@ class CollectionOfPublicationsDMTest {
         genreId = mock(GenreId.class);
         userId = mock(UserId.class);
         isPrivate = true;
-        publicUntil = LocalDateTime.now().plusDays(5);
+        publicUntil = LocalDate.now().plusDays(5);
     }
 
     // =========================================================================

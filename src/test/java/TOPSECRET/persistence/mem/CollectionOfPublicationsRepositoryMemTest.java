@@ -27,6 +27,12 @@ import static org.mockito.Mockito.*;
 
 class CollectionOfPublicationsRepositoryMemTest {
 
+    private CollectionOfPublications createMockCollection(boolean isPrivate, boolean isPublic) {
+        CollectionOfPublications c = mock(CollectionOfPublications.class);
+        when(c.getIsPrivate()).thenReturn(isPrivate);
+        when(c.isCurrentlyPublic()).thenReturn(isPublic);
+        return c;
+    }
 
     private CollectionOfPublicationsFactory factoryDouble;
 
@@ -81,65 +87,6 @@ class CollectionOfPublicationsRepositoryMemTest {
                 IllegalArgumentException.class,
                 () -> sut.save(collection)
         );
-    }
-
-    // ===================================================
-    // -------------------  UPDATE -----------------------
-    // ===================================================
-
-    @Test
-    void update_shouldUpdateAndReturnCollection_whenCollectionExists() throws InstanceNotFoundException {
-        // arrange
-        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-
-        CollectionOfPublications existingCollection = mock(CollectionOfPublications.class);
-
-        CollectionOfPublications updatedCollection = mock(CollectionOfPublications.class);
-
-        when(existingCollection.id()).thenReturn(id);
-        when(updatedCollection.id()).thenReturn(id);
-
-        sut.save(existingCollection);
-
-        // act
-        CollectionOfPublications result = sut.update(updatedCollection);
-
-        // assert
-        assertEquals(updatedCollection, result);
-        assertEquals(updatedCollection, sut.findById(id));
-    }
-
-    @Test
-    void update_shouldThrow_whenCollectionIsNull() {
-        // arrange
-        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
-
-        // act + assert
-        NullPointerException ex = assertThrows(
-                NullPointerException.class,
-                () -> sut.update(null)
-        );
-
-        assertEquals("collection cannot be null", ex.getMessage());
-    }
-
-    @Test
-    void update_shouldReturnNull_whenCollectionDoesNotExist() {
-        // arrange
-        ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
-
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-
-        when(collection.id()).thenReturn(id);
-
-        // act
-        CollectionOfPublications result = sut.update(collection);
-
-        // assert
-        assertNull(result);
     }
 
     // ===================================================
@@ -384,8 +331,102 @@ class CollectionOfPublicationsRepositoryMemTest {
         // ASSERT
         assertTrue(result.isEmpty());
     }
+
+    // ===========================================================
+    // ========== findAllPublicCollections =======================
+    // ===========================================================
+
+    @Test
+    void findAllPublicCollections_shouldReturnOnlyPublicCollections() {
+
+        // ARRANGE
+        GenreId genreId = mock(GenreId.class);
+
+        CollectionOfPublicationsId id1 = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublicationsId id2 = mock(CollectionOfPublicationsId.class);
+
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+
+        when(c1.id()).thenReturn(id1);
+        when(c2.id()).thenReturn(id2);
+
+        when(c1.getCollectionGenre()).thenReturn(genreId);
+        when(c2.getCollectionGenre()).thenReturn(genreId);
+
+        when(c1.getIsPrivate()).thenReturn(false);
+        when(c2.getIsPrivate()).thenReturn(false);
+
+        CollectionOfPublicationsRepositoryMem repo =
+                new CollectionOfPublicationsRepositoryMem();
+
+        repo.save(c1);
+        repo.save(c2);
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repo.findPublicCollectionsByGenreId(genreId);
+
+        // ASSERT
+        assertEquals(2, result.size());
+        assertTrue(result.contains(c1));
+        assertTrue(result.contains(c2));
+    }
+
+    @Test
+    void findAllPublicCollections_shouldReturnEmpty_whenRepositoryEmpty() {
+
+        //Arrange
+        CollectionOfPublicationsRepositoryMem repo =
+                new CollectionOfPublicationsRepositoryMem();
+
+        //Act
+        List<CollectionOfPublications> result = repo.findAllPublicCollections();
+
+        //Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // ===========================================================
+    // ========== findAll ========================================
+    // ===========================================================
+
+    @Test
+    void findAll_shouldReturnAllStoredCollections() {
+
+        // ARRANGE
+        CollectionOfPublications c1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications c2 = mock(CollectionOfPublications.class);
+
+        CollectionOfPublicationsId id1 = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublicationsId id2 = mock(CollectionOfPublicationsId.class);
+
+        when(c1.id()).thenReturn(id1);
+        when(c2.id()).thenReturn(id2);
+
+        CollectionOfPublicationsRepositoryMem repo =
+                new CollectionOfPublicationsRepositoryMem();
+
+        repo.save(c1);
+        repo.save(c2);
+
+        // ACT
+        List<CollectionOfPublications> result = repo.findAll();
+
+        // ASSERT
+        assertEquals(2, result.size());
+        assertTrue(result.contains(c1));
+        assertTrue(result.contains(c2));
+    }
+
+    @Test
+    void findAll_shouldReturnEmptyList_whenNoCollectionsExist() {
+
+        CollectionOfPublicationsRepositoryMem repo =
+                new CollectionOfPublicationsRepositoryMem();
+
+        List<CollectionOfPublications> result = repo.findAll();
+
+        assertTrue(result.isEmpty());
+    }
 }
-
-
-
-
