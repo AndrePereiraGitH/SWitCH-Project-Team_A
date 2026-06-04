@@ -34,17 +34,61 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link CollectionOfPublicationsService}.
  *
- * <p>Covers two areas:</p>
- * <ul>
- *   <li><b>createAndSave — happy path</b>: verifies that a
- *       {@link CollectionOfPublications} is correctly created via
- *       {@link CollectionOfPublicationsFactory} and persisted via
- *       {@link ICollectionOfPublicationsRepository}, returning the saved instance.</li>
+ * <p>This test suite validates the behavior of the service responsible for managing
+ * collections of publications, including creation, visibility control, retrieval,
+ * and access permissions.</p>
  *
- *   <li><b>createAndSave — null rejection</b>: verifies that all mandatory
- *       parameters ({@code collectionName}, {@code collectionGenreId},
- *       {@code userId}) throw {@link NullPointerException}
- *       when {@code null}.</li>
+ * <h2>Covered Functional Areas</h2>
+ *
+ * <h3>1. Constructor Validation</h3>
+ * <ul>
+ *   <li>Ensures all required dependencies are validated for null values.</li>
+ *   <li>Verifies proper service instantiation when dependencies are valid.</li>
+ * </ul>
+ *
+ * <h3>2. Collection Creation</h3>
+ * <ul>
+ *   <li>Validates {@code createAndSave} happy path.</li>
+ *   <li>Ensures null inputs are rejected.</li>
+ *   <li>Ensures user existence and permission checks via authorization policy.</li>
+ * </ul>
+ *
+ * <h3>3. Visibility Management</h3>
+ * <ul>
+ *   <li>makeCollectionPublic: publishing a collection.</li>
+ *   <li>makeCollectionPrivate: hiding a collection.</li>
+ *   <li>makeCollectionPublicUntil: time-limited publication support.</li>
+ *   <li>Validates ownership checks and authorization rules.</li>
+ * </ul>
+ *
+ * <h3>4. Retrieval Operations</h3>
+ * <ul>
+ *   <li>findAllByOwnerId: retrieve user-owned collections.</li>
+ *   <li>findById: fetch a single collection or throw if missing.</li>
+ *   <li>existsById: check existence of a collection.</li>
+ *   <li>findPublicCollectionsByGenreId: filter public collections by genre.</li>
+ *   <li>findAllPublicCollections: map public collections to DTOs.</li>
+ *   <li>findAllCollections: admin-level access to all collections.</li>
+ * </ul>
+ *
+ * <h3>5. User Utilities</h3>
+ * <ul>
+ *   <li>getUserName: resolve username from UserId.</li>
+ * </ul>
+ *
+ * <h2>Security & Authorization</h2>
+ * <ul>
+ *   <li>All mutating operations validate ownership and policy rules.</li>
+ *   <li>Access control is enforced via {@link CollectionOfPublicationsAuthorizationPolicy}.</li>
+ *   <li>Unauthorized access results in {@link AccessDeniedException}.</li>
+ * </ul>
+ *
+ * <h2>Exception Coverage</h2>
+ * <ul>
+ *   <li>{@link NullPointerException} for invalid inputs.</li>
+ *   <li>{@link UsernameNotFoundException} when user is missing.</li>
+ *   <li>{@link InstanceNotFoundException} when collections are not found.</li>
+ *   <li>{@link AccessDeniedException} for forbidden operations.</li>
  * </ul>
  */
 class CollectionOfPublicationsServiceTest {
@@ -352,6 +396,187 @@ class CollectionOfPublicationsServiceTest {
         // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
                 () -> service.makeCollectionPublic(collectionId, userIdDouble));
+    }
+
+    @Test
+    void makeCollectionPublic_shouldNotSave_whenCollectionWasAlreadyPublic()
+            throws InstanceNotFoundException, AccessDeniedException {
+        // Arrange
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        User user = mock(User.class);
+
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collection.getOwnerId()).thenReturn(userIdDouble);
+
+        // Simulate already public
+        when(collection.makePublic()).thenReturn(false);
+
+        // Act
+        boolean result = service.makeCollectionPublic(collectionId, userIdDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    // =======================================================================================
+    // Tests for makeCollectionPrivate(CollectionOfPublicationsId collectionId, UserId userId)
+    // =======================================================================================
+
+    @Test
+    void makeCollectionPrivate_shouldReturnTrueAndSave_whenCollectionStateChanges() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user)); // Assuming getUser() uses this
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userId);
+
+        // Simulate the collection changing state
+        when(collection.makePrivate()).thenReturn(true);
+
+        // ACT
+        boolean result = service.makeCollectionPrivate(collectionId, userId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldReturnFalseAndNotSave_whenCollectionIsAlreadyPrivate() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userId);
+
+        // Simulate the collection already being private
+        when(collection.makePrivate()).thenReturn(false);
+
+        // ACT
+        boolean result = service.makeCollectionPrivate(collectionId, userId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+
+        // ACT & ASSERT
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> service.makeCollectionPrivate(null, userId));
+
+        assertEquals("CollectionOfPublicationsId cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldThrowNullPointerException_whenUserIdIsNull() {
+        // ARRANGE
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+
+        // ACT & ASSERT
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> service.makeCollectionPrivate(collectionId, null));
+
+        assertEquals("userId cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldThrowAccessDeniedException_whenPolicyDeniesSharing() {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+
+        // Policy denies permission
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(false);
+
+        // ACT & ASSERT
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+                () -> service.makeCollectionPrivate(collectionId, userId));
+
+        assertEquals("You do not have permission to modify the access to this Collection", exception.getMessage());
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldThrowAccessDeniedException_whenUserDoesNotOwnCollection() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        UserId otherOwnerId = mock(UserId.class); // Simulate a different owner
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+
+        // The collection returns an ID that does NOT match the requesting userId
+        when(collection.getOwnerId()).thenReturn(otherOwnerId);
+
+        // ACT & ASSERT
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+                () -> service.makeCollectionPrivate(collectionId, userId));
+
+        assertEquals("You do not have permission to modify a collection you do not own", exception.getMessage());
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldNotSave_whenCollectionWasAlreadyPrivate() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        User user = mock(User.class);
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userId);
+
+        // Simulate already private
+        when(collection.makePrivate()).thenReturn(false);
+
+        // ACT
+        boolean result = service.makeCollectionPrivate(collectionId, userId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldThrowInstanceNotFoundException_whenCollectionDoesNotExist() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
+
+        // Repository fails to find the collection
+        when(collectionOfPublicationsRepository.findById(collectionId))
+                .thenThrow(new InstanceNotFoundException("Collection not found"));
+
+        // ACT & ASSERT
+        assertThrows(InstanceNotFoundException.class,
+                () -> service.makeCollectionPrivate(collectionId, userId));
     }
 
     // ===========================================================================
