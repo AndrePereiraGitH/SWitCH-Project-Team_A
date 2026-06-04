@@ -1,17 +1,17 @@
 const API_BASE = "http://localhost:8081";
 
 async function request(url, options = {}) {
-    const fullUrl = url.startsWith("http") ? url : `${API_BASE}${url}`;
-    const res = await fetch(fullUrl, {
-        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-        ...options,
-    });
-    if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
-    }
-    if (res.status === 204) return null;
-    return res.json();
+  const fullUrl = url.startsWith("http") ? url : `${API_BASE}${url}`;
+  const res = await fetch(fullUrl, {
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    ...options,
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+  }
+  if (res.status === 204) return null;
+  return res.json();
 }
 
 export const api = {
@@ -23,5 +23,5 @@ export const api = {
 };
 
 export function linkHref(resource, rel) {
-    return resource?._links?.[rel]?.href;
+  return resource?._links?.[rel]?.href;
 }

@@ -92,9 +92,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toDetailsDTO_throwsOnNullPublication() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 PublicationSampleMapper.toDetailsDTO(
                         null,
@@ -105,9 +102,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toDetailsDTO_throwsOnNullBd() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 PublicationSampleMapper.toDetailsDTO(
                         mockPublication("id", Condition.GOOD),
@@ -118,9 +112,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toDetailsDTO_throwsOnNullAuthors() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 PublicationSampleMapper.toDetailsDTO(
                         mockPublication("id", Condition.GOOD),
@@ -131,9 +122,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toDetailsDTO_throwsOnNullEdition() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 PublicationSampleMapper.toDetailsDTO(
                         mockPublication("id", Condition.GOOD),
@@ -179,8 +167,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toDetailsDTOs_emptyListReturnsEmpty() {
-        // Arrange
-
         // Act
         List<PublicationDetailsDTO> dtos =
                 PublicationSampleMapper.toDetailsDTOs(
@@ -192,13 +178,93 @@ class PublicationSampleMapperTest {
 
     @Test
     void toDetailsDTOs_throwsOnNullPublications() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 PublicationSampleMapper.toDetailsDTOs(
                         null, List.of(), List.of(), List.of()));
     }
+
+    // -------------------------------------------------------------------------
+    // toPublicationDTO
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toPublicationDTO_returnsCorrectDTO_withAllFields() {
+        // Arrange
+        PublicationSample pub = mockPublication("pub-1", Condition.GOOD);
+
+        LibraryId libId = mock(LibraryId.class);
+        when(libId.getId()).thenReturn("lib-123");
+        when(pub.getLibraryID()).thenReturn(libId);
+
+        CollectionOfPublicationsId collId = mock(CollectionOfPublicationsId.class);
+        when(collId.getId()).thenReturn("coll-456");
+        when(pub.getCollecOfPubID()).thenReturn(collId);
+
+        BibliographicalData bd = mockBd("The Pragmatic Programmer");
+        List<Author> authors = List.of(mockAuthor("Andy Hunt"), mockAuthor("Dave Thomas"));
+        List<Genre> genres = List.of(mockGenre("Programming"));
+        User owner = mockUser("dev_user");
+
+        // Act
+        PublicationDTO dto = PublicationSampleMapper.toPublicationDTO(pub, bd, authors, genres, owner);
+
+        // Assert
+        assertEquals("pub-1", dto.getId());
+        assertEquals("dev_user", dto.getOwnerName());
+        assertEquals(List.of("Programming"), dto.getGenres());
+    }
+
+    @Test
+    void toPublicationDTO_returnsCorrectDTO_whenLibraryAndCollectionAreNull() {
+        // Arrange
+        PublicationSample pub = mockPublication("pub-1", Condition.POOR);
+        when(pub.getLibraryID()).thenReturn(null);
+        when(pub.getCollecOfPubID()).thenReturn(null);
+
+        BibliographicalData bd = mockBd("The Pragmatic Programmer");
+        List<Author> authors = List.of(mockAuthor("Andy Hunt"));
+        List<Genre> genres = List.of(mockGenre("Programming"));
+        User owner = mockUser("dev_user");
+
+        // Act
+        PublicationDTO dto = PublicationSampleMapper.toPublicationDTO(pub, bd, authors, genres, owner);
+
+        // Assert
+        assertEquals("pub-1", dto.getId());
+        assertEquals("dev_user", dto.getOwnerName());
+        assertEquals(List.of("Programming"), dto.getGenres());
+    }
+
+    @Test
+    void toPublicationDTO_throwsOnNullPublication() {
+        assertThrows(NullPointerException.class, () ->
+                PublicationSampleMapper.toPublicationDTO(null, mockBd("Title"), List.of(), List.of(), mockUser("u")));
+    }
+
+    @Test
+    void toPublicationDTO_throwsOnNullBd() {
+        assertThrows(NullPointerException.class, () ->
+                PublicationSampleMapper.toPublicationDTO(mockPublication("1", Condition.NEW), null, List.of(), List.of(), mockUser("u")));
+    }
+
+    @Test
+    void toPublicationDTO_throwsOnNullAuthors() {
+        assertThrows(NullPointerException.class, () ->
+                PublicationSampleMapper.toPublicationDTO(mockPublication("1", Condition.NEW), mockBd("Title"), null, List.of(), mockUser("u")));
+    }
+
+    @Test
+    void toPublicationDTO_throwsOnNullGenres() {
+        assertThrows(NullPointerException.class, () ->
+                PublicationSampleMapper.toPublicationDTO(mockPublication("1", Condition.NEW), mockBd("Title"), List.of(), null, mockUser("u")));
+    }
+
+    @Test
+    void toPublicationDTO_throwsOnNullOwner() {
+        assertThrows(NullPointerException.class, () ->
+                PublicationSampleMapper.toPublicationDTO(mockPublication("1", Condition.NEW), mockBd("Title"), List.of(), List.of(), null));
+    }
+
 
     // -------------------------------------------------------------------------
     // toPublicationDTOs
@@ -234,6 +300,18 @@ class PublicationSampleMapperTest {
         assertEquals(List.of("Fiction"), dtos.get(0).getGenres());
     }
 
+    @Test
+    void toPublicationDTOs_emptyListReturnsEmpty() {
+        assertTrue(PublicationSampleMapper.toPublicationDTOs(List.of(), List.of(), List.of(), List.of(), List.of()).isEmpty());
+    }
+
+    @Test
+    void toPublicationDTOs_throwsOnNullPublications() {
+        assertThrows(NullPointerException.class, () ->
+                PublicationSampleMapper.toPublicationDTOs(null, List.of(), List.of(), List.of(), List.of()));
+    }
+
+
     // -------------------------------------------------------------------------
     // toReferenceDTO
     // -------------------------------------------------------------------------
@@ -254,18 +332,12 @@ class PublicationSampleMapperTest {
 
     @Test
     void toReferenceDTO_throwsOnNullPublication() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 PublicationSampleMapper.toReferenceDTO(null, mockBd("Title")));
     }
 
     @Test
     void toReferenceDTO_throwsOnNullBd() {
-        // Arrange
-
-        // Act & Assert
         assertThrows(NullPointerException.class, () ->
                 PublicationSampleMapper.toReferenceDTO(mockPublication("id", Condition.GOOD), null));
     }
@@ -298,9 +370,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toReferenceDTOs_emptyListReturnsEmpty() {
-        // Arrange
-
-        // Act & Assert
         assertTrue(PublicationSampleMapper.toReferenceDTOs(List.of(), List.of()).isEmpty());
     }
 
@@ -311,8 +380,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toPubId_wrapsId() {
-        // Arrange
-
         // Act
         PublicationSampleId id = PublicationSampleMapper.toPubId("pub-99");
 
@@ -322,8 +389,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toBdId_wrapsId() {
-        // Arrange
-
         // Act
         BibliographicalDataId id = PublicationSampleMapper.toBdId("bd-42");
 
@@ -333,8 +398,6 @@ class PublicationSampleMapperTest {
 
     @Test
     void toEditionId_wrapsId() {
-        // Arrange
-
         // Act
         EditionId id = PublicationSampleMapper.toEditionId("ed-7");
 
@@ -489,7 +552,9 @@ class PublicationSampleMapperTest {
         PublicationSampleId pubId = mock(PublicationSampleId.class);
         when(pubId.getID()).thenReturn(id);
         when(pub.id()).thenReturn(pubId);
-        when(pub.getCondition()).thenReturn(Condition.NEW);
+
+        when(pub.getCondition()).thenReturn(condition);
+
         return pub;
     }
 

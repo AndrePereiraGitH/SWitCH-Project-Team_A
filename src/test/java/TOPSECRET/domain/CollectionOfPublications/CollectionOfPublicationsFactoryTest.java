@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import org.junit.jupiter.api.BeforeEach;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * Unit tests for {@link CollectionOfPublicationsFactory}.
@@ -117,7 +117,7 @@ class CollectionOfPublicationsFactoryTest {
         // Arrange
         String name = "Fantasy Collection";
         boolean isPrivate = true;
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
 
 
@@ -143,7 +143,7 @@ class CollectionOfPublicationsFactoryTest {
     @Test
     void recreateShouldThrowExceptionWhenIdIsNull() {
 
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
 
         factory = new CollectionOfPublicationsFactory();
 
@@ -161,7 +161,7 @@ class CollectionOfPublicationsFactoryTest {
     @Test
     void recreateShouldThrowExceptionWhenNameIsNull() {
         // arrange
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
 
         // act + assert
@@ -180,7 +180,7 @@ class CollectionOfPublicationsFactoryTest {
     void recreateShouldThrowExceptionWhenGenreIdIsNull() {
 
         // arrange
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
 
         // act + assert
@@ -198,7 +198,7 @@ class CollectionOfPublicationsFactoryTest {
     @Test
     void recreateShouldThrowExceptionWhenUserIdIsNull() {
         // arrange
-        LocalDateTime publicUntil = LocalDateTime.now().plusDays(5);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
         factory = new CollectionOfPublicationsFactory();
 
         // act + assert

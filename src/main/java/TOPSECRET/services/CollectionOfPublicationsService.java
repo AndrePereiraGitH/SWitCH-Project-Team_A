@@ -9,12 +9,14 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.collectionOfPublications.CollectionOfPublicationsMapper;
+import TOPSECRET.dto.collectionOfPublications.response.PublicCollectionOfPublicationsDTO;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -100,6 +102,24 @@ public class CollectionOfPublicationsService {
     }
 
     /**
+     * Retrieves the username associated with the given user identifier.
+     *
+     * <p>This method delegates user lookup to the underlying user repository
+     * and returns the username of the matching {@link User}.</p>
+     *
+     * @param userId the identifier of the user whose username is to be retrieved;
+     *               must not be {@code null}
+     * @return the username of the corresponding user
+     * @throws UsernameNotFoundException if no user exists with the given identifier
+     */
+    public String getUserName(UserId userId) {
+
+        Objects.requireNonNull(userId, "userId cannot be null");
+
+        return getUser(userId).getUserName();
+    }
+
+    /**
      * Creates and persists a new {@link CollectionOfPublications}.
      *
      * <p>This method retrieves the user, verifies they are authorized to create
@@ -178,7 +198,7 @@ public class CollectionOfPublicationsService {
         boolean changed = collection.makePublic();
 
         if (changed) {
-            collectionOfPublicationsRepository.update(collection);
+            collectionOfPublicationsRepository.save(collection);
         }
 
         return changed;
@@ -205,7 +225,7 @@ public class CollectionOfPublicationsService {
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
      */
     public boolean makeCollectionPublicUntil(
-            CollectionOfPublicationsId collectionId, LocalDateTime publicUntil, UserId userId)
+            CollectionOfPublicationsId collectionId, LocalDate publicUntil, UserId userId)
             throws InstanceNotFoundException, AccessDeniedException {
 
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
@@ -213,7 +233,7 @@ public class CollectionOfPublicationsService {
         Objects.requireNonNull(userId, "userId cannot be null");
 
 
-        if (!publicUntil.isAfter(LocalDateTime.now())) {
+        if (!publicUntil.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Public until date must be in the future");
         }
 
@@ -236,7 +256,7 @@ public class CollectionOfPublicationsService {
         boolean changed = collection.makePublicUntil(publicUntil);
 
         if (changed) {
-            collectionOfPublicationsRepository.update(collection);
+            collectionOfPublicationsRepository.save(collection);
         }
 
         return changed;
@@ -301,5 +321,60 @@ public class CollectionOfPublicationsService {
         Objects.requireNonNull(genreId, "genreId cannot be null");
 
         return collectionOfPublicationsRepository.findPublicCollectionsByGenreId(genreId);
+    }
+
+    /**
+     * Retrieves all collections that are currently public and maps them into
+     * {@link PublicCollectionOfPublicationsDTO}.
+     *
+     * <p>A collection is considered public if it satisfies the domain rule
+     * defined in {@link CollectionOfPublications#isCurrentlyPublic()}.</p>
+     *
+     * <p>This method performs full orchestration:</p>
+     * <ul>
+     *     <li>retrieves all collections from the repository</li>
+     *     <li>filters only currently public collections</li>
+     *     <li>resolves the owner's username</li>
+     *     <li>maps the result into DTOs for API exposure</li>
+     * </ul>
+     *
+     * @return a list of {@link PublicCollectionOfPublicationsDTO}; may be empty
+     * @throws NullPointerException if repository returns null (defensive check)
+     */
+    public List<PublicCollectionOfPublicationsDTO> findAllPublicCollections() {
+        return collectionOfPublicationsRepository.findAll()
+                .stream()
+                .filter(CollectionOfPublications::isCurrentlyPublic)
+                .map(c -> {
+                    String ownerName = getUserName(c.getOwnerId());
+                    return CollectionOfPublicationsMapper.toPublicDTO(c, ownerName);
+                })
+                .toList();
+    }
+
+    /**
+     * Retrieves all {@link CollectionOfPublications} in the system.
+     *
+     * <p>This operation is restricted to administrative users only. Authorization
+     * is enforced via {@link CollectionOfPublicationsAuthorizationPolicy#canViewAllCollections(User)}.</p>
+     *
+     * <p>No filtering is applied; all persisted collections are returned.</p>
+     *
+     * @param requesterId the identifier of the user requesting the operation; must not be {@code null}
+     * @return a list of all collections in the system; may be empty
+     * @throws NullPointerException if {@code requesterId} is {@code null}
+     * @throws AccessDeniedException if the user is not authorized to view all collections
+     */
+    public List<CollectionOfPublications> findAllCollections(UserId requesterId) {
+
+        Objects.requireNonNull(requesterId, "requesterId cannot be null");
+
+        User user = getUser(requesterId);
+
+        if (!policy.canViewAllCollections(user)) {
+            throw new AccessDeniedException("User not authorized to view all collections");
+        }
+
+        return collectionOfPublicationsRepository.findAll();
     }
 }

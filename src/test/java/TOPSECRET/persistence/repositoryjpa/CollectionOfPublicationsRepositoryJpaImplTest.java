@@ -15,7 +15,6 @@ import org.mockito.MockitoAnnotations;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -121,20 +120,6 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         assertSame(collection, result);
     }
 
-    @Test
-    void save_shouldThrowWhenCollectionAlreadyExists() {
-
-        // Arrange
-        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublications collection = mock(CollectionOfPublications.class);
-
-        when(collection.id()).thenReturn(id);
-        when(jpa.existsById(id)).thenReturn(true);
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> repo.save(collection));
-    }
 
     @Test
     void save_shouldThrowExceptionWhenCollectionIsNull() {
@@ -142,51 +127,6 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> repo.save(null));
-    }
-
-    // ===========================================================
-    // ========== Tests for Update ===============================
-    // ===========================================================
-
-    @Test
-    void update_shouldReturnUpdatedCollection_whenCollectionIsValid() {
-        // arrange
-        CollectionOfPublications collection =
-                mock(CollectionOfPublications.class);
-
-        CollectionOfPublicationsDM collectionDMToUpdate =
-                mock(CollectionOfPublicationsDM.class);
-
-        CollectionOfPublicationsDM updatedCollectionDM =
-                mock(CollectionOfPublicationsDM.class);
-
-        CollectionOfPublications updatedCollection =
-                mock(CollectionOfPublications.class);
-
-        when(assembler.toDM(collection))
-                .thenReturn(collectionDMToUpdate);
-
-        when(jpa.save(collectionDMToUpdate))
-                .thenReturn(updatedCollectionDM);
-
-        when(assembler.toDomain(updatedCollectionDM))
-                .thenReturn(updatedCollection);
-
-        // act
-        CollectionOfPublications result = repo.update(collection);
-
-        // assert
-        assertEquals(updatedCollection, result);
-
-
-    }
-
-    @Test
-    void update_shouldThrow_whenCollectionIsNull() {
-
-        // act + assert
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> repo.update(null));
-        assertEquals("collection cannot be null", ex.getMessage());
     }
 
     // ===========================================================
@@ -239,7 +179,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     void findById_shouldThrow_whenCollectionIsNull() {
 
         //act + assert
-        NullPointerException ex = assertThrows(NullPointerException.class, () ->repo.findById(null));
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> repo.findById(null));
         assertEquals("CollectionOfPublications Id cannot be null", ex.getMessage());
 
     }
@@ -284,7 +224,7 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     void findAllByOwnerId_shouldThrow_whenOwnerIdIsNull() {
 
         // act + assert
-        NullPointerException ex = assertThrows(NullPointerException.class, ()-> repo.findAllByOwnerId(null));
+        NullPointerException ex = assertThrows(NullPointerException.class, () -> repo.findAllByOwnerId(null));
         assertEquals("ownerId cannot be null", ex.getMessage());
     }
 
@@ -318,6 +258,94 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     }
 
     // ===========================================================
+    // ========== findAllPublicCollections =======================
+    // ===========================================================
+
+    @Test
+    void findAllPublicCollections_shouldReturnOnlyCurrentlyPublicCollections() {
+
+        // ARRANGE
+        GenreId genreId = mock(GenreId.class);
+
+        CollectionOfPublicationsDM dm1 = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublicationsDM dm2 = mock(CollectionOfPublicationsDM.class);
+
+        CollectionOfPublications domain1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications domain2 = mock(CollectionOfPublications.class);
+
+        when(jpa.findByGenreIdAndIsPrivateFalse(genreId))
+                .thenReturn(List.of(dm1, dm2));
+
+        when(assembler.toDomain(dm1)).thenReturn(domain1);
+        when(assembler.toDomain(dm2)).thenReturn(domain2);
+
+        when(domain1.isCurrentlyPublic()).thenReturn(true);
+        when(domain2.isCurrentlyPublic()).thenReturn(false);
+
+        CollectionOfPublicationsRepositoryJpaImpl repo =
+                new CollectionOfPublicationsRepositoryJpaImpl(jpa, assembler);
+
+        // ACT
+        List<CollectionOfPublications> result =
+                repo.findPublicCollectionsByGenreId(genreId);
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertTrue(result.contains(domain1));
+        assertFalse(result.contains(domain2));
+    }
+
+    @Test
+    void findAllPublicCollections_shouldReturnEmptyList_whenNoData() {
+
+        // ARRANGE
+        when(jpa.findAll()).thenReturn(List.of());
+
+        CollectionOfPublicationsRepositoryJpaImpl repo =
+                new CollectionOfPublicationsRepositoryJpaImpl(
+                        jpa,
+                        assembler
+                );
+
+        // ACT
+        List<CollectionOfPublications> result = repo.findAllPublicCollections();
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    // ===========================================================
+    // ========== Find All =======================================
+    // ===========================================================
+
+    @Test
+    void findAll_shouldReturnMappedDomainObjects() {
+
+        // ARRANGE
+        CollectionOfPublicationsDM dm1 = mock(CollectionOfPublicationsDM.class);
+        CollectionOfPublicationsDM dm2 = mock(CollectionOfPublicationsDM.class);
+
+        CollectionOfPublications domain1 = mock(CollectionOfPublications.class);
+        CollectionOfPublications domain2 = mock(CollectionOfPublications.class);
+
+        when(jpa.findAll()).thenReturn(List.of(dm1, dm2));
+
+        when(assembler.toDomain(dm1)).thenReturn(domain1);
+        when(assembler.toDomain(dm2)).thenReturn(domain2);
+
+        CollectionOfPublicationsRepositoryJpaImpl repo =
+                new CollectionOfPublicationsRepositoryJpaImpl(jpa, assembler);
+
+        // ACT
+        List<CollectionOfPublications> result = repo.findAll();
+
+        // ASSERT
+        assertEquals(2, result.size());
+        assertTrue(result.contains(domain1));
+        assertTrue(result.contains(domain2));
+    }
+
+    // ===========================================================
     // ========== Default return methods =========================
     // ===========================================================
 
@@ -347,17 +375,18 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
         CollectionOfPublications publicCollection = mock(CollectionOfPublications.class);
         CollectionOfPublications privateCollection = mock(CollectionOfPublications.class);
 
-        when(publicCollection.getIsPrivate()).thenReturn(false);
-        when(privateCollection.getIsPrivate()).thenReturn(true);
+        when(publicCollection.isCurrentlyPublic()).thenReturn(true);
+        when(privateCollection.isCurrentlyPublic()).thenReturn(false);
 
-        when(jpa.findPublicCollectionsByGenreId(genreIdDouble))
+        when(jpa.findByGenreIdAndIsPrivateFalse(genreIdDouble))
                 .thenReturn(List.of(publicDM, privateDM));
 
         when(assembler.toDomain(publicDM)).thenReturn(publicCollection);
         when(assembler.toDomain(privateDM)).thenReturn(privateCollection);
 
         // ACT
-        List<CollectionOfPublications> result = repo.findPublicCollectionsByGenreId(genreIdDouble);
+        List<CollectionOfPublications> result =
+                repo.findPublicCollectionsByGenreId(genreIdDouble);
 
         // ASSERT
         assertEquals(1, result.size(), "One public collection found matching this genre");
