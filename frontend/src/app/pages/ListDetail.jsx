@@ -27,7 +27,7 @@ export function ListDetail() {
     // Publications in this collection — matched by collectionId on the publication
     const publicationsInList = publications.filter(p => p.collectionId === list.collectionId);
     const notInList = publications.filter(
-        p => p.collectionId !== list.collectionId && p.libraryId != null
+        p => p.collectionId == null && p.libraryId != null
     );
 
     const handleAddPublication = async (publicationId) => {

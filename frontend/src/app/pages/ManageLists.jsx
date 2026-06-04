@@ -94,7 +94,7 @@ export function ManageLists() {
     };
 
     const filteredPublications = publications
-        .filter(p => p.libraryId != null)
+        .filter(p => p.libraryId != null && p.collectionId == null)
         .filter(pub =>
             pub.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
             pub.author?.toLowerCase().includes(searchQuery.toLowerCase())
