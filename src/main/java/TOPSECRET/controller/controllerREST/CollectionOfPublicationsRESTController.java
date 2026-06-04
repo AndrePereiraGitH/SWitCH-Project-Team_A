@@ -175,6 +175,59 @@ public class CollectionOfPublicationsRESTController {
     }
 
     /**
+     * Changes the visibility of a specified collection of publications to private.
+     *
+     * <p>Requires the requesting user to be authorized for this operation (e.g., the owner of the collection).
+     * Upon success, the returned DTO is enriched with a self-link and other navigational
+     * HATEOAS links based on the user's permissions.</p>
+     *
+     * @param collectionId the unique identifier of the collection to be made private
+     * @param userId       the unique identifier of the user performing the request
+     * @return HTTP 200 OK with the updated {@link ResponseCollectionOfPublicationsDTO},
+     * HTTP 400 BAD REQUEST if the provided identifiers are invalid,
+     * HTTP 403 FORBIDDEN if the user lacks the necessary permissions,
+     * or HTTP 500 INTERNAL SERVER ERROR if an unexpected error occurs (e.g., entity not found).
+     */
+    @PatchMapping("/{collectionId}/make-private")
+    public ResponseEntity<ResponseCollectionOfPublicationsDTO> makeCollectionPrivate(
+            @PathVariable String collectionId,
+            @RequestParam String userId) {
+
+        try {
+
+            CollectionOfPublicationsId collectionIdVO =
+                    CollectionOfPublicationsMapper.toCollectionId(collectionId);
+
+            UserId userIdVO =
+                    CollectionOfPublicationsMapper.toUserId(userId);
+
+            collectionService.makeCollectionPrivate(collectionIdVO, userIdVO);
+
+            CollectionOfPublications collection = collectionService.findById(collectionIdVO);
+
+            ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collection);
+
+            List<Link> links = linkProvider.getLinksForCollectionOfPublications(userIdVO);
+            links.forEach(result::add);
+
+            result.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .makeCollectionPrivate(collectionId, userId))
+                    .withSelfRel());
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Makes the specified collection of publications public until the given date.
      *
      * <p>Delegates the operation to {@link CollectionOfPublicationsService}, then retrieves

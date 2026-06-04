@@ -205,6 +205,58 @@ public class CollectionOfPublicationsService {
     }
 
     /**
+     * Sets a collection of publications as private for its owner.
+     * <p>
+     * This method validates the input parameters, checks whether the user has
+     * permission to modify the collection, verifies ownership, and then attempts
+     * to change the collection's visibility to private.
+     * </p>
+     *
+     * <p>
+     * If the collection is already private, no changes are persisted and the method
+     * returns {@code false}. If the state changes successfully, the updated entity
+     * is saved and the method returns {@code true}.
+     * </p>
+     *
+     * @param collectionId the identifier of the collection of publications to be modified
+     * @param userId the identifier of the user attempting the operation
+     * @return {@code true} if the collection visibility was changed to private,
+     *         {@code false} if no change was needed
+     *
+     * @throws NullPointerException if {@code collectionId} or {@code userId} is null
+     * @throws InstanceNotFoundException if the collection or user cannot be found
+     * @throws AccessDeniedException if the user does not have permission to modify
+     *         the collection or is not its owner
+     */
+
+    public boolean makeCollectionPrivate(CollectionOfPublicationsId collectionId, UserId userId)
+            throws InstanceNotFoundException, AccessDeniedException {
+
+        Objects.requireNonNull(collectionId, "CollectionOfPublicationsId cannot be null");
+        Objects.requireNonNull(userId, "userId cannot be null");
+
+        User user = getUser(userId);
+
+        if (!policy.canShareCollectionOfPublications(user)) {
+            throw new AccessDeniedException("You do not have permission to modify the access to this Collection");
+        }
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
+
+        if (!collection.getOwnerId().equals(userId)) {
+            throw new AccessDeniedException(
+                    "You do not have permission to modify a collection you do not own");
+        }
+        boolean changed = collection.makePrivate();
+
+        if (changed) {
+            collectionOfPublicationsRepository.save(collection);
+        }
+
+        return changed;
+    }
+
+    /**
      * Makes a collection of publications public until the specified date and time.
      *
      * <p>The user must be authorized to perform this operation and must own the collection.
