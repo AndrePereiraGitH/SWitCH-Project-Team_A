@@ -553,7 +553,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        false
                 );
 
         Link providerLink =
