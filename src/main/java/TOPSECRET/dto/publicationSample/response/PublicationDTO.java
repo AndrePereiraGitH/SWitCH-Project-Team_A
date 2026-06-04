@@ -28,6 +28,8 @@ public class PublicationDTO extends RepresentationModel<PublicationDTO> {
     private String language;
     private List<String> genres;
     private String ownerName;
+    private String libraryId;
     private String condition;
+    private String collectionId;
 
 }

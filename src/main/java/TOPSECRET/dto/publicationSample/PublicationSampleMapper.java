@@ -128,7 +128,10 @@ public class PublicationSampleMapper {
                 bd.getOriginalLanguage().toString(),
                 genreTypes(genres),
                 owner.getUserName(),
-                publication.getCondition().toString());
+                publication.getLibraryID() != null ? publication.getLibraryID().getId() : null,  // libraryId
+                publication.getCondition().toString(),                                             // condition
+                publication.getCollecOfPubID() != null ? publication.getCollecOfPubID().getId() : null  // collectionId
+        );
     }
 
     /**
