@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,8 +22,9 @@ import static org.mockito.Mockito.when;
  * Unit tests for {@link CollectionOfPublicationsMapper}.
  *
  * <p>Verifies correct mapping from {@link CollectionOfPublications} domain objects
- * to {@link ResponseCollectionOfPublicationsDTO}, including single and list mappings,
- * null handling, and filtering of null elements within lists.</p>
+ * to {@link ResponseCollectionOfPublicationsDTO} and {@link PublicCollectionOfPublicationsDTO},
+ * including single and list mappings, null handling, filtering of null elements,
+ * and value object conversions.</p>
  */
 class CollectionOfPublicationsMapperTest {
 
@@ -37,6 +39,7 @@ class CollectionOfPublicationsMapperTest {
         when(idDouble.getId()).thenReturn("collection-123");
         when(idDouble.toString()).thenReturn("collection-123");
         when(collectionDouble.getCollectionName()).thenReturn("My Collection");
+        when(collectionDouble.getIsPrivate()).thenReturn(true);
     }
 
     // -------------------------------------------------------------------------
@@ -45,25 +48,43 @@ class CollectionOfPublicationsMapperTest {
 
     @Test
     void toDTO_ShouldReturnCollectionNameCorrectly() {
-        // ACT
         ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collectionDouble);
-
-        // ASSERT
         assertEquals("My Collection", result.getCollectionName());
     }
 
     @Test
     void toDTO_ShouldReturnCollectionIdCorrectly() {
-        // ACT
         ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collectionDouble);
-
-        // ASSERT
         assertEquals("collection-123", result.getCollectionId());
     }
 
     @Test
+    void toDTO_ShouldReturnIsPrivateTrue_WhenCollectionIsPrivate() {
+        when(collectionDouble.getIsPrivate()).thenReturn(true);
+        ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collectionDouble);
+        assertTrue(result.isPrivate());
+    }
+
+    @Test
+    void toDTO_ShouldReturnIsPrivateFalse_WhenCollectionIsPublic() {
+        when(collectionDouble.getIsPrivate()).thenReturn(false);
+        ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collectionDouble);
+        assertFalse(result.isPrivate());
+    }
+
+    @Test
+    void toDTO_ShouldMapAllFieldsCorrectly() {
+        when(collectionDouble.getIsPrivate()).thenReturn(false);
+        ResponseCollectionOfPublicationsDTO result = CollectionOfPublicationsMapper.toDTO(collectionDouble);
+        assertAll(
+                () -> assertEquals("My Collection", result.getCollectionName()),
+                () -> assertEquals("collection-123", result.getCollectionId()),
+                () -> assertFalse(result.isPrivate())
+        );
+    }
+
+    @Test
     void toDTO_ShouldThrowNullPointerException_WhenCollectionIsNull() {
-        // ACT & ASSERT
         assertThrows(NullPointerException.class, () -> CollectionOfPublicationsMapper.toDTO(null));
     }
 
@@ -73,46 +94,80 @@ class CollectionOfPublicationsMapperTest {
 
     @Test
     void toDTOList_ShouldReturnCorrectListSize() {
-        // ARRANGE
         List<CollectionOfPublications> collections = List.of(collectionDouble);
-
-        // ACT
         List<ResponseCollectionOfPublicationsDTO> result = CollectionOfPublicationsMapper.toDTOList(collections);
-
-        // ASSERT
         assertEquals(1, result.size());
     }
 
     @Test
+    void toDTOList_ShouldMapEachElement() {
+        CollectionOfPublications second = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsId secondId = mock(CollectionOfPublicationsId.class);
+        when(second.id()).thenReturn(secondId);
+        when(secondId.toString()).thenReturn("collection-456");
+        when(second.getCollectionName()).thenReturn("Second Collection");
+        when(second.getIsPrivate()).thenReturn(false);
+
+        List<ResponseCollectionOfPublicationsDTO> result =
+                CollectionOfPublicationsMapper.toDTOList(List.of(collectionDouble, second));
+
+        assertEquals(2, result.size());
+        assertEquals("My Collection", result.get(0).getCollectionName());
+        assertEquals("Second Collection", result.get(1).getCollectionName());
+    }
+
+    @Test
+    void toDTOList_ShouldPreserveIsPrivate_ForEachElement() {
+        when(collectionDouble.getIsPrivate()).thenReturn(true);
+
+        CollectionOfPublications publicCollection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsId publicId = mock(CollectionOfPublicationsId.class);
+        when(publicCollection.id()).thenReturn(publicId);
+        when(publicId.toString()).thenReturn("collection-789");
+        when(publicCollection.getCollectionName()).thenReturn("Public Collection");
+        when(publicCollection.getIsPrivate()).thenReturn(false);
+
+        List<ResponseCollectionOfPublicationsDTO> result =
+                CollectionOfPublicationsMapper.toDTOList(List.of(collectionDouble, publicCollection));
+
+        assertTrue(result.get(0).isPrivate());
+        assertFalse(result.get(1).isPrivate());
+    }
+
+    @Test
     void toDTOList_ShouldReturnEmptyList_WhenListIsEmpty() {
-        // ARRANGE
-        List<CollectionOfPublications> collections = List.of();
-
-        // ACT
-        List<ResponseCollectionOfPublicationsDTO> result = CollectionOfPublicationsMapper.toDTOList(collections);
-
-        // ASSERT
+        List<ResponseCollectionOfPublicationsDTO> result =
+                CollectionOfPublicationsMapper.toDTOList(List.of());
         assertTrue(result.isEmpty());
     }
 
     @Test
     void toDTOList_ShouldThrowNullPointerException_WhenListIsNull() {
-        // ACT & ASSERT
         assertThrows(NullPointerException.class, () -> CollectionOfPublicationsMapper.toDTOList(null));
     }
 
     @Test
     void toDTOList_ShouldIgnoreNullElements_WhenListContainsNulls() {
-        // ARRANGE
-        List<CollectionOfPublications> collections = new java.util.ArrayList<>();
+        List<CollectionOfPublications> collections = new ArrayList<>();
         collections.add(collectionDouble);
         collections.add(null);
 
-        // ACT
-        List<ResponseCollectionOfPublicationsDTO> result = CollectionOfPublicationsMapper.toDTOList(collections);
+        List<ResponseCollectionOfPublicationsDTO> result =
+                CollectionOfPublicationsMapper.toDTOList(collections);
 
-        // ASSERT
         assertEquals(1, result.size());
+    }
+
+    @Test
+    void toDTOList_ShouldReturnEmptyList_WhenAllElementsAreNull() {
+        List<CollectionOfPublications> collections = new ArrayList<>();
+        collections.add(null);
+        collections.add(null);
+
+        List<ResponseCollectionOfPublicationsDTO> result =
+                CollectionOfPublicationsMapper.toDTOList(collections);
+
+        assertTrue(result.isEmpty());
     }
 
     // -------------------------------------------------------------------------
@@ -120,123 +175,27 @@ class CollectionOfPublicationsMapperTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void toGenreIdShouldReturnGenreIdWhenStringIsValid() {
-        // ARRANGE
-        String genreIdString = "genre-123";
-
-        // ACT
-        GenreId result = CollectionOfPublicationsMapper.toGenreId(genreIdString);
-
-        // ASSERT
-        assertEquals(genreIdString, result.getID());
+    void toGenreId_ShouldReturnGenreId_WhenStringIsValid() {
+        GenreId result = CollectionOfPublicationsMapper.toGenreId("genre-123");
+        assertEquals("genre-123", result.getID());
     }
 
     @Test
-    void toGenreIdShouldThrowIllegalArgumentExceptionWhenStringIsNull() {
-        // ACT & ASSERT
-        assertThrows(IllegalArgumentException.class, () -> CollectionOfPublicationsMapper.toGenreId(null));
+    void toGenreId_ShouldThrowIllegalArgumentException_WhenStringIsNull() {
+        assertThrows(IllegalArgumentException.class,
+                () -> CollectionOfPublicationsMapper.toGenreId(null));
     }
 
     @Test
-    void toGenreIdShouldThrowIllegalArgumentExceptionWhenStringIsBlank() {
-        // ACT & ASSERT
-        assertThrows(IllegalArgumentException.class, () -> CollectionOfPublicationsMapper.toGenreId("   "));
-    }
-
-    // -------------------------------------------------------------------------
-    // Constructor
-    // -------------------------------------------------------------------------
-
-    @Test
-    void constructor_ShouldThrowUnsupportedOperationException_WhenInstantiatedViaReflection() {
-        // ACT & ASSERT
-        assertThrows(InvocationTargetException.class, () -> {
-            java.lang.reflect.Constructor<CollectionOfPublicationsMapper> constructor =
-                    CollectionOfPublicationsMapper.class.getDeclaredConstructor();
-            constructor.setAccessible(true);
-            constructor.newInstance();
-        });
-    }
-
-    // -------------------------------------------------------------------------
-    // PublicDTO
-    // -------------------------------------------------------------------------
-
-    @Test
-    void toPublicDTO_ShouldMapCollectionCorrectly() {
-
-        // ARRANGE
-        CollectionOfPublications collectionDouble =
-                mock(CollectionOfPublications.class);
-
-        CollectionOfPublicationsId collectionIdDouble =
-                mock(CollectionOfPublicationsId.class);
-
-        UserId ownerIdDouble =
-                mock(UserId.class);
-
-        LocalDate publicUntil =
-                LocalDate.now().plusDays(5);
-
-        when(collectionDouble.id()).thenReturn(collectionIdDouble);
-        when(collectionDouble.getCollectionName()).thenReturn("My Collection");
-        when(collectionDouble.getOwnerId()).thenReturn(ownerIdDouble);
-        when(collectionDouble.getPublicUntil()).thenReturn(publicUntil);
-
-        when(collectionIdDouble.toString()).thenReturn("collection-123");
-
-        // ACT
-        PublicCollectionOfPublicationsDTO result =
-                CollectionOfPublicationsMapper.toPublicDTO(
-                        collectionDouble,
-                        "owner-123"
-                );
-
-        // ASSERT
-        assertEquals("collection-123", result.getCollectionId());
-        assertEquals("My Collection", result.getCollectionName());
-        assertEquals("owner-123", result.getOwnerName());
-        assertEquals(publicUntil, result.getPublicUntil());
+    void toGenreId_ShouldThrowIllegalArgumentException_WhenStringIsBlank() {
+        assertThrows(IllegalArgumentException.class,
+                () -> CollectionOfPublicationsMapper.toGenreId("   "));
     }
 
     @Test
-    void toPublicDTO_ShouldThrowNullPointerException_WhenCollectionIsNull() {
-
-        assertThrows(
-                NullPointerException.class,
-                () -> CollectionOfPublicationsMapper.toPublicDTO(
-                        null,
-                        "owner-123"
-                )
-        );
-    }
-
-    @Test
-    void toPublicDTO_ShouldAllowNullPublicUntil() {
-
-        CollectionOfPublications collection =
-                mock(CollectionOfPublications.class);
-
-        CollectionOfPublicationsId id =
-                mock(CollectionOfPublicationsId.class);
-
-        UserId owner =
-                mock(UserId.class);
-
-        when(collection.id()).thenReturn(id);
-        when(collection.getCollectionName()).thenReturn("A");
-        when(collection.getOwnerId()).thenReturn(owner);
-        when(collection.getPublicUntil()).thenReturn(null);
-
-        when(id.toString()).thenReturn("id-1");
-
-        PublicCollectionOfPublicationsDTO dto =
-                CollectionOfPublicationsMapper.toPublicDTO(
-                        collection,
-                        "owner-1"
-                );
-
-        assertNull(dto.getPublicUntil());
+    void toGenreId_ShouldThrowIllegalArgumentException_WhenStringIsEmpty() {
+        assertThrows(IllegalArgumentException.class,
+                () -> CollectionOfPublicationsMapper.toGenreId(""));
     }
 
     // -------------------------------------------------------------------------
@@ -245,34 +204,25 @@ class CollectionOfPublicationsMapperTest {
 
     @Test
     void toUserId_ShouldReturnUserId_WhenStringIsValid() {
-
-        // ARRANGE
-        String userId = "user-123";
-
-        // ACT
-        UserId result = CollectionOfPublicationsMapper.toUserId(userId);
-
-        // ASSERT
+        UserId result = CollectionOfPublicationsMapper.toUserId("user-123");
         assertEquals(new UserId("user-123"), result);
     }
 
     @Test
     void toUserId_ShouldReturnEquivalentValueObject_WhenStringIsValid() {
-        // ACT
         UserId result = CollectionOfPublicationsMapper.toUserId("user-123");
-
-        // ASSERT
         assertNotNull(result);
         assertEquals("user-123", result.getUserId());
     }
 
     @Test
     void toUserId_ShouldThrowException_WhenStringIsNull() {
+        assertThrows(Exception.class, () -> CollectionOfPublicationsMapper.toUserId(null));
+    }
 
-        assertThrows(
-                Exception.class,
-                () -> CollectionOfPublicationsMapper.toUserId(null)
-        );
+    @Test
+    void toUserId_ShouldThrowException_WhenStringIsBlank() {
+        assertThrows(Exception.class, () -> CollectionOfPublicationsMapper.toUserId("  "));
     }
 
     // -------------------------------------------------------------------------
@@ -281,37 +231,106 @@ class CollectionOfPublicationsMapperTest {
 
     @Test
     void toCollectionId_ShouldReturnCollectionId_WhenStringIsValid() {
-
-        // ARRANGE
-        String collectionId = "collection-123";
-
-        // ACT
         CollectionOfPublicationsId result =
-                CollectionOfPublicationsMapper.toCollectionId(collectionId);
-
-        // ASSERT
-        assertEquals(
-                new CollectionOfPublicationsId("collection-123"),
-                result
-        );
+                CollectionOfPublicationsMapper.toCollectionId("collection-123");
+        assertEquals(new CollectionOfPublicationsId("collection-123"), result);
     }
 
     @Test
     void toCollectionId_ShouldReturnEquivalentValueObject_WhenStringIsValid() {
-        // ACT
         CollectionOfPublicationsId result =
                 CollectionOfPublicationsMapper.toCollectionId("collection-123");
-
-        // ASSERT
+        assertNotNull(result);
         assertEquals(new CollectionOfPublicationsId("collection-123"), result);
     }
 
     @Test
     void toCollectionId_ShouldThrowException_WhenStringIsNull() {
+        assertThrows(Exception.class,
+                () -> CollectionOfPublicationsMapper.toCollectionId(null));
+    }
 
-        assertThrows(
-                Exception.class,
-                () -> CollectionOfPublicationsMapper.toCollectionId(null)
+    @Test
+    void toCollectionId_ShouldThrowException_WhenStringIsBlank() {
+        assertThrows(Exception.class,
+                () -> CollectionOfPublicationsMapper.toCollectionId("  "));
+    }
+
+    // -------------------------------------------------------------------------
+    // toPublicDTO
+    // -------------------------------------------------------------------------
+
+    @Test
+    void toPublicDTO_ShouldMapAllFieldsCorrectly() {
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
+
+        when(collection.id()).thenReturn(id);
+        when(id.toString()).thenReturn("collection-123");
+        when(collection.getCollectionName()).thenReturn("My Collection");
+        when(collection.getPublicUntil()).thenReturn(publicUntil);
+
+        PublicCollectionOfPublicationsDTO result =
+                CollectionOfPublicationsMapper.toPublicDTO(collection, "alice_smith");
+
+        assertAll(
+                () -> assertEquals("collection-123", result.getCollectionId()),
+                () -> assertEquals("My Collection", result.getCollectionName()),
+                () -> assertEquals("alice_smith", result.getOwnerName()),
+                () -> assertEquals(publicUntil, result.getPublicUntil())
         );
+    }
+
+    @Test
+    void toPublicDTO_ShouldAllowNullPublicUntil() {
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        when(collection.id()).thenReturn(id);
+        when(id.toString()).thenReturn("id-1");
+        when(collection.getCollectionName()).thenReturn("A");
+        when(collection.getPublicUntil()).thenReturn(null);
+
+        PublicCollectionOfPublicationsDTO result =
+                CollectionOfPublicationsMapper.toPublicDTO(collection, "owner-1");
+
+        assertNull(result.getPublicUntil());
+    }
+
+    @Test
+    void toPublicDTO_ShouldThrowNullPointerException_WhenCollectionIsNull() {
+        assertThrows(NullPointerException.class,
+                () -> CollectionOfPublicationsMapper.toPublicDTO(null, "owner-123"));
+    }
+
+    @Test
+    void toPublicDTO_ShouldAllowNullOwnerName() {
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        when(collection.id()).thenReturn(id);
+        when(id.toString()).thenReturn("id-1");
+        when(collection.getCollectionName()).thenReturn("A");
+        when(collection.getPublicUntil()).thenReturn(null);
+
+        PublicCollectionOfPublicationsDTO result =
+                CollectionOfPublicationsMapper.toPublicDTO(collection, null);
+
+        assertNull(result.getOwnerName());
+    }
+
+    // -------------------------------------------------------------------------
+    // Constructor
+    // -------------------------------------------------------------------------
+
+    @Test
+    void constructor_ShouldThrowUnsupportedOperationException_WhenInstantiatedViaReflection() {
+        assertThrows(InvocationTargetException.class, () -> {
+            java.lang.reflect.Constructor<CollectionOfPublicationsMapper> constructor =
+                    CollectionOfPublicationsMapper.class.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            constructor.newInstance();
+        });
     }
 }

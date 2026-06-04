@@ -27,4 +27,6 @@ public class ResponseCollectionOfPublicationsDTO extends
      * The unique identifier of the collection.
      */
     private final String collectionId;
+
+    private final boolean isPrivate;
 }
