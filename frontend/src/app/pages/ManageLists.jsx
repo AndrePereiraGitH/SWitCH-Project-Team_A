@@ -8,7 +8,7 @@ const API_BASE_URL = "http://localhost:8081";
 
 export function ManageLists() {
     const navigate = useNavigate();
-    const { lists, loading, error, addList, makePublic, makePublicUntil, addPublicationToList } = useLists();
+    const { lists, loading, error, addList, makePublic, makePrivate, makePublicUntil, addPublicationToList } = useLists();
     const { publications, refresh } = usePublications();
 
     const [genres, setGenres] = useState([]);
@@ -37,17 +37,24 @@ export function ManageLists() {
         e.preventDefault();
         setSubmitting(true);
         try {
-            await addList({
+            const created = await addList({
                 collectionName: newList.name,
                 genreId: newList.genreId,
             });
 
-            // If public with duration, make it public until that date
-            // We do this after creation using the returned collectionId
-            // The context's addList returns the created DTO
-            // Share handling is done separately via makePublicUntil / makePublic
-            // For now: if isPublic is checked, call make-public after creation
-            // (handled below in a follow-up step — see note)
+            // If user wants it public, call the appropriate endpoint
+            if (newList.isPublic) {
+                if (newList.shareDuration) {
+                    // Public until N days from today
+                    const publicUntil = new Date();
+                    publicUntil.setDate(publicUntil.getDate() + parseInt(newList.shareDuration));
+                    const dateStr = publicUntil.toISOString().split("T")[0]; // "YYYY-MM-DD"
+                    await makePublicUntil(created.collectionId, dateStr);
+                } else {
+                    // Public indefinitely
+                    await makePublic(created.collectionId);
+                }
+            }
 
             setShowCreateModal(false);
             setNewList({ name: "", genreId: "", isPublic: false, shareDuration: "" });
@@ -65,6 +72,14 @@ export function ManageLists() {
             }
         } catch (err) {
             alert("Failed to update visibility: " + err.message);
+        }
+    };
+
+    const handleTogglePrivate = async (list) => {
+        try {
+            await makePrivate(list.collectionId);
+        } catch (err) {
+            alert("Failed to make private: " + err.message);
         }
     };
 
@@ -160,18 +175,19 @@ export function ManageLists() {
                                     >
                                         <Eye className="w-4 h-4" />
                                     </Link>
+
                                     <button
-                                        onClick={() => handleTogglePublic(list)}
-                                        disabled={!list.private}
+                                        onClick={() => list.private ? handleTogglePublic(list) : handleTogglePrivate(list)}
                                         className={`flex items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
-                                            !list.private
-                                                ? "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
-                                                : "bg-accent hover:bg-accent/90 text-white"
+                                            list.private
+                                                ? "bg-accent hover:bg-accent/90 text-white"
+                                                : "bg-muted hover:bg-muted/80 text-foreground"
                                         }`}
-                                        title={!list.private ? "Already public" : "Make Public"}
+                                        title={list.private ? "Make Public" : "Make Private"}
                                     >
-                                        {!list.private ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                                        {list.private ? <Unlock className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
                                     </button>
+
                                     <button
                                         onClick={() => {
                                             setActiveListId(list.collectionId);

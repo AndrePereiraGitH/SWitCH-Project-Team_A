@@ -64,6 +64,20 @@ export function ListsProvider({ children }) {
     return updated;
   };
 
+  const makePrivate = async (collectionId) => {
+    const res = await fetch(
+        `${BASE_URL}/collection-of-publications/${collectionId}/make-private?userId=${CURRENT_USER_ID}`,
+        { method: "PATCH", headers: { "Content-Type": "application/json" } }
+    );
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Make private failed (${res.status}): ${body}`);
+    }
+    const updated = await res.json();
+    setLists(prev => prev.map(l => l.collectionId === collectionId ? updated : l));
+    return updated;
+  };
+
   const makePublicUntil = async (collectionId, publicUntil) => {
     const res = await fetch(
         `${BASE_URL}/collection-of-publications/${collectionId}/make-public-until?publicUntil=${publicUntil}&userId=${CURRENT_USER_ID}`,
@@ -99,6 +113,7 @@ export function ListsProvider({ children }) {
         error,
         addList,
         makePublic,
+        makePrivate,
         makePublicUntil,
         addPublicationToList,
         getListById,
