@@ -50,10 +50,6 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
 
         Objects.requireNonNull(collectionOfPublications, "collectionOfPublications cannot be null");
 
-        if (collectionRepositoryJpa.existsById(collectionOfPublications.id())) {
-            throw new IllegalArgumentException("CollectionOfPublications already exists");
-        }
-
         CollectionOfPublicationsDM collectionDM =
                 collectionOfPublicationsAssembler.toDM(collectionOfPublications);
 
@@ -64,23 +60,6 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
                 collectionOfPublicationsAssembler.toDomain(collectionDMSaved);
 
         return collectionSaved;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CollectionOfPublications update(CollectionOfPublications collection) {
-
-        Objects.requireNonNull(collection, "collection cannot be null");
-
-        CollectionOfPublicationsDM collectionDMtOUpdate = collectionOfPublicationsAssembler.toDM(collection);
-
-        CollectionOfPublicationsDM updatedDBCollectionDM = collectionRepositoryJpa.save(collectionDMtOUpdate);
-
-        CollectionOfPublications updatedCollection = collectionOfPublicationsAssembler.toDomain(updatedDBCollectionDM);
-
-        return updatedCollection;
     }
 
     /**
@@ -136,13 +115,40 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
     public List<CollectionOfPublications> findPublicCollectionsByGenreId(GenreId genreId) {
 
         Objects.requireNonNull(genreId, "genreId cannot be null");
-        List<CollectionOfPublicationsDM> genreCollections = collectionRepositoryJpa.findPublicCollectionsByGenreId(genreId);
 
-        List<CollectionOfPublications> listOfGenreCollections = genreCollections.stream()
+        List<CollectionOfPublicationsDM> genreCollections =
+                collectionRepositoryJpa.findByGenreIdAndIsPrivateFalse(genreId);
+
+        return genreCollections.stream()
                 .map(collectionOfPublicationsAssembler::toDomain)
-                .filter(collection -> !collection.getIsPrivate())
+                .filter(CollectionOfPublications::isCurrentlyPublic)
                 .toList();
+    }
 
-        return listOfGenreCollections;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findAllPublicCollections() {
+
+        List<CollectionOfPublicationsDM> publicCollections =
+                collectionRepositoryJpa.findByIsPrivateFalse();
+
+        return publicCollections.stream()
+                .map(collectionOfPublicationsAssembler::toDomain)
+                .filter(CollectionOfPublications::isCurrentlyPublic)
+                .toList();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<CollectionOfPublications> findAll() {
+
+        return collectionRepositoryJpa.findAll()
+                .stream()
+                .map(collectionOfPublicationsAssembler::toDomain)
+                .toList();
     }
 }

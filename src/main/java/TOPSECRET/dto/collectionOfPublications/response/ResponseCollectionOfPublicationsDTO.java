@@ -1,6 +1,5 @@
 package TOPSECRET.dto.collectionOfPublications.response;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.hateoas.RepresentationModel;
 

@@ -6,7 +6,7 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -28,7 +28,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     private GenreId _collectionGenreId;
     private final UserId _ownerId;
     private boolean _isPrivate;
-    private LocalDateTime publicUntil;
+    private LocalDate publicUntil;
 
     /**
      * Creates a new collection of publications — US017.
@@ -89,7 +89,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      */
     protected CollectionOfPublications(
             CollectionOfPublicationsId collectionOfPublicationsId, String collectionName,
-            GenreId collectionGenreId, UserId userId, boolean isPrivate, LocalDateTime publicUntil) {
+            GenreId collectionGenreId, UserId userId, boolean isPrivate, LocalDate publicUntil) {
 
         if (collectionOfPublicationsId == null) {
             throw new IllegalArgumentException("CollectionOfPublicationsId cannot be null.");
@@ -127,13 +127,13 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
      *         {@code false} if it was already public until the same date and time
      * @throws IllegalArgumentException if {@code publicUntil} is null or is not in the future
      */
-    public boolean makePublicUntil(LocalDateTime publicUntil) {
+    public boolean makePublicUntil(LocalDate publicUntil) {
 
         if (publicUntil == null) {
             throw new IllegalArgumentException("Public until date cannot be null.");
         }
 
-        if (!publicUntil.isAfter(LocalDateTime.now())) {
+        if (!publicUntil.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Public until date must be in the future.");
         }
 
@@ -181,6 +181,30 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return true;
     }
 
+    /**
+     * Determines whether this collection of publications is currently public.
+     *
+     * <p>A collection is currently public if:
+     * <ul>
+     *     <li>it is not private</li>
+     *     <li>and either it has no expiration date, or the expiration date is in the future</li>
+     * </ul>
+     *
+     * @return true if currently public, false otherwise
+     */
+    public boolean isCurrentlyPublic() {
+
+        if (_isPrivate) {
+            return false;
+        }
+
+        if (publicUntil == null) {
+            return true;
+        }
+
+        return publicUntil.isAfter(LocalDate.now());
+    }
+
     public boolean getIsPrivate() {
         return _isPrivate;
     }
@@ -201,7 +225,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
         return _id;
     }
 
-    public LocalDateTime getPublicUntil() {
+    public LocalDate getPublicUntil() {
         return publicUntil;
     }
 
@@ -238,7 +262,7 @@ public class CollectionOfPublications implements AggregateRoot<CollectionOfPubli
     @Override
     public int hashCode() {
         return Objects.hash(
-                _collectionName.toLowerCase(), // must match equalsIgnoreCase — lowercase makes them consistent
+                _collectionName.toLowerCase(),
                 _collectionGenreId,
                 _ownerId,
                 _isPrivate

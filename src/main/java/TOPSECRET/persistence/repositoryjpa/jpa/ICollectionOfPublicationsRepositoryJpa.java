@@ -40,20 +40,6 @@ public interface ICollectionOfPublicationsRepositoryJpa
 
 
     /**
-     * Retrieves all collections owned by a specific user.
-     *
-     * <p>
-     * This query operation searches the persistence layer for every
-     * {@link CollectionOfPublicationsDM} associated with the given owner.
-     * </p>
-     *
-     * @param ownerId identifier of the collection owner
-     * @return list of collections belonging to the specified user;
-     * returns an empty list if none are found
-     */
-    List<CollectionOfPublicationsDM> findByOwnerId(UserId ownerId);
-
-    /**
      * Retrieves all public {@link CollectionOfPublicationsDM} entities associated with
      * the given genre.
      *
@@ -61,5 +47,13 @@ public interface ICollectionOfPublicationsRepositoryJpa
      * @return a list of public {@link CollectionOfPublicationsDM} belonging to the given genre;
      * may be empty if none exist
      */
-    List<CollectionOfPublicationsDM> findPublicCollectionsByGenreId(GenreId genreId);
+    List<CollectionOfPublicationsDM> findByGenreIdAndIsPrivateFalse(GenreId genreId);
+
+    /**
+     * Retrieves all non-private {@link CollectionOfPublicationsDM} entities.
+     *
+     * @return a list of collections that are marked as public;
+     * may be empty if none exist
+     */
+    List<CollectionOfPublicationsDM> findByIsPrivateFalse();
 }
