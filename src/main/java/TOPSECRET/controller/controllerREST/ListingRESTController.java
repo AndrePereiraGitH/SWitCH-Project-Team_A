@@ -96,13 +96,16 @@ public class ListingRESTController {
     @PostMapping("")
     public ResponseEntity<ListingResponseDTO> createListing(@RequestBody ListingRequestDTO listingRequestDTO, @RequestParam String userId) {
 
-        UserId userIdVO = ListingMapper.toUserId(userId);
-        List<PublicationSampleId> itemsId = listingRequestDTO.getPublicationIds().stream().map(ListingMapper::toPublicationId).toList();
-        SaleType saleType = ListingMapper.toSaleType(listingRequestDTO.getSaleType());
-        Price price = ListingMapper.toPrice(listingRequestDTO.getPrice());
-        List<Picture> pictures = listingRequestDTO.getPictures().stream().map(ListingMapper::toPicture).toList();
-
+        System.out.println("DTO = " + listingRequestDTO);
         try {
+
+            UserId userIdVO = ListingMapper.toUserId(userId);
+            List<PublicationSampleId> itemsId = listingRequestDTO.getPublicationIds().stream().map(ListingMapper::toPublicationId).toList();
+            SaleType saleType = ListingMapper.toSaleType(listingRequestDTO.getSaleType());
+            Price price = ListingMapper.toPrice(listingRequestDTO.getPrice());
+            List<Picture> pictures = listingRequestDTO.getPictures().stream().map(ListingMapper::toPicture).toList();
+
+
             Listing listing = listingService.createAndSave(
                     listingRequestDTO.getListingTitle(),
                     itemsId,
