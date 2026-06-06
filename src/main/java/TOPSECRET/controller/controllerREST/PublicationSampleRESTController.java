@@ -58,6 +58,24 @@ public class PublicationSampleRESTController {
     private final PublicationSampleLinkProvider publicationSampleLinkProvider;
 
     /**
+     * Enumerates the link contexts that drive which HATEOAS link groups are
+     * attached to a {@link PublicationDTO} response.
+     *
+     * <ul>
+     *   <li>{@code GENERAL} — public and owner links only.</li>
+     *   <li>{@code OWNER} — public and owner links.</li>
+     *   <li>{@code LIBRARY} — public, owner, and library links.</li>
+     *   <li>{@code COLLECTION} — public, owner, and collection links.</li>
+     * </ul>
+     */
+    private enum LinkContext {
+        GENERAL,
+        OWNER,
+        LIBRARY,
+        COLLECTION
+    }
+
+    /**
      * Creates a new {@code PublicationSampleRESTController}.
      *
      * @param userService                   the service responsible for user operations
@@ -65,6 +83,7 @@ public class PublicationSampleRESTController {
      * @param genreService                  the service responsible for genre lookups
      * @param bibliographicalDataService    the service responsible for bibliographical data lookups
      * @param authorService                 the service responsible for author lookups
+     * @param editionService                the service responsible for edition lookups
      * @param publicationSampleLinkProvider the provider responsible for generating HATEOAS links
      */
     @Autowired
@@ -112,7 +131,7 @@ public class PublicationSampleRESTController {
             PublicationSample pbSample =
                     publicationSampleService.createAndSave(bdId, id, editionId, condition);
 
-            PublicationDTO result = toPublicationDTO(pbSample, id);
+            PublicationDTO result = toPublicationDTO(pbSample, id, LinkContext.OWNER);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
@@ -136,26 +155,22 @@ public class PublicationSampleRESTController {
     /**
      * Retrieves a publication sample by its unique identifier.
      *
-     * <p>Returns the publication sample enriched with a self-link and navigational links
-     * based on the requester's permissions.</p>
+     * <p>Returns the publication sample enriched with a self-link and public
+     * navigational links. No authentication required.</p>
      *
      * @param publicationSampleId the unique identifier of the publication sample to retrieve
-     * @param userId              the ID of the user performing the request
      * @return HTTP 200 with the {@link PublicationDTO}, HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/{publicationSampleId}")
     public ResponseEntity<PublicationDTO> findById(
-            @PathVariable("publicationSampleId") String publicationSampleId,
-            @RequestParam String userId) {
+            @PathVariable("publicationSampleId") String publicationSampleId) {
 
         try {
-            UserId id = PublicationSampleMapper.toUserId(userId);
-
             PublicationSampleId pbSampleId = PublicationSampleMapper.toPubId(publicationSampleId);
 
             PublicationSample pbSample = publicationSampleService.findById(pbSampleId);
 
-            PublicationDTO result = toPublicationDTO(pbSample, id);
+            PublicationDTO result = toPublicationDTO(pbSample);
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
@@ -175,23 +190,20 @@ public class PublicationSampleRESTController {
     /**
      * Retrieves all publication samples in the system.
      *
-     * <p>Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * <p>Each item in the returned list is enriched with a self-link and public
+     * navigational links. No authentication required.</p>
      *
-     * @param userId the ID of the user performing the request
      * @return HTTP 200 with a list of {@link PublicationDTO}, or an error status
      */
     @GetMapping("")
-    public ResponseEntity<List<PublicationDTO>> findAll(@RequestParam(required = false) String userId) {
+    public ResponseEntity<List<PublicationDTO>> findAll() {
 
         try {
-            UserId id = PublicationSampleMapper.toUserId(userId);
-
             List<PublicationSample> pbSampleList = publicationSampleService.findAll();
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -208,21 +220,17 @@ public class PublicationSampleRESTController {
     /**
      * Retrieves all publication samples associated with the given bibliographical data ID.
      *
-     * <p>Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * <p>Each item in the returned list is enriched with a self-link and public
+     * navigational links. No authentication required.</p>
      *
      * @param bibliographicalDataId the bibliographical data identifier to filter by
-     * @param userId                the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, or an error status
      */
     @GetMapping("/by-bibliographical-data/{bibliographicalDataId}")
     public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataId(
-            @RequestParam String bibliographicalDataId,
-            @RequestParam String userId) {
+            @RequestParam String bibliographicalDataId) {
 
         try {
-            UserId id = PublicationSampleMapper.toUserId(userId);
-
             BibliographicalDataId bdId = PublicationSampleMapper.toBibliographicalDataId(bibliographicalDataId);
 
             List<PublicationSample> pbSampleList =
@@ -230,7 +238,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -247,21 +255,17 @@ public class PublicationSampleRESTController {
     /**
      * Retrieves all publication samples whose bibliographical data ID is in the given list.
      *
-     * <p>Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * <p>Each item in the returned list is enriched with a self-link and public
+     * navigational links. No authentication required.</p>
      *
      * @param bibliographicalDataIds the list of bibliographical data identifiers to filter by
-     * @param userId                 the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, or an error status
      */
     @GetMapping("/by-bibliographical-data")
     public ResponseEntity<List<PublicationDTO>> findByBibliographicalDataIdIn(
-            @RequestParam List<String> bibliographicalDataIds,
-            @RequestParam String userId) {
+            @RequestParam List<String> bibliographicalDataIds) {
 
         try {
-            UserId id = PublicationSampleMapper.toUserId(userId);
-
             List<BibliographicalDataId> bdIds = PublicationSampleMapper.toBibliographicalDataIds(bibliographicalDataIds);
 
             List<PublicationSample> pbSampleList =
@@ -269,7 +273,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -286,21 +290,17 @@ public class PublicationSampleRESTController {
     /**
      * Retrieves all publication samples associated with any of the given edition IDs.
      *
-     * <p>Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * <p>Each item in the returned list is enriched with a self-link and public
+     * navigational links. No authentication required.</p>
      *
      * @param editionIds the list of edition identifiers to filter by
-     * @param userId     the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, or an error status
      */
     @GetMapping("/by-edition")
     public ResponseEntity<List<PublicationDTO>> findByEditionIdIn(
-            @RequestParam List<String> editionIds,
-            @RequestParam String userId) {
+            @RequestParam List<String> editionIds) {
 
         try {
-            UserId id = PublicationSampleMapper.toUserId(userId);
-
             List<EditionId> edIds = PublicationSampleMapper.toEditionIds(editionIds);
 
             List<PublicationSample> pbSampleList =
@@ -308,7 +308,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -326,8 +326,8 @@ public class PublicationSampleRESTController {
      * Retrieves all publication samples that belong to the specified collection.
      *
      * <p>Requires the requesting user to be authorized to query by collection.
-     * Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * Each item in the returned list is enriched with a self-link and collection
+     * navigational links based on the requester's permissions.</p>
      *
      * @param collectionId the unique identifier of the collection to filter by
      * @param userId       the ID of the user performing the request
@@ -349,7 +349,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.COLLECTION));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -369,26 +369,26 @@ public class PublicationSampleRESTController {
      * Retrieves all publication samples owned by the given user that are assigned to a library.
      *
      * <p>Requires the requesting user to be authorized for this operation.
-     * Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * Each item in the returned list is enriched with a self-link and library
+     * navigational links based on the requester's permissions.</p>
      *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
      *         HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/in-library")
-    public ResponseEntity<List<PublicationDTO>> findByUserIdAndLibraryIdIsNotNull(
+    public ResponseEntity<List<PublicationDTO>> findPublicationsInLibrary(
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
             List<PublicationSample> pbSampleList =
-                    publicationSampleService.findByUserIdAndLibraryIdIsNotNull(id);
+                    publicationSampleService.findPublicationsInLibrary(id);
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.LIBRARY));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -408,26 +408,26 @@ public class PublicationSampleRESTController {
      * Retrieves all publication samples owned by the given user that are not assigned to any library.
      *
      * <p>Requires the requesting user to be authorized for this operation.
-     * Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * Each item in the returned list is enriched with a self-link and library
+     * navigational links based on the requester's permissions.</p>
      *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
      *         HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/not-in-library")
-    public ResponseEntity<List<PublicationDTO>> findByUserIdAndLibraryIdIsNull(
+    public ResponseEntity<List<PublicationDTO>> findPublicationsNotInLibrary(
             @RequestParam String userId) {
 
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
             List<PublicationSample> pbSampleList =
-                    publicationSampleService.findByUserIdAndLibraryIdIsNull(id);
+                    publicationSampleService.findPublicationsNotInLibrary(id);
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.LIBRARY));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -448,9 +448,9 @@ public class PublicationSampleRESTController {
      * nor listed for sale.
      *
      * <p>Requires the requesting user to be authorized for this operation. The library
-     * is resolved internally from the user's identity.
-     * Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * is resolved internally from the user's identity. Each item in the returned list
+     * is enriched with a self-link and library navigational links based on the
+     * requester's permissions.</p>
      *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
@@ -468,7 +468,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.LIBRARY));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -489,10 +489,10 @@ public class PublicationSampleRESTController {
      * to be added to the specified collection.
      *
      * <p>A publication sample is considered eligible if it is assigned to a library
-     * and not already present in the target collection.
-     * Requires the requesting user to be authorized for this operation.
-     * Each item in the returned list is enriched with a self-link and navigational
-     * links based on the requester's permissions.</p>
+     * and not already present in the target collection. Requires the requesting user
+     * to be authorized for this operation. Each item in the returned list is enriched
+     * with a self-link and collection navigational links based on the requester's
+     * permissions.</p>
      *
      * @param collectionId the unique identifier of the target collection
      * @param userId       the ID of the user performing the request
@@ -514,7 +514,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id));
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.COLLECTION));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -539,7 +539,7 @@ public class PublicationSampleRESTController {
      *
      * <p>The library is resolved internally from the user's identity — no explicit
      * library identifier is required. Requires the requesting user to be authorized
-     * for this operation.</p>
+     * for this operation and to own the publication sample.</p>
      *
      * @param publicationSampleId the unique identifier of the publication sample to assign
      * @param userId              the ID of the user performing the request
@@ -559,7 +559,7 @@ public class PublicationSampleRESTController {
             PublicationSample pbSample =
                     publicationSampleService.addPublicationToLibrary(pbId, id);
 
-            PublicationDTO publicationDTO = toPublicationDTO(pbSample, id);
+            PublicationDTO publicationDTO = toPublicationDTO(pbSample, id, LinkContext.LIBRARY);
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTO);
 
@@ -577,7 +577,8 @@ public class PublicationSampleRESTController {
     /**
      * Assigns a publication sample to the specified collection.
      *
-     * <p>Requires the requesting user to be authorized for this operation.</p>
+     * <p>Requires the requesting user to be authorized for this operation and to
+     * own the publication sample.</p>
      *
      * @param publicationSampleId the unique identifier of the publication sample to assign
      * @param collectionId        the unique identifier of the target collection
@@ -601,7 +602,7 @@ public class PublicationSampleRESTController {
             PublicationSample pbSample =
                     publicationSampleService.assignPublicationToCollection(cpId, pbId, id);
 
-            PublicationDTO publicationDTO = toPublicationDTO(pbSample, id);
+            PublicationDTO publicationDTO = toPublicationDTO(pbSample, id, LinkContext.COLLECTION);
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTO);
 
@@ -622,17 +623,19 @@ public class PublicationSampleRESTController {
 
     /**
      * Builds a {@link PublicationDTO} from a {@link PublicationSample}, enriching it
-     * with bibliographical data, authors, genres, owner information, and HATEOAS links.
+     * with bibliographical data, authors, genres, owner information, and HATEOAS links
+     * appropriate to the given {@link LinkContext}.
      *
-     * <p>Delegates DTO assembly to {@link PublicationSampleMapper#toPublicationDTO} and
-     * attaches a self-link plus navigational links generated by the link provider.</p>
+     * <p>Always attaches public links. Owner, library, or collection links are added
+     * based on the context.</p>
      *
      * @param pbSample the publication sample to convert; must not be {@code null}
      * @param userId   the ID of the requesting user used to generate contextual links
+     * @param context  the link context that determines which additional link groups are attached
      * @return the populated {@link PublicationDTO} with links attached
      * @throws InstanceNotFoundException if the associated user is not found by the link provider
      */
-    private PublicationDTO toPublicationDTO(PublicationSample pbSample, UserId userId)
+    private PublicationDTO toPublicationDTO(PublicationSample pbSample, UserId userId, LinkContext context)
             throws InstanceNotFoundException {
 
         BibliographicalData bd = bibliographicalDataService.findById(pbSample.getBibliographicalDataID());
@@ -645,10 +648,52 @@ public class PublicationSampleRESTController {
                 getGenres(bd),
                 getOwner(pbSample));
 
-        List<Link> links = new ArrayList<>(
-                publicationSampleLinkProvider.getPublicationSampleLinks(userId));
+        List<Link> links = new ArrayList<>(publicationSampleLinkProvider.getPublicLinks());
+
+        switch (context) {
+            case OWNER      -> links.addAll(publicationSampleLinkProvider.getOwnerLinks(userId));
+            case LIBRARY    -> links.addAll(publicationSampleLinkProvider.getLibraryLinks(userId));
+            case COLLECTION -> links.addAll(publicationSampleLinkProvider.getCollectionLinks(userId));
+            default         -> {}
+        }
+
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                .findById(pbSample.id().getID(), userId.toString())).withSelfRel());
+                .findById(pbSample.id().getID())).withSelfRel());
+
+        links.forEach(result::add);
+
+        return result;
+    }
+
+    /**
+     * Builds a {@link PublicationDTO} from a {@link PublicationSample} for public endpoints,
+     * enriching it with bibliographical data, authors, genres, owner information, and public
+     * HATEOAS links only.
+     *
+     * <p>No user identity is required. Only public links and a self-link are attached.</p>
+     *
+     * @param pbSample the publication sample to convert; must not be {@code null}
+     * @return the populated {@link PublicationDTO} with public links attached
+     * @throws InstanceNotFoundException if any dependent lookup fails
+     */
+    private PublicationDTO toPublicationDTO(PublicationSample pbSample)
+            throws InstanceNotFoundException {
+
+        BibliographicalData bd = bibliographicalDataService.findById(pbSample.getBibliographicalDataID());
+
+        PublicationDTO result = PublicationSampleMapper.toPublicationDTO(
+                pbSample,
+                bd,
+                getEdition(pbSample),
+                getAuthors(bd),
+                getGenres(bd),
+                getOwner(pbSample));
+
+        List<Link> links = new ArrayList<>(publicationSampleLinkProvider.getPublicLinks());
+
+        links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                .findById(pbSample.id().getID())).withSelfRel());
+
         links.forEach(result::add);
 
         return result;
@@ -692,11 +737,7 @@ public class PublicationSampleRESTController {
     /**
      * Retrieves the {@link Edition} associated with the given {@link PublicationSample}.
      *
-     * <p>This helper method extracts the edition identifier from the provided publication
-     * sample and delegates to the edition service to fetch the corresponding entity.</p>
-     *
-     * @param publicationSample the publication sample from which to extract the edition ID;
-     * should not be null
+     * @param publicationSample the publication sample from which to extract the edition ID
      * @return the {@link Edition} corresponding to the publication sample's edition ID
      */
     private Edition getEdition(PublicationSample publicationSample) {
