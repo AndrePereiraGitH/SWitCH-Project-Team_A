@@ -1,6 +1,8 @@
 package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublicationSampleAuthorizationPolicy;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.ILibraryRepository;
@@ -16,6 +18,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,6 +41,7 @@ import java.util.Objects;
 public class PublicationSampleService {
 
     private final IPublicationSampleRepository publicationSampleRepository;
+    private final ICollectionOfPublicationsRepository collectionOfPublicationsRepository;
     private final IUserRepository userRepository;
     private final PublicationSampleFactory factory;
     private final PublicationSampleAuthorizationPolicy policy;
@@ -54,11 +58,13 @@ public class PublicationSampleService {
      * @throws NullPointerException if any argument is {@code null}
      */
     public PublicationSampleService(IPublicationSampleRepository publicationSampleRepository,
+                                    ICollectionOfPublicationsRepository collectionOfPublicationsRepository,
                                     PublicationSampleFactory factory,
                                     PublicationSampleAuthorizationPolicy policy,
                                     IUserRepository userRepository,
                                     ILibraryRepository libraryRepository) {
         this.publicationSampleRepository = Objects.requireNonNull(publicationSampleRepository, "Repository cannot be null");
+        this.collectionOfPublicationsRepository = Objects.requireNonNull(collectionOfPublicationsRepository, "Repository cannot be null");
         this.factory = Objects.requireNonNull(factory, "Factory cannot be null");
         this.policy = Objects.requireNonNull(policy, "Policy cannot be null");
         this.userRepository = Objects.requireNonNull(userRepository, "UserRepository cannot be null");
@@ -244,13 +250,19 @@ public class PublicationSampleService {
      * @throws AccessDeniedException   if the user is not authorized
      * @throws NullPointerException    if {@code collectionId} is {@code null}
      */
-    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId, UserId userId) {
+    public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId, UserId userId) throws InstanceNotFoundException {
         Objects.requireNonNull(collectionId, "CollectionId cannot be null");
 
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (!policy.canFindByCollectionOfPublicationsId(user)) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId);
+
+        if(!collectionOfPublications.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Access denied");
         }
 
@@ -391,7 +403,7 @@ public class PublicationSampleService {
      * @throws AccessDeniedException   if the user is not authorized
      * @throws NullPointerException    if {@code userId} or {@code collectionId} is {@code null}
      */
-    public List<PublicationSample> findAvailableForCollection(UserId userId, CollectionOfPublicationsId collectionId) {
+    public List<PublicationSample> findAvailableForCollection(UserId userId, CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
         Objects.requireNonNull(userId, "UserId cannot be null");
         Objects.requireNonNull(collectionId, "CollectionId cannot be null");
 
@@ -399,6 +411,12 @@ public class PublicationSampleService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         if (!policy.canFindAvailableForCollection(user)) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId);
+
+        if(!collectionOfPublications.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Access denied");
         }
 

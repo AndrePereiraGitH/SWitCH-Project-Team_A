@@ -12,6 +12,7 @@ import TOPSECRET.dto.US018PublicationSampleMapper;
 import TOPSECRET.services.PublicationSampleService;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,7 @@ class ToAddPublicationToAListOfMineControllerTest {
     }
 
     @Test
-    void shouldReturnAvailablePublicationsUsingServiceMethod() {
+    void shouldReturnAvailablePublicationsUsingServiceMethod() throws InstanceNotFoundException {
         // Arrange
         ICollectionOfPublicationsRepository collectionRepo = mock(ICollectionOfPublicationsRepository.class);
         PublicationSampleService publicationService = mock(PublicationSampleService.class);

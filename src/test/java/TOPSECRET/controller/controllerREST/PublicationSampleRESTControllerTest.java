@@ -104,7 +104,7 @@ class PublicationSampleRESTControllerTest {
         dto = new RegisterPublicationSampleDTO("bd-001", "edition-001", "NEW");
     }
 
-    private void setupPublicationSampleMocks() throws InstanceNotFoundException {
+    private void setupPublicationSampleMocks() {
         when(publicationSampleId.toString()).thenReturn("ps-001");
         when(publicationSample.id()).thenReturn(publicationSampleId);
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
@@ -1166,7 +1166,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findByCollectionOfPublicationsId_shouldReturnEmptyList_whenNoMatchExists() {
+    void findByCollectionOfPublicationsId_shouldReturnEmptyList_whenNoMatchExists() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -1220,7 +1220,7 @@ class PublicationSampleRESTControllerTest {
     // =========================================================================
 
     @Test
-    void findByCollectionOfPublicationsId_shouldReturnNotFound_whenEntityNotFound() {
+    void findByCollectionOfPublicationsId_shouldReturnNotFound_whenEntityNotFound() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -1242,7 +1242,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findByCollectionOfPublicationsId_shouldReturnForbidden_whenAccessDenied() {
+    void findByCollectionOfPublicationsId_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -1264,7 +1264,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findByCollectionOfPublicationsId_shouldReturnBadRequest_whenIllegalArgument() {
+    void findByCollectionOfPublicationsId_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -1286,7 +1286,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findByCollectionOfPublicationsId_shouldReturnInternalServerError_whenUnexpectedException() {
+    void findByCollectionOfPublicationsId_shouldReturnInternalServerError_whenUnexpectedException() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -1979,7 +1979,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findAvailableForCollection_shouldReturnEmptyList_whenNoMatchExists() {
+    void findAvailableForCollection_shouldReturnEmptyList_whenNoMatchExists() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -2033,7 +2033,7 @@ class PublicationSampleRESTControllerTest {
     // =========================================================================
 
     @Test
-    void findAvailableForCollection_shouldReturnNotFound_whenEntityNotFound() {
+    void findAvailableForCollection_shouldReturnNotFound_whenEntityNotFound() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -2055,7 +2055,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findAvailableForCollection_shouldReturnForbidden_whenAccessDenied() {
+    void findAvailableForCollection_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -2077,7 +2077,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findAvailableForCollection_shouldReturnBadRequest_whenIllegalArgument() {
+    void findAvailableForCollection_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
@@ -2099,7 +2099,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void findAvailableForCollection_shouldReturnInternalServerError_whenUnexpectedException() {
+    void findAvailableForCollection_shouldReturnInternalServerError_whenUnexpectedException() throws InstanceNotFoundException {
 
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
