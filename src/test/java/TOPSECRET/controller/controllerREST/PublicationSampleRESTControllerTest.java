@@ -1308,6 +1308,186 @@ class PublicationSampleRESTControllerTest {
     }
 
     // =========================================================================
+// findAllPublicationsOwnedByUser — success
+// =========================================================================
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldReturnOk_whenSuccess() throws Exception {
+
+        // Arrange
+        setupPublicationSampleMocks();
+        when(publicationSampleLinkProvider.getOwnerLinks(any())).thenReturn(new ArrayList<>());
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenReturn(List.of(publicationSample));
+            when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertNotNull(result.getBody());
+            assertEquals(1, result.getBody().size());
+        }
+    }
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldReturnEmptyList_whenUserHasNoPublications() {
+
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenReturn(List.of());
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertNotNull(result.getBody());
+            assertTrue(result.getBody().isEmpty());
+        }
+    }
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldAddSelfLinkToEachItem() throws Exception {
+
+        // Arrange
+        setupPublicationSampleMocks();
+        when(publicationSampleLinkProvider.getOwnerLinks(any())).thenReturn(new ArrayList<>());
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenReturn(List.of(publicationSample));
+            when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertNotNull(result.getBody());
+            assertTrue(result.getBody().get(0).hasLink("self"));
+        }
+    }
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldAddOwnerNavigationLinks_whenProviderReturnsLinks() throws Exception {
+
+        // Arrange
+        setupPublicationSampleMocks();
+        Link navLink = Link.of("/publicationSamples").withRel("create-publication-sample");
+        when(publicationSampleLinkProvider.getOwnerLinks(any()))
+                .thenReturn(new ArrayList<>(List.of(navLink)));
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenReturn(List.of(publicationSample));
+            when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertNotNull(result.getBody());
+            assertTrue(result.getBody().get(0).hasLink("create-publication-sample"));
+            assertTrue(result.getBody().get(0).hasLink("self"));
+        }
+    }
+
+    // =========================================================================
+    // findAllPublicationsOwnedByUser — exceptions
+    // =========================================================================
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldReturnForbidden_whenAccessDenied() {
+
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenThrow(new AccessDeniedException("denied"));
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+            assertNull(result.getBody());
+        }
+    }
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldReturnNotFound_whenEntityNotFound() {
+
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenThrow(new EntityNotFoundException());
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+            assertNull(result.getBody());
+        }
+    }
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldReturnBadRequest_whenIllegalArgument() {
+
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+            assertNull(result.getBody());
+        }
+    }
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldReturnInternalServerError_whenUnexpectedException() {
+
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.findAllPublicationsOwnedByUser(userId))
+                    .thenThrow(new RuntimeException());
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findAllPublicationsOwnedByUser(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+            assertNull(result.getBody());
+        }
+    }
+
+    // =========================================================================
     // findPublicationsInLibrary — success
     // =========================================================================
 

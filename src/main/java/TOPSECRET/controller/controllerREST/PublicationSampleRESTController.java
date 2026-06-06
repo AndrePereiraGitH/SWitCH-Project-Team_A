@@ -366,6 +366,47 @@ public class PublicationSampleRESTController {
     }
 
     /**
+     * Retrieves all publication samples owned by the given user.
+     *
+     * <p>Requires the requesting user to be authorized for this operation.
+     * Each item in the returned list is enriched with a self-link and owner
+     * navigational links based on the requester's permissions.</p>
+     *
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with a list of {@link PublicationDTO}, HTTP 403 if unauthorized,
+     *         HTTP 404 if the user is not found, or HTTP 500 on error
+     */
+    @GetMapping("/my-publications")
+    public ResponseEntity<List<PublicationDTO>> findAllPublicationsOwnedByUser(
+            @RequestParam String userId) {
+
+        try{
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            List<PublicationSample> allPublicationsOwnedByUser =
+                    publicationSampleService.findAllPublicationsOwnedByUser(id);
+
+            List<PublicationDTO> publicationDTOS = new ArrayList<>();
+
+            for (PublicationSample pbSample : allPublicationsOwnedByUser) {
+                publicationDTOS.add(toPublicationDTO(pbSample,id,LinkContext.OWNER));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
+
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Retrieves all publication samples owned by the given user that are assigned to a library.
      *
      * <p>Requires the requesting user to be authorized for this operation.
