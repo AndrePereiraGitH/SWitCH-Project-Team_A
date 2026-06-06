@@ -498,7 +498,7 @@ class PublicationSampleServiceTest {
         List<PublicationSample> samples = List.of(sample);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindByUserIdAndLibraryIdIsNotNull(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId)).thenReturn(samples);
+        when(publicationSampleRepository.findPublicationsInLibrary(userId)).thenReturn(samples);
 
         // Act
         List<PublicationSample> result = service.findByUserIdAndLibraryIdIsNotNull(userId);
@@ -544,7 +544,7 @@ class PublicationSampleServiceTest {
         List<PublicationSample> samples = List.of(sample);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindByUserIdAndLibraryIdIsNull(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNull(userId)).thenReturn(samples);
+        when(publicationSampleRepository.findPublicationsNotInLibrary(userId)).thenReturn(samples);
 
         // Act
         List<PublicationSample> result = service.findByUserIdAndLibraryIdIsNull(userId);
@@ -656,7 +656,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId))
+        when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(inCollection, notInCollection));
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId))
                 .thenReturn(List.of(inCollection));
@@ -678,7 +678,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId))
+        when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(s1, s2));
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId))
                 .thenReturn(List.of());
@@ -695,7 +695,7 @@ class PublicationSampleServiceTest {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId))
+        when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(sample));
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId))
                 .thenReturn(List.of(sample));

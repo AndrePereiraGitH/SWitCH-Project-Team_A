@@ -276,7 +276,7 @@ public class PublicationSampleService {
         }
 
         List<PublicationSample> publicationSamplesOwnedByUserInLibrary =
-                publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId);
+                publicationSampleRepository.findPublicationsInLibrary(userId);
 
         return publicationSamplesOwnedByUserInLibrary;
     }
@@ -301,7 +301,7 @@ public class PublicationSampleService {
         }
 
         List<PublicationSample> publicationSamplesOwnedByUserNotInLibrary =
-                publicationSampleRepository.findByUserIdAndLibraryIdIsNull(userId);
+                publicationSampleRepository.findPublicationsNotInLibrary(userId);
 
         return publicationSamplesOwnedByUserNotInLibrary;
     }
@@ -369,7 +369,7 @@ public class PublicationSampleService {
         }
 
         List<PublicationSample> allUserPublications =
-                publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId);
+                publicationSampleRepository.findPublicationsInLibrary(userId);
 
         List<PublicationSample> publicationsInCollection =
                 publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);

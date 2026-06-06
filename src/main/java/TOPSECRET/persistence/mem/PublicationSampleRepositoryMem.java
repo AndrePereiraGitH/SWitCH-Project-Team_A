@@ -27,7 +27,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     // Fields
     // -------------------------------------------------------------------------
 
-    private List<PublicationSample> allPublicationsInSystem;
+    private final List<PublicationSample> allPublicationsInSystem;
 
     // -------------------------------------------------------------------------
     // Constructor
@@ -70,9 +70,8 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         return false;
     }
 
-
     // -------------------------------------------------------------------------
-    // Identity Lookup
+    // Lookup — by identity
     // -------------------------------------------------------------------------
 
     /** {@inheritDoc} */
@@ -97,7 +96,7 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     }
 
     // -------------------------------------------------------------------------
-    // Lookup - by associated identifiers
+    // Lookup — by associated identifiers
     // -------------------------------------------------------------------------
 
     /** {@inheritDoc} */
@@ -129,45 +128,6 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
         for (PublicationSample pbSample : allPublicationsInSystem) {
             if (pbSample.getBibliographicalDataID().equals(bdId)) {
                 listOfPubSamples.add(pbSample);
-            }
-        }
-        return listOfPubSamples;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
-        if (listOfEditionIds == null) {
-            throw new NullPointerException("listOfEditionIds cannot be null");
-        }
-
-        List<PublicationSampleId> listOfPubSampleIds = new ArrayList<>();
-
-        for (EditionId editionId : listOfEditionIds) {
-            for (PublicationSample pbSample : allPublicationsInSystem) {
-                if (pbSample.getEditionID().equals(editionId)) {
-                    listOfPubSampleIds.add(pbSample.id());
-                }
-            }
-        }
-        return listOfPubSampleIds;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
-        if (listOfEditionIds == null) {
-            throw new NullPointerException("listOfEditionIds cannot be null");
-        }
-
-        List<PublicationSample> listOfPubSamples = new ArrayList<>();
-
-        for (EditionId editionId : listOfEditionIds) {
-            for (PublicationSample pbSample : allPublicationsInSystem) {
-                if (pbSample.getEditionID().equals(editionId)) {
-                    listOfPubSamples.add(pbSample);
-                }
             }
         }
         return listOfPubSamples;
@@ -221,38 +181,40 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
     /** {@inheritDoc} */
     @Override
-    public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId) {
-        if (userId == null) {
-            throw new NullPointerException("UserId must not be null");
+    public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
+        if (listOfEditionIds == null) {
+            throw new NullPointerException("listOfEditionIds cannot be null");
         }
 
-        List<PublicationSample> listOfPublications = new ArrayList<>();
+        List<PublicationSampleId> listOfPubSampleIds = new ArrayList<>();
 
-        for (PublicationSample pubSample : allPublicationsInSystem) {
-            if (pubSample.isOwnedByUser(userId) && pubSample.isInUserLibrary()) {
-                listOfPublications.add(pubSample);
+        for (EditionId editionId : listOfEditionIds) {
+            for (PublicationSample pbSample : allPublicationsInSystem) {
+                if (pbSample.getEditionID().equals(editionId)) {
+                    listOfPubSampleIds.add(pbSample.id());
+                }
             }
         }
-
-        return listOfPublications;
+        return listOfPubSampleIds;
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
-        if (userId == null) {
-            throw new NullPointerException("UserId must not be null");
+    public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
+        if (listOfEditionIds == null) {
+            throw new NullPointerException("listOfEditionIds cannot be null");
         }
 
-        List<PublicationSample> listOfPublicationsNotInLibrary = new ArrayList<>();
+        List<PublicationSample> listOfPubSamples = new ArrayList<>();
 
-        for (PublicationSample pubSample : allPublicationsInSystem) {
-            if (pubSample.isOwnedByUser(userId) && !pubSample.isInUserLibrary()) {
-                listOfPublicationsNotInLibrary.add(pubSample);
+        for (EditionId editionId : listOfEditionIds) {
+            for (PublicationSample pbSample : allPublicationsInSystem) {
+                if (pbSample.getEditionID().equals(editionId)) {
+                    listOfPubSamples.add(pbSample);
+                }
             }
         }
-
-        return listOfPublicationsNotInLibrary;
+        return listOfPubSamples;
     }
 
     /** {@inheritDoc} */
@@ -275,6 +237,57 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
     }
 
     // -------------------------------------------------------------------------
+    // Lookup — by owner
+    // -------------------------------------------------------------------------
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findAllByOwnerId(UserId userId) {
+
+        List<PublicationSample> allPublicationsOwnedByUser = allPublicationsInSystem.stream()
+                .filter(publicationSample -> publicationSample.isOwnedByUser(userId))
+                .toList();
+
+        return allPublicationsOwnedByUser;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findPublicationsInLibrary(UserId userId) {
+        if (userId == null) {
+            throw new NullPointerException("UserId must not be null");
+        }
+
+        List<PublicationSample> listOfPublications = new ArrayList<>();
+
+        for (PublicationSample pubSample : allPublicationsInSystem) {
+            if (pubSample.isOwnedByUser(userId) && pubSample.isInUserLibrary()) {
+                listOfPublications.add(pubSample);
+            }
+        }
+
+        return listOfPublications;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findPublicationsNotInLibrary(UserId userId) {
+        if (userId == null) {
+            throw new NullPointerException("UserId must not be null");
+        }
+
+        List<PublicationSample> listOfPublicationsNotInLibrary = new ArrayList<>();
+
+        for (PublicationSample pubSample : allPublicationsInSystem) {
+            if (pubSample.isOwnedByUser(userId) && !pubSample.isInUserLibrary()) {
+                listOfPublicationsNotInLibrary.add(pubSample);
+            }
+        }
+
+        return listOfPublicationsNotInLibrary;
+    }
+
+    // -------------------------------------------------------------------------
     // Domain Operations
     // -------------------------------------------------------------------------
 
@@ -288,12 +301,10 @@ public class PublicationSampleRepositoryMem implements IPublicationSampleReposit
 
         List<PublicationSample> listOfPublications =
                 allPublicationsInSystem.stream()
-                .filter(p -> Objects.equals(p.getLibraryID(), libraryId))
-                .filter(p -> !excludedStatuses.contains(p.getPublicationStatus()))
-                .toList();
+                        .filter(p -> Objects.equals(p.getLibraryID(), libraryId))
+                        .filter(p -> !excludedStatuses.contains(p.getPublicationStatus()))
+                        .toList();
 
         return listOfPublications;
     }
-
-
 }
