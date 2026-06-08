@@ -394,7 +394,7 @@ class ListingMapperTest {
         PhysicalAttributes physicalAttributes = mock(PhysicalAttributes.class);
 
         when(listing.id()).thenReturn(listingId);
-        when(listingId.toString()).thenReturn("listing-1");
+        when(listingId.getId()).thenReturn("listing-1");
 
         when(listing.getListingTitle()).thenReturn("Clean Code");
 
@@ -467,7 +467,7 @@ class ListingMapperTest {
         Price price = mock(Price.class);
 
         when(listing.id()).thenReturn(listingId);
-        when(listingId.toString()).thenReturn("listing-1");
+        when(listingId.getId()).thenReturn("listing-1");
 
         when(listing.getListingTitle()).thenReturn("Listing title");
 

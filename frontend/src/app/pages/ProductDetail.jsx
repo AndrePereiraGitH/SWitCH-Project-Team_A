@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Tag, Package, Star, Calendar, User, BookOpen, Info } from "lucide-react";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
-import { API_BASE_URL } from "../../api/constants";
+import { API_BASE_URL, CURRENT_USER_ID } from "../../api/constants";
 
 
 
@@ -20,10 +20,9 @@ export function ProductDetail() {
     useEffect(() => {
     async function fetchProduct() {
         try {
-        const userId = "user-001"; // trocar pelo user real/autenticado
 
         const response = await fetch(
-            `${API_BASE_URL}/listings/${productId}?userId=${userId}`
+            `${API_BASE_URL}/listings/${productId}?userId=${CURRENT_USER_ID}`
         );
 
         if (!response.ok) {
