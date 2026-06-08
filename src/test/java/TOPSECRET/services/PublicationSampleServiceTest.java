@@ -1,6 +1,8 @@
 package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublicationSampleAuthorizationPolicy;
+import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublications;
+import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsRepository;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.ILibraryRepository;
@@ -41,22 +43,24 @@ import static org.mockito.Mockito.*;
  *   <li><b>findAll</b> — full collection retrieval.</li>
  *   <li><b>findByBibliographicalDataId</b> — filter by single BD ID.</li>
  *   <li><b>findByBibliographicalDataIdIn</b> — filter by multiple BD IDs.</li>
- *   <li><b>findByEditionIdIn</b> — filter by edition IDs.</li>
- *   <li><b>findByCollectionOfPublicationsId</b> — filter by collection with authorization.</li>
- *   <li><b>findByUserIdAndLibraryIdIsNotNull</b> — user publications in library.</li>
- *   <li><b>findByUserIdAndLibraryIdIsNull</b> — user publications not in library.</li>
- *   <li><b>findByLibraryIdAndPublicationStatusNotIn</b> — available publications in library.</li>
- *   <li><b>findAvailableForCollection</b> — domain filtering for collection eligibility.</li>
- *   <li><b>addPublicationToLibrary</b> — domain operation with authorization.</li>
- *   <li><b>assignPublicationToCollection</b> — domain operation with authorization.</li>
  *   <li><b>findIdsByBibliographicalDataIdIn</b> — filter IDs by multiple BD IDs.</li>
+ *   <li><b>findByEditionIdIn</b> — filter by edition IDs.</li>
  *   <li><b>findIdsByEditionIdIn</b> — filter IDs by edition IDs.</li>
+ *   <li><b>findByCollectionOfPublicationsId</b> — filter by collection with authorization and ownership check.</li>
+ *   <li><b>findAllPublicationsOwnedByUser</b> — all publications owned by a user.</li>
+ *   <li><b>findPublicationsInLibrary</b> — user publications assigned to a library.</li>
+ *   <li><b>findPublicationsNotInLibrary</b> — user publications not assigned to any library.</li>
+ *   <li><b>findByLibraryIdAndPublicationStatusNotIn</b> — available publications in library.</li>
+ *   <li><b>findAvailableForCollection</b> — domain filtering for collection eligibility with ownership check.</li>
+ *   <li><b>addPublicationToLibrary</b> — domain operation with authorization and ownership check.</li>
+ *   <li><b>assignPublicationToCollection</b> — domain operation with authorization and ownership check.</li>
  * </ul>
  */
 @ExtendWith(MockitoExtension.class)
 class PublicationSampleServiceTest {
 
     @Mock private IPublicationSampleRepository publicationSampleRepository;
+    @Mock private ICollectionOfPublicationsRepository collectionOfPublicationsRepository;
     @Mock private IUserRepository userRepository;
     @Mock private PublicationSampleFactory factory;
     @Mock private PublicationSampleAuthorizationPolicy policy;
@@ -91,38 +95,69 @@ class PublicationSampleServiceTest {
     // =========================================================================
 
     @Test
-    void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
+    void constructor_shouldThrowNullPointerException_whenPublicationSampleRepositoryIsNull() {
         assertThrows(NullPointerException.class, () ->
-                new PublicationSampleService(null, factory, policy, userRepository, libraryRepository));
+                new PublicationSampleService(
+                        null, collectionOfPublicationsRepository, factory, policy, userRepository, libraryRepository));
+    }
+
+    @Test
+    void constructor_shouldThrowNullPointerException_whenCollectionOfPublicationsRepositoryIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                new PublicationSampleService(
+                        publicationSampleRepository, null, factory, policy, userRepository, libraryRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
         assertThrows(NullPointerException.class, () ->
-                new PublicationSampleService(publicationSampleRepository, null, policy, userRepository, libraryRepository));
+                new PublicationSampleService(
+                        publicationSampleRepository, collectionOfPublicationsRepository, null, policy, userRepository, libraryRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenPolicyIsNull() {
         assertThrows(NullPointerException.class, () ->
-                new PublicationSampleService(publicationSampleRepository, factory, null, userRepository, libraryRepository));
+                new PublicationSampleService(
+                        publicationSampleRepository, collectionOfPublicationsRepository, factory, null, userRepository, libraryRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenUserRepositoryIsNull() {
         assertThrows(NullPointerException.class, () ->
-                new PublicationSampleService(publicationSampleRepository, factory, policy, null, libraryRepository));
+                new PublicationSampleService(
+                        publicationSampleRepository, collectionOfPublicationsRepository, factory, policy, null, libraryRepository));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenLibraryRepositoryIsNull() {
         assertThrows(NullPointerException.class, () ->
-                new PublicationSampleService(publicationSampleRepository, factory, policy, userRepository, null));
+                new PublicationSampleService(
+                        publicationSampleRepository, collectionOfPublicationsRepository, factory, policy, userRepository, null));
     }
 
     // =========================================================================
     // createAndSave
     // =========================================================================
+
+    @Test
+    void createAndSave_shouldReturnPersistedSample_whenSuccessful() throws InstanceAlreadyExistsException {
+        // Arrange
+        PublicationSample saved = mock(PublicationSample.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(true);
+        when(factory.create(bdId, userId, editionId, Condition.NEW)).thenReturn(sample);
+        when(sample.id()).thenReturn(sampleId);
+        when(publicationSampleRepository.existsById(sampleId)).thenReturn(false);
+        when(publicationSampleRepository.save(sample)).thenReturn(saved);
+
+        // Act
+        PublicationSample result = service.createAndSave(bdId, userId, editionId, Condition.NEW);
+
+        // Assert
+        assertEquals(saved, result);
+    }
 
     @Test
     void createAndSave_shouldThrowEntityNotFoundException_whenUserNotFound() {
@@ -159,37 +194,9 @@ class PublicationSampleServiceTest {
                 service.createAndSave(bdId, userId, editionId, Condition.NEW));
     }
 
-    @Test
-    void createAndSave_shouldReturnPersistedSample_whenSuccessful() throws InstanceAlreadyExistsException {
-        // Arrange
-        PublicationSample saved = mock(PublicationSample.class);
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreatePublicationSample(user)).thenReturn(true);
-        when(factory.create(bdId, userId, editionId, Condition.NEW)).thenReturn(sample);
-        when(sample.id()).thenReturn(sampleId);
-        when(publicationSampleRepository.existsById(sampleId)).thenReturn(false);
-        when(publicationSampleRepository.save(sample)).thenReturn(saved);
-
-        // Act
-        PublicationSample result = service.createAndSave(bdId, userId, editionId, Condition.NEW);
-
-        // Assert
-        assertEquals(saved, result);
-    }
-
     // =========================================================================
     // findById
     // =========================================================================
-
-    @Test
-    void findById_shouldThrowEntityNotFoundException_whenSampleNotFound() {
-        // Arrange
-        when(publicationSampleRepository.findById(sampleId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(EntityNotFoundException.class, () ->
-                service.findById(sampleId));
-    }
 
     @Test
     void findById_shouldReturnSample_whenFound() {
@@ -201,6 +208,16 @@ class PublicationSampleServiceTest {
 
         // Assert
         assertEquals(sample, result);
+    }
+
+    @Test
+    void findById_shouldThrowEntityNotFoundException_whenSampleNotFound() {
+        // Arrange
+        when(publicationSampleRepository.findById(sampleId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.findById(sampleId));
     }
 
     // =========================================================================
@@ -237,12 +254,6 @@ class PublicationSampleServiceTest {
     // =========================================================================
 
     @Test
-    void findByBibliographicalDataId_shouldThrowNullPointerException_whenBdIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findByBibliographicalDataId(null));
-    }
-
-    @Test
     void findByBibliographicalDataId_shouldReturnMatchingSamples() {
         // Arrange
         List<PublicationSample> samples = List.of(sample);
@@ -267,15 +278,15 @@ class PublicationSampleServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void findByBibliographicalDataId_shouldThrowNullPointerException_whenBdIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findByBibliographicalDataId(null));
+    }
+
     // =========================================================================
     // findByBibliographicalDataIdIn
     // =========================================================================
-
-    @Test
-    void findByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdsIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findByBibliographicalDataIdIn(null));
-    }
 
     @Test
     void findByBibliographicalDataIdIn_shouldReturnMatchingSamples() {
@@ -304,52 +315,15 @@ class PublicationSampleServiceTest {
         assertTrue(result.isEmpty());
     }
 
-    // =========================================================================
-    // findByEditionIdIn
-    // =========================================================================
-
     @Test
-    void findByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
+    void findByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdsIsNull() {
         assertThrows(NullPointerException.class, () ->
-                service.findByEditionIdIn(null));
-    }
-
-    @Test
-    void findByEditionIdIn_shouldReturnMatchingSamples() {
-        // Arrange
-        List<EditionId> editionIds = List.of(editionId);
-        List<PublicationSample> samples = List.of(sample);
-        when(publicationSampleRepository.findByEditionIdIn(editionIds)).thenReturn(samples);
-
-        // Act
-        List<PublicationSample> result = service.findByEditionIdIn(editionIds);
-
-        // Assert
-        assertEquals(samples, result);
-    }
-
-    @Test
-    void findByEditionIdIn_shouldReturnEmptyList_whenNoMatchExists() {
-        // Arrange
-        List<EditionId> editionIds = List.of(editionId);
-        when(publicationSampleRepository.findByEditionIdIn(editionIds)).thenReturn(List.of());
-
-        // Act
-        List<PublicationSample> result = service.findByEditionIdIn(editionIds);
-
-        // Assert
-        assertTrue(result.isEmpty());
+                service.findByBibliographicalDataIdIn(null));
     }
 
     // =========================================================================
-// findIdsByBibliographicalDataIdIn
-// =========================================================================
-
-    @Test
-    void findIdsByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdsIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findIdsByBibliographicalDataIdIn(null));
-    }
+    // findIdsByBibliographicalDataIdIn
+    // =========================================================================
 
     @Test
     void findIdsByBibliographicalDataIdIn_shouldReturnMatchingIds() {
@@ -378,15 +352,52 @@ class PublicationSampleServiceTest {
         assertTrue(result.isEmpty());
     }
 
-// =========================================================================
-// findIdsByEditionIdIn
-// =========================================================================
+    @Test
+    void findIdsByBibliographicalDataIdIn_shouldThrowNullPointerException_whenBdIdsIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findIdsByBibliographicalDataIdIn(null));
+    }
+
+    // =========================================================================
+    // findByEditionIdIn
+    // =========================================================================
 
     @Test
-    void findIdsByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findIdsByEditionIdIn(null));
+    void findByEditionIdIn_shouldReturnMatchingSamples() {
+        // Arrange
+        List<EditionId> editionIds = List.of(editionId);
+        List<PublicationSample> samples = List.of(sample);
+        when(publicationSampleRepository.findByEditionIdIn(editionIds)).thenReturn(samples);
+
+        // Act
+        List<PublicationSample> result = service.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertEquals(samples, result);
     }
+
+    @Test
+    void findByEditionIdIn_shouldReturnEmptyList_whenNoMatchExists() {
+        // Arrange
+        List<EditionId> editionIds = List.of(editionId);
+        when(publicationSampleRepository.findByEditionIdIn(editionIds)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = service.findByEditionIdIn(editionIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findByEditionIdIn(null));
+    }
+
+    // =========================================================================
+    // findIdsByEditionIdIn
+    // =========================================================================
 
     @Test
     void findIdsByEditionIdIn_shouldReturnMatchingIds() {
@@ -415,14 +426,49 @@ class PublicationSampleServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void findIdsByEditionIdIn_shouldThrowNullPointerException_whenEditionIdsIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findIdsByEditionIdIn(null));
+    }
+
     // =========================================================================
     // findByCollectionOfPublicationsId
     // =========================================================================
 
     @Test
-    void findByCollectionOfPublicationsId_shouldThrowNullPointerException_whenCollectionIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findByCollectionOfPublicationsId(null, userId));
+    void findByCollectionOfPublicationsId_shouldReturnSamples_whenSuccessful() throws Exception {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        List<PublicationSample> samples = List.of(sample);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userId);
+        when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId)).thenReturn(samples);
+
+        // Act
+        List<PublicationSample> result = service.findByCollectionOfPublicationsId(collectionId, userId);
+
+        // Assert
+        assertEquals(samples, result);
+    }
+
+    @Test
+    void findByCollectionOfPublicationsId_shouldThrowAccessDeniedException_whenUserDoesNotOwnCollection() throws Exception {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        UserId otherUserId = mock(UserId.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(otherUserId);
+
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.findByCollectionOfPublicationsId(collectionId, userId));
     }
 
     @Test
@@ -436,7 +482,7 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void findByCollectionOfPublicationsId_shouldThrowAccessDeniedException_whenAccessDenied() {
+    void findByCollectionOfPublicationsId_shouldThrowAccessDeniedException_whenPolicyDenied() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
@@ -447,115 +493,235 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void findByCollectionOfPublicationsId_shouldReturnSamples_whenSuccessful() {
+    void findByCollectionOfPublicationsId_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findByCollectionOfPublicationsId(null, userId));
+    }
+
+    // =========================================================================
+    // findAllPublicationsOwnedByUser
+    // =========================================================================
+
+    @Test
+    void findAllPublicationsOwnedByUser_shouldReturnAllSamples_whenSuccessful() {
         // Arrange
-        List<PublicationSample> samples = List.of(sample);
+        List<PublicationSample> samples = List.of(sample, mock(PublicationSample.class));
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
-        when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId)).thenReturn(samples);
+        when(policy.canFindPublicationsOwnedByUserId(user)).thenReturn(true);
+        when(publicationSampleRepository.findAllByOwnerId(userId)).thenReturn(samples);
 
         // Act
-        List<PublicationSample> result = service.findByCollectionOfPublicationsId(collectionId, userId);
+        List<PublicationSample> result = service.findAllPublicationsOwnedByUser(userId);
 
         // Assert
         assertEquals(samples, result);
     }
 
-    // =========================================================================
-    // findByUserIdAndLibraryIdIsNotNull
-    // =========================================================================
-
     @Test
-    void findByUserIdAndLibraryIdIsNotNull_shouldThrowNullPointerException_whenUserIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findByUserIdAndLibraryIdIsNotNull(null));
+    void findAllPublicationsOwnedByUser_shouldReturnEmptyList_whenUserHasNoPublications() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsOwnedByUserId(user)).thenReturn(true);
+        when(publicationSampleRepository.findAllByOwnerId(userId)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = service.findAllPublicationsOwnedByUser(userId);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdAndLibraryIdIsNotNull_shouldThrowEntityNotFoundException_whenUserNotFound() {
+    void findAllPublicationsOwnedByUser_shouldThrowEntityNotFoundException_whenUserNotFound() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
-                service.findByUserIdAndLibraryIdIsNotNull(userId));
+                service.findAllPublicationsOwnedByUser(userId));
     }
 
     @Test
-    void findByUserIdAndLibraryIdIsNotNull_shouldThrowAccessDeniedException_whenAccessDenied() {
+    void findAllPublicationsOwnedByUser_shouldThrowAccessDeniedException_whenAccessDenied() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByUserIdAndLibraryIdIsNotNull(user)).thenReturn(false);
+        when(policy.canFindPublicationsOwnedByUserId(user)).thenReturn(false);
 
         // Act & Assert
         assertThrows(AccessDeniedException.class, () ->
-                service.findByUserIdAndLibraryIdIsNotNull(userId));
+                service.findAllPublicationsOwnedByUser(userId));
     }
 
     @Test
-    void findByUserIdAndLibraryIdIsNotNull_shouldReturnSamples_whenSuccessful() {
+    void findAllPublicationsOwnedByUser_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findAllPublicationsOwnedByUser(null));
+    }
+
+    // =========================================================================
+    // findPublicationsInLibrary
+    // =========================================================================
+
+    @Test
+    void findPublicationsInLibrary_shouldReturnSamples_whenSuccessful() {
         // Arrange
         List<PublicationSample> samples = List.of(sample);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByUserIdAndLibraryIdIsNotNull(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId)).thenReturn(samples);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(true);
+        when(publicationSampleRepository.findPublicationsInLibrary(userId)).thenReturn(samples);
 
         // Act
-        List<PublicationSample> result = service.findByUserIdAndLibraryIdIsNotNull(userId);
+        List<PublicationSample> result = service.findPublicationsInLibrary(userId);
 
         // Assert
         assertEquals(samples, result);
     }
 
-    // =========================================================================
-    // findByUserIdAndLibraryIdIsNull
-    // =========================================================================
-
     @Test
-    void findByUserIdAndLibraryIdIsNull_shouldThrowNullPointerException_whenUserIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findByUserIdAndLibraryIdIsNull(null));
+    void findPublicationsInLibrary_shouldReturnEmptyList_whenUserHasNoPublicationsInLibrary() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(true);
+        when(publicationSampleRepository.findPublicationsInLibrary(userId)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = service.findPublicationsInLibrary(userId);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void findByUserIdAndLibraryIdIsNull_shouldThrowEntityNotFoundException_whenUserNotFound() {
+    void findPublicationsInLibrary_shouldThrowEntityNotFoundException_whenUserNotFound() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(EntityNotFoundException.class, () ->
-                service.findByUserIdAndLibraryIdIsNull(userId));
+                service.findPublicationsInLibrary(userId));
     }
 
     @Test
-    void findByUserIdAndLibraryIdIsNull_shouldThrowAccessDeniedException_whenAccessDenied() {
+    void findPublicationsInLibrary_shouldThrowAccessDeniedException_whenAccessDenied() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByUserIdAndLibraryIdIsNull(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
 
         // Act & Assert
         assertThrows(AccessDeniedException.class, () ->
-                service.findByUserIdAndLibraryIdIsNull(userId));
+                service.findPublicationsInLibrary(userId));
     }
 
     @Test
-    void findByUserIdAndLibraryIdIsNull_shouldReturnSamples_whenSuccessful() {
+    void findPublicationsInLibrary_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findPublicationsInLibrary(null));
+    }
+
+    // =========================================================================
+    // findPublicationsNotInLibrary
+    // =========================================================================
+
+    @Test
+    void findPublicationsNotInLibrary_shouldReturnSamples_whenSuccessful() {
         // Arrange
         List<PublicationSample> samples = List.of(sample);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByUserIdAndLibraryIdIsNull(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNull(userId)).thenReturn(samples);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
+        when(publicationSampleRepository.findPublicationsNotInLibrary(userId)).thenReturn(samples);
 
         // Act
-        List<PublicationSample> result = service.findByUserIdAndLibraryIdIsNull(userId);
+        List<PublicationSample> result = service.findPublicationsNotInLibrary(userId);
 
         // Assert
         assertEquals(samples, result);
+    }
+
+    @Test
+    void findPublicationsNotInLibrary_shouldReturnEmptyList_whenUserHasNoPublicationsOutsideLibrary() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
+        when(publicationSampleRepository.findPublicationsNotInLibrary(userId)).thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = service.findPublicationsNotInLibrary(userId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findPublicationsNotInLibrary_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.findPublicationsNotInLibrary(userId));
+    }
+
+    @Test
+    void findPublicationsNotInLibrary_shouldThrowAccessDeniedException_whenAccessDenied() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.findPublicationsNotInLibrary(userId));
+    }
+
+    @Test
+    void findPublicationsNotInLibrary_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findPublicationsNotInLibrary(null));
     }
 
     // =========================================================================
     // findByLibraryIdAndPublicationStatusNotIn
     // =========================================================================
+
+    @Test
+    void findByLibraryIdAndPublicationStatusNotIn_shouldExcludeSoldAndForSaleStatuses_whenSuccessful() {
+        // Arrange
+        Library library = mock(Library.class);
+        List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
+        List<PublicationSample> samples = List.of(sample);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
+        when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
+        when(library.id()).thenReturn(libraryId);
+        when(publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded))
+                .thenReturn(samples);
+
+        // Act
+        List<PublicationSample> result = service.findByLibraryIdAndPublicationStatusNotIn(userId);
+
+        // Assert
+        assertEquals(samples, result);
+    }
+
+    @Test
+    void findByLibraryIdAndPublicationStatusNotIn_shouldReturnEmptyList_whenNoAvailablePublications() {
+        // Arrange
+        Library library = mock(Library.class);
+        List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
+        when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
+        when(library.id()).thenReturn(libraryId);
+        when(publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded))
+                .thenReturn(List.of());
+
+        // Act
+        List<PublicationSample> result = service.findByLibraryIdAndPublicationStatusNotIn(userId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 
     @Test
     void findByLibraryIdAndPublicationStatusNotIn_shouldThrowEntityNotFoundException_whenUserNotFound() {
@@ -590,73 +756,22 @@ class PublicationSampleServiceTest {
                 service.findByLibraryIdAndPublicationStatusNotIn(userId));
     }
 
-    @Test
-    void findByLibraryIdAndPublicationStatusNotIn_shouldExcludeSoldAndForSaleStatuses_whenSuccessful() {
-        // Arrange
-        Library library = mock(Library.class);
-        List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
-        List<PublicationSample> samples = List.of(sample);
-
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
-        when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
-        when(library.id()).thenReturn(libraryId);
-        when(publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded))
-                .thenReturn(samples);
-
-        // Act
-        List<PublicationSample> result = service.findByLibraryIdAndPublicationStatusNotIn(userId);
-
-        // Assert
-        assertEquals(samples, result);
-    }
-
     // =========================================================================
     // findAvailableForCollection
     // =========================================================================
 
     @Test
-    void findAvailableForCollection_shouldThrowNullPointerException_whenUserIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findAvailableForCollection(null, collectionId));
-    }
-
-    @Test
-    void findAvailableForCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.findAvailableForCollection(userId, null));
-    }
-
-    @Test
-    void findAvailableForCollection_shouldThrowEntityNotFoundException_whenUserNotFound() {
+    void findAvailableForCollection_shouldReturnOnlySamplesNotAlreadyInCollection() throws Exception {
         // Arrange
-        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(EntityNotFoundException.class, () ->
-                service.findAvailableForCollection(userId, collectionId));
-    }
-
-    @Test
-    void findAvailableForCollection_shouldThrowAccessDeniedException_whenAccessDenied() {
-        // Arrange
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
-
-        // Act & Assert
-        assertThrows(AccessDeniedException.class, () ->
-                service.findAvailableForCollection(userId, collectionId));
-    }
-
-    @Test
-    void findAvailableForCollection_shouldReturnOnlySamplesNotAlreadyInCollection() {
-        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
         PublicationSample inCollection = mock(PublicationSample.class);
         PublicationSample notInCollection = mock(PublicationSample.class);
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId))
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userId);
+        when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(inCollection, notInCollection));
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId))
                 .thenReturn(List.of(inCollection));
@@ -671,14 +786,17 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void findAvailableForCollection_shouldReturnAllUserSamples_whenCollectionIsEmpty() {
+    void findAvailableForCollection_shouldReturnAllUserSamples_whenCollectionIsEmpty() throws Exception {
         // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
         PublicationSample s1 = mock(PublicationSample.class);
         PublicationSample s2 = mock(PublicationSample.class);
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId))
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userId);
+        when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(s1, s2));
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId))
                 .thenReturn(List.of());
@@ -691,11 +809,15 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void findAvailableForCollection_shouldReturnEmptyList_whenAllUserSamplesAlreadyInCollection() {
+    void findAvailableForCollection_shouldReturnEmptyList_whenAllUserSamplesAlreadyInCollection() throws Exception {
         // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(publicationSampleRepository.findByUserIdAndLibraryIdIsNotNull(userId))
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(userId);
+        when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(sample));
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId))
                 .thenReturn(List.of(sample));
@@ -707,14 +829,79 @@ class PublicationSampleServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void findAvailableForCollection_shouldThrowAccessDeniedException_whenUserDoesNotOwnCollection() throws Exception {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        UserId otherUserId = mock(UserId.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindAvailableForCollection(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collection.getOwnerId()).thenReturn(otherUserId);
+
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.findAvailableForCollection(userId, collectionId));
+    }
+
+    @Test
+    void findAvailableForCollection_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.findAvailableForCollection(userId, collectionId));
+    }
+
+    @Test
+    void findAvailableForCollection_shouldThrowAccessDeniedException_whenPolicyDenied() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.findAvailableForCollection(userId, collectionId));
+    }
+
+    @Test
+    void findAvailableForCollection_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findAvailableForCollection(null, collectionId));
+    }
+
+    @Test
+    void findAvailableForCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findAvailableForCollection(userId, null));
+    }
+
     // =========================================================================
     // addPublicationToLibrary
     // =========================================================================
 
     @Test
-    void addPublicationToLibrary_shouldThrowNullPointerException_whenPublicationSampleIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.addPublicationToLibrary(null, userId));
+    void addPublicationToLibrary_shouldAssignLibraryAndReturnSavedSample_whenSuccessful() {
+        // Arrange
+        Library library = mock(Library.class);
+        PublicationSample saved = mock(PublicationSample.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
+        when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
+        when(library.id()).thenReturn(libraryId);
+        when(publicationSampleRepository.findById(sampleId)).thenReturn(Optional.of(sample));
+        when(sample.isOwnedByUser(userId)).thenReturn(true);
+        when(publicationSampleRepository.save(sample)).thenReturn(saved);
+
+        // Act
+        PublicationSample result = service.addPublicationToLibrary(sampleId, userId);
+
+        // Assert
+        assertEquals(saved, result);
+        verify(sample).addPublicationToLibrary(libraryId);
     }
 
     @Test
@@ -728,7 +915,7 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void addPublicationToLibrary_shouldThrowAccessDeniedException_whenAccessDenied() {
+    void addPublicationToLibrary_shouldThrowAccessDeniedException_whenPolicyDenied() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
@@ -754,6 +941,7 @@ class PublicationSampleServiceTest {
     void addPublicationToLibrary_shouldThrowEntityNotFoundException_whenSampleNotFound() {
         // Arrange
         Library library = mock(Library.class);
+
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
         when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
@@ -766,23 +954,26 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void addPublicationToLibrary_shouldAssignLibraryAndReturnSavedSample_whenSuccessful() {
+    void addPublicationToLibrary_shouldThrowAccessDeniedException_whenUserDoesNotOwnSample() {
         // Arrange
         Library library = mock(Library.class);
-        PublicationSample saved = mock(PublicationSample.class);
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
         when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
         when(library.id()).thenReturn(libraryId);
         when(publicationSampleRepository.findById(sampleId)).thenReturn(Optional.of(sample));
-        when(publicationSampleRepository.save(sample)).thenReturn(saved);
+        when(sample.isOwnedByUser(userId)).thenReturn(false);
 
-        // Act
-        PublicationSample result = service.addPublicationToLibrary(sampleId, userId);
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.addPublicationToLibrary(sampleId, userId));
+    }
 
-        // Assert
-        assertEquals(saved, result);
+    @Test
+    void addPublicationToLibrary_shouldThrowNullPointerException_whenPublicationSampleIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.addPublicationToLibrary(null, userId));
     }
 
     // =========================================================================
@@ -790,15 +981,22 @@ class PublicationSampleServiceTest {
     // =========================================================================
 
     @Test
-    void assignPublicationToCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.assignPublicationToCollection(null, sampleId, userId));
-    }
+    void assignPublicationToCollection_shouldAssignCollectionAndReturnSavedSample_whenSuccessful() {
+        // Arrange
+        PublicationSample saved = mock(PublicationSample.class);
 
-    @Test
-    void assignPublicationToCollection_shouldThrowNullPointerException_whenPublicationSampleIdIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                service.assignPublicationToCollection(collectionId, null, userId));
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
+        when(publicationSampleRepository.findById(sampleId)).thenReturn(Optional.of(sample));
+        when(sample.isOwnedByUser(userId)).thenReturn(true);
+        when(publicationSampleRepository.save(sample)).thenReturn(saved);
+
+        // Act
+        PublicationSample result = service.assignPublicationToCollection(collectionId, sampleId, userId);
+
+        // Assert
+        assertEquals(saved, result);
+        verify(sample).addPublicationToCollection(collectionId);
     }
 
     @Test
@@ -812,7 +1010,7 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void assignPublicationToCollection_shouldThrowAccessDeniedException_whenAccessDenied() {
+    void assignPublicationToCollection_shouldThrowAccessDeniedException_whenPolicyDenied() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
@@ -835,19 +1033,27 @@ class PublicationSampleServiceTest {
     }
 
     @Test
-    void assignPublicationToCollection_shouldAssignCollectionAndReturnSavedSample_whenSuccessful() {
+    void assignPublicationToCollection_shouldThrowAccessDeniedException_whenUserDoesNotOwnSample() {
         // Arrange
-        PublicationSample saved = mock(PublicationSample.class);
-
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
         when(publicationSampleRepository.findById(sampleId)).thenReturn(Optional.of(sample));
-        when(publicationSampleRepository.save(sample)).thenReturn(saved);
+        when(sample.isOwnedByUser(userId)).thenReturn(false);
 
-        // Act
-        PublicationSample result = service.assignPublicationToCollection(collectionId, sampleId, userId);
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.assignPublicationToCollection(collectionId, sampleId, userId));
+    }
 
-        // Assert
-        assertEquals(saved, result);
+    @Test
+    void assignPublicationToCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.assignPublicationToCollection(null, sampleId, userId));
+    }
+
+    @Test
+    void assignPublicationToCollection_shouldThrowNullPointerException_whenPublicationSampleIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.assignPublicationToCollection(collectionId, null, userId));
     }
 }

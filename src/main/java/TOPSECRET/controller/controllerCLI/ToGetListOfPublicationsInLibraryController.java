@@ -79,7 +79,7 @@ public class ToGetListOfPublicationsInLibraryController {
                 .orElseThrow(() ->
                         new IllegalArgumentException("Username is not valid or not found"));
 
-        List<PublicationSample> listOfPublications = pubSampleRepo.findByUserIdAndLibraryIdIsNotNull(userId);
+        List<PublicationSample> listOfPublications = pubSampleRepo.findPublicationsInLibrary(userId);
 
         List<US012PublicationDetailsDTO> listOfPublicationsDTO = mapper.toDTOs(listOfPublications);
 

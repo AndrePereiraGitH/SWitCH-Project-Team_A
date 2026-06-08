@@ -111,7 +111,7 @@ class ToAddPublicationToLibraryControllerTest {
                         libraryRepositoryDouble,
                         pubSampleServiceDouble);
 
-        when(pubSampleServiceDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
+        when(pubSampleServiceDouble.findPublicationsNotInLibrary(userIdDouble))
                 .thenReturn(List.of(publication1, publication2));
 
         // Act
@@ -132,7 +132,7 @@ class ToAddPublicationToLibraryControllerTest {
                         libraryRepositoryDouble,
                         pubSampleServiceDouble);
 
-        when(pubSampleServiceDouble.findByUserIdAndLibraryIdIsNull(userIdDouble))
+        when(pubSampleServiceDouble.findPublicationsNotInLibrary(userIdDouble))
                 .thenReturn(List.of());
 
         // Act
