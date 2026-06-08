@@ -10,8 +10,8 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.management.InstanceNotFoundException;
 import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -146,7 +146,7 @@ class CollectionOfPublicationsRepositoryMemTest {
     // ===================================================
 
     @Test
-    void findById_shouldFindCollection_whenExistsById() throws InstanceNotFoundException {
+    void findById_shouldFindCollection_whenExistsById() {
         // Arrange
         ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
 
@@ -158,21 +158,24 @@ class CollectionOfPublicationsRepositoryMemTest {
         sut.save(collection);
 
         // Act
-        CollectionOfPublications result = sut.findById(id);
+        Optional<CollectionOfPublications> result = sut.findById(id);
 
         // Assert
-        assertEquals(result, collection);
+        assertTrue(result.isPresent());
+        assertEquals(collection, result.get());
     }
 
     @Test
-    void findById_shouldThrow_whenCollectionDoesNotExists() {
-        //arrange
+    void findById_shouldReturnEmpty_whenCollectionDoesNotExist() {
+        // Arrange
         ICollectionOfPublicationsRepository sut = new CollectionOfPublicationsRepositoryMem();
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
 
-        //act + assert
-        InstanceNotFoundException ex = assertThrows(InstanceNotFoundException.class, () -> sut.findById(id));
-        assertEquals("collection not found by Id: " + id, ex.getMessage());
+        // Act
+        Optional<CollectionOfPublications> result = sut.findById(id);
+
+        // Assert
+        assertTrue(result.isEmpty());
     }
 
     @Test
