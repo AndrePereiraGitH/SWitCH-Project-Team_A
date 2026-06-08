@@ -9,10 +9,12 @@ import java.util.Optional;
 /**
  * Repository interface responsible for managing {@link PublicationSample} aggregates.
  *
- * <p>Provides operations grouped into three categories:</p>
+ * <p>Provides operations grouped into four categories:</p>
  * <ul>
  *   <li><b>Persistence</b> — save and existence checks.</li>
- *   <li><b>Lookup</b> — queries by identity or associated identifiers.</li>
+ *   <li><b>Lookup — by identity</b> — queries by unique identifier.</li>
+ *   <li><b>Lookup — by associated identifiers</b> — queries filtered by related entity IDs.</li>
+ *   <li><b>Lookup — by owner</b> — queries scoped to a specific user.</li>
  *   <li><b>Domain Operations</b> — queries that involve domain-specific filtering.</li>
  * </ul>
  */
@@ -96,18 +98,18 @@ public interface IPublicationSampleRepository {
     /**
      * Retrieves all publication sample IDs associated with any of the given edition IDs.
      *
-     * @param listOfEditionIds the list of edition IDs; must not be {@code null}
+     * @param editionIds the list of edition IDs; must not be {@code null}
      * @return a list of matching {@link PublicationSampleId}; never {@code null}, may be empty
      */
-    List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds);
+    List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> editionIds);
 
     /**
      * Retrieves all {@link PublicationSample} instances associated with any of the given edition IDs.
      *
-     * @param listOfEditionIds the list of edition IDs; must not be {@code null}
+     * @param editionIds the list of edition IDs; must not be {@code null}
      * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
      */
-    List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds);
+    List<PublicationSample> findByEditionIdIn(List<EditionId> editionIds);
 
     /**
      * Retrieves all publication samples that belong to the specified library.
@@ -125,21 +127,33 @@ public interface IPublicationSampleRepository {
      */
     List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId);
 
+    // =========================================================================
+    // Lookup — by owner
+    // =========================================================================
+
     /**
-     * Retrieves all publications owned by the given user that are assigned to a library.
+     * Retrieves all publication samples owned by the given user.
+     *
+     * @param userId the user ID; must not be {@code null}
+     * @return a list of {@link PublicationSample} owned by the user; never {@code null}, may be empty
+     */
+    List<PublicationSample> findAllByOwnerId(UserId userId);
+
+    /**
+     * Retrieves all publication samples owned by the given user that are assigned to a library.
      *
      * @param userId the user ID; must not be {@code null}
      * @return a list of {@link PublicationSample} assigned to a library; never {@code null}, may be empty
      */
-    List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId);
+    List<PublicationSample> findPublicationsInLibrary(UserId userId);
 
     /**
-     * Retrieves all publications owned by the given user that are not assigned to any library.
+     * Retrieves all publication samples owned by the given user that are not assigned to any library.
      *
      * @param userId the user ID; must not be {@code null}
      * @return a list of {@link PublicationSample} without a library; never {@code null}, may be empty
      */
-    List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId);
+    List<PublicationSample> findPublicationsNotInLibrary(UserId userId);
 
     // =========================================================================
     // Domain Operations

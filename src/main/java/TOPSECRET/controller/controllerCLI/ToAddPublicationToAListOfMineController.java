@@ -12,6 +12,7 @@ import TOPSECRET.dto.US018PublicationSampleDTO;
 import TOPSECRET.dto.US018PublicationSampleMapper;
 import TOPSECRET.services.PublicationSampleService;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 /**
@@ -99,7 +100,7 @@ public class ToAddPublicationToAListOfMineController {
      * @throws IllegalArgumentException if collectionId is null
      */
     public List<US018PublicationSampleDTO> getPublicationsForCollection(
-            CollectionOfPublicationsId collectionId) {
+            CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
 
         if (collectionId == null) {
             throw new IllegalArgumentException("collectionId cannot be null");

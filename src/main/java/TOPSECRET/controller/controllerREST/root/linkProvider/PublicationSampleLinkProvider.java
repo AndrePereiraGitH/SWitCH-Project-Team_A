@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -21,8 +22,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * {@link PublicationSampleRESTController} endpoints.
  *
  * <p>Links are generated based on the requesting user's identity and permissions.
- * Fixed navigational links are always included, while conditional links are only
- * added when the user is authorized for the corresponding operation.</p>
+ * Public links are always included, while conditional links are only added when
+ * the user is authorized for the corresponding operation.</p>
+ *
+ * <p>Links are grouped into four categories:</p>
+ * <ul>
+ *   <li><b>Public</b> — always included; no authorization required.</li>
+ *   <li><b>Owner</b> — included when the user is authorized to create publication samples.</li>
+ *   <li><b>Library</b> — included when the user is authorized for library operations.</li>
+ *   <li><b>Collection</b> — included when the user is authorized for collection operations.</li>
+ * </ul>
  */
 @Component
 public class PublicationSampleLinkProvider {
@@ -33,8 +42,10 @@ public class PublicationSampleLinkProvider {
     /**
      * Creates a new {@code PublicationSampleLinkProvider}.
      *
-     * @param policy         the authorization policy used to determine which links to include
-     * @param userRepository the repository used to look up the requesting user
+     * @param policy         the authorization policy used to determine which links to include;
+     *                       must not be {@code null}
+     * @param userRepository the repository used to look up the requesting user;
+     *                       must not be {@code null}
      */
     @Autowired
     public PublicationSampleLinkProvider(PublicationSampleAuthorizationPolicy policy,
@@ -44,63 +55,67 @@ public class PublicationSampleLinkProvider {
     }
 
     /**
-     * Generates a list of HATEOAS navigation links for the given user.
+     * Generates a list of public HATEOAS navigation links that are always available,
+     * regardless of the requesting user's identity or permissions.
      *
      * <p>The following links are always included:</p>
      * <ul>
      *   <li>{@code find-by-id} — retrieve a publication sample by its ID.</li>
      *   <li>{@code find-all} — retrieve all publication samples.</li>
      *   <li>{@code find-by-bdId} — retrieve publication samples by bibliographical data ID.</li>
-     *   <li>{@code find-by-editionId} — retrieve publication samples by edition ID.</li>
-     * </ul>
-     *
-     * <p>The following links are conditionally included based on the user's permissions:</p>
-     * <ul>
-     *   <li>{@code create-publication-sample} — create a new publication sample.</li>
-     *   <li>{@code find-by-collectionId} — retrieve publication samples by collection ID.</li>
-     *   <li>{@code find-in-library} — retrieve user publications assigned to a library.</li>
-     *   <li>{@code find-not-in-library} — retrieve user publications not assigned to any library.</li>
-     *   <li>{@code find-available-in-library} — retrieve available publications in the user's library.</li>
-     *   <li>{@code find-available-for-collection} — retrieve publications eligible for a collection.</li>
-     *   <li>{@code add-to-library} — assign a publication sample to the user's library.</li>
-     *   <li>{@code assign-to-collection} — assign a publication sample to a collection.</li>
+     *   <li>{@code find-by-editionIds} — retrieve publication samples by edition IDs.</li>
      *   <li>{@code find-by-bdIds} — retrieve publication samples by multiple bibliographical data IDs.</li>
      * </ul>
      *
-     * @param userId the identifier of the requesting user; must not be {@code null}
-     * @return a list of {@link Link} instances; never {@code null}, may vary based on permissions
-     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     * @return a list of public {@link Link} instances; never {@code null}, never empty
      */
-    public List<Link> getPublicationSampleLinks(UserId userId) throws InstanceNotFoundException {
+    public List<Link> getPublicLinks() {
 
         List<Link> links = new ArrayList<>();
 
-        User user = userRepository.findByID(userId)
-                .orElseThrow(() -> new InstanceNotFoundException("User not found"));
-
-        // ---- With no policy ----
-
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                .findById(null, null))
+                .findById(null))
                 .withRel("find-by-id"));
 
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                .findAll(null))
+                .findAll())
                 .withRel("find-all"));
 
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                .findByBibliographicalDataId(null, null))
+                .findByBibliographicalDataId(null))
                 .withRel("find-by-bdId"));
 
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                .findByEditionIdIn(null, null))
+                .findByEditionIdIn(null))
                 .withRel("find-by-editionIds"));
 
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                .findByBibliographicalDataIdIn(null, null))
+                .findByBibliographicalDataIdIn(null))
                 .withRel("find-by-bdIds"));
 
-        // ---- Policy ----
+        return links;
+    }
+
+    /**
+     * Generates a list of owner-scoped HATEOAS navigation links based on the
+     * requesting user's permissions.
+     *
+     * <p>The following link is conditionally included:</p>
+     * <ul>
+     *   <li>{@code create-publication-sample} — create a new publication sample.</li>
+     * </ul>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a list of owner {@link Link} instances; never {@code null}, may be empty
+     * @throws NullPointerException      if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     */
+    public List<Link> getOwnerLinks(UserId userId) throws InstanceNotFoundException {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<Link> links = new ArrayList<>();
+
+        User user = resolveUser(userId);
 
         if (policy.canCreatePublicationSample(user)) {
             links.add(linkTo(methodOn(PublicationSampleRESTController.class)
@@ -108,21 +123,42 @@ public class PublicationSampleLinkProvider {
                     .withRel("create-publication-sample"));
         }
 
-        if (policy.canFindByCollectionOfPublicationsId(user)) {
-            links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                    .findByCollectionOfPublicationsId(null, null))
-                    .withRel("find-by-collectionId"));
-        }
+        return links;
+    }
 
-        if (policy.canFindByUserIdAndLibraryIdIsNotNull(user)) {
+    /**
+     * Generates a list of library-scoped HATEOAS navigation links based on the
+     * requesting user's permissions.
+     *
+     * <p>The following links are conditionally included:</p>
+     * <ul>
+     *   <li>{@code find-in-library} — retrieve user publications assigned to a library.</li>
+     *   <li>{@code find-not-in-library} — retrieve user publications not assigned to any library.</li>
+     *   <li>{@code find-available-in-library} — retrieve available publications in the user's library.</li>
+     *   <li>{@code add-to-library} — assign a publication sample to the user's library.</li>
+     * </ul>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a list of library {@link Link} instances; never {@code null}, may be empty
+     * @throws NullPointerException      if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     */
+    public List<Link> getLibraryLinks(UserId userId) throws InstanceNotFoundException {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<Link> links = new ArrayList<>();
+
+        User user = resolveUser(userId);
+
+        if (policy.canFindPublicationsInLibrary(user)) {
             links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                    .findByUserIdAndLibraryIdIsNotNull(null))
+                    .findPublicationsInLibrary(null))
                     .withRel("find-in-library"));
         }
 
-        if (policy.canFindByUserIdAndLibraryIdIsNull(user)) {
+        if (policy.canFindPublicationsNotInLibrary(user)) {
             links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                    .findByUserIdAndLibraryIdIsNull(null))
+                    .findPublicationsNotInLibrary(null))
                     .withRel("find-not-in-library"));
         }
 
@@ -132,16 +168,48 @@ public class PublicationSampleLinkProvider {
                     .withRel("find-available-in-library"));
         }
 
-        if (policy.canFindAvailableForCollection(user)) {
-            links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                    .findAvailableForCollection(null, null))
-                    .withRel("find-available-for-collection"));
-        }
-
         if (policy.canAddPublicationToLibrary(user)) {
             links.add(linkTo(methodOn(PublicationSampleRESTController.class)
                     .addPublicationToLibrary(null, null))
                     .withRel("add-to-library"));
+        }
+
+        return links;
+    }
+
+    /**
+     * Generates a list of collection-scoped HATEOAS navigation links based on the
+     * requesting user's permissions.
+     *
+     * <p>The following links are conditionally included:</p>
+     * <ul>
+     *   <li>{@code find-by-collectionId} — retrieve publication samples by collection ID.</li>
+     *   <li>{@code find-available-for-collection} — retrieve publications eligible for a collection.</li>
+     *   <li>{@code assign-to-collection} — assign a publication sample to a collection.</li>
+     * </ul>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a list of collection {@link Link} instances; never {@code null}, may be empty
+     * @throws NullPointerException      if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     */
+    public List<Link> getCollectionLinks(UserId userId) throws InstanceNotFoundException {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<Link> links = new ArrayList<>();
+
+        User user = resolveUser(userId);
+
+        if (policy.canFindByCollectionOfPublicationsId(user)) {
+            links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                    .findByCollectionOfPublicationsId(null, null))
+                    .withRel("find-by-collectionId"));
+        }
+
+        if (policy.canFindAvailableForCollection(user)) {
+            links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                    .findAvailableForCollection(null, null))
+                    .withRel("find-available-for-collection"));
         }
 
         if (policy.canAssignPublicationToCollection(user)) {
@@ -151,5 +219,19 @@ public class PublicationSampleLinkProvider {
         }
 
         return links;
+    }
+
+    /**
+     * Resolves a {@link User} from the repository by the given {@link UserId}.
+     *
+     * @param userId the identifier of the user to resolve; must not be {@code null}
+     * @return the resolved {@link User}
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     */
+    private User resolveUser(UserId userId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found"));
+
+        return user;
     }
 }

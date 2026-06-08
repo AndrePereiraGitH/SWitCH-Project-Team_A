@@ -41,11 +41,6 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return publicationSampleAssembler.toDomain(saved);
     }
 
-
-    // =========================================================================
-    // Lookup — by identity
-    // =========================================================================
-
     /** {@inheritDoc} */
     @Override
     public boolean existsById(PublicationSampleId publicationSampleId) {
@@ -54,17 +49,9 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         return isExistent;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public List<PublicationSample> findAll() {
-        List<PublicationSample> allPublications =
-                publicationSampleRepositoryJpa.findAll()
-                .stream()
-                .map(publicationSampleAssembler::toDomain)
-                .toList();
-
-        return allPublications;
-    }
+    // =========================================================================
+    // Lookup — by identity
+    // =========================================================================
 
     /** {@inheritDoc} */
     @Override
@@ -74,9 +61,21 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         Optional<PublicationSample> publicationSample =
                 publicationSampleRepositoryJpa.findById(publicationSampleId)
-                .map(publicationSampleAssembler::toDomain);
+                        .map(publicationSampleAssembler::toDomain);
 
         return publicationSample;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findAll() {
+        List<PublicationSample> allPublications =
+                publicationSampleRepositoryJpa.findAll()
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
+
+        return allPublications;
     }
 
     // =========================================================================
@@ -91,8 +90,8 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         List<PublicationSampleId> allPublicationsWithSpecificBD =
                 publicationSampleRepositoryJpa.findAllByBdId(bdId)
-                .stream()
-                .map(PublicationSampleDM::getPubSampleId).toList();
+                        .stream()
+                        .map(PublicationSampleDM::getPubSampleId).toList();
 
         return allPublicationsWithSpecificBD;
     }
@@ -120,9 +119,9 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         List<PublicationSampleId> allPublicationsWithSpecificBDs =
                 publicationSampleRepositoryJpa.findAllByBdIdIn(bdIds)
-                .stream()
-                .map(PublicationSampleDM::getPubSampleId)
-                .toList();
+                        .stream()
+                        .map(PublicationSampleDM::getPubSampleId)
+                        .toList();
 
         return allPublicationsWithSpecificBDs;
     }
@@ -150,9 +149,9 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         List<PublicationSampleId> allPublicationsWithSpecificEditions =
                 publicationSampleRepositoryJpa.findAllByEditionIdIn(listOfEditionIds)
-                .stream()
-                .map(PublicationSampleDM::getPubSampleId)
-                .toList();
+                        .stream()
+                        .map(PublicationSampleDM::getPubSampleId)
+                        .toList();
 
         return allPublicationsWithSpecificEditions;
     }
@@ -180,9 +179,9 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         List<PublicationSample> allPublicationsInLibrary =
                 publicationSampleRepositoryJpa.findByLibraryId(libraryId)
-                .stream()
-                .map(publicationSampleAssembler::toDomain)
-                .toList();
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
 
         return allPublicationsInLibrary;
     }
@@ -195,41 +194,59 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
 
         List<PublicationSample> allPublicationsInCollection =
                 publicationSampleRepositoryJpa.findAllByCollectionOfPublicationsId(collectionId)
-                .stream()
-                .map(publicationSampleAssembler::toDomain)
-                .toList();
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
 
         return allPublicationsInCollection;
     }
 
+    // =========================================================================
+    // Lookup — by owner
+    // =========================================================================
+
     /** {@inheritDoc} */
     @Override
-    public List<PublicationSample> findByUserIdAndLibraryIdIsNotNull(UserId userId) {
+    public List<PublicationSample> findAllByOwnerId(UserId userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<PublicationSample> allPublicationsOwnedByUser =
+                publicationSampleRepositoryJpa.findAllByOwnerId(userId)
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
+
+        return allPublicationsOwnedByUser;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<PublicationSample> findPublicationsInLibrary(UserId userId) {
 
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         List<PublicationSample> allPublicationsInUserLibrary =
                 publicationSampleRepositoryJpa.findAllByOwnerId(userId)
-                .stream()
-                .map(publicationSampleAssembler::toDomain)
-                .filter(PublicationSample::isInUserLibrary)
-                .toList();
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .filter(PublicationSample::isInUserLibrary)
+                        .toList();
 
         return allPublicationsInUserLibrary;
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<PublicationSample> findByUserIdAndLibraryIdIsNull(UserId userId) {
+    public List<PublicationSample> findPublicationsNotInLibrary(UserId userId) {
 
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         List<PublicationSample> allPublicationsOwnedByUserAndNotInLibrary =
                 publicationSampleRepositoryJpa.findAllByOwnerId(userId)
-                .stream()
-                .map(publicationSampleAssembler::toDomain)
-                .filter(p -> !p.isInUserLibrary())
-                .toList();
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .filter(p -> !p.isInUserLibrary())
+                        .toList();
 
         return allPublicationsOwnedByUserAndNotInLibrary;
     }
@@ -245,13 +262,12 @@ public class PublicationSampleRepositoryJpaImpl implements IPublicationSampleRep
         Objects.requireNonNull(libraryId, "LibraryId cannot be null");
         Objects.requireNonNull(excludedStatuses, "ExcludedStatuses cannot be null");
 
-
         List<PublicationSample> allPublicationsInLibraryAvailableForSale =
                 publicationSampleRepositoryJpa
-                .findAllByLibraryIdAndPublicationStatusNotIn(libraryId, excludedStatuses)
-                .stream()
-                .map(publicationSampleAssembler::toDomain)
-                .toList();
+                        .findAllByLibraryIdAndPublicationStatusNotIn(libraryId, excludedStatuses)
+                        .stream()
+                        .map(publicationSampleAssembler::toDomain)
+                        .toList();
 
         return allPublicationsInLibraryAvailableForSale;
     }

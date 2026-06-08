@@ -6,9 +6,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.services.LibraryService;
 import TOPSECRET.services.PublicationSampleService;
-import jakarta.persistence.EntityNotFoundException;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
@@ -64,7 +62,7 @@ public class ToAddPublicationToLibraryController {
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null");
         }
-        return _service.findByUserIdAndLibraryIdIsNull(userId);
+        return _service.findPublicationsNotInLibrary(userId);
     }
 
     /**
