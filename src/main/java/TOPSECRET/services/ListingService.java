@@ -74,7 +74,7 @@ public class ListingService {
         }
 
         if (!verifyPublicationsOwner(itemsId, sellerId)) {
-            throw new AuthorizationServiceException("You just have permissions to sell your own Publications");
+            throw new AccessDeniedException("You just have permissions to sell your own Publications");
         }
 
         Listing createdListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);

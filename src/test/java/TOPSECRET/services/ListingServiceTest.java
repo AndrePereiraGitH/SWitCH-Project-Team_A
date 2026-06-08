@@ -202,7 +202,7 @@ class ListingServiceTest {
     }
 
     @Test
-    void createAndSave_shouldThrowAuthorizationServiceException_whenPublicationIsNotOwnedByUser() {
+    void createAndSave_shouldThrowAccessDeniedException_whenPublicationIsNotOwnedByUser() {
 
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
@@ -223,7 +223,7 @@ class ListingServiceTest {
         when(publicationSample.getOwnerID()).thenReturn(otherUserId);
 
         assertThrows(
-                AuthorizationServiceException.class,
+                AccessDeniedException.class,
                 () -> service.createAndSave(
                         title,
                         List.of(publicationSampleId),
