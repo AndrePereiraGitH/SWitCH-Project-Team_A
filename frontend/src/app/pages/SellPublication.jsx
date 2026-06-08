@@ -2,13 +2,18 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Euro, Clock, Tag, Upload, X } from "lucide-react";
 import { usePublications } from "../components/PublicationsContext";
+import { API_BASE_URL , CURRENT_USER_ID } from "../../api/constants";
 
 export function SellPublication() {
     const navigate = useNavigate();
     const { bookId } = useParams();
-    const { getAllPublications, setPublicationForSale } = usePublications();
+    const { getAllPublications } = usePublications();
+
     const [saleType, setSaleType] = useState("direct");
     const [images, setImages] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState("");
+
     const [formData, setFormData] = useState({
         price: "",
         startingPrice: "",
@@ -16,7 +21,8 @@ export function SellPublication() {
         auctionStartDate: "",
         auctionStartTime: "",
         auctionEndDate: "",
-        auctionEndTime: ""
+        auctionEndTime: "",
+        shortDescription: ""
     });
 
     const book = getAllPublications().find(pub => pub.id === bookId);
@@ -40,16 +46,59 @@ export function SellPublication() {
         );
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
+        setSubmitError("");
 
-        const price = saleType === "direct"
-            ? parseFloat(formData.price)
-            : parseFloat(formData.startingPrice);
+        try {
+            //const userId = "user-001";
 
-        setPublicationForSale(bookId, price);
-        navigate("/my-publications");
-    };
+            const price =
+            saleType === "direct"
+                ? formData.price
+                : formData.startingPrice;
+
+            const body = {
+            listingTitle: book.title,
+            publicationIds: [bookId],
+            saleType: saleType === "direct" ? "Direct Sale" : "Auction",
+            price: price.toString(),
+            shortDescription: formData.shortDescription || "",
+            pictures: [],
+            publicationDate: new Date().toISOString().split("T")[0]
+            };
+
+            console.log("Creating listing with body:", body);
+            console.log("book:", book);
+            console.log("bookId:", bookId);
+            console.log("Creating listing with body:", body);
+
+            const response = await fetch(
+            `http://localhost:8081/listings?userId=${CURRENT_USER_ID}`,
+            {
+                method: "POST",
+                headers: {
+                "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }
+            );
+
+            if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Create listing failed:", response.status, errorText);
+            throw new Error(errorText || "Failed to create listing");
+            }
+
+            navigate("/explore");
+        } catch (error) {
+            console.error("Create listing error:", error);
+            setSubmitError(error.message);
+        } finally {
+            setSubmitting(false);
+        }
+        };
 
     const handleChange = (e) => {
         setFormData(prev => ({
@@ -60,15 +109,19 @@ export function SellPublication() {
 
     const handleImageUpload = (e) => {
         const files = e.target.files;
+
         if (files && images.length < 5) {
             Array.from(files).forEach(file => {
-                if (images.length < 5) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        setImages(prev => [...prev, reader.result]);
-                    };
-                    reader.readAsDataURL(file);
-                }
+                const reader = new FileReader();
+
+                reader.onloadend = () => {
+                    setImages(prev => {
+                        if (prev.length >= 5) return prev;
+                        return [...prev, reader.result];
+                    });
+                };
+
+                reader.readAsDataURL(file);
             });
         }
     };
@@ -95,18 +148,24 @@ export function SellPublication() {
                         </div>
                         <div>
                             <h1 className="font-serif text-4xl text-foreground">Put For Sale</h1>
-                            <p className="text-muted-foreground">US044: Direct sale of publication</p>
+                            <p className="text-muted-foreground">Create listing for this publication</p>
                         </div>
                     </div>
 
-                    {/* Book Info */}
                     <div className="bg-muted p-4 rounded-lg mb-6">
                         <h3 className="font-serif text-lg mb-1">{book.title}</h3>
                         <p className="text-sm text-muted-foreground mb-1">{book.author}</p>
-                        <span className="text-xs bg-card px-2 py-1 rounded">Condição: {book.condition}</span>
+                        <span className="text-xs bg-card px-2 py-1 rounded">
+                            Condition: {book.condition}
+                        </span>
                     </div>
 
-                    {/* Sale Type Selection */}
+                    {submitError && (
+                        <div className="bg-destructive/10 border-2 border-destructive text-destructive rounded-xl p-4 mb-6">
+                            {submitError}
+                        </div>
+                    )}
+
                     <div className="mb-8">
                         <label className="block mb-4 font-semibold text-lg">Sale Type</label>
                         <div className="grid md:grid-cols-2 gap-4">
@@ -153,7 +212,20 @@ export function SellPublication() {
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Image Upload Section */}
+                        <div>
+                            <label className="block mb-2 font-semibold text-foreground">
+                                Description
+                            </label>
+                            <textarea
+                                name="shortDescription"
+                                value={formData.shortDescription}
+                                onChange={handleChange}
+                                placeholder="Describe the condition, edition, or any useful details..."
+                                rows={4}
+                                className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                            />
+                        </div>
+
                         <div>
                             <label className="block mb-2 font-semibold text-foreground">Upload Images</label>
                             <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-primary transition-colors">
@@ -201,7 +273,9 @@ export function SellPublication() {
 
                         {saleType === "direct" ? (
                             <div>
-                                <label className="block mb-2 font-semibold text-foreground">Sale Price *</label>
+                                <label className="block mb-2 font-semibold text-foreground">
+                                    Sale Price *
+                                </label>
                                 <div className="relative">
                                     <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                     <input
@@ -220,7 +294,9 @@ export function SellPublication() {
                         ) : (
                             <>
                                 <div>
-                                    <label className="block mb-2 font-semibold text-foreground">Starting Price *</label>
+                                    <label className="block mb-2 font-semibold text-foreground">
+                                        Starting Price *
+                                    </label>
                                     <div className="relative">
                                         <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                         <input
@@ -238,7 +314,9 @@ export function SellPublication() {
                                 </div>
 
                                 <div>
-                                    <label className="block mb-2 font-semibold text-foreground">Buy Out Price (optional)</label>
+                                    <label className="block mb-2 font-semibold text-foreground">
+                                        Buy Out Price
+                                    </label>
                                     <div className="relative">
                                         <Euro className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                         <input
@@ -252,31 +330,32 @@ export function SellPublication() {
                                             className="w-full pl-12 pr-4 py-4 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                                         />
                                     </div>
-                                    <p className="text-xs text-muted-foreground mt-2">
-                                        Price for immediate purchase without auction
-                                    </p>
                                 </div>
 
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block mb-2 font-semibold text-foreground">Start Date *</label>
+                                        <label className="block mb-2 font-semibold text-foreground">
+                                            Start Date *
+                                        </label>
                                         <input
                                             type="date"
                                             name="auctionStartDate"
                                             value={formData.auctionStartDate}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl"
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-2 font-semibold text-foreground">Start Time *</label>
+                                        <label className="block mb-2 font-semibold text-foreground">
+                                            Start Time *
+                                        </label>
                                         <input
                                             type="time"
                                             name="auctionStartTime"
                                             value={formData.auctionStartTime}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl"
                                             required
                                         />
                                     </div>
@@ -284,46 +363,45 @@ export function SellPublication() {
 
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block mb-2 font-semibold text-foreground">End Date *</label>
+                                        <label className="block mb-2 font-semibold text-foreground">
+                                            End Date *
+                                        </label>
                                         <input
                                             type="date"
                                             name="auctionEndDate"
                                             value={formData.auctionEndDate}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl"
                                             required
                                         />
                                     </div>
                                     <div>
-                                        <label className="block mb-2 font-semibold text-foreground">End Time *</label>
+                                        <label className="block mb-2 font-semibold text-foreground">
+                                            End Time *
+                                        </label>
                                         <input
                                             type="time"
                                             name="auctionEndTime"
                                             value={formData.auctionEndTime}
                                             onChange={handleChange}
-                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                                            className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl"
                                             required
                                         />
                                     </div>
                                 </div>
-
-                                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-6">
-                                    <p className="text-sm text-foreground leading-relaxed">
-                                        <strong className="text-primary">ℹ️ Nota:</strong> Buy Out Price allows buyers to purchase immediately without auction. If not set, only bids will be accepted.
-                                    </p>
-                                </div>
                             </>
                         )}
 
-                        {/* Actions */}
                         <div className="flex gap-4 pt-6">
                             <button
                                 type="submit"
-                                className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-semibold text-lg"
+                                disabled={submitting}
+                                className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-accent text-white rounded-xl hover:shadow-2xl hover:scale-105 transition-all font-semibold text-lg disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                                 <Tag className="w-5 h-5" />
-                                Publish Sale
+                                {submitting ? "Publishing..." : "Publish Sale"}
                             </button>
+
                             <button
                                 type="button"
                                 onClick={() => navigate(-1)}

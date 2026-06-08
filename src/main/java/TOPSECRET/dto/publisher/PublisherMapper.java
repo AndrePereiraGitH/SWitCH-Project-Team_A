@@ -36,7 +36,7 @@ public final class PublisherMapper {
 
         return new ResponsePublisherDTO(
                 publisher.getName(),
-                publisher.id().toString()
+                publisher.id().getPublisherId()
         );
     }
 

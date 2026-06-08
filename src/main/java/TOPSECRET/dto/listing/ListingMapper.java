@@ -107,7 +107,7 @@ public class ListingMapper {
                 .orElse(null);
 
         return new ListingDetailsDTO(
-                listing.id().toString(),
+                listing.id().getId(),
                 listing.getListingTitle(),
                 authors.stream()
                         .map(Author::getName)

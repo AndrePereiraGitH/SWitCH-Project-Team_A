@@ -1,11 +1,10 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { screen, fireEvent, render } from "@testing-library/react";
+import { screen, fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { SellPublication } from "./SellPublication";
 
-// ── Mocks ─────────────────────────────────────────────────────────────────────
-
 const mockNavigate = vi.fn();
+
 vi.mock("react-router-dom", async (importOriginal) => {
     const actual = await importOriginal();
     return {
@@ -14,24 +13,25 @@ vi.mock("react-router-dom", async (importOriginal) => {
     };
 });
 
-const mockSetPublicationForSale = vi.fn();
 const mockGetAllPublications = vi.fn();
 
 vi.mock("../components/PublicationsContext", () => ({
     usePublications: () => ({
         getAllPublications: mockGetAllPublications,
-        setPublicationForSale: mockSetPublicationForSale
-    })
+    }),
+}));
+
+vi.mock("../../api/constants", () => ({
+    API_BASE_URL: "http://localhost:8081",
+    CURRENT_USER_ID: "user-001",
 }));
 
 const mockBook = {
     id: "book-1",
     title: "Clean Code",
     author: "Robert C. Martin",
-    condition: "Good"
+    condition: "Good",
 };
-
-// ── Test Wrappers ─────────────────────────────────────────────────────────────
 
 function renderWithRealPublication() {
     render(
@@ -53,15 +53,18 @@ function renderNotFound() {
     );
 }
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
-
 describe("SellPublication", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+
         mockGetAllPublications.mockReturnValue([mockBook]);
+
+        global.fetch = vi.fn().mockResolvedValue({
+            ok: true,
+            text: vi.fn().mockResolvedValue(""),
+        });
     });
 
-    // ── Publication not found ──
     describe("Not Found", () => {
         test("shows not found message when publication does not exist", () => {
             renderNotFound();
@@ -74,61 +77,35 @@ describe("SellPublication", () => {
         });
     });
 
-    // ── Rendering ──
     describe("Rendering", () => {
         test("renders the page title", () => {
             renderWithRealPublication();
             expect(screen.getByText("Put For Sale")).toBeInTheDocument();
         });
 
-        test("renders the US044 description", () => {
+        test("renders the page description", () => {
             renderWithRealPublication();
-            expect(screen.getByText(/US044/i)).toBeInTheDocument();
+            expect(screen.getByText("Create listing for this publication")).toBeInTheDocument();
         });
 
-        test("renders the book title", () => {
+        test("renders the book details", () => {
             renderWithRealPublication();
+
             expect(screen.getByText("Clean Code")).toBeInTheDocument();
-        });
-
-        test("renders the book author", () => {
-            renderWithRealPublication();
             expect(screen.getByText("Robert C. Martin")).toBeInTheDocument();
+            expect(screen.getByText(/Condition:\s*Good/i)).toBeInTheDocument();
         });
 
-        test("renders the book condition", () => {
+        test("renders action buttons", () => {
             renderWithRealPublication();
-            expect(screen.getByText(/Good/i)).toBeInTheDocument();
-        });
 
-        test("renders the back button", () => {
-            renderWithRealPublication();
             expect(screen.getByText("Back")).toBeInTheDocument();
-        });
-
-        test("renders the Publish Sale button", () => {
-            renderWithRealPublication();
             expect(screen.getByRole("button", { name: /Publish Sale/i })).toBeInTheDocument();
-        });
-
-        test("renders the Cancel button", () => {
-            renderWithRealPublication();
             expect(screen.getByRole("button", { name: /Cancel/i })).toBeInTheDocument();
         });
     });
 
-    // ── Sale type selection ──
     describe("Sale Type Selection", () => {
-        test("renders Direct Sale option", () => {
-            renderWithRealPublication();
-            expect(screen.getByText("Direct Sale")).toBeInTheDocument();
-        });
-
-        test("renders Auction option", () => {
-            renderWithRealPublication();
-            expect(screen.getByText("Auction")).toBeInTheDocument();
-        });
-
         test("Direct Sale is selected by default", () => {
             renderWithRealPublication();
             expect(screen.getByText("Sale Price *")).toBeInTheDocument();
@@ -136,93 +113,70 @@ describe("SellPublication", () => {
 
         test("clicking Auction shows auction fields", () => {
             renderWithRealPublication();
+
             fireEvent.click(screen.getByText("Auction"));
+
             expect(screen.getByText("Starting Price *")).toBeInTheDocument();
-        });
-
-        test("clicking Auction shows Start Date field", () => {
-            renderWithRealPublication();
-            fireEvent.click(screen.getByText("Auction"));
             expect(screen.getByText("Start Date *")).toBeInTheDocument();
-        });
-
-        test("clicking Auction shows End Date field", () => {
-            renderWithRealPublication();
-            fireEvent.click(screen.getByText("Auction"));
+            expect(screen.getByText("Start Time *")).toBeInTheDocument();
             expect(screen.getByText("End Date *")).toBeInTheDocument();
-        });
-
-        test("clicking Auction shows Buy Out Price field", () => {
-            renderWithRealPublication();
-            fireEvent.click(screen.getByText("Auction"));
-            const buyOutTexts = screen.getAllByText(/Buy Out Price/i);
-            expect(buyOutTexts.length).toBeGreaterThan(0);
+            expect(screen.getByText("End Time *")).toBeInTheDocument();
+            expect(screen.getByText("Buy Out Price")).toBeInTheDocument();
         });
 
         test("clicking Direct Sale hides auction fields", () => {
             renderWithRealPublication();
-            fireEvent.click(screen.getByText("Auction"));
-            fireEvent.click(screen.getByText("Direct Sale"));
-            expect(screen.queryByText("Starting Price *")).not.toBeInTheDocument();
-        });
 
-        test("clicking Direct Sale shows sale price field", () => {
-            renderWithRealPublication();
             fireEvent.click(screen.getByText("Auction"));
             fireEvent.click(screen.getByText("Direct Sale"));
+
+            expect(screen.queryByText("Starting Price *")).not.toBeInTheDocument();
             expect(screen.getByText("Sale Price *")).toBeInTheDocument();
         });
     });
 
-    // ── Direct sale form ──
     describe("Direct Sale Form", () => {
-        test("renders sale price input with placeholder", () => {
-            renderWithRealPublication();
-            expect(screen.getByPlaceholderText("25.00")).toBeInTheDocument();
-        });
-
         test("user can type a price", () => {
             renderWithRealPublication();
+
             const priceInput = screen.getByPlaceholderText("25.00");
             fireEvent.change(priceInput, { target: { value: "15.99" } });
+
             expect(priceInput.value).toBe("15.99");
         });
+
+        test("user can type a description", () => {
+            renderWithRealPublication();
+
+            const descriptionInput = screen.getByPlaceholderText(
+                "Describe the condition, edition, or any useful details..."
+            );
+
+            fireEvent.change(descriptionInput, {
+                target: { value: "Almost new." },
+            });
+
+            expect(descriptionInput.value).toBe("Almost new.");
+        });
     });
 
-    // ── Auction form ──
     describe("Auction Form", () => {
-        function selectAuction() {
+        test("user can type auction values", () => {
+            renderWithRealPublication();
+
             fireEvent.click(screen.getByText("Auction"));
-        }
 
-        test("renders starting price input", () => {
-            renderWithRealPublication();
-            selectAuction();
-            expect(screen.getByPlaceholderText("10.00")).toBeInTheDocument();
-        });
-
-        test("renders buyout price input", () => {
-            renderWithRealPublication();
-            selectAuction();
-            expect(screen.getByPlaceholderText("20.00")).toBeInTheDocument();
-        });
-
-        test("user can type a starting price", () => {
-            renderWithRealPublication();
-            selectAuction();
             const startingPriceInput = screen.getByPlaceholderText("10.00");
-            fireEvent.change(startingPriceInput, { target: { value: "5.00" } });
-            expect(startingPriceInput.value).toBe("5.00");
-        });
+            const buyoutPriceInput = screen.getByPlaceholderText("20.00");
 
-        test("shows info note about buy out price", () => {
-            renderWithRealPublication();
-            selectAuction();
-            expect(screen.getByText(/Buy Out Price allows buyers/i)).toBeInTheDocument();
+            fireEvent.change(startingPriceInput, { target: { value: "5.00" } });
+            fireEvent.change(buyoutPriceInput, { target: { value: "20.00" } });
+
+            expect(startingPriceInput.value).toBe("5.00");
+            expect(buyoutPriceInput.value).toBe("20.00");
         });
     });
 
-    // ── Image upload ──
     describe("Image Upload", () => {
         test("renders upload images section", () => {
             renderWithRealPublication();
@@ -235,29 +189,117 @@ describe("SellPublication", () => {
         });
     });
 
-    // ── Navigation ──
-    describe("Navigation", () => {
-        test("renders without crashing", () => {
-            renderWithRealPublication();
-            expect(document.body).toBeTruthy();
-        });
-
+    describe("Navigation and Submit", () => {
         test("navigates back when Cancel is clicked", () => {
             renderWithRealPublication();
+
             fireEvent.click(screen.getByRole("button", { name: /Cancel/i }));
+
             expect(mockNavigate).toHaveBeenCalledWith(-1);
         });
 
-        test("calls setPublicationForSale and navigates when published", () => {
+        test("creates direct sale listing and navigates to explore", async () => {
             renderWithRealPublication();
 
-            const priceInput = screen.getByPlaceholderText("25.00");
-            fireEvent.change(priceInput, { target: { value: "15.99" } });
+            fireEvent.change(screen.getByPlaceholderText("25.00"), {
+                target: { value: "15.99" },
+            });
 
             fireEvent.click(screen.getByRole("button", { name: /Publish Sale/i }));
 
-            expect(mockSetPublicationForSale).toHaveBeenCalledWith("book-1", 15.99);
-            expect(mockNavigate).toHaveBeenCalledWith("/my-publications");
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalledWith(
+                    "http://localhost:8081/listings?userId=user-001",
+                    expect.objectContaining({
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    })
+                );
+            });
+
+            const [, options] = global.fetch.mock.calls[0];
+
+            expect(JSON.parse(options.body)).toMatchObject({
+                listingTitle: "Clean Code",
+                publicationIds: ["book-1"],
+                saleType: "Direct Sale",
+                price: "15.99",
+                shortDescription: "",
+                pictures: [],
+            });
+
+            expect(mockNavigate).toHaveBeenCalledWith("/explore");
+        });
+
+        test("creates auction listing with starting price", async () => {
+            renderWithRealPublication();
+
+            fireEvent.click(screen.getByText("Auction"));
+
+            const form = document.querySelector("form");
+
+            fireEvent.change(form.querySelector('input[name="startingPrice"]'), {
+                target: { value: "5.00" },
+            });
+
+            fireEvent.change(form.querySelector('input[name="buyoutPrice"]'), {
+                target: { value: "20.00" },
+            });
+
+            fireEvent.change(form.querySelector('input[name="auctionStartDate"]'), {
+                target: { value: "2026-06-10" },
+            });
+
+            fireEvent.change(form.querySelector('input[name="auctionStartTime"]'), {
+                target: { value: "10:00" },
+            });
+
+            fireEvent.change(form.querySelector('input[name="auctionEndDate"]'), {
+                target: { value: "2026-06-11" },
+            });
+
+            fireEvent.change(form.querySelector('input[name="auctionEndTime"]'), {
+                target: { value: "10:00" },
+            });
+
+            fireEvent.click(screen.getByRole("button", { name: /Publish Sale/i }));
+
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalled();
+            });
+
+            const [, options] = global.fetch.mock.calls[0];
+
+            expect(JSON.parse(options.body)).toMatchObject({
+                listingTitle: "Clean Code",
+                publicationIds: ["book-1"],
+                saleType: "Auction",
+                price: "5.00",
+                shortDescription: "",
+                pictures: [],
+            });
+
+            expect(mockNavigate).toHaveBeenCalledWith("/explore");
+        });
+
+        test("shows error when listing creation fails", async () => {
+            global.fetch.mockResolvedValueOnce({
+                ok: false,
+                text: vi.fn().mockResolvedValue("Failed to create listing"),
+            });
+
+            renderWithRealPublication();
+
+            fireEvent.change(screen.getByPlaceholderText("25.00"), {
+                target: { value: "15.99" },
+            });
+
+            fireEvent.click(screen.getByRole("button", { name: /Publish Sale/i }));
+
+            expect(await screen.findByText("Failed to create listing")).toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalledWith("/explore");
         });
     });
 });
