@@ -69,7 +69,6 @@ public class PublicationSampleRESTController {
      * </ul>
      */
     private enum LinkContext {
-        GENERAL,
         OWNER,
         LIBRARY,
         COLLECTION
