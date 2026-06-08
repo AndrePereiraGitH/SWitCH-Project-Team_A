@@ -5,10 +5,13 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;import java.util.List;
@@ -27,6 +30,7 @@ public class ListingService {
     private final IListingRepository listingRepository;
     private final ListingFactory listingFactory;
     private final IUserRepository userRepository;
+    private final IPublicationSampleRepository publicationSampleRepository;
     private final ListingAuthorizationPolicy policy;
 
     /**
@@ -35,13 +39,13 @@ public class ListingService {
      * @param listingRepository the repository used to persist listings; must not be {@code null}
      * @param listingFactory    the factory used to create listing instances; must not be {@code null}
      */
-    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, ListingAuthorizationPolicy policy) {
+    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, IPublicationSampleRepository publicationSampleRepository, ListingAuthorizationPolicy policy) {
         this.listingRepository = Objects.requireNonNull(listingRepository, "listingRepository must not be null");
         this.listingFactory = Objects.requireNonNull(listingFactory, "listingFactory must not be null");
         this.userRepository = Objects.requireNonNull(userRepository, "User repository cannot be null");
+        this.publicationSampleRepository = publicationSampleRepository;
         this.policy = Objects.requireNonNull(policy, "Listing Authorization Policy cannot be null");
     }
-
 
     /**
      * Creates a new {@link Listing} from the supplied parameters and persists it.
@@ -59,19 +63,34 @@ public class ListingService {
                                  SaleType saleType,
                                  Price price,
                                  String shortDescription,
-                                 UserId userId,
+                                 UserId sellerId,
                                  List<Picture> pictures
                                  ) throws AccessDeniedException {
 
-        User user = userRepository.findByID(userId).orElseThrow(() -> new EntityNotFoundException("User not found id = " + userId));
+        User user = userRepository.findByID(sellerId).orElseThrow(() -> new EntityNotFoundException("User not found id = " + sellerId));
 
         if (!policy.canCreateListing(user)) {
             throw new AccessDeniedException("You do not have permissions to create Listing");
         }
 
-        Listing createdListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, userId, pictures);
+        if (!verifyPublicationsOwner(itemsId, sellerId)) {
+            throw new AuthorizationServiceException("You just have permissions to sell your own Publications");
+        }
+
+        Listing createdListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);
 
         return listingRepository.save(createdListing);
+    }
+
+    private boolean verifyPublicationsOwner(List<PublicationSampleId> itemIds, UserId sellerId) {
+
+        for (PublicationSampleId itemId : itemIds) {
+           PublicationSample pub = publicationSampleRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
+           if (!pub.getOwnerID().equals(sellerId) ){
+               return false;
+            }
+        }
+        return true;
     }
 
     /**
