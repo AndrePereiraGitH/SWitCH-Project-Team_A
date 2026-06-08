@@ -61,17 +61,13 @@ public class BibliographicalDataRESTController {
      * associated author names, converts the entities into DTOs, and enriches the
      * response with relevant HATEOAS links.</p>
      *
-     * @param userId the identifier of the user requesting the bibliographical data
      * @return a {@link ResponseEntity} containing a {@link CollectionModel} of
      *         {@code responseBibliographicalDataDTO} objects with HATEOAS links,
      *         or an appropriate HTTP error status if the request fails
      */
     @GetMapping
-    public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData(
-            @RequestParam String userId) {
+    public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData() {
         try {
-            UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
-
             List<BibliographicalData> bibliographicalDataList = service.findAll();
 
             Map<BibliographicalDataId, List<String>> authorNamesMap = service.buildAuthorNamesMap(bibliographicalDataList);
@@ -85,13 +81,13 @@ public class BibliographicalDataRESTController {
                 BibliographicalDataId bdId = BibliographicalDataMapper.toBibliographicalDataId(dto.getBdId());
 
                 dto.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                        .getBibliographicalDataById(bdId.getID(), userId))
+                        .getBibliographicalDataById(bdId.getID()))
                         .withSelfRel());
             }
 
             CollectionModel<responseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
 
-            List<Link> links = provider.getLinksForBibliographicalData(idOfUser);
+            List<Link> links = provider.getPublicLinksForBibliographicalData();
             collectionModel.add(links);
 
             return ResponseEntity.ok(collectionModel);
@@ -155,11 +151,11 @@ public class BibliographicalDataRESTController {
                     bibliographicalData,
                     service.getAuthors(bibliographicalData));
 
-            List<Link> links = provider.getLinksForBibliographicalData(idOfUser);
+            List<Link> links = provider.getRegisteredUserLinksForBibliographicalData(idOfUser);
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                    .getBibliographicalDataById(bibliographicalData.id().getID(), userId))
+                    .getBibliographicalDataById(bibliographicalData.id().getID()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -181,18 +177,14 @@ public class BibliographicalDataRESTController {
      * available for the given user, and a self link pointing to this endpoint.</p>
      *
      * @param id the identifier of the bibliographical data to retrieve
-     * @param userId the identifier of the user requesting the resource, used to resolve available links
      * @return a {@link ResponseEntity} containing the bibliographical data DTO
      */
     @GetMapping("/{id}")
     public ResponseEntity<responseBibliographicalDataDTO> getBibliographicalDataById(
-            @PathVariable String id,
-            @RequestParam String userId) {
+            @PathVariable String id) {
 
         try{
             BibliographicalDataId bdId = BibliographicalDataMapper.toBibliographicalDataId(id);
-
-            UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
 
             BibliographicalData bd = service.findById(bdId);
 
@@ -201,10 +193,10 @@ public class BibliographicalDataRESTController {
                     service.getAuthors(bd)
             );
 
-            provider.getLinksForBibliographicalData(idOfUser).forEach(result::add);
+            provider.getPublicLinksForBibliographicalData().forEach(result::add);
 
             result.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                    .getBibliographicalDataById(id, userId))
+                    .getBibliographicalDataById(id))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
