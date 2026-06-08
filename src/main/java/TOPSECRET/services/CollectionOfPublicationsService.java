@@ -102,6 +102,23 @@ public class CollectionOfPublicationsService {
     }
 
     /**
+     * Retrieves a {@link CollectionOfPublications} by its identifier, or throws if not found.
+     *
+     * <p>This is a private helper used internally to avoid repeating the Optional
+     * unwrap and exception handling logic across service methods.</p>
+     *
+     * @param collectionId the identifier of the collection to retrieve; must not be {@code null}
+     * @return the matching {@link CollectionOfPublications}
+     * @throws InstanceNotFoundException if no collection exists with the given identifier
+     */
+    private CollectionOfPublications getCollection(CollectionOfPublicationsId collectionId)
+            throws InstanceNotFoundException {
+        return collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new InstanceNotFoundException(
+                        "Collection not found: " + collectionId));
+    }
+
+    /**
      * Retrieves the username associated with the given user identifier.
      *
      * <p>This method delegates user lookup to the underlying user repository
@@ -189,7 +206,7 @@ public class CollectionOfPublicationsService {
             throw new AccessDeniedException("You do not have permission to share a Collection");
         }
 
-        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
+        CollectionOfPublications collection = getCollection(collectionId);
 
         if (!collection.getOwnerId().equals(userId)) {
             throw new AccessDeniedException(
@@ -244,9 +261,7 @@ public class CollectionOfPublicationsService {
                     ("You do not have permission to make this collection public until a given date");
         }
 
-        CollectionOfPublications collection =
-                collectionOfPublicationsRepository.findById(collectionId);
-        ;
+        CollectionOfPublications collection = getCollection(collectionId);
 
         if (!collection.getOwnerId().equals(userId)) {
             throw new AccessDeniedException(
@@ -274,7 +289,7 @@ public class CollectionOfPublicationsService {
      */
     public CollectionOfPublications findById(CollectionOfPublicationsId collectionId)
             throws InstanceNotFoundException {
-        return collectionOfPublicationsRepository.findById(collectionId);
+        return getCollection(collectionId);
     }
 
     /**

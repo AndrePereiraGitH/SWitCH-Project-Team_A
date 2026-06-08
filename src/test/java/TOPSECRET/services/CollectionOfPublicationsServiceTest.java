@@ -238,7 +238,7 @@ class CollectionOfPublicationsServiceTest {
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         User user = mock(User.class);
 
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
         when(collection.getOwnerId()).thenReturn(userIdDouble);
@@ -262,7 +262,7 @@ class CollectionOfPublicationsServiceTest {
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(ownerIdDouble);
 
         // Act + Assert
@@ -276,7 +276,7 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
@@ -291,7 +291,7 @@ class CollectionOfPublicationsServiceTest {
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         User user = mock(User.class);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canShareCollectionOfPublications(user)).thenReturn(false);
 
@@ -308,7 +308,7 @@ class CollectionOfPublicationsServiceTest {
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         User user = mock(User.class);
 
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
         when(collection.getOwnerId()).thenReturn(userIdDouble);
@@ -345,7 +345,7 @@ class CollectionOfPublicationsServiceTest {
         when(policy.canShareCollectionOfPublications(user)).thenReturn(true);
 
         when(collectionOfPublicationsRepository.findById(collectionId))
-                .thenReturn(collection);
+                .thenReturn(Optional.of(collection));
 
         when(collection.getOwnerId()).thenReturn(ownerIdDouble);
 
@@ -369,7 +369,7 @@ class CollectionOfPublicationsServiceTest {
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublicUntil(publicUntil)).thenReturn(true);
 
@@ -397,13 +397,14 @@ class CollectionOfPublicationsServiceTest {
             throws InstanceNotFoundException {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
-        LocalDate publicUntil = LocalDate.now().plusDays(5);        User user = mock(User.class);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
+        User user = mock(User.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
         UserId ownerIdDouble = mock(UserId.class);
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(ownerIdDouble);
 
         // Act + Assert
@@ -418,13 +419,14 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        LocalDate publicUntil = LocalDate.now().plusDays(5);        User user = mock(User.class);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
+        User user = mock(User.class);
 
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
 
         when(collectionOfPublicationsRepository.findById(collectionId))
-                .thenReturn(collection);
+                .thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublicUntil(publicUntil))
                 .thenReturn(false);
@@ -499,10 +501,11 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        LocalDate publicUntil = LocalDate.now().plusDays(5);        User user = mock(User.class);
+        LocalDate publicUntil = LocalDate.now().plusDays(5);
+        User user = mock(User.class);
         when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(user));
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(userIdDouble);
         when(collection.makePublicUntil(publicUntil)).thenReturn(true);
 
@@ -528,7 +531,7 @@ class CollectionOfPublicationsServiceTest {
         when(policy.canMakeCollectionPublicUntil(user)).thenReturn(true);
 
         when(collectionOfPublicationsRepository.findById(collectionId))
-                .thenReturn(collection);
+                .thenReturn(Optional.of(collection));
 
         when(collection.getOwnerId()).thenReturn(ownerIdDouble);
 
@@ -587,7 +590,7 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
 
         // Act
         CollectionOfPublications result = service.findById(collectionId);
@@ -602,7 +605,7 @@ class CollectionOfPublicationsServiceTest {
         // Arrange
         CollectionOfPublicationsId collectionId = mock(CollectionOfPublicationsId.class);
         when(collectionOfPublicationsRepository.findById(collectionId))
-                .thenThrow(InstanceNotFoundException.class);
+                .thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,
