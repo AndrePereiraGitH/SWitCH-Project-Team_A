@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -55,11 +56,24 @@ public class ListingLinkProvider {
      * @return a list of HATEOAS links available to the user
      * @throws InstanceNotFoundException if no user exists with the given identifier
      */
-    public List<Link> getLinksForListings(UserId userId) throws InstanceNotFoundException {
-        List<Link> links = new ArrayList<>();
+    public List<Link> getOwnerLinks(UserId userId) throws InstanceNotFoundException {
 
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<Link> links = new ArrayList<>();
         User user = userRepo.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found"));
 
+        if (authPolicy.canCreateListing(user)) {
+            links.add(linkTo(methodOn(ListingRESTController.class)
+                    .createListing(null, null))
+                    .withRel("create-listing"));
+        }
+        return links;
+    }
+
+    public List<Link> getPublicLinks() {
+
+        List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(ListingRESTController.class)
                 .findById(null, null))
@@ -77,12 +91,7 @@ public class ListingLinkProvider {
                 .getAllDirectSaleByPublisher(null, null))
                 .withRel("get-all-direct-sale-by-publisher"));
 
-        if (authPolicy.canCreateListing(user)) {
-            links.add(linkTo(methodOn(ListingRESTController.class)
-                    .createListing(null, null))
-                    .withRel("create-listing"));
-
-        }
         return links;
+
     }
 }
