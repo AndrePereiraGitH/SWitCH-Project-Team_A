@@ -1,0 +1,131 @@
+@startuml
+autonumber
+hide footbox
+title As a User, I want to get the list of publications in my library
+
+actor User
+participant ":UI" as UI
+participant ":PublicationSampleRESTController" as Ctrl
+participant ":PublicationSampleMapper" as Mapper
+participant ":PublicationSampleService" as Service
+participant ":IUserRepository" as UserRepo
+participant "user: Optional<User>" as user
+participant ":PublicationSampleAuthorizationPolicy" as Policy
+participant ":IPublicationSampleRepository" as PubRepo
+participant "publications: List<PublicationSample>" as publications
+participant ":BibliographicalDataService" as BDService
+participant ":EditionService" as EditionService
+participant ":AuthorService" as AuthorService
+participant ":GenreService" as GenreService
+participant ":UserService" as UserService
+participant ":PublicationSampleLinkProvider" as LinkProvider
+participant "result: PublicationDTO" as pubDTO
+participant "publicationDTOS: List<PublicationDTO>" as ListDTO
+
+User -> UI : I want to see a list of the publications in my library
+activate UI
+UI --> User : Enter your userId
+deactivate UI
+User -> UI : userId
+activate UI
+
+UI -> Ctrl : GET /publicationSamples/in-library?userId={userId}
+activate Ctrl
+
+Ctrl -> Mapper : toUserId(userId)
+activate Mapper
+Mapper --> Ctrl : id: UserId
+deactivate Mapper
+
+Ctrl -> Service : findPublicationsInLibrary(id)
+activate Service
+
+Service -> UserRepo : findByID(id)
+activate UserRepo
+UserRepo -->> user ** : <<create>>
+UserRepo --> Service : user
+deactivate UserRepo
+
+alt user not found
+    Service --> Ctrl : EntityNotFoundException
+    Ctrl --> UI : 404 Not Found
+end
+
+Service -> Policy : canFindPublicationsInLibrary(user)
+activate Policy
+Policy --> Service : boolean
+deactivate Policy
+
+alt not allowed
+    Service --> Ctrl : AccessDeniedException
+    Ctrl --> UI : 403 Forbidden
+end
+
+Service -> PubRepo : findPublicationsInLibrary(id)
+activate PubRepo
+PubRepo -->> publications ** : <<create>>
+PubRepo --> Service : publications
+deactivate PubRepo
+
+Service --> Ctrl : publications
+deactivate Service
+
+Ctrl -->> ListDTO ** : <<create>>
+
+loop for each pbSample in publications
+
+    Ctrl -> BDService : findById(pbSample.getBibliographicalDataID())
+    activate BDService
+    BDService --> Ctrl : bd: BibliographicalData
+    deactivate BDService
+
+    Ctrl -> EditionService : findById(pbSample.getEditionID())
+    activate EditionService
+    EditionService --> Ctrl : edition: Edition
+    deactivate EditionService
+
+    Ctrl -> AuthorService : findById(authorId) [for each author in bd]
+    activate AuthorService
+    AuthorService --> Ctrl : authors: List<Author>
+    deactivate AuthorService
+
+    Ctrl -> GenreService : findById(genreId) [for each genre in bd]
+    activate GenreService
+    GenreService --> Ctrl : genres: List<Genre>
+    deactivate GenreService
+
+    Ctrl -> UserService : findByID(pbSample.getOwnerID())
+    activate UserService
+    UserService --> Ctrl : owner: User
+    deactivate UserService
+
+    Ctrl -> Mapper : toPublicationDTO(pbSample, bd, edition, authors, genres, owner)
+    activate Mapper
+    Mapper -->> pubDTO ** : <<create>>
+    Mapper --> Ctrl : result
+    deactivate Mapper
+
+    Ctrl -> LinkProvider : getPublicLinks()
+    activate LinkProvider
+    LinkProvider --> Ctrl : links
+    deactivate LinkProvider
+
+    Ctrl -> LinkProvider : getLibraryLinks(id)
+    activate LinkProvider
+    LinkProvider --> Ctrl : libraryLinks
+    deactivate LinkProvider
+
+    Ctrl -> Ctrl : links.addAll(libraryLinks)
+    Ctrl -> Ctrl : links.add(methodOn(findById(pbSample.id())).withSelfRel())
+    Ctrl -> Ctrl : links.forEach(result::add)
+    Ctrl -> Ctrl : publicationDTOS.add(result)
+
+end
+
+Ctrl --> UI : 200 OK\n body: List<PublicationDTO>
+deactivate Ctrl
+
+UI --> User : Display list of publications
+deactivate UI
+
+@enduml
