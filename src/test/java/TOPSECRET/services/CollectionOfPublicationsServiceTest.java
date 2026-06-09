@@ -976,39 +976,17 @@ class CollectionOfPublicationsServiceTest {
 // ==========================================================================
 
     @Test
-    void findAllPublicCollections_shouldReturnOnlyPublicDTOs() {
+    void findAllPublicCollections_shouldReturnOnlyPublicCollections() {
 
         // ARRANGE
         CollectionOfPublications c1 = mock(CollectionOfPublications.class);
         CollectionOfPublications c2 = mock(CollectionOfPublications.class);
 
-        UserId owner1 = mock(UserId.class);
-        UserId owner2 = mock(UserId.class);
-
-        User userMock = mock(User.class);
-
-        CollectionOfPublicationsId id1 = mock(CollectionOfPublicationsId.class);
-        CollectionOfPublicationsId id2 = mock(CollectionOfPublicationsId.class);
-
-        when(c1.id()).thenReturn(id1);
-        when(c2.id()).thenReturn(id2);
-
-        when(id1.toString()).thenReturn("col-1");
-        when(id2.toString()).thenReturn("col-2");
-
         when(c1.isCurrentlyPublic()).thenReturn(true);
         when(c2.isCurrentlyPublic()).thenReturn(false);
 
-        when(c1.getOwnerId()).thenReturn(owner1);
-        when(c2.getOwnerId()).thenReturn(owner2);
-
         when(collectionOfPublicationsRepository.findAll())
                 .thenReturn(List.of(c1, c2));
-
-        when(userRepository.findByID(owner1)).thenReturn(Optional.of(userMock));
-        when(userRepository.findByID(owner2)).thenReturn(Optional.of(userMock));
-
-        when(userMock.getUserName()).thenReturn("owner-1");
 
         CollectionOfPublicationsService service =
                 new CollectionOfPublicationsService(
@@ -1019,12 +997,11 @@ class CollectionOfPublicationsServiceTest {
                 );
 
         // ACT
-        List<PublicCollectionOfPublicationsDTO> result =
-                service.findAllPublicCollections();
+        List<CollectionOfPublications> result = service.findAllPublicCollections();
 
         // ASSERT
         assertEquals(1, result.size());
-        assertEquals("owner-1", result.get(0).getOwnerName());
+        assertTrue(result.contains(c1));
     }
 
     @Test
@@ -1041,8 +1018,7 @@ class CollectionOfPublicationsServiceTest {
                         userRepository
                 );
 
-        List<PublicCollectionOfPublicationsDTO> result =
-                service.findAllPublicCollections();
+        List<CollectionOfPublications> result = service.findAllPublicCollections();
 
         assertTrue(result.isEmpty());
     }

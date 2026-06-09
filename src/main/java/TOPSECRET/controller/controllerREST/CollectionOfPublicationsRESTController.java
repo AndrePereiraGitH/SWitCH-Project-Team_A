@@ -88,10 +88,10 @@ public class CollectionOfPublicationsRESTController {
             @RequestBody @Valid RequestCollectionOfPublicationsDTO requestCollectionDTO,
             @RequestParam String ownerId) {
 
-        GenreId genreId = CollectionOfPublicationsMapper.toGenreId(requestCollectionDTO.genreId());
-        UserId userId = CollectionOfPublicationsMapper.toUserId(ownerId);
-
         try {
+            GenreId genreId = CollectionOfPublicationsMapper.toGenreId(requestCollectionDTO.genreId());
+            UserId userId = CollectionOfPublicationsMapper.toUserId(ownerId);
+
             CollectionOfPublications collection = collectionService.createAndSave(
                     requestCollectionDTO.collectionName(), genreId, userId);
 
@@ -290,7 +290,7 @@ public class CollectionOfPublicationsRESTController {
 
     /**
      * Retrieves all currently public collections associated with a given genre,
-     * enriched with public HATEOAS links.
+     * enriched with a self-link per collection and public HATEOAS navigational links.
      *
      * @param genreId the identifier of the genre whose public collections are to
      *                be retrieved; must not be {@code null}
@@ -304,7 +304,7 @@ public class CollectionOfPublicationsRESTController {
      */
     @GetMapping("public/genre/{genreId}")
     public ResponseEntity<List<PublicCollectionOfPublicationsDTO>>
-    findPublicCollectionsByGenreId(@RequestParam String genreId) {
+    findPublicCollectionsByGenreId(@PathVariable String genreId) {
 
         try {
 
@@ -321,9 +321,16 @@ public class CollectionOfPublicationsRESTController {
                                         collectionService.getUserName(
                                                 collection.getOwnerId());
 
-                                return CollectionOfPublicationsMapper.toPublicDTO(
-                                        collection,
-                                        ownerName);
+                                PublicCollectionOfPublicationsDTO dto =
+                                        CollectionOfPublicationsMapper.toPublicDTO(
+                                                collection,
+                                                ownerName);
+
+                                dto.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                                        .getCollectionById(collection.id().toString()))
+                                        .withSelfRel());
+
+                                return dto;
                             })
                             .toList();
 
@@ -375,7 +382,18 @@ public class CollectionOfPublicationsRESTController {
                     collectionService.findAllByOwnerId(userIdVO);
 
             List<ResponseCollectionOfPublicationsDTO> response =
-                    CollectionOfPublicationsMapper.toDTOList(collections);
+                    collections.stream()
+                            .map(collection -> {
+                                ResponseCollectionOfPublicationsDTO dto =
+                                        CollectionOfPublicationsMapper.toDTO(collection);
+
+                                dto.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                                        .getCollectionById(collection.id().toString()))
+                                        .withSelfRel());
+
+                                return dto;
+                            })
+                            .toList();
 
             List<Link> links = linkProvider.getOwnerLinks(userIdVO);
             response.forEach(dto -> links.forEach(dto::add));
@@ -438,22 +456,15 @@ public class CollectionOfPublicationsRESTController {
     }
 
     /**
-     * Retrieves all collections that are currently public.
-     *
-     * <p>A collection is included if it satisfies the domain rule
-     * defined in {@link CollectionOfPublications#isCurrentlyPublic()}.</p>
-     *
-     * <p>This endpoint does not apply any filtering by genre or owner.
-     * It returns all public collections available in the system,
-     * enriched with owner display information.</p>
-     *
-     * <p>The response includes {@link PublicCollectionOfPublicationsDTO}
-     * objects representing the public view of each collection.</p>
+     * Retrieves all currently public collections, enriched with a self-link
+     * per collection and public HATEOAS navigational links.
      *
      * @return a {@link ResponseEntity} containing a list of
-     * {@link PublicCollectionOfPublicationsDTO}
-     * @return {@code 200 OK} if successful
-     * @return {@code 500 INTERNAL SERVER ERROR} on unexpected failure
+     * {@link PublicCollectionOfPublicationsDTO} and:
+     * <ul>
+     *     <li>{@code 200 OK} if successful</li>
+     *     <li>{@code 500 INTERNAL SERVER ERROR} on unexpected failure</li>
+     * </ul>
      */
     @GetMapping("/public/all")
     public ResponseEntity<List<PublicCollectionOfPublicationsDTO>>
@@ -461,8 +472,31 @@ public class CollectionOfPublicationsRESTController {
 
         try {
 
-            List<PublicCollectionOfPublicationsDTO> response =
+            List<CollectionOfPublications> collections =
                     collectionService.findAllPublicCollections();
+
+            List<PublicCollectionOfPublicationsDTO> response =
+                    collections.stream()
+                            .map(collection -> {
+                                String ownerName =
+                                        collectionService.getUserName(
+                                                collection.getOwnerId());
+
+                                PublicCollectionOfPublicationsDTO dto =
+                                        CollectionOfPublicationsMapper.toPublicDTO(
+                                                collection,
+                                                ownerName);
+
+                                dto.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                                        .getCollectionById(collection.id().toString()))
+                                        .withSelfRel());
+
+                                return dto;
+                            })
+                            .toList();
+
+            List<Link> links = linkProvider.getPublicLinks();
+            response.forEach(dto -> links.forEach(dto::add));
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
 
@@ -480,7 +514,8 @@ public class CollectionOfPublicationsRESTController {
      * any data is returned.</p>
      *
      * <p>No filtering is applied. All collections stored in the system are
-     * returned as {@link ResponseCollectionOfPublicationsDTO} objects.</p>
+     * returned as {@link ResponseCollectionOfPublicationsDTO} objects, each
+     * enriched with a self-link and public HATEOAS navigational links.</p>
      *
      * @param userId the identifier of the requesting user; must not be {@code null}
      * @return a {@link ResponseEntity} containing a list of all collections and:
@@ -504,7 +539,21 @@ public class CollectionOfPublicationsRESTController {
                     collectionService.findAllCollections(userIdVO);
 
             List<ResponseCollectionOfPublicationsDTO> response =
-                    CollectionOfPublicationsMapper.toDTOList(collections);
+                    collections.stream()
+                            .map(collection -> {
+                                ResponseCollectionOfPublicationsDTO dto =
+                                        CollectionOfPublicationsMapper.toDTO(collection);
+
+                                dto.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                                        .getCollectionById(collection.id().toString()))
+                                        .withSelfRel());
+
+                                return dto;
+                            })
+                            .toList();
+
+            List<Link> links = linkProvider.getPublicLinks();
+            response.forEach(dto -> links.forEach(dto::add));
 
             return ResponseEntity.status(HttpStatus.OK).body(response);
 

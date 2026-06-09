@@ -103,23 +103,6 @@ public class CollectionOfPublicationsService {
     }
 
     /**
-     * Retrieves a {@link CollectionOfPublications} by its identifier, or throws if not found.
-     *
-     * <p>This is a private helper used internally to avoid repeating the Optional
-     * unwrap and exception handling logic across service methods.</p>
-     *
-     * @param collectionId the identifier of the collection to retrieve; must not be {@code null}
-     * @return the matching {@link CollectionOfPublications}
-     * @throws InstanceNotFoundException if no collection exists with the given identifier
-     */
-    private CollectionOfPublications getCollection(CollectionOfPublicationsId collectionId)
-            throws InstanceNotFoundException {
-        return collectionOfPublicationsRepository.findById(collectionId)
-                .orElseThrow(() -> new InstanceNotFoundException(
-                        "Collection not found: " + collectionId));
-    }
-
-    /**
      * Retrieves the username associated with the given user identifier.
      *
      * <p>This method delegates user lookup to the underlying user repository
@@ -238,14 +221,13 @@ public class CollectionOfPublicationsService {
      * </p>
      *
      * @param collectionId the identifier of the collection of publications to be modified
-     * @param userId the identifier of the user attempting the operation
+     * @param userId       the identifier of the user attempting the operation
      * @return {@code true} if the collection visibility was changed to private,
-     *         {@code false} if no change was needed
-     *
-     * @throws NullPointerException if {@code collectionId} or {@code userId} is null
+     * {@code false} if no change was needed
+     * @throws NullPointerException      if {@code collectionId} or {@code userId} is null
      * @throws InstanceNotFoundException if the collection or user cannot be found
-     * @throws AccessDeniedException if the user does not have permission to modify
-     *         the collection or is not its owner
+     * @throws AccessDeniedException     if the user does not have permission to modify
+     *                                   the collection or is not its owner
      */
 
     @Transactional
@@ -395,31 +377,17 @@ public class CollectionOfPublicationsService {
     }
 
     /**
-     * Retrieves all collections that are currently public and maps them into
-     * {@link PublicCollectionOfPublicationsDTO}.
+     * Retrieves all collections that are currently public.
      *
      * <p>A collection is considered public if it satisfies the domain rule
      * defined in {@link CollectionOfPublications#isCurrentlyPublic()}.</p>
      *
-     * <p>This method performs full orchestration:</p>
-     * <ul>
-     *     <li>retrieves all collections from the repository</li>
-     *     <li>filters only currently public collections</li>
-     *     <li>resolves the owner's username</li>
-     *     <li>maps the result into DTOs for API exposure</li>
-     * </ul>
-     *
-     * @return a list of {@link PublicCollectionOfPublicationsDTO}; may be empty
-     * @throws NullPointerException if repository returns null (defensive check)
+     * @return a list of {@link CollectionOfPublications} that are currently public; may be empty
      */
-    public List<PublicCollectionOfPublicationsDTO> findAllPublicCollections() {
+    public List<CollectionOfPublications> findAllPublicCollections() {
         return collectionOfPublicationsRepository.findAll()
                 .stream()
                 .filter(CollectionOfPublications::isCurrentlyPublic)
-                .map(c -> {
-                    String ownerName = getUserName(c.getOwnerId());
-                    return CollectionOfPublicationsMapper.toPublicDTO(c, ownerName);
-                })
                 .toList();
     }
 
@@ -433,7 +401,7 @@ public class CollectionOfPublicationsService {
      *
      * @param requesterId the identifier of the user requesting the operation; must not be {@code null}
      * @return a list of all collections in the system; may be empty
-     * @throws NullPointerException if {@code requesterId} is {@code null}
+     * @throws NullPointerException  if {@code requesterId} is {@code null}
      * @throws AccessDeniedException if the user is not authorized to view all collections
      */
     public List<CollectionOfPublications> findAllCollections(UserId requesterId) {
@@ -447,5 +415,22 @@ public class CollectionOfPublicationsService {
         }
 
         return collectionOfPublicationsRepository.findAll();
+    }
+
+    /**
+     * Retrieves a {@link CollectionOfPublications} by its identifier, or throws if not found.
+     *
+     * <p>This is a private helper used internally to avoid repeating the Optional
+     * unwrap and exception handling logic across service methods.</p>
+     *
+     * @param collectionId the identifier of the collection to retrieve; must not be {@code null}
+     * @return the matching {@link CollectionOfPublications}
+     * @throws InstanceNotFoundException if no collection exists with the given identifier
+     */
+    private CollectionOfPublications getCollection(CollectionOfPublicationsId collectionId)
+            throws InstanceNotFoundException {
+        return collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new InstanceNotFoundException(
+                        "Collection not found: " + collectionId));
     }
 }
