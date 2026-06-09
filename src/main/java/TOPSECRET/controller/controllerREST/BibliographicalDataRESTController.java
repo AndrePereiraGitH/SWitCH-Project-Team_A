@@ -7,8 +7,8 @@ import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.bibliographicalData.BibliographicalDataMapper;
-import TOPSECRET.dto.bibliographicalData.request.requestBibliographicalDataDTO;
-import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
+import TOPSECRET.dto.bibliographicalData.request.RequestBibliographicalDataDTO;
+import TOPSECRET.dto.bibliographicalData.response.ResponseBibliographicalDataDTO;
 import TOPSECRET.services.BibliographicalDataService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -66,17 +66,17 @@ public class BibliographicalDataRESTController {
      *         or an appropriate HTTP error status if the request fails
      */
     @GetMapping
-    public ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> getAllBibliographicalData() {
+    public ResponseEntity<CollectionModel<ResponseBibliographicalDataDTO>> getAllBibliographicalData() {
         try {
             List<BibliographicalData> bibliographicalDataList = service.findAll();
 
             Map<BibliographicalDataId, List<String>> authorNamesMap = service.buildAuthorNamesMap(bibliographicalDataList);
 
-            List<responseBibliographicalDataDTO> responseList = BibliographicalDataMapper.toDTOs(
+            List<ResponseBibliographicalDataDTO> responseList = BibliographicalDataMapper.toDTOs(
                     bibliographicalDataList,
                     authorNamesMap);
 
-            for (responseBibliographicalDataDTO dto : responseList) {
+            for (ResponseBibliographicalDataDTO dto : responseList) {
 
                 BibliographicalDataId bdId = BibliographicalDataMapper.toBibliographicalDataId(dto.getBdId());
 
@@ -85,7 +85,7 @@ public class BibliographicalDataRESTController {
                         .withSelfRel());
             }
 
-            CollectionModel<responseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
+            CollectionModel<ResponseBibliographicalDataDTO> collectionModel = CollectionModel.of(responseList);
 
             List<Link> links = provider.getPublicLinksForBibliographicalData();
             collectionModel.add(links);
@@ -125,8 +125,8 @@ public class BibliographicalDataRESTController {
      * @throws IllegalArgumentException if the provided request data is invalid
      */
     @PostMapping
-    public ResponseEntity<responseBibliographicalDataDTO> createBibliographicalData(
-            @RequestBody requestBibliographicalDataDTO requestBibliographicalDataDTO,
+    public ResponseEntity<ResponseBibliographicalDataDTO> createBibliographicalData(
+            @RequestBody RequestBibliographicalDataDTO requestBibliographicalDataDTO,
             @RequestParam String userId) {
         try {
             UserId idOfUser = BibliographicalDataMapper.toUserId(userId);
@@ -147,7 +147,7 @@ public class BibliographicalDataRESTController {
                     idOfUser
             );
 
-            responseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
+            ResponseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
                     bibliographicalData,
                     service.getAuthors(bibliographicalData));
 
@@ -180,7 +180,7 @@ public class BibliographicalDataRESTController {
      * @return a {@link ResponseEntity} containing the bibliographical data DTO
      */
     @GetMapping("/{id}")
-    public ResponseEntity<responseBibliographicalDataDTO> getBibliographicalDataById(
+    public ResponseEntity<ResponseBibliographicalDataDTO> getBibliographicalDataById(
             @PathVariable String id) {
 
         try{
@@ -188,7 +188,7 @@ public class BibliographicalDataRESTController {
 
             BibliographicalData bd = service.findById(bdId);
 
-            responseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
+            ResponseBibliographicalDataDTO result = BibliographicalDataMapper.toDTO(
                     bd,
                     service.getAuthors(bd)
             );
