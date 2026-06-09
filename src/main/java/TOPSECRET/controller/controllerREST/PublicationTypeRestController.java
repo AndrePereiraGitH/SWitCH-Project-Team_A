@@ -9,7 +9,6 @@ import TOPSECRET.dto.PublicationType.request.CreatePublicationTypeDTO;
 import TOPSECRET.dto.PublicationType.response.PublicationTypeResponseDTO;
 import TOPSECRET.services.PublicationTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -34,7 +33,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * <p>Base path: {@code /publication-types}</p>
  */
 
-@Slf4j
 @RestController
 @Tag(name = "PublicationTypes", description = "Publication Types management endpoints")
 @RequestMapping(path = "/publication-types")
