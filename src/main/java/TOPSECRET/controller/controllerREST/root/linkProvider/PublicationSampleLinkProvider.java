@@ -1,6 +1,7 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.PublicationSampleRESTController;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublicationSampleAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
@@ -34,7 +35,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * </ul>
  */
 @Component
-public class PublicationSampleLinkProvider {
+public class PublicationSampleLinkProvider implements RootLinkProvider {
 
     private final PublicationSampleAuthorizationPolicy policy;
     private final IUserRepository userRepository;
@@ -222,6 +223,29 @@ public class PublicationSampleLinkProvider {
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * <p>Aggregates links from all four groups in order:
+     * public, library, owner, and collection.</p>
+     */
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+        List<Link> links = new ArrayList<>();
+
+        links.addAll(getPublicLinks());
+        links.addAll(getLibraryLinks(userId));
+        links.addAll(getOwnerLinks(userId));
+        links.addAll(getCollectionLinks(userId));
+
+        return links;
+    }
+
+
+    // =========================================================================
+    // Private helpers
+    // =========================================================================
+
+    /**
      * Resolves a {@link User} from the repository by the given {@link UserId}.
      *
      * @param userId the identifier of the user to resolve; must not be {@code null}
@@ -234,4 +258,5 @@ public class PublicationSampleLinkProvider {
 
         return user;
     }
+
 }
