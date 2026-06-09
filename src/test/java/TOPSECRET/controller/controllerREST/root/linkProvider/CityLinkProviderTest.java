@@ -73,12 +73,13 @@ class CityLinkProviderTest {
         List<Link> result = sut.getLinks(doubleUserId);
 
         // ASSERT
-        assertEquals(1, result.size());
-        assertTrue(result.get(0).getRel().value().equals("create-city"));
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("cities")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("create-city")));
     }
 
     @Test
-    void getLinks_shouldReturnEmptyList_whenUserIsNotAdmin() throws InstanceNotFoundException {
+    void getLinks_shouldNotReturnCreateCityLink_whenUserIsNotAdmin() throws InstanceNotFoundException {
 
         // ARRANGE
         CityLinkProvider sut = new CityLinkProvider(doublePolicy, doubleRepository);
@@ -90,7 +91,9 @@ class CityLinkProviderTest {
         List<Link> result = sut.getLinks(doubleUserId);
 
         // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("cities")));
+        assertFalse(result.stream().anyMatch(l -> l.getRel().value().equals("create-city")));
     }
 
     @Test

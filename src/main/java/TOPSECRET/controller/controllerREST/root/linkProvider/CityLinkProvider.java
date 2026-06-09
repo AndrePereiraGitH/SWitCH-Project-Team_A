@@ -31,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * </ul>
  */
 @Component
-public class CityLinkProvider {
+public class CityLinkProvider implements RootLinkProvider{
 
     private final CityAuthorizationPolicy policy;
     private final IUserRepository repository;
@@ -47,6 +47,27 @@ public class CityLinkProvider {
     public CityLinkProvider (CityAuthorizationPolicy policy, IUserRepository repository){
         this.policy = policy;
         this.repository = repository;
+    }
+
+    /**
+     * Aggregates all HATEOAS navigation links available to the requesting user.
+     *
+     * <p>Always includes public links (e.g. {@code cities}) and conditionally
+     * includes restricted links based on the user's permissions (e.g. {@code create-city}).</p>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a list of {@link Link} instances; never {@code null}, never empty
+     * @throws NullPointerException      if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     */
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        List<Link> links = new ArrayList<>();
+        links.addAll(getPublicLinks());
+        links.addAll(getRestrictedLinks(userId));
+        return links;
     }
 
     /**
@@ -78,17 +99,14 @@ public class CityLinkProvider {
      *
      * @param userId the identifier of the requesting user; must not be {@code null}
      * @return a list of {@link Link} instances; never {@code null}, may be empty
-     * @throws NullPointerException      if {@code userId} is {@code null}
      * @throws InstanceNotFoundException if no user is found for the given {@code userId}
      */
-    public List<Link> getLinks (UserId userId) throws InstanceNotFoundException {
-        Objects.requireNonNull(userId, "UserId cannot be null");
-
+    private List<Link> getRestrictedLinks(UserId userId) throws InstanceNotFoundException {
         List<Link> links = new ArrayList<>();
 
         User user = resolveUser(userId);
 
-        if(policy.canCreateCity(user)){
+        if (policy.canCreateCity(user)) {
             links.add(linkTo(methodOn(CityRESTController.class)
                     .createCity(null, userId))
                     .withRel("create-city"));
