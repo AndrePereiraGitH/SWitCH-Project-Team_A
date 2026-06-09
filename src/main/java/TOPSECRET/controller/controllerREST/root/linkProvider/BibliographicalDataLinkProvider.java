@@ -59,14 +59,18 @@ public class BibliographicalDataLinkProvider {
      * @param userId the identifier of the user requesting available actions
      * @return a list of HATEOAS links available to the user
      */
-    public List<Link> getLinksForBibliographicalData(UserId userId){
+    public List<Link> getRegisteredUserLinksForBibliographicalData(UserId userId){
 
         List<Link> links = new ArrayList<>();
 
-        // Public / universally available action
+        // Public / universally available actions
         links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                .getAllBibliographicalData(null))
+                .getAllBibliographicalData())
                 .withRel("get-bibliographical-data"));
+
+        links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                .getBibliographicalDataById(null))
+                .withRel("get-bibliographical-data-by-id"));
 
         userRepo.findByID(userId).ifPresent(user -> {
 
@@ -77,6 +81,21 @@ public class BibliographicalDataLinkProvider {
                         .withRel("create-bibliographical-data"));
             }
         });
+
+        return links;
+    }
+
+    public List<Link> getPublicLinksForBibliographicalData (){
+
+        List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                .getAllBibliographicalData())
+                .withRel("get-bibliographical-data"));
+
+        links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                .getBibliographicalDataById(null))
+                .withRel("get-bibliographical-data-by-id"));
 
         return links;
     }

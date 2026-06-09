@@ -139,7 +139,12 @@ public final class BibliographicalDataMapper {
      * @param id the user identifier as a string
      * @return a new {@link BibliographicalDataId} instance
      */
-    public static BibliographicalDataId toBibliographicalDataId (String id){ return new BibliographicalDataId(id); }
+    public static BibliographicalDataId toBibliographicalDataId (String id) throws IllegalArgumentException {
+        if (id == null){
+            throw new IllegalArgumentException("Id can't be null");
+        }
+        return new BibliographicalDataId(id);
+    }
 
     /**
      * Creates a {@link Locale} instance from the given string value.

@@ -84,7 +84,7 @@ class BibliographicalDataRESTControllerTest {
 
 
             // Act
-            ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData(userId);
+            ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData();
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -100,7 +100,7 @@ class BibliographicalDataRESTControllerTest {
         when(service.findAll()).thenThrow(new IllegalArgumentException("Invalid request"));
 
         // Act
-        ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData(userId);
+        ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData();
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -114,7 +114,7 @@ class BibliographicalDataRESTControllerTest {
         when(service.findAll()).thenThrow(new RuntimeException("Unexpected error"));
 
         // Act
-        ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData(userId);
+        ResponseEntity<CollectionModel<responseBibliographicalDataDTO>> response = controller.getAllBibliographicalData();
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -186,7 +186,7 @@ class BibliographicalDataRESTControllerTest {
 
             when(service.getAuthors(bibliographicalData)).thenReturn(List.of("Author One"));
 
-            when(provider.getLinksForBibliographicalData(userIdDouble)).thenReturn(List.of());
+            when(provider.getRegisteredUserLinksForBibliographicalData(userIdDouble)).thenReturn(List.of());
 
             // Act
             ResponseEntity<responseBibliographicalDataDTO> response = controller.createBibliographicalData(request, id);
@@ -352,7 +352,7 @@ class BibliographicalDataRESTControllerTest {
 
         when(bibliographicalData.id()).thenReturn(bdId);
         when(service.getAuthors(bibliographicalData)).thenReturn(authors);
-        when(provider.getLinksForBibliographicalData(userIdDouble)).thenReturn(List.of(customLink));
+        when(provider.getRegisteredUserLinksForBibliographicalData(userIdDouble)).thenReturn(List.of(customLink));
 
         try (MockedStatic<BibliographicalDataMapper> mockedMapper =
                      mockStatic(BibliographicalDataMapper.class)) {
@@ -404,9 +404,6 @@ class BibliographicalDataRESTControllerTest {
     @Test
     void getBibliographicalDataById_returnsOkWithDtoAndLinks() throws Exception {
         // Arrange
-        String id = "id1";
-        UserId userId = new UserId(id);
-
         String bdId = "bdId1";
         BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
 
@@ -419,7 +416,7 @@ class BibliographicalDataRESTControllerTest {
 
         when(service.findById(bdIdDouble)).thenReturn(bdDouble);
         when(service.getAuthors(bdDouble)).thenReturn(List.of("Author One"));
-        when(provider.getLinksForBibliographicalData(userId)).thenReturn(List.of(extraLink));
+        when(provider.getPublicLinksForBibliographicalData()).thenReturn(List.of(extraLink));
 
         // Act
         try (MockedStatic<BibliographicalDataMapper> mockedMapper =
@@ -433,12 +430,7 @@ class BibliographicalDataRESTControllerTest {
                     BibliographicalDataMapper.toDTO(bdDouble, List.of("Author One"))
             ).thenReturn(resultDto);
 
-            mockedMapper.when(() ->
-                    BibliographicalDataMapper.toUserId(id)
-            ).thenReturn(userId);
-
-
-            ResponseEntity<responseBibliographicalDataDTO> response = controller.getBibliographicalDataById(bdId, id);
+            ResponseEntity<responseBibliographicalDataDTO> response = controller.getBibliographicalDataById(bdId);
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -451,11 +443,10 @@ class BibliographicalDataRESTControllerTest {
 
     @Test
     void getBibliographicalDataById_whenDataDoesNotExist_returnsNotFound() throws Exception {
-        String userId = "id1";
+        // Arrange
         String bdId = "bdId1";
 
         BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
-        UserId userIdDouble = mock(UserId.class);
 
         try (MockedStatic<BibliographicalDataMapper> mockedMapper =
                      mockStatic(BibliographicalDataMapper.class)) {
@@ -464,16 +455,14 @@ class BibliographicalDataRESTControllerTest {
                     BibliographicalDataMapper.toBibliographicalDataId(bdId)
             ).thenReturn(bdIdDouble);
 
-            mockedMapper.when(() ->
-                    BibliographicalDataMapper.toUserId(userId)
-            ).thenReturn(userIdDouble);
-
             when(service.findById(bdIdDouble))
                     .thenThrow(new InstanceNotFoundException("BibliographicalData was not found:"));
 
+            // Act
             ResponseEntity<responseBibliographicalDataDTO> response =
-                    controller.getBibliographicalDataById(bdId, userId);
+                    controller.getBibliographicalDataById(bdId);
 
+            // Assert
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
             assertNull(response.getBody());
         }
@@ -482,9 +471,6 @@ class BibliographicalDataRESTControllerTest {
     @Test
     void getBibliographicalDataById_whenProviderReturnsNoLinks_stillAddsSelfLink() throws Exception {
         // Arrange
-        String id = "id1";
-        UserId userId = new UserId(id);
-
         String bdId = "bdId1";
         BibliographicalDataId bdIdDouble = mock(BibliographicalDataId.class);
 
@@ -492,7 +478,7 @@ class BibliographicalDataRESTControllerTest {
 
         when(service.findById(bdIdDouble)).thenReturn(bdDouble);
         when(service.getAuthors(bdDouble)).thenReturn(List.of("Author One"));
-        when(provider.getLinksForBibliographicalData(userId)).thenReturn(List.of());
+        when(provider.getPublicLinksForBibliographicalData()).thenReturn(List.of());
 
         responseBibliographicalDataDTO resultDto =
                 new responseBibliographicalDataDTO("bdId1", "Title", List.of("Author One"));
@@ -509,16 +495,40 @@ class BibliographicalDataRESTControllerTest {
                     BibliographicalDataMapper.toDTO(bdDouble, List.of("Author One"))
             ).thenReturn(resultDto);
 
-            mockedMapper.when(() ->
-                    BibliographicalDataMapper.toUserId(id)
-            ).thenReturn(userId);
-
-            ResponseEntity<responseBibliographicalDataDTO> response = controller.getBibliographicalDataById(bdId, id);
+            ResponseEntity<responseBibliographicalDataDTO> response = controller.getBibliographicalDataById(bdId);
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertTrue(response.getBody().hasLink("self"));
         }
+    }
+
+    @Test
+    void getBibliographicalDataById_whenUnexpectedException_returnsInternalServerError() throws InstanceNotFoundException {
+        // Arrange
+        String id = "bdId1";
+        BibliographicalDataId bdId = new BibliographicalDataId(id);
+
+        when(service.findById(bdId)).thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<responseBibliographicalDataDTO> response =
+                controller.getBibliographicalDataById(id);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void getBibliographicalDataById_whenNullId_returnsBadRequest() {
+        // Act
+        ResponseEntity<responseBibliographicalDataDTO> response =
+                controller.getBibliographicalDataById(null);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
     }
 }

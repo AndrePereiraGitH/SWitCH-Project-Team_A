@@ -39,7 +39,7 @@ class PublicationSampleLinkProviderTest {
     @Mock private IUserRepository userRepository;
 
     @InjectMocks
-    private PublicationSampleLinkProvider linkProvider;
+    private PublicationSampleLinkProvider provider;
 
     private UserId userId;
     private User user;
@@ -58,7 +58,7 @@ class PublicationSampleLinkProviderTest {
     void getPublicLinks_shouldReturnFindByIdLink() {
 
         // Act
-        List<Link> links = linkProvider.getPublicLinks();
+        List<Link> links = provider.getPublicLinks();
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-id")));
@@ -68,7 +68,7 @@ class PublicationSampleLinkProviderTest {
     void getPublicLinks_shouldReturnFindAllLink() {
 
         // Act
-        List<Link> links = linkProvider.getPublicLinks();
+        List<Link> links = provider.getPublicLinks();
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
@@ -78,7 +78,7 @@ class PublicationSampleLinkProviderTest {
     void getPublicLinks_shouldReturnFindByBdIdLink() {
 
         // Act
-        List<Link> links = linkProvider.getPublicLinks();
+        List<Link> links = provider.getPublicLinks();
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-bdId")));
@@ -88,7 +88,7 @@ class PublicationSampleLinkProviderTest {
     void getPublicLinks_shouldReturnFindByBdIdsLink() {
 
         // Act
-        List<Link> links = linkProvider.getPublicLinks();
+        List<Link> links = provider.getPublicLinks();
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-bdIds")));
@@ -98,7 +98,7 @@ class PublicationSampleLinkProviderTest {
     void getPublicLinks_shouldReturnFindByEditionIdsLink() {
 
         // Act
-        List<Link> links = linkProvider.getPublicLinks();
+        List<Link> links = provider.getPublicLinks();
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-editionIds")));
@@ -108,7 +108,7 @@ class PublicationSampleLinkProviderTest {
     void getPublicLinks_shouldReturnExactlyFiveLinks() {
 
         // Act
-        List<Link> links = linkProvider.getPublicLinks();
+        List<Link> links = provider.getPublicLinks();
 
         // Assert
         assertEquals(5, links.size());
@@ -119,7 +119,7 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                linkProvider.getOwnerLinks(null));
+                provider.getOwnerLinks(null));
     }
 
     // =========================================================================
@@ -134,7 +134,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canCreatePublicationSample(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getOwnerLinks(userId);
+        List<Link> links = provider.getOwnerLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-publication-sample")));
@@ -148,7 +148,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canCreatePublicationSample(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getOwnerLinks(userId);
+        List<Link> links = provider.getOwnerLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-publication-sample")));
@@ -162,7 +162,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canCreatePublicationSample(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getOwnerLinks(userId);
+        List<Link> links = provider.getOwnerLinks(userId);
 
         // Assert
         assertTrue(links.isEmpty());
@@ -176,7 +176,7 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () ->
-                linkProvider.getOwnerLinks(userId));
+                provider.getOwnerLinks(userId));
     }
 
     @Test
@@ -184,7 +184,7 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                linkProvider.getOwnerLinks(null));
+                provider.getOwnerLinks(null));
     }
 
     // =========================================================================
@@ -199,7 +199,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindPublicationsInLibrary(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-in-library")));
@@ -213,7 +213,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-in-library")));
@@ -227,7 +227,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
@@ -241,7 +241,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
@@ -255,7 +255,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-in-library")));
@@ -269,7 +269,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-in-library")));
@@ -283,7 +283,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("add-to-library")));
@@ -297,7 +297,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("add-to-library")));
@@ -314,7 +314,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertTrue(links.isEmpty());
@@ -331,7 +331,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getLibraryLinks(userId);
+        List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
         assertEquals(4, links.size());
@@ -345,7 +345,7 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () ->
-                linkProvider.getLibraryLinks(userId));
+                provider.getLibraryLinks(userId));
     }
 
     @Test
@@ -353,7 +353,7 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                linkProvider.getLibraryLinks(null));
+                provider.getLibraryLinks(null));
     }
 
     // =========================================================================
@@ -368,7 +368,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-collectionId")));
@@ -382,7 +382,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-collectionId")));
@@ -396,7 +396,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-for-collection")));
@@ -410,7 +410,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canFindAvailableForCollection(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-available-for-collection")));
@@ -424,7 +424,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("assign-to-collection")));
@@ -438,7 +438,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("assign-to-collection")));
@@ -454,7 +454,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertTrue(links.isEmpty());
@@ -470,7 +470,7 @@ class PublicationSampleLinkProviderTest {
         when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
 
         // Act
-        List<Link> links = linkProvider.getCollectionLinks(userId);
+        List<Link> links = provider.getCollectionLinks(userId);
 
         // Assert
         assertEquals(3, links.size());
@@ -484,7 +484,7 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () ->
-                linkProvider.getCollectionLinks(userId));
+                provider.getCollectionLinks(userId));
     }
 
     @Test
@@ -492,6 +492,267 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                linkProvider.getCollectionLinks(null));
+                provider.getCollectionLinks(null));
+    }
+
+    // =========================================================================
+    // Public links — always present
+    // =========================================================================
+
+
+    @Test
+    void getLinks_alwaysContainsFindById() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-id")));
+    }
+
+
+    @Test
+    void getLinks_alwaysContainsFindAll() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+    }
+
+
+    @Test
+    void getLinks_alwaysContainsFindByBdId() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-bdId")));
+    }
+
+
+    @Test
+    void getLinks_alwaysContainsFindByEditionIds() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-editionIds")));
+    }
+
+
+    @Test
+    void getLinks_alwaysContainsFindByBdIds() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-bdIds")));
+    }
+
+    // =========================================================================
+    // Owner links — conditional
+    // =========================================================================
+
+
+    @Test
+    void getLinks_whenCanCreate_containsCreatePublicationSample() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(true);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-publication-sample")));
+    }
+
+
+    @Test
+    void getLinks_whenCannotCreate_doesNotContainCreatePublicationSample() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-publication-sample")));
+    }
+
+    // =========================================================================
+    // Library links — conditional
+    // =========================================================================
+
+
+    @Test
+    void getLinks_whenCanFindInLibrary_containsFindInLibrary() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(true);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-in-library")));
+    }
+
+
+    @Test
+    void getLinks_whenCanAddToLibrary_containsAddToLibrary() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("add-to-library")));
+    }
+
+    // =========================================================================
+    // Collection links — conditional
+    // =========================================================================
+
+
+    @Test
+    void getLinks_whenCanAssignToCollection_containsAssignToCollection() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("assign-to-collection")));
+    }
+
+
+    @Test
+    void getLinks_whenCanFindByCollectionId_containsFindByCollectionId() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-by-collectionId")));
+    }
+
+    // =========================================================================
+    // User not found
+    // =========================================================================
+
+
+    @Test
+    void getLinks_userNotFound_throwsInstanceNotFoundException() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () -> provider.getLinks(userId));
     }
 }

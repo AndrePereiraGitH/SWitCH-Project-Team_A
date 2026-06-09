@@ -305,6 +305,18 @@ class BibliographicalDataMapperTest {
         assertEquals(id, result.getID());
     }
 
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenInputIsInvalid() {
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> BibliographicalDataMapper.toBibliographicalDataId(null)
+        );
+
+        // Assert
+        assertTrue(exception.getMessage().contains("Id can't be null"));
+    }
+
 
     // =============================================================
     // ====================== toLocale Tests =======================
