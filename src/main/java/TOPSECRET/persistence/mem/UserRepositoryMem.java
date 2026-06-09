@@ -91,6 +91,14 @@ public class UserRepositoryMem implements IUserRepository {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<User> findAll() {
+        return new ArrayList<>(_userList);
+    }
+
+    /**
      * Returns the total number of users currently stored in memory.
      *
      * @return the number of users in the repository
