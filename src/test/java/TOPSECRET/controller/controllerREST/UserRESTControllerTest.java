@@ -206,6 +206,71 @@ class UserRESTControllerTest {
     }
 
     // ================================================================
+    // GET /users — 200 OK (with results)
+    // ================================================================
+
+    @Test
+    void getAllUsers_shouldReturnOk_whenUsersExist() {
+
+        // Arrange
+        User userDouble = mock(User.class);
+        ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
+
+        when(userService.findAll()).thenReturn(List.of(userDouble));
+        when(userLinkProvider.getPublicLinks())
+                .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
+
+        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toDTO(userDouble)).thenReturn(responseDTO);
+
+            // Act
+            ResponseEntity<List<ResponseUserDTO>> response = controller.getAllUsers();
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertEquals(1, response.getBody().size());
+        }
+    }
+
+    // ================================================================
+    // GET /users — 200 OK (empty list)
+    // ================================================================
+
+    @Test
+    void getAllUsers_shouldReturnOk_whenNoUsersExist() {
+
+        // Arrange
+        when(userService.findAll()).thenReturn(List.of());
+
+        // Act
+        ResponseEntity<List<ResponseUserDTO>> response = controller.getAllUsers();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isEmpty());
+    }
+
+    // ================================================================
+    // GET /users — 500 INTERNAL SERVER ERROR
+    // ================================================================
+
+    @Test
+    void getAllUsers_shouldReturnInternalServerError_whenUnexpectedException() {
+
+        // Arrange
+        when(userService.findAll()).thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<List<ResponseUserDTO>> response = controller.getAllUsers();
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    // ================================================================
     // GET /users/{id} — 200 OK
     // ================================================================
 
