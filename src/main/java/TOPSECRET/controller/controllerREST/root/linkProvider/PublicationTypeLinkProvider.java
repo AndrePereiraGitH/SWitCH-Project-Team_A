@@ -1,6 +1,7 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.PublicationTypeRestController;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.PublicationTypeAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
@@ -20,13 +21,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Provides HATEOAS links related to PublicationType resources.
  */
 @Component
-public class PublicationTypeLinkProvider {
+public class PublicationTypeLinkProvider implements RootLinkProvider {
 
     private final PublicationTypeAuthorizationPolicy policy;
     private final IUserRepository userRepository;
 
     @Autowired
-    public PublicationTypeLinkProvider(PublicationTypeAuthorizationPolicy policy, IUserRepository userRepository){
+    public PublicationTypeLinkProvider(PublicationTypeAuthorizationPolicy policy, IUserRepository userRepository) {
         this.policy = policy;
         this.userRepository = userRepository;
     }
@@ -47,7 +48,7 @@ public class PublicationTypeLinkProvider {
                 .orElseThrow(() ->
                         new IllegalArgumentException("User not found"));
 
-        if(policy.canCreatePublicationType(user)){
+        if (policy.canCreatePublicationType(user)) {
             links.add(linkTo(methodOn(PublicationTypeRestController.class)
                     .createPublicationType(null, null))
                     .withRel("create-publication-type"));
@@ -72,4 +73,21 @@ public class PublicationTypeLinkProvider {
 
         return links;
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Aggregates links from all four groups in order:
+     * public and with UserId .</p>
+     */
+    @Override
+    public List<Link> getLinks(UserId userId) {
+        List<Link> links = new ArrayList<>();
+
+        links.addAll(getPublicLinks());
+        links.addAll(getCreateLinks(userId));
+
+        return links;
+    }
+
 }

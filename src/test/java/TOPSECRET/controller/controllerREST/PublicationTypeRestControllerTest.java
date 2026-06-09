@@ -626,4 +626,69 @@ class PublicationTypeRestControllerTest {
             );
         }
     }
+
+    @Test
+    void shouldAddCreateLinkToResponseDTOWhenCreatingPublicationType() throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        String format = "Book";
+
+        UserId userId = mock(UserId.class);
+
+        PublicationType publicationType = mock(PublicationType.class);
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+
+        when(publicationType.id()).thenReturn(publicationTypeId);
+        when(publicationTypeId.toString()).thenReturn("pt-001");
+
+        PublicationTypeResponseDTO responseDTO =
+                new PublicationTypeResponseDTO("1", "Book");
+
+        Link createLink =
+                Link.of("/publication-types",
+                        "create-publication-type");
+
+        when(createDTO.mediaFormat()).thenReturn(format);
+
+        when(service.createAndSave(format, userId))
+                .thenReturn(publicationType);
+
+        when(linkProvider.getPublicLinks())
+                .thenReturn(new ArrayList<>());
+
+        when(linkProvider.getCreateLinks(userId))
+                .thenReturn(new ArrayList<>(List.of(createLink)));
+
+        try (MockedStatic<PublicationTypeMapper> mapper =
+                     mockStatic(PublicationTypeMapper.class)) {
+
+            mapper.when(() ->
+                            PublicationTypeMapper.toUserId(userIdStr))
+                    .thenReturn(userId);
+
+            mapper.when(() ->
+                            PublicationTypeMapper.toDTO(publicationType))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<PublicationTypeResponseDTO> response =
+                    controller.createPublicationType(createDTO, userIdStr);
+
+            // ASSERT
+            assertNotNull(response.getBody());
+
+            assertTrue(
+                    response.getBody()
+                            .getLinks()
+                            .toList()
+                            .stream()
+                            .anyMatch(link ->
+                                    link.getRel().value()
+                                            .equals("create-publication-type"))
+            );
+        }
+    }
+
+
 }

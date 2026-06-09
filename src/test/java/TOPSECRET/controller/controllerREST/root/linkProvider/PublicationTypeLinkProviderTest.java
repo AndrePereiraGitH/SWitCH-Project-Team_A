@@ -101,5 +101,142 @@ class PublicationTypeLinkProviderTest {
         );
     }
 
+    @Test
+    void shouldReturnPublicAndCreateLinksWhenUserHasPermission() {
+
+        // ARRANGE
+
+        provider = new PublicationTypeLinkProvider(
+                policy,
+                userRepository
+        );
+
+        UserId userIdDouble = mock(UserId.class);
+        User userDouble = mock(User.class);
+
+        when(userRepository.findByID(userIdDouble))
+                .thenReturn(Optional.of(userDouble));
+
+        when(policy.canCreatePublicationType(userDouble))
+                .thenReturn(true);
+
+        // ACT
+        List<Link> links = provider.getLinks(userIdDouble);
+
+        // ASSERT
+        assertEquals(2, links.size());
+
+        assertTrue(
+                links.stream()
+                        .anyMatch(link ->
+                                link.getRel().value()
+                                        .equals("get-all-publication-types"))
+        );
+
+        assertTrue(
+                links.stream()
+                        .anyMatch(link ->
+                                link.getRel().value()
+                                        .equals("create-publication-type"))
+        );
+    }
+
+    @Test
+    void shouldReturnOnlyPublicLinksWhenUserHasNoPermission() {
+
+        // ARRANGE
+        provider = new PublicationTypeLinkProvider(
+                policy,
+                userRepository
+        );
+
+        UserId userIdDouble = mock(UserId.class);
+        User userDouble = mock(User.class);
+
+        when(userRepository.findByID(userIdDouble))
+                .thenReturn(Optional.of(userDouble));
+
+        when(policy.canCreatePublicationType(userDouble))
+                .thenReturn(false);
+
+        // ACT
+        List<Link> links = provider.getLinks(userIdDouble);
+
+        // ASSERT
+        assertEquals(1, links.size());
+        assertTrue(
+                links.stream()
+                        .anyMatch(link ->
+                                link.getRel().value()
+                                        .equals("get-all-publication-types"))
+        );
+
+        assertFalse(
+                links.stream()
+                        .anyMatch(link ->
+                                link.getRel().value()
+                                        .equals("create-publication-type"))
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserIdIsNull() {
+
+        // ARRANGE
+        provider = new PublicationTypeLinkProvider(
+                policy,
+                userRepository
+        );
+
+        // ACT + ASSERT
+        assertThrows(
+                NullPointerException.class,
+                () -> provider.getLinks(null)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserDoesNotExist() {
+
+        // ARRANGE
+
+        provider = new PublicationTypeLinkProvider(
+                policy,
+                userRepository
+        );
+
+        UserId userIdDouble = mock(UserId.class);
+
+        when(userRepository.findByID(userIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> provider.getCreateLinks(userIdDouble)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCreateLinksReceivesNullUserId() {
+
+        // ARRANGE
+
+        provider = new PublicationTypeLinkProvider(
+                policy,
+                userRepository
+        );
+
+        // ACT + ASSERT
+
+        assertThrows(
+                NullPointerException.class,
+                () -> provider.getCreateLinks(null)
+        );
+    }
+
+
+
 
 }

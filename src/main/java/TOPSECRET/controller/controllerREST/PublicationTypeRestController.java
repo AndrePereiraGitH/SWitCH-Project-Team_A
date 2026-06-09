@@ -91,7 +91,7 @@ public class PublicationTypeRestController {
             UserId id = PublicationTypeMapper.toUserId(userId);
             PublicationType publicationType = service.createAndSave(createPublicationTypeDTO.mediaFormat(), id);
 
-            PublicationTypeResponseDTO result = toPublicationTypeDTO(publicationType);
+            PublicationTypeResponseDTO result = toPublicationTypeDTO(publicationType, id);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
