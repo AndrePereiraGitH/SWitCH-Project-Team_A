@@ -4,7 +4,6 @@ import TOPSECRET.controller.controllerREST.root.linkProvider.AuthorLinkProvider;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.AuthorId;
-import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.author.AuthorMapper;
 import TOPSECRET.dto.author.request.CreateAuthorDTO;
@@ -19,12 +18,25 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST Controller responsible for managing Author resources.
+ *
+ * <p>Exposes endpoints for creating and querying authors, and coordinates the
+ * interaction between DTOs, domain objects, application services, and HATEOAS links.</p>
+ *
+ * <p>Endpoints are grouped into two categories:</p>
+ * <ul>
+ *   <li><b>Public</b> — retrieval endpoints; no authentication required.</li>
+ *   <li><b>Private</b> — creation endpoints; require a valid authenticated user.</li>
+ * </ul>
+ */
 @RestController
 @Tag(name = "Authors", description = "Authors management endpoint")
 @RequestMapping(path = "/authors")
@@ -34,12 +46,34 @@ public class AuthorRESTController {
     private final AuthorLinkProvider provider;
     private final CountryService countryService;
 
+    /**
+     * Creates a new {@code AuthorRESTController}.
+     *
+     * @param service        the service responsible for author operations
+     * @param provider       the provider responsible for generating HATEOAS links
+     * @param countryService the service responsible for country lookups
+     */
     public AuthorRESTController(AuthorService service, AuthorLinkProvider provider, CountryService countryService) {
         this.service = service;
         this.provider = provider;
         this.countryService = countryService;
     }
 
+    // =========================================================================
+    // POST — private
+    // =========================================================================
+
+    /**
+     * Creates a new author in the system.
+     *
+     * <p>Maps the incoming DTO to domain objects, delegates creation to the service,
+     * and enriches the response with public and private HATEOAS links based on the
+     * requester's permissions.</p>
+     *
+     * @param dto    the DTO containing the new author's data
+     * @param userId the ID of the user performing the creation
+     * @return HTTP 201 with the created {@link AuthorDTO}, or an error status
+     */
     @PostMapping("")
     public ResponseEntity<AuthorDTO> createAuthor(
             @RequestBody CreateAuthorDTO dto,
@@ -56,18 +90,10 @@ public class AuthorRESTController {
                     id
             );
 
-            Country country = countryService.findById(author.getCountryID());
-            AuthorDTO result = AuthorMapper.toDTO(author, country);
-
-            List<Link> links = provider.getLinks(id);
-
-            links.add(linkTo(methodOn(AuthorRESTController.class)
-                    .findById(author.id().toString(), userId))
-                    .withSelfRel());
-
-            links.forEach(result::add);
+            AuthorDTO result = toAuthorDTO(author, id);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
+
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
@@ -79,32 +105,30 @@ public class AuthorRESTController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<AuthorDTO>> findAll(@RequestParam String userId) {
+    // =========================================================================
+    // GET — public
+    // =========================================================================
+
+    /**
+     * Retrieves all authors in the system.
+     *
+     * <p>Each item in the returned list is enriched with a self-link and public
+     * navigational links. No authentication required.</p>
+     *
+     * @return HTTP 200 with a list of {@link AuthorDTO}, or an error status
+     */
+    @GetMapping("")
+    public ResponseEntity<List<AuthorDTO>> findAll() {
 
         try {
-            UserId id = AuthorMapper.toUserId(userId);
-
             List<Author> authors = service.findAll();
-            List<AuthorDTO> authorsDTO = new ArrayList<>();
+            List<AuthorDTO> result = new ArrayList<>();
 
             for (Author author : authors) {
-                CountryId countryId = author.getCountryID();
-                Country country = countryService.findById(countryId);
-
-                AuthorDTO result = AuthorMapper.toDTO(author, country);
-
-                List<Link> links = provider.getLinks(id);
-                links.add(linkTo(methodOn(AuthorRESTController.class)
-                        .findById(author.id().toString(), userId))
-                        .withSelfRel());
-
-                links.forEach(result::add);
-
-                authorsDTO.add(result);
+                result.add(toAuthorDTO(author));
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(authorsDTO);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -113,34 +137,89 @@ public class AuthorRESTController {
         }
     }
 
+    /**
+     * Retrieves an author by their unique identifier.
+     *
+     * <p>Returns the author enriched with a self-link and public navigational links.
+     * No authentication required.</p>
+     *
+     * @param authorId the unique identifier of the author to retrieve
+     * @return HTTP 200 with the {@link AuthorDTO}, HTTP 404 if not found, or HTTP 500 on error
+     */
     @GetMapping("/{authorId}")
     public ResponseEntity<AuthorDTO> findById(
-            @PathVariable("authorId") String authorId,
-            @RequestParam String userId) {
+            @PathVariable("authorId") String authorId) {
 
         try {
             AuthorId id = AuthorMapper.toAuthorId(authorId);
-            UserId uId = AuthorMapper.toUserId(userId);
 
             Author author = service.findById(id);
-            CountryId countryId = author.getCountryID();
-            Country country = countryService.findById(countryId);
 
-            AuthorDTO result = AuthorMapper.toDTO(author, country);
-
-            List<Link> links = provider.getLinks(uId);
-
-            links.add(linkTo(methodOn(AuthorRESTController.class)
-                    .findById(author.id().toString(), userId))
-                    .withSelfRel());
-
-            links.forEach(result::add);
+            AuthorDTO result = toAuthorDTO(author);
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    // =========================================================================
+    // Private helpers
+    // =========================================================================
+
+    /**
+     * Builds an {@link AuthorDTO} for a public endpoint, enriching it with
+     * country information and public HATEOAS links only.
+     *
+     * <p>No user identity is required. Only public links and a self-link are attached.</p>
+     *
+     * @param author the author to convert; must not be {@code null}
+     * @return the populated {@link AuthorDTO} with public links attached
+     * @throws InstanceNotFoundException if any dependent lookup fails
+     */
+    private AuthorDTO toAuthorDTO(Author author) throws InstanceNotFoundException {
+        Country country = countryService.findById(author.getCountryID());
+
+        AuthorDTO result = AuthorMapper.toDTO(author, country);
+
+        List<Link> links = new ArrayList<>(provider.getPublicLinks());
+
+        links.add(linkTo(methodOn(AuthorRESTController.class)
+                .findById(author.id().toString()))
+                .withSelfRel());
+
+        links.forEach(result::add);
+
+        return result;
+    }
+
+    /**
+     * Builds an {@link AuthorDTO} for a private endpoint, enriching it with
+     * country information, public links, and private HATEOAS links based on
+     * the requesting user's permissions.
+     *
+     * @param author the author to convert; must not be {@code null}
+     * @param userId the ID of the requesting user used to generate contextual links
+     * @return the populated {@link AuthorDTO} with public and private links attached
+     * @throws InstanceNotFoundException if the associated user is not found by the link provider
+     */
+    private AuthorDTO toAuthorDTO(Author author, UserId userId) throws InstanceNotFoundException {
+        Country country = countryService.findById(author.getCountryID());
+
+        AuthorDTO result = AuthorMapper.toDTO(author, country);
+
+        List<Link> links = new ArrayList<>(provider.getPublicLinks());
+        links.addAll(provider.getPrivateLinks(userId));
+
+        links.add(linkTo(methodOn(AuthorRESTController.class)
+                .findById(author.id().toString()))
+                .withSelfRel());
+
+        links.forEach(result::add);
+
+        return result;
     }
 }
