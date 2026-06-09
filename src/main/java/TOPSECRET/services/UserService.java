@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -92,6 +93,15 @@ public class UserService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
         return user;
+    }
+
+    /**
+     * Returns all users in the system.
+     *
+     * @return a list of all {@link User} instances; never {@code null}, may be empty
+     */
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     /**
