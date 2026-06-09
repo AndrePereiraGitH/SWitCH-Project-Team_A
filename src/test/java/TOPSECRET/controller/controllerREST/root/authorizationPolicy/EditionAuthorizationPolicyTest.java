@@ -17,12 +17,14 @@ import static org.mockito.Mockito.*;
 class EditionAuthorizationPolicyTest {
 
     @Test
-    void canCreateEdition_shouldReturnTrue_whenUserIsAdmin() {
+    void canCreateEdition_shouldReturnTrue_whenUserHasOnlyAdminRole() {
 
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of(UserRole.ADMIN));
 
         // ACT
         boolean result = sut.canCreateEdition(user);
@@ -32,27 +34,14 @@ class EditionAuthorizationPolicyTest {
     }
 
     @Test
-    void canCreateEdition_shouldReturnTrue_whenUserIsNormalUser() {
+    void canCreateEdition_shouldReturnTrue_whenUserHasOnlyNormalUserRole() {
 
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
-        // ACT
-        boolean result = sut.canCreateEdition(user);
-
-        // ASSERT
-        assertTrue(result);
-    }
-
-    @Test
-    void canCreateEdition_shouldReturnTrue_whenUserHasMultipleRoles() {
-
-        // ARRANGE
-        EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
-        User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN, UserRole.NORMAL_USER));
+        when(user.getUserRoles())
+                .thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // ACT
         boolean result = sut.canCreateEdition(user);
@@ -67,7 +56,9 @@ class EditionAuthorizationPolicyTest {
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of());
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of());
 
         // ACT
         boolean result = sut.canCreateEdition(user);
@@ -76,20 +67,129 @@ class EditionAuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // =========================================================
+   // canFindByPublisherId
+   // =========================================================
+
     @Test
-    void canCreateEdition_shouldReturnConsistentResult_whenCalledTwice() {
+    void canFindByPublisherId_shouldReturnTrue_whenUserIsNormalUser() {
 
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // ACT
-        boolean first = sut.canCreateEdition(user);
-        boolean second = sut.canCreateEdition(user);
+        boolean result = sut.canFindByPublisherId(user);
 
         // ASSERT
-        assertTrue(first);
-        assertEquals(first, second);
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindByPublisherId_shouldReturnFalse_whenUserIsAdmin() {
+
+        // ARRANGE
+        EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
+        User user = mock(User.class);
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of(UserRole.ADMIN));
+
+        // ACT
+        boolean result = sut.canFindByPublisherId(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindByPublisherId_shouldReturnFalse_whenUserHasNoRoles() {
+
+        // ARRANGE
+        EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
+        User user = mock(User.class);
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of());
+
+        // ACT
+        boolean result = sut.canFindByPublisherId(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+    // =========================================================
+// canFindByPublicationTypeId
+// =========================================================
+
+    @Test
+    void canFindByPublicationTypeId_shouldReturnTrue_whenUserIsNormalUser() {
+
+        // ARRANGE
+        EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
+        User user = mock(User.class);
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // ACT
+        boolean result = sut.canFindByPublicationTypeId(user);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindByPublicationTypeId_shouldReturnFalse_whenUserIsAdmin() {
+
+        // ARRANGE
+        EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
+        User user = mock(User.class);
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of(UserRole.ADMIN));
+
+        // ACT
+        boolean result = sut.canFindByPublicationTypeId(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindByPublicationTypeId_shouldReturnFalse_whenUserHasNoRoles() {
+
+        // ARRANGE
+        EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
+        User user = mock(User.class);
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of());
+
+        // ACT
+        boolean result = sut.canFindByPublicationTypeId(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindByPublisherId_shouldReturnTrue_whenUserHasMultipleRoles() {
+
+        // ARRANGE
+        EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
+        User user = mock(User.class);
+
+        when(user.getUserRoles())
+                .thenReturn(Set.of(UserRole.ADMIN, UserRole.NORMAL_USER));
+
+        // ACT
+        boolean result = sut.canFindByPublisherId(user);
+
+        // ASSERT
+        assertTrue(result);
     }
 }

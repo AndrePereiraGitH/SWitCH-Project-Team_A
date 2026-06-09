@@ -1,9 +1,11 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.EditionRESTController;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.EditionAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
@@ -27,7 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * </ul>
  */
 @Component
-public class EditionLinkProvider {
+public class EditionLinkProvider implements RootLinkProvider {
 
     private final EditionAuthorizationPolicy policy;
     private final IUserRepository repository;
@@ -85,7 +87,7 @@ public class EditionLinkProvider {
      * @throws NullPointerException      if {@code userId} is {@code null}
      * @throws InstanceNotFoundException if no user is found for the given {@code userId}
      */
-    public List<Link> getPrivateLinks(UserId userId) throws InstanceNotFoundException {
+    public List<Link> getCreateLinks(UserId userId) throws InstanceNotFoundException {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         List<Link> links = new ArrayList<>();
@@ -101,6 +103,34 @@ public class EditionLinkProvider {
         return links;
     }
 
+    public List<Link> getPublisherLinks(UserId userId) throws InstanceNotFoundException {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        List<Link> links = new ArrayList<>();
+        User user = resolveUser(userId);
+
+        if(policy.canFindByPublisherId(user)) {
+            links.add(linkTo(methodOn(EditionRESTController.class)
+                    .findByPublisherId(null))
+                    .withRel("find-by-publisher-id"));
+        }
+
+        return links;
+    }
+
+    public List<Link> getPublicationTypeLinks (UserId userId) throws InstanceNotFoundException {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        List<Link> links = new ArrayList<>();
+        User user = resolveUser(userId);
+
+        if(policy.canFindByPublicationTypeId(user)) {
+            links.add(linkTo(methodOn(EditionRESTController.class)
+                    .findByPublicationTypeId(null))
+                    .withRel("find-by-publication-type-id"));
+        }
+
+        return links;
+    }
+
     /**
      * Resolves a {@link User} from the repository by the given {@link UserId}.
      *
@@ -111,5 +141,17 @@ public class EditionLinkProvider {
     private User resolveUser(UserId userId) throws InstanceNotFoundException {
         return repository.findByID(userId)
                 .orElseThrow(() -> new InstanceNotFoundException("User not found"));
+    }
+
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+        List<Link> links = new ArrayList<>();
+
+        links.addAll(getPublicLinks());
+        links.addAll(getCreateLinks(userId));
+        links.addAll(getPublisherLinks(userId));
+        links.addAll(getPublicationTypeLinks(userId));
+
+        return links;
     }
 }

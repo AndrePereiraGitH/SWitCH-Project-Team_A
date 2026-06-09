@@ -39,4 +39,36 @@ public class EditionAuthorizationPolicy {
         return user.getUserRoles().contains(UserRole.ADMIN)
                 || user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
+
+    /**
+     * Determines whether the given user is authorized to retrieve editions
+     * by publisher identifier.
+     *
+     * <p>Access is granted only to users with the
+     * {@link UserRole#NORMAL_USER} role.</p>
+     *
+     * @param user the user requesting the operation
+     * @return {@code true} if the user has permission to retrieve editions
+     *         by publisher ID; {@code false} otherwise
+     */
+    public boolean canFindByPublisherId(User user) {
+        boolean result = user.getUserRoles().contains(UserRole.NORMAL_USER);
+        return result;
+    }
+
+    /**
+     * Determines whether the given user is authorized to retrieve editions
+     * by publication type identifier.
+     *
+     * <p>Access is granted only to users with the
+     * {@link UserRole#NORMAL_USER} role.</p>
+     *
+     * @param user the user requesting the operation
+     * @return {@code true} if the user has permission to retrieve editions
+     *         by publication type ID; {@code false} otherwise
+     */
+    public boolean canFindByPublicationTypeId(User user) {
+        boolean result = user.getUserRoles().contains(UserRole.NORMAL_USER);
+        return result;
+    }
 }

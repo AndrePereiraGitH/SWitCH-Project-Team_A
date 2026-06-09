@@ -189,13 +189,13 @@ public class EditionRESTController {
 
             List<Edition> editions = service.findByPublisherId(id);
 
-            if (editions.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-
             List<EditionDTO> result = new ArrayList<>();
             for (Edition edition : editions) {
                 result.add(toEditionDTO(edition));
+            }
+
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -266,13 +266,13 @@ public class EditionRESTController {
 
             List<Edition> editions = service.findByPublicationTypeId(id);
 
-            if (editions.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-
             List<EditionDTO> result = new ArrayList<>();
             for (Edition edition : editions) {
                 result.add(toEditionDTO(edition));
+            }
+
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -326,7 +326,7 @@ public class EditionRESTController {
         EditionDTO result = EditionMapper.toDTO(edition);
 
         List<Link> links = new ArrayList<>(provider.getPublicLinks());
-        links.addAll(provider.getPrivateLinks(userId));
+        links.addAll(provider.getCreateLinks(userId));
 
         links.add(linkTo(methodOn(EditionRESTController.class)
                 .findById(edition.id().getID()))

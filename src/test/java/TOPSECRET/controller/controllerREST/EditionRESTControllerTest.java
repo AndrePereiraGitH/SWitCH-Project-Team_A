@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.EditionLinkProvider;
 import TOPSECRET.domain.Edition.Edition;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
@@ -878,8 +879,8 @@ class EditionRESTControllerTest {
     private void stubProviderLinks(UserId userId, List<Link> publicLinks, List<Link> privateLinks)
             throws Exception {
         when(provider.getPublicLinks()).thenReturn(publicLinks);
-        lenient().doAnswer(inv -> privateLinks).when(provider).getPrivateLinks(userId);
-        lenient().doAnswer(inv -> privateLinks).when(provider).getPrivateLinks(any());
+        lenient().doAnswer(inv -> privateLinks).when(provider).getCreateLinks(userId);
+        lenient().doAnswer(inv -> privateLinks).when(provider).getCreateLinks(any());
     }
 
     /**
