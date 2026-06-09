@@ -45,14 +45,17 @@ class ListingLinkProviderTest {
     void getOwnerLinks_shouldReturnOneLink_whenUserCanCreateListing()
             throws InstanceNotFoundException {
 
+        // Arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(true);
 
+        // Act
         List<Link> links = provider.getOwnerLinks(userId);
 
+        // Assert
         assertEquals(1, links.size());
     }
 
@@ -60,14 +63,17 @@ class ListingLinkProviderTest {
     void getOwnerLinks_shouldReturnCreateListingRel_whenUserCanCreateListing()
             throws InstanceNotFoundException {
 
+        // Arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(true);
 
+        // Act
         List<Link> links = provider.getOwnerLinks(userId);
 
+        // Assert
         assertEquals("create-listing", links.get(0).getRel().value());
     }
 
@@ -75,24 +81,29 @@ class ListingLinkProviderTest {
     void getOwnerLinks_shouldReturnEmptyList_whenUserCannotCreateListing()
             throws InstanceNotFoundException {
 
+        // Arrange
         UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(false);
 
+        // Act
         List<Link> links = provider.getOwnerLinks(userId);
 
+        // Assert
         assertTrue(links.isEmpty());
     }
 
     @Test
     void getOwnerLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
 
+        // Arrange
         UserId userId = mock(UserId.class);
 
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
+        // Act & Assert
         assertThrows(
                 InstanceNotFoundException.class,
                 () -> provider.getOwnerLinks(userId)
@@ -102,6 +113,7 @@ class ListingLinkProviderTest {
     @Test
     void getOwnerLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
 
+        // Act & Assert
         assertThrows(
                 NullPointerException.class,
                 () -> provider.getOwnerLinks(null)
@@ -111,16 +123,20 @@ class ListingLinkProviderTest {
     @Test
     void getPublicLinks_shouldReturnFourLinks() {
 
+        // Act
         List<Link> links = provider.getPublicLinks();
 
+        // Assert
         assertEquals(4, links.size());
     }
 
     @Test
     void getPublicLinks_shouldContainFindByIdLink() {
 
+        // Act
         List<Link> links = provider.getPublicLinks();
 
+        // Assert
         assertTrue(links.stream()
                 .anyMatch(link -> link.getRel().value().equals("find-by-id")));
     }
@@ -128,8 +144,10 @@ class ListingLinkProviderTest {
     @Test
     void getPublicLinks_shouldContainFindAllLink() {
 
+        // Act
         List<Link> links = provider.getPublicLinks();
 
+        // Assert
         assertTrue(links.stream()
                 .anyMatch(link -> link.getRel().value().equals("find-all")));
     }
@@ -137,8 +155,10 @@ class ListingLinkProviderTest {
     @Test
     void getPublicLinks_shouldContainGetAllDirectSaleByGenreLink() {
 
+        // Act
         List<Link> links = provider.getPublicLinks();
 
+        // Assert
         assertTrue(links.stream()
                 .anyMatch(link -> link.getRel().value().equals("get-all-direct-sale-by-genre")));
     }
@@ -146,9 +166,41 @@ class ListingLinkProviderTest {
     @Test
     void getPublicLinks_shouldContainGetAllDirectSaleByPublisherLink() {
 
+        // Act
         List<Link> links = provider.getPublicLinks();
 
+        // Assert
         assertTrue(links.stream()
                 .anyMatch(link -> link.getRel().value().equals("get-all-direct-sale-by-publisher")));
+    }
+
+    @Test
+    void getLinks_shouldReturnFiveLinks_whenUserCanCreateListing()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertEquals(5, links.size());
+    }
+
+    @Test
+    void getLinks_shouldReturnFourLinks_whenUserCannotCreateListing()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertEquals(4, links.size());
     }
 }
