@@ -13,6 +13,7 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,8 +24,12 @@ import java.util.List;
  * Mapper responsible for converting {@link Listing} domain objects into
  * {@link ListingResponseDTO} objects.
  */
-@Service
+@Component
 public class ListingMapper {
+
+    private static final String UNKNOWN = "Unknown";
+    private static final String NOT_AVAILABLE = "N/A";
+    private static final String EMPTY = "";
 
     /**
      * Converts a {@link Listing} and its associated bibliographical data into a
@@ -77,7 +82,6 @@ public class ListingMapper {
      * such as {@code "N/A"} or {@code "Unknown"}.</p>
      *
      * @param listing the listing to convert
-     * @param bibliographicalDatas the bibliographical data associated with the listing
      * @param pubSamples the publication samples associated with the listing
      * @param editions the editions associated with the publication samples
      * @param authors the authors associated with the bibliographical data
@@ -87,62 +91,33 @@ public class ListingMapper {
      */
     public static ListingDetailsDTO toListingDetailsDTO(
             Listing listing,
-            List<BibliographicalData> bibliographicalDatas,
             List<PublicationSample> pubSamples,
             List<Edition> editions,
             List<Author> authors,
             List<Genre> genres,
             List<Publisher> publishers
     ) {
-        Edition edition = editions.stream()
-                .findFirst()
-                .orElse(null);
-
-        Publisher publisher = publishers.stream()
-                .findFirst()
-                .orElse(null);
-
-        PublicationSample sample = pubSamples.stream()
-                .findFirst()
-                .orElse(null);
+        Edition edition = getFirstOrNull(editions);
+        Publisher publisher = getFirstOrNull(publishers);
+        PublicationSample sample = getFirstOrNull(pubSamples);
 
         return new ListingDetailsDTO(
-                listing.id().getId(),
+                getListingId(listing),
                 listing.getListingTitle(),
-                authors.stream()
-                        .map(Author::getName)
-                        .distinct()
-                        .toList(),
-                genres.stream()
-                        .map(Genre::getGenreType)
-                        .distinct()
-                        .toList(),
-                listing.getPrice().getPrice(),
-                sample != null && sample.getCondition() != null
-                        ? sample.getCondition().toString()
-                        : "Unknown",
-                listing.getSaleType().toString(),
-                listing.getPictures().stream()
-                        .findFirst()
-                        .map(Picture::getPicture)
-                        .orElse(""),
+                getAuthorNames(authors),
+                getGenreTypes(genres),
+                getPrice(listing),
+                listing.getPublicationDate(),
+                getCondition(sample),
+                getSaleType(listing),
+                getFirstPicture(listing),
                 listing.getShortDescription(),
-                listing.getSellerId().getUserId(),
-                publisher != null
-                        ? publisher.getName()
-                        : "N/A",
-                edition != null && edition.getCode() != null
-                        ? edition.getCode().toString()
-                        : "N/A",
-                edition != null && edition.getEditionDate() != null
-                        ? edition.getEditionDate().getYear()
-                        : null,
-                edition != null && edition.getPhysicalAttributes() != null
-                        ? edition.getPhysicalAttributes().getNumberOfPages()
-                        : null,
-                edition != null && edition.getEditionLanguage() != null
-                        ? edition.getEditionLanguage().getDisplayLanguage()
-                        : "N/A"
+                getSellerId(listing),
+                getPublisherName(publisher),
+                getEditionCode(edition),
+                getEditionYear(edition),
+                getNumberOfPages(edition),
+                getEditionLanguage(edition)
         );
     }
 
@@ -229,5 +204,235 @@ public class ListingMapper {
         return new PublisherID(publisherId);
     }
 
+    /**
+     * Retrieves the listing identifier.
+     *
+     * @param listing the listing whose identifier should be extracted
+     * @return the listing identifier as a string
+     */
+    private static String getListingId(Listing listing) {
+        return listing.id().getId();
+    }
+
+    /**
+     * Retrieves the seller identifier associated with the listing.
+     *
+     * @param listing the listing whose seller identifier should be extracted
+     * @return the seller identifier as a string
+     */
+    private static String getSellerId(Listing listing) {
+        return listing.getSellerId().getUserId();
+    }
+
+    /**
+     * Retrieves the sale type of the listing.
+     *
+     * @param listing the listing whose sale type should be extracted
+     * @return the sale type as a string
+     */
+    private static String getSaleType(Listing listing) {
+        return listing.getSaleType().toString();
+    }
+
+    /**
+     * Retrieves the listing price.
+     *
+     * @param listing the listing whose price should be extracted
+     * @return the price as a string
+     */
+    private static String getPrice(Listing listing) {
+        return listing.getPrice().getPrice().toString();
+    }
+
+    /**
+     * Retrieves all picture URLs associated with the listing.
+     *
+     * @param listing the listing whose pictures should be extracted
+     * @return a list containing the picture URLs
+     */
+    private static List<String> getPictures(Listing listing) {
+        return listing.getPictures()
+                .stream()
+                .map(Picture::getPicture)
+                .toList();
+    }
+
+    /**
+     * Retrieves the first picture associated with the listing.
+     *
+     * <p>If the listing does not contain any pictures, an empty string is returned.</p>
+     *
+     * @param listing the listing whose first picture should be extracted
+     * @return the first picture URL, or an empty string if none exists
+     */
+    private static String getFirstPicture(Listing listing) {
+        return listing.getPictures()
+                .stream()
+                .findFirst()
+                .map(Picture::getPicture)
+                .orElse(EMPTY);
+    }
+
+    /**
+     * Retrieves the titles of the provided bibliographical data records.
+     *
+     * @param bibliographicalDatas the bibliographical data records
+     * @return a list containing the extracted titles
+     */
+    private static List<String> getBibliographicalTitles(List<BibliographicalData> bibliographicalDatas) {
+        return bibliographicalDatas.stream()
+                .map(BibliographicalData::getTitle)
+                .toList();
+    }
+
+    /**
+     * Retrieves the genre identifiers from the first bibliographical data record.
+     *
+     * @param bibliographicalDatas the bibliographical data records
+     * @return a list containing the genre identifiers
+     */
+    private static List<String> getGenreIds(List<BibliographicalData> bibliographicalDatas) {
+        return bibliographicalDatas.get(0)
+                .getGenres()
+                .stream()
+                .map(GenreId::getID)
+                .toList();
+    }
+
+    /**
+     * Retrieves the distinct author names.
+     *
+     * @param authors the authors whose names should be extracted
+     * @return a list containing the distinct author names
+     */
+    private static List<String> getAuthorNames(List<Author> authors) {
+        return authors.stream()
+                .map(Author::getName)
+                .distinct()
+                .toList();
+    }
+
+    /**
+     * Retrieves the distinct genre types.
+     *
+     * @param genres the genres whose types should be extracted
+     * @return a list containing the distinct genre types
+     */
+    private static List<String> getGenreTypes(List<Genre> genres) {
+        return genres.stream()
+                .map(Genre::getGenreType)
+                .distinct()
+                .toList();
+    }
+
+    /**
+     * Retrieves the condition of a publication sample.
+     *
+     * <p>If the sample or its condition is unavailable, the value
+     * {@code "Unknown"} is returned.</p>
+     *
+     * @param sample the publication sample
+     * @return the condition description, or {@code "Unknown"} if unavailable
+     */
+    private static String getCondition(PublicationSample sample) {
+        if (sample == null || sample.getCondition() == null) {
+            return UNKNOWN;
+        }
+
+        return sample.getCondition().toString();
+    }
+
+    /**
+     * Retrieves the publisher name.
+     *
+     * <p>If no publisher is provided, the value {@code "N/A"} is returned.</p>
+     *
+     * @param publisher the publisher
+     * @return the publisher name, or {@code "N/A"} if unavailable
+     */
+    private static String getPublisherName(Publisher publisher) {
+        if (publisher == null) {
+            return NOT_AVAILABLE;
+        }
+
+        return publisher.getName();
+    }
+
+    /**
+     * Retrieves the edition code.
+     *
+     * <p>If the edition or its code is unavailable, the value {@code "N/A"}
+     * is returned.</p>
+     *
+     * @param edition the edition
+     * @return the edition code, or {@code "N/A"} if unavailable
+     */
+    private static String getEditionCode(Edition edition) {
+        if (edition == null || edition.getCode() == null) {
+            return NOT_AVAILABLE;
+        }
+
+        return edition.getCode().toString();
+    }
+
+    /**
+     * Retrieves the publication year of an edition.
+     *
+     * @param edition the edition
+     * @return the publication year, or {@code null} if unavailable
+     */
+    private static Integer getEditionYear(Edition edition) {
+        if (edition == null || edition.getEditionDate() == null) {
+            return null;
+        }
+
+        return edition.getEditionDate().getYear();
+    }
+
+    /**
+     * Retrieves the number of pages of an edition.
+     *
+     * @param edition the edition
+     * @return the number of pages, or {@code null} if unavailable
+     */
+    private static Integer getNumberOfPages(Edition edition) {
+        if (edition == null || edition.getPhysicalAttributes() == null) {
+            return null;
+        }
+
+        return edition.getPhysicalAttributes().getNumberOfPages();
+    }
+
+    /**
+     * Retrieves the language of an edition.
+     *
+     * <p>If the edition or its language is unavailable, the value
+     * {@code "N/A"} is returned.</p>
+     *
+     * @param edition the edition
+     * @return the language name, or {@code "N/A"} if unavailable
+     */
+    private static String getEditionLanguage(Edition edition) {
+        if (edition == null || edition.getEditionLanguage() == null) {
+            return NOT_AVAILABLE;
+        }
+
+        return edition.getEditionLanguage().getDisplayLanguage();
+    }
+
+    /**
+     * Retrieves the first element of a list.
+     *
+     * <p>If the list is empty, {@code null} is returned.</p>
+     *
+     * @param list the source list
+     * @param <T> the element type
+     * @return the first element, or {@code null} if the list is empty
+     */
+    private static <T> T getFirstOrNull(List<T> list) {
+        return list.stream()
+                .findFirst()
+                .orElse(null);
+    }
 
 }
