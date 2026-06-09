@@ -7,6 +7,7 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +17,8 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link EditionLinkProvider}.
  *
- * <p>Validates link generation based on user authorization rules.</p>
+ * <p>Updated for Sprint 7: {@code getLinks()} has been replaced by
+ * {@code getPublicLinks()} and {@code getPrivateLinks(UserId)}.</p>
  */
 class EditionLinkProviderTest {
 
@@ -25,28 +27,83 @@ class EditionLinkProviderTest {
     private final UserId userId = mock(UserId.class);
 
     // =========================================================
-    // USER WITH PERMISSION TO CREATE
+    // getPublicLinks — always available, no user needed
     // =========================================================
 
     @Test
-    void getLinks_shouldReturnTwoLinks_whenUserCanCreateEdition() {
+    void getPublicLinks_shouldReturnTwoLinks_always() {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-        User user = mock(User.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreateEdition(user)).thenReturn(true);
 
         // ACT
-        List<Link> result = sut.getLinks(userId);
+        List<Link> result = sut.getPublicLinks();
 
         // ASSERT
         assertEquals(2, result.size());
     }
 
     @Test
-    void getLinks_shouldContainCreateEditionRel_whenUserCanCreateEdition() {
+    void getPublicLinks_shouldContainFindEditionRel() {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-edition")));
+    }
+
+    @Test
+    void getPublicLinks_shouldContainFindAllEditionsRel() {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
+    }
+
+    @Test
+    void getPublicLinks_shouldReturnNonNullHrefs() {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        result.forEach(l -> assertNotNull(l.getHref()));
+    }
+
+    @Test
+    void getPublicLinks_shouldNotInteractWithRepository() {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+
+        // ACT
+        sut.getPublicLinks();
+
+        // ASSERT
+        verifyNoInteractions(repository);
+    }
+
+    // =========================================================
+    // getPrivateLinks — user can create edition
+    // =========================================================
+
+    @Test
+    void getPrivateLinks_shouldReturnOneLink_whenUserCanCreateEdition()
+            throws InstanceNotFoundException {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
@@ -56,7 +113,25 @@ class EditionLinkProviderTest {
         when(policy.canCreateEdition(user)).thenReturn(true);
 
         // ACT
-        List<Link> result = sut.getLinks(userId);
+        List<Link> result = sut.getPrivateLinks(userId);
+
+        // ASSERT
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getPrivateLinks_shouldContainCreateEditionRel_whenUserCanCreateEdition()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateEdition(user)).thenReturn(true);
+
+        // ACT
+        List<Link> result = sut.getPrivateLinks(userId);
 
         // ASSERT
         assertTrue(result.stream()
@@ -64,7 +139,8 @@ class EditionLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldContainFindAllEditionsRel_whenUserCanCreateEdition() {
+    void getPrivateLinks_shouldReturnNonNullHrefs_whenUserCanCreateEdition()
+            throws InstanceNotFoundException {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
@@ -74,36 +150,19 @@ class EditionLinkProviderTest {
         when(policy.canCreateEdition(user)).thenReturn(true);
 
         // ACT
-        List<Link> result = sut.getLinks(userId);
-
-        // ASSERT
-        assertTrue(result.stream()
-                .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
-    }
-
-    @Test
-    void getLinks_shouldReturnNonNullHref_whenUserCanCreateEdition() {
-
-        // ARRANGE
-        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-        User user = mock(User.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreateEdition(user)).thenReturn(true);
-
-        // ACT
-        List<Link> result = sut.getLinks(userId);
+        List<Link> result = sut.getPrivateLinks(userId);
 
         // ASSERT
         result.forEach(l -> assertNotNull(l.getHref()));
     }
 
     // =========================================================
-    // USER WITHOUT PERMISSION
+    // getPrivateLinks — user cannot create edition
     // =========================================================
 
     @Test
-    void getLinks_shouldReturnOneLink_whenUserCannotCreateEdition() {
+    void getPrivateLinks_shouldReturnEmptyList_whenUserCannotCreateEdition()
+            throws InstanceNotFoundException {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
@@ -113,14 +172,15 @@ class EditionLinkProviderTest {
         when(policy.canCreateEdition(user)).thenReturn(false);
 
         // ACT
-        List<Link> result = sut.getLinks(userId);
+        List<Link> result = sut.getPrivateLinks(userId);
 
         // ASSERT
-        assertEquals(1, result.size());
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void getLinks_shouldContainFindAllEditionsRel_whenUserCannotCreateEdition() {
+    void getPrivateLinks_shouldNotContainCreateEditionRel_whenUserCannotCreateEdition()
+            throws InstanceNotFoundException {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
@@ -130,25 +190,7 @@ class EditionLinkProviderTest {
         when(policy.canCreateEdition(user)).thenReturn(false);
 
         // ACT
-        List<Link> result = sut.getLinks(userId);
-
-        // ASSERT
-        assertTrue(result.stream()
-                .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
-    }
-
-    @Test
-    void getLinks_shouldNotContainCreateEditionRel_whenUserCannotCreateEdition() {
-
-        // ARRANGE
-        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-        User user = mock(User.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreateEdition(user)).thenReturn(false);
-
-        // ACT
-        List<Link> result = sut.getLinks(userId);
+        List<Link> result = sut.getPrivateLinks(userId);
 
         // ASSERT
         assertTrue(result.stream()
@@ -156,24 +198,30 @@ class EditionLinkProviderTest {
     }
 
     // =========================================================
-    // USER NOT FOUND
+    // getPrivateLinks — error cases
     // =========================================================
 
     @Test
-    void getLinks_shouldThrowException_whenUserDoesNotExist() {
+    void getPrivateLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
 
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
-        // ACT
-        Exception ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> sut.getLinks(userId)
-        );
+        // ACT + ASSERT
+        assertThrows(InstanceNotFoundException.class,
+                () -> sut.getPrivateLinks(userId));
+    }
 
-        // ASSERT
-        assertEquals("User not found", ex.getMessage());
+    @Test
+    void getPrivateLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.getPrivateLinks(null));
     }
 }

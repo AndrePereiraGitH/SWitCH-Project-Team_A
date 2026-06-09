@@ -11,6 +11,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link EditionAuthorizationPolicy}.
+ *
+ * <p>No changes required for Sprint 7 — policy logic is unchanged.</p>
  */
 class EditionAuthorizationPolicyTest {
 
@@ -20,7 +22,6 @@ class EditionAuthorizationPolicyTest {
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
         // ACT
@@ -36,7 +37,6 @@ class EditionAuthorizationPolicyTest {
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // ACT
@@ -52,7 +52,6 @@ class EditionAuthorizationPolicyTest {
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN, UserRole.NORMAL_USER));
 
         // ACT
@@ -68,7 +67,6 @@ class EditionAuthorizationPolicyTest {
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-
         when(user.getUserRoles()).thenReturn(Set.of());
 
         // ACT
@@ -84,7 +82,6 @@ class EditionAuthorizationPolicyTest {
         // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
-
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // ACT
