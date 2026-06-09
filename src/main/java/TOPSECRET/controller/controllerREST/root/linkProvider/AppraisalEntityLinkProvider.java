@@ -6,6 +6,8 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import java.util.List;
+
+import TOPSECRET.dto.user.UserMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
@@ -47,18 +49,45 @@ public class AppraisalEntityLinkProvider {
      * @param id identifier of the user whose permissions are evaluated
      * @return list of links available for the user
      */
-    public List<Link> getLinks (UserId id){
+    public List<Link> getAdminLinks (UserId id){
 
         List<Link> links = new ArrayList<>();
 
         User user = repository.findByID(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
 
         if(policy.canRegisterAppraisalEntity(user)){
             links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
-                    .registerAppraisalEntity(null, id))
+                    .registerAppraisalEntity(null, id.toString()))
                     .withRel("register-appraisal-entity"));
         }
+
+        return links;
+    }
+
+    /**
+     * Generates a list of public HATEOAS navigation links that are always available,
+     * regardless of the requesting user's identity or permissions.
+     *
+     * <p>The following links are always included:</p>
+     * <ul>
+     *   <li>{@code find-by-id} — retrieve an appraisal entity by its ID.</li>
+     *   <li>{@code find-all} — retrieve all appraisal entities.</li>
+     * </ul>
+     *
+     * @return a list of public {@link Link} instances; never {@code null}, never empty
+     */
+    public List<Link> getPublicLinks() {
+
+        List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
+                .findById(null))
+                .withRel("find-by-id"));
+
+        links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
+                .findAll())
+                .withRel("find-all"));
 
         return links;
     }
