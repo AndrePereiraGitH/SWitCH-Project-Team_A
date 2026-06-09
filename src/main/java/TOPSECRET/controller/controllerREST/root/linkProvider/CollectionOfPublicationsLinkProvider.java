@@ -9,11 +9,14 @@ import org.springframework.hateoas.Link;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.management.InstanceNotFoundException;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Component responsible for dynamically generating HATEOAS links for
@@ -46,30 +49,72 @@ public class CollectionOfPublicationsLinkProvider {
     }
 
     /**
-     * Returns a list of HATEOAS links available to the given user for collection of
-     * publications-related operations.
+     * Returns a list of public HATEOAS links that are always available,
+     * regardless of the requesting user's identity or permissions.
      *
-     * <p>Each link is conditionally included based on whether the user is authorized
-     * to perform the corresponding operation, as evaluated by
-     * {@link CollectionOfPublicationsAuthorizationPolicy}.</p>
+     * <p>The following links are always included:</p>
+     * <ul>
+     *   <li>{@code find-all-public} — retrieve all currently public collections.</li>
+     *   <li>{@code find-public-by-genre} — retrieve public collections filtered by genre.</li>
+     *   <li>{@code find-by-id} — retrieve a collection by its identifier.</li>
+     * </ul>
      *
-     * @param userId the identifier of the authenticated user; must not be {@code null}
-     * @return a list of {@link Link} objects representing the permitted operations;
-     * may be empty if the user has no authorized operations
-     * @throws IllegalArgumentException if no user is found for the given {@code userId}
-     *
+     * @return a list of public {@link Link} instances; never {@code null}, never empty
      */
-    public List<Link> getLinksForCollectionOfPublications(UserId userId) {
+    public List<Link> getPublicLinks() {
+
+        List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                .findAllPublicCollections())
+                .withRel("find-all-public"));
+
+        links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                .findPublicCollectionsByGenreId(null))
+                .withRel("find-public-by-genre"));
+
+        links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                .getCollectionById(null))
+                .withRel("find-by-id"));
+
+        return links;
+    }
+
+    /**
+     * Returns a list of owner-scoped HATEOAS links based on the requesting
+     * user's permissions.
+     *
+     * <p>The following links are conditionally included:</p>
+     * <ul>
+     *   <li>{@code create-collection-of-publications} — included when the user
+     *       is authorized to create collections.</li>
+     *   <li>{@code find-own-collections} — included when the user is authorized
+     *       to view their own collections.</li>
+     * </ul>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a list of owner {@link Link} instances; never {@code null}, may be empty
+     * @throws NullPointerException      if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     */
+    public List<Link> getOwnerLinks(UserId userId) throws InstanceNotFoundException {
+        Objects.requireNonNull(userId, "userId cannot be null");
 
         List<Link> links = new ArrayList<>();
 
         User user = userRepo.findByID(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + userId));
 
         if (collectionPolicy.canCreateCollectionOfPublications(user)) {
             links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
                     .createCollectionOfPublications(null, null))
                     .withRel("create-collection-of-publications"));
+        }
+
+        if (collectionPolicy.canViewOwnCollections(user)) {
+            links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .findCollectionsByOwnerId(null))
+                    .withRel("find-own-collections"));
         }
 
         return links;
