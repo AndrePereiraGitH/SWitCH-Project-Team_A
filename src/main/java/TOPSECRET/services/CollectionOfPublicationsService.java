@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 
 /**
@@ -194,6 +195,7 @@ public class CollectionOfPublicationsService {
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
      * @throws NullPointerException      if {@code collectionId} or {@code userId} is {@code null}
      */
+    @Transactional
     public boolean makeCollectionPublic(CollectionOfPublicationsId collectionId, UserId userId)
             throws InstanceNotFoundException, AccessDeniedException {
 
@@ -246,6 +248,7 @@ public class CollectionOfPublicationsService {
      *         the collection or is not its owner
      */
 
+    @Transactional
     public boolean makeCollectionPrivate(CollectionOfPublicationsId collectionId, UserId userId)
             throws InstanceNotFoundException, AccessDeniedException {
 
@@ -293,6 +296,7 @@ public class CollectionOfPublicationsService {
      *                                   or does not own the collection
      * @throws InstanceNotFoundException if no collection is found with the given {@code collectionId}
      */
+    @Transactional
     public boolean makeCollectionPublicUntil(
             CollectionOfPublicationsId collectionId, LocalDate publicUntil, UserId userId)
             throws InstanceNotFoundException, AccessDeniedException {
