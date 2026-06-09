@@ -258,7 +258,7 @@ public class CollectionOfPublicationsService {
             throw new AccessDeniedException("You do not have permission to modify the access to this Collection");
         }
 
-        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId);
+        CollectionOfPublications collection = getCollection(collectionId);
 
         if (!collection.getOwnerId().equals(userId)) {
             throw new AccessDeniedException(
