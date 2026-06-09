@@ -2,10 +2,15 @@ package TOPSECRET.dto.listing;
 
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import org.springframework.stereotype.Service;
@@ -44,20 +49,6 @@ public class ListingMapper {
         );
     }
 
-    /**
-     * Converts a {@link Listing} domain object and its related bibliographical data
-     * into a {@link ListingResponseExploreDTO}, used by the frontend Explore page.
-     *
-     * <p>This DTO contains the listing information required to display and filter
-     * sale items in the Explore page, including listing title, authors, genres,
-     * price, condition and sale type.</p>
-     *
-     * @param listing the listing domain object to be converted
-     * @param bd the bibliographical data associated with the listed publication
-     * @param authors the list of author names associated with the publication
-     * @param condition the condition of the listed publication sample
-     * @return a {@link ListingResponseExploreDTO} containing the data required by the Explore page
-     */
     public static ListingResponseExploreDTO toResponseExploreDTO(Listing listing, List<BibliographicalData> bd, List<String> authors, Condition condition) {
         return new ListingResponseExploreDTO(
                 listing.id().getId(),
@@ -66,7 +57,92 @@ public class ListingMapper {
                 bd.get(0).getGenres().stream().map(GenreId::getID).toList(),
                 listing.getPrice().getPrice().toString(),
                 condition.getDescription(),
-                listing.getSaleType().toString()
+                listing.getSaleType().toString(),
+                listing.getPictures().stream().findFirst().map(Picture::getPicture).orElse("")
+        );
+    }
+
+    /**
+     * Converts a listing and its related domain entities into a {@link ListingDetailsDTO}.
+     *
+     * <p>This method aggregates information from the listing, publication samples,
+     * bibliographical data, editions, authors, genres, and publishers in order to
+     * build a detailed representation suitable for API responses.</p>
+     *
+     * <p>When multiple editions, publication samples, or publishers are provided,
+     * only the first available instance is used to populate edition-specific and
+     * publisher-specific fields.</p>
+     *
+     * <p>Missing optional information is replaced with sensible default values
+     * such as {@code "N/A"} or {@code "Unknown"}.</p>
+     *
+     * @param listing the listing to convert
+     * @param bibliographicalDatas the bibliographical data associated with the listing
+     * @param pubSamples the publication samples associated with the listing
+     * @param editions the editions associated with the publication samples
+     * @param authors the authors associated with the bibliographical data
+     * @param genres the genres associated with the bibliographical data
+     * @param publishers the publishers associated with the editions
+     * @return a {@link ListingDetailsDTO} containing the aggregated listing details
+     */
+    public static ListingDetailsDTO toListingDetailsDTO(
+            Listing listing,
+            List<BibliographicalData> bibliographicalDatas,
+            List<PublicationSample> pubSamples,
+            List<Edition> editions,
+            List<Author> authors,
+            List<Genre> genres,
+            List<Publisher> publishers
+    ) {
+        Edition edition = editions.stream()
+                .findFirst()
+                .orElse(null);
+
+        Publisher publisher = publishers.stream()
+                .findFirst()
+                .orElse(null);
+
+        PublicationSample sample = pubSamples.stream()
+                .findFirst()
+                .orElse(null);
+
+        return new ListingDetailsDTO(
+                listing.id().getId(),
+                listing.getListingTitle(),
+                authors.stream()
+                        .map(Author::getName)
+                        .distinct()
+                        .toList(),
+                genres.stream()
+                        .map(Genre::getGenreType)
+                        .distinct()
+                        .toList(),
+                listing.getPrice().getPrice(),
+                sample != null && sample.getCondition() != null
+                        ? sample.getCondition().toString()
+                        : "Unknown",
+                listing.getSaleType().toString(),
+                listing.getPictures().stream()
+                        .findFirst()
+                        .map(Picture::getPicture)
+                        .orElse(""),
+                listing.getShortDescription(),
+                listing.getSellerId().getUserId(),
+                publisher != null
+                        ? publisher.getName()
+                        : "N/A",
+                edition != null && edition.getCode() != null
+                        ? edition.getCode().toString()
+                        : "N/A",
+                edition != null && edition.getEditionDate() != null
+                        ? edition.getEditionDate().getYear()
+                        : null,
+                edition != null && edition.getPhysicalAttributes() != null
+                        ? edition.getPhysicalAttributes().getNumberOfPages()
+                        : null,
+                edition != null && edition.getEditionLanguage() != null
+                        ? edition.getEditionLanguage().getDisplayLanguage()
+                        : "N/A"
         );
     }
 

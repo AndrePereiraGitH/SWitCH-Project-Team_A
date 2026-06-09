@@ -22,16 +22,13 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenInstantiatingUtilityClass() throws Exception {
 
-        // ARRANGE
         Constructor<PublisherMapper> constructor =
                 PublisherMapper.class.getDeclaredConstructor();
         constructor.setAccessible(true);
 
-        // ACT
         InvocationTargetException ex =
                 assertThrows(InvocationTargetException.class, constructor::newInstance);
 
-        // ASSERT
         assertInstanceOf(UnsupportedOperationException.class, ex.getCause());
         assertEquals("Utility class", ex.getCause().getMessage());
     }
@@ -39,18 +36,15 @@ class PublisherMapperTest {
     @Test
     void shouldConvertPublisherToDTO() {
 
-        // ARRANGE
         Publisher publisher = mock(Publisher.class);
         PublisherID publisherID = mock(PublisherID.class);
 
         when(publisher.getName()).thenReturn("Test Publisher");
         when(publisher.id()).thenReturn(publisherID);
-        when(publisherID.toString()).thenReturn("PUB-1");
+        when(publisherID.getPublisherId()).thenReturn("PUB-1");
 
-        // ACT
         ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
-        // ASSERT
         assertEquals("Test Publisher", result.getName());
         assertEquals("PUB-1", result.getPublisherId());
     }
@@ -58,7 +52,6 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenPublisherIsNull() {
 
-        // ACT + ASSERT
         NullPointerException exception =
                 assertThrows(
                         NullPointerException.class,
@@ -71,7 +64,6 @@ class PublisherMapperTest {
     @Test
     void shouldConvertListOfPublishersToDTOList() {
 
-        // ARRANGE
         Publisher p1 = mock(Publisher.class);
         Publisher p2 = mock(Publisher.class);
 
@@ -84,16 +76,14 @@ class PublisherMapperTest {
         when(p1.id()).thenReturn(id1);
         when(p2.id()).thenReturn(id2);
 
-        when(id1.toString()).thenReturn("PUB-1");
-        when(id2.toString()).thenReturn("PUB-2");
+        when(id1.getPublisherId()).thenReturn("PUB-1");
+        when(id2.getPublisherId()).thenReturn("PUB-2");
 
         List<Publisher> publishers = List.of(p1, p2);
 
-        // ACT
         List<ResponsePublisherDTO> result =
                 PublisherMapper.toDTOList(publishers);
 
-        // ASSERT
         assertEquals(2, result.size());
         assertEquals("Publisher One", result.get(0).getName());
         assertEquals("Publisher Two", result.get(1).getName());
@@ -102,7 +92,6 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenListOfPublishersIsNull() {
 
-        // ACT + ASSERT
         NullPointerException exception =
                 assertThrows(
                         NullPointerException.class,
@@ -115,17 +104,15 @@ class PublisherMapperTest {
     @Test
     void shouldThrowExceptionWhenListContainsNullPublisher() {
 
-        // ARRANGE
         Publisher validPublisher = mock(Publisher.class);
         PublisherID id = mock(PublisherID.class);
 
         when(validPublisher.getName()).thenReturn("Test");
         when(validPublisher.id()).thenReturn(id);
-        when(id.toString()).thenReturn("PUB-1");
+        when(id.getPublisherId()).thenReturn("PUB-1");
 
         List<Publisher> publishers = Arrays.asList(validPublisher, null);
 
-        // ACT + ASSERT
         NullPointerException exception =
                 assertThrows(
                         NullPointerException.class,
@@ -138,19 +125,16 @@ class PublisherMapperTest {
     @Test
     void shouldReturnImmutableList() {
 
-        // ARRANGE
         Publisher publisher = mock(Publisher.class);
         PublisherID id = mock(PublisherID.class);
 
         when(publisher.getName()).thenReturn("Publisher");
         when(publisher.id()).thenReturn(id);
-        when(id.toString()).thenReturn("PUB-1");
+        when(id.getPublisherId()).thenReturn("PUB-1");
 
-        // ACT
         List<ResponsePublisherDTO> result =
                 PublisherMapper.toDTOList(List.of(publisher));
 
-        // ASSERT
         assertThrows(
                 UnsupportedOperationException.class,
                 () -> result.add(mock(ResponsePublisherDTO.class))
@@ -160,7 +144,6 @@ class PublisherMapperTest {
     @Test
     void shouldThrowNullPointerExceptionWhenDTOIsNullInToContact() {
 
-        // ACT + ASSERT
         assertThrows(
                 NullPointerException.class,
                 () -> PublisherMapper.toContact(null)
@@ -170,7 +153,6 @@ class PublisherMapperTest {
     @Test
     void shouldConvertDTOToContact() {
 
-        // ARRANGE
         RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
 
         when(pubDTO.street()).thenReturn("Main St");
@@ -181,22 +163,18 @@ class PublisherMapperTest {
         when(pubDTO.extension()).thenReturn("101");
         when(pubDTO.email()).thenReturn("test@example.com");
 
-        // ACT
         Contact result = PublisherMapper.toContact(pubDTO);
 
-        // ASSERT
         assertNotNull(result);
     }
 
     @Test
     void shouldThrowWhenCityIdIsNull() {
 
-        // ARRANGE
         RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
 
         when(pubDTO.cityId()).thenReturn(null);
 
-        // ACT + ASSERT
         assertThrows(
                 IllegalArgumentException.class,
                 () -> PublisherMapper.toContact(pubDTO)
@@ -206,7 +184,6 @@ class PublisherMapperTest {
     @Test
     void shouldThrowWhenEmailIsNull() {
 
-        // ARRANGE
         RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
 
         when(pubDTO.street()).thenReturn("Main St");
@@ -217,7 +194,6 @@ class PublisherMapperTest {
         when(pubDTO.extension()).thenReturn("101");
         when(pubDTO.email()).thenReturn(null);
 
-        // ACT + ASSERT
         assertThrows(
                 NullPointerException.class,
                 () -> PublisherMapper.toContact(pubDTO)
@@ -227,7 +203,6 @@ class PublisherMapperTest {
     @Test
     void shouldThrowWhenEmailHasNoAtSign() {
 
-        // ARRANGE
         RequestPublisherDTO pubDTO = mock(RequestPublisherDTO.class);
 
         when(pubDTO.street()).thenReturn("Main St");
@@ -238,7 +213,6 @@ class PublisherMapperTest {
         when(pubDTO.extension()).thenReturn("101");
         when(pubDTO.email()).thenReturn("invalidemail");
 
-        // ACT + ASSERT
         assertThrows(
                 ArrayIndexOutOfBoundsException.class,
                 () -> PublisherMapper.toContact(pubDTO)
@@ -248,13 +222,10 @@ class PublisherMapperTest {
     @Test
     void toPublisherId_shouldReturnPublisherID_whenValidString() {
 
-        // ARRANGE
         String raw = "pub-123";
 
-        // ACT
         PublisherID result = PublisherMapper.toPublisherId(raw);
 
-        // ASSERT
         assertNotNull(result);
         assertEquals(raw, result.getPublisherId());
     }
@@ -274,13 +245,10 @@ class PublisherMapperTest {
     @Test
     void toUserId_shouldReturnUserId_whenValidString() {
 
-        // ARRANGE
         String raw = "user-456";
 
-        // ACT
         UserId result = PublisherMapper.toUserId(raw);
 
-        // ASSERT
         assertNotNull(result);
         assertEquals(raw, result.getUserId());
     }

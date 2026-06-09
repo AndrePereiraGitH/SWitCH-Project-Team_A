@@ -14,11 +14,9 @@ vi.mock("react-router-dom", async (importOriginal) => {
 });
 
 // Mock PublicationsContext
-const mockGetAllPublications = vi.fn();
+const mockUsePublications = vi.fn();
 vi.mock("../components/PublicationsContext", () => ({
-    usePublications: () => ({
-        getAllPublications: mockGetAllPublications
-    }),
+    usePublications: () => mockUsePublications(),
 }));
 
 // Mock ListsContext
@@ -46,8 +44,8 @@ const mockPublications = [
     {
         id: "1",
         title: "The Lord of the Rings",
-        author: "J.R.R. Tolkien",
-        genre: "Fantasy",
+        authors: ["J.R.R. Tolkien"], // Updated to match component expecting array
+        genres: ["Fantasy"],         // Updated to match component expecting array
         type: "book",
         isbn: "9780261103573",
         condition: "good",
@@ -56,8 +54,8 @@ const mockPublications = [
     {
         id: "2",
         title: "Dune",
-        author: "Frank Herbert",
-        genre: "Science Fiction",
+        authors: ["Frank Herbert"],   // Updated to match component expecting array
+        genres: ["Science Fiction"],  // Updated to match component expecting array
         type: "book",
         isbn: "9780441013593",
         condition: "veryGood",
@@ -76,7 +74,12 @@ function renderMyPublications() {
 describe("MyPublications", () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        mockGetAllPublications.mockReturnValue(mockPublications);
+        // Setup default mock return structure
+        mockUsePublications.mockReturnValue({
+            publications: mockPublications,
+            loading: false,
+            error: null,
+        });
     });
 
     test("renders page title and publications", () => {
@@ -88,10 +91,10 @@ describe("MyPublications", () => {
     });
 
     test("shows empty state when no publications exist", () => {
-        mockGetAllPublications.mockReturnValue([]);
+        mockUsePublications.mockReturnValue({ publications: [], loading: false, error: null });
         renderMyPublications();
 
-        expect(screen.getByText("No books found")).toBeInTheDocument();
+        expect(screen.getByText("No publications found")).toBeInTheDocument();
         expect(screen.getByText("Add First Publication")).toBeInTheDocument();
     });
 
@@ -104,7 +107,7 @@ describe("MyPublications", () => {
     });
 
     test("navigates to add publication when clicking Add First Publication in empty state", () => {
-        mockGetAllPublications.mockReturnValue([]);
+        mockUsePublications.mockReturnValue({ publications: [], loading: false, error: null });
         renderMyPublications();
 
         fireEvent.click(screen.getByText("Add First Publication"));
@@ -131,19 +134,24 @@ describe("MyPublications", () => {
     });
 
     test("filters publications by type", () => {
-        mockGetAllPublications.mockReturnValue([
-            ...mockPublications,
-            {
-                id: "3",
-                title: "National Geographic",
-                author: "Various",
-                genre: "Science",
-                type: "magazine",
-                isbn: "12345678",
-                condition: "good",
-                price: 5,
-            },
-        ]);
+        mockUsePublications.mockReturnValue({
+            publications: [
+                ...mockPublications,
+                {
+                    id: "3",
+                    title: "National Geographic",
+                    authors: ["Various"], // Updated to match component expecting array
+                    genres: ["Science"],  // Updated to match component expecting array
+                    type: "magazine",
+                    isbn: "12345678",
+                    condition: "good",
+                    price: 5,
+                },
+            ],
+            loading: false,
+            error: null,
+        });
+
         renderMyPublications();
 
         const typeSelect = screen.getByDisplayValue("All Types");

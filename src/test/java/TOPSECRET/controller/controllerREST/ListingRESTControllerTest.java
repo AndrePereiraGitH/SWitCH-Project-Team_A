@@ -3,13 +3,17 @@ package TOPSECRET.controller.controllerREST;
 import TOPSECRET.controller.controllerREST.root.linkProvider.ListingLinkProvider;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
+import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import TOPSECRET.services.*;
@@ -52,6 +56,13 @@ class ListingRESTControllerTest {
 
     @Mock
     private AuthorService authorService;
+
+
+    @Mock
+    private GenreService genreService;
+
+    @Mock
+    private PublisherService publisherService;
 
     @Mock
     private ListingLinkProvider listingLinkProvider;
@@ -518,8 +529,8 @@ class ListingRESTControllerTest {
     }
 
     // ============================================================
-    // --------------  findById  -----------------------------------
-    // ============================================================
+// --------------  findById  ----------------------------------
+// ============================================================
 
     @Test
     void findById_shouldReturnOkWithDto_whenListingExists()
@@ -527,42 +538,82 @@ class ListingRESTControllerTest {
 
         // Arrange
         String id = "listing-1";
-        UserId userId = mock(UserId.class);
-        String userId1 = "userid";
+        String userIdParam = "userid";
 
+        UserId userId = mock(UserId.class);
         ListingId listingId = mock(ListingId.class);
+
         Listing listing = mock(Listing.class);
+
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
         PublicationSample publicationSample = mock(PublicationSample.class);
+
         BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
         BibliographicalData bibliographicalData = mock(BibliographicalData.class);
-        ListingResponseDTO dto = mock(ListingResponseDTO.class);
+
+        AuthorId authorId = mock(AuthorId.class);
+        Author author = mock(Author.class);
+
+        GenreId genreId = mock(GenreId.class);
+        Genre genre = mock(Genre.class);
+
+        EditionId editionId = mock(EditionId.class);
+        Edition edition = mock(Edition.class);
+
+        PublisherID publisherId = mock(PublisherID.class);
+        Publisher publisher = mock(Publisher.class);
+
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
         when(listingService.findById(listingId)).thenReturn(listing);
+
         when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
         when(publicationService.findById(publicationSampleId)).thenReturn(publicationSample);
+
         when(publicationSample.getBibliographicalDataID()).thenReturn(bibliographicalDataId);
         when(biblioDataService.findById(bibliographicalDataId)).thenReturn(bibliographicalData);
+
+        when(bibliographicalData.getAuthors()).thenReturn(List.of(authorId));
+        when(authorService.findById(authorId)).thenReturn(author);
+
+        when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
+        when(genreService.findById(genreId)).thenReturn(genre);
+
+        when(publicationSample.getEditionID()).thenReturn(editionId);
+        when(editionService.findById(editionId)).thenReturn(edition);
+
+        when(edition.getPublisherID()).thenReturn(publisherId);
+        when(publisherService.findById(publisherId)).thenReturn(publisher);
+
         when(listingLinkProvider.getLinksForListings(userId)).thenReturn(List.of());
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
-            mockedMapper.when(() -> ListingMapper.toUserId(userId1))
+
+            mockedMapper.when(() -> ListingMapper.toUserId(userIdParam))
                     .thenReturn(userId);
+
             mockedMapper.when(() -> ListingMapper.toListingId(id))
                     .thenReturn(listingId);
-            mockedMapper.when(() -> ListingMapper.toResponseDTO(
+
+            mockedMapper.when(() -> ListingMapper.toListingDetailsDTO(
                             eq(listing),
-                            eq(List.of(bibliographicalData))
+                            eq(List.of(bibliographicalData)),
+                            eq(List.of(publicationSample)),
+                            eq(List.of(edition)),
+                            eq(List.of(author)),
+                            eq(List.of(genre)),
+                            eq(List.of(publisher))
                     ))
                     .thenReturn(dto);
 
             // Act
-            ResponseEntity<ListingResponseDTO> response =
-                    controller.findById(id, userId1);
+            ResponseEntity<ListingDetailsDTO> response =
+                    controller.findById(id, userIdParam);
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertSame(dto, response.getBody());
+
         }
     }
 
@@ -571,13 +622,16 @@ class ListingRESTControllerTest {
 
         // Arrange
         String id = "listing-1";
+        String userIdParam = "userId";
+
         UserId userId = mock(UserId.class);
-        String userId1 = "userId";
         ListingId listingId = mock(ListingId.class);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
-            mockedMapper.when(() -> ListingMapper.toUserId(userId1))
+
+            mockedMapper.when(() -> ListingMapper.toUserId(userIdParam))
                     .thenReturn(userId);
+
             mockedMapper.when(() -> ListingMapper.toListingId(id))
                     .thenReturn(listingId);
 
@@ -585,8 +639,8 @@ class ListingRESTControllerTest {
                     .thenThrow(new EntityNotFoundException());
 
             // Act
-            ResponseEntity<ListingResponseDTO> response =
-                    controller.findById(id, userId1);
+            ResponseEntity<ListingDetailsDTO> response =
+                    controller.findById(id, userIdParam);
 
             // Assert
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -601,13 +655,16 @@ class ListingRESTControllerTest {
 
         // Arrange
         String id = "listing-1";
+        String userIdParam = "userId";
+
         UserId userId = mock(UserId.class);
-        String userId1 = "userId";
         ListingId listingId = mock(ListingId.class);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
-            mockedMapper.when(() -> ListingMapper.toUserId(userId1))
+
+            mockedMapper.when(() -> ListingMapper.toUserId(userIdParam))
                     .thenReturn(userId);
+
             mockedMapper.when(() -> ListingMapper.toListingId(id))
                     .thenReturn(listingId);
 
@@ -615,8 +672,8 @@ class ListingRESTControllerTest {
                     .thenThrow(new RuntimeException());
 
             // Act
-            ResponseEntity<ListingResponseDTO> response =
-                    controller.findById(id, userId1);
+            ResponseEntity<ListingDetailsDTO> response =
+                    controller.findById(id, userIdParam);
 
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -626,10 +683,20 @@ class ListingRESTControllerTest {
 
     @Test
     void findById_shouldReturnBadRequest_whenListingIdIsInvalid() {
-        ResponseEntity<ListingResponseDTO> response =
-                controller.findById(null, "user-001");
 
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+
+            mockedMapper.when(() -> ListingMapper.toListingId(null))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response =
+                    controller.findById(null, "user-001");
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
     }
     // ============================================================
     // --------------  getAllDirectSaleByGenre  -------------------

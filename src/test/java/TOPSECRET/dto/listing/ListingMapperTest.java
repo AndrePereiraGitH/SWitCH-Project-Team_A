@@ -1,10 +1,16 @@
 package TOPSECRET.dto.listing;
 
+import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
+import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import org.junit.jupiter.api.Test;
@@ -12,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -70,7 +77,7 @@ class ListingMapperTest {
 
         // act
 
-        ListingResponseDTO result = mapper.toResponseDTO(listing, List.of());
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, List.of());
 
         // assert
 
@@ -362,5 +369,145 @@ class ListingMapperTest {
     void toPublisherId_shouldThrow_whenPublisherIdIsNull() {
         // act + assert
         assertThrows(Exception.class, () -> ListingMapper.toPublisherId(null));
+    }
+
+    // ============================================================
+// --------------  toListingDetailsDTO  ------------------------
+// ============================================================
+
+    @Test
+    void toListingDetailsDTO_shouldMapAllFieldsCorrectly() {
+        // Arrange
+        Listing listing = mock(Listing.class);
+        ListingId listingId = mock(ListingId.class);
+        UserId sellerId = mock(UserId.class);
+        Price price = mock(Price.class);
+        Picture picture = mock(Picture.class);
+
+        PublicationSample sample = mock(PublicationSample.class);
+        Edition edition = mock(Edition.class);
+        Publisher publisher = mock(Publisher.class);
+        Author author = mock(Author.class);
+        Genre genre = mock(Genre.class);
+
+        Code code = mock(Code.class);
+        PhysicalAttributes physicalAttributes = mock(PhysicalAttributes.class);
+
+        when(listing.id()).thenReturn(listingId);
+        when(listingId.getId()).thenReturn("listing-1");
+
+        when(listing.getListingTitle()).thenReturn("Clean Code");
+
+        when(author.getName()).thenReturn("Robert C. Martin");
+        when(genre.getGenreType()).thenReturn("Software");
+
+        when(listing.getPrice()).thenReturn(price);
+        when(price.getPrice()).thenReturn(new BigDecimal("24.99"));
+
+        when(sample.getCondition()).thenReturn(Condition.GOOD);
+
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        when(picture.getPicture()).thenReturn("image.jpg");
+        when(listing.getPictures()).thenReturn(List.of(picture));
+
+        when(listing.getShortDescription()).thenReturn("A book about clean code.");
+
+        when(listing.getSellerId()).thenReturn(sellerId);
+        when(sellerId.getUserId()).thenReturn("user-1");
+
+        when(publisher.getName()).thenReturn("Prentice Hall");
+
+        when(edition.getCode()).thenReturn(code);
+        when(code.toString()).thenReturn("9780132350884");
+
+        when(edition.getEditionDate()).thenReturn(LocalDate.of(2008, 8, 1));
+
+        when(edition.getPhysicalAttributes()).thenReturn(physicalAttributes);
+        when(physicalAttributes.getNumberOfPages()).thenReturn(464);
+
+        when(edition.getEditionLanguage()).thenReturn(Locale.ENGLISH);
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing,
+                List.of(),
+                List.of(sample),
+                List.of(edition),
+                List.of(author),
+                List.of(genre),
+                List.of(publisher)
+        );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("listing-1", result.getId());
+        assertEquals("Clean Code", result.getListingTitle());
+        assertEquals(List.of("Robert C. Martin"), result.getAuthors());
+        assertEquals(List.of("Software"), result.getGenre());
+        assertEquals(new BigDecimal("24.99"), result.getPrice());
+        assertEquals(Condition.GOOD.toString(), result.getCondition());
+        assertEquals(SaleType.DIRECT_SALE.toString(), result.getSaleType());
+        assertEquals("image.jpg", result.getPicture());
+        assertEquals("A book about clean code.", result.getShortDescription());
+        assertEquals("user-1", result.getSellerId());
+        assertEquals("Prentice Hall", result.getPublisher());
+        assertEquals("9780132350884", result.getIsbn());
+        assertEquals(2008, result.getYear());
+        assertEquals(464, result.getPages());
+        assertEquals(Locale.ENGLISH.getDisplayLanguage(), result.getLanguage());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseDefaultValues_whenOptionalDataIsMissing() {
+        // Arrange
+        Listing listing = mock(Listing.class);
+        ListingId listingId = mock(ListingId.class);
+        UserId sellerId = mock(UserId.class);
+        Price price = mock(Price.class);
+
+        when(listing.id()).thenReturn(listingId);
+        when(listingId.getId()).thenReturn("listing-1");
+
+        when(listing.getListingTitle()).thenReturn("Listing title");
+
+        when(listing.getPrice()).thenReturn(price);
+        when(price.getPrice()).thenReturn(new BigDecimal("10.00"));
+
+        when(listing.getSaleType()).thenReturn(SaleType.AUCTION);
+        when(listing.getPictures()).thenReturn(List.of());
+        when(listing.getShortDescription()).thenReturn("Short description");
+
+        when(listing.getSellerId()).thenReturn(sellerId);
+        when(sellerId.getUserId()).thenReturn("seller-1");
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing,
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of()
+        );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("listing-1", result.getId());
+        assertEquals("Listing title", result.getListingTitle());
+        assertEquals(List.of(), result.getAuthors());
+        assertEquals(List.of(), result.getGenre());
+        assertEquals(new BigDecimal("10.00"), result.getPrice());
+        assertEquals("Unknown", result.getCondition());
+        assertEquals(SaleType.AUCTION.toString(), result.getSaleType());
+        assertEquals("", result.getPicture());
+        assertEquals("Short description", result.getShortDescription());
+        assertEquals("seller-1", result.getSellerId());
+        assertEquals("N/A", result.getPublisher());
+        assertEquals("N/A", result.getIsbn());
+        assertNull(result.getYear());
+        assertNull(result.getPages());
+        assertEquals("N/A", result.getLanguage());
     }
 }

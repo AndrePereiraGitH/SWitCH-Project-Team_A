@@ -3,14 +3,17 @@ package TOPSECRET.controller.controllerREST;
 import TOPSECRET.controller.controllerREST.root.linkProvider.ListingLinkProvider;
 import TOPSECRET.domain.Author.Author;
 import TOPSECRET.domain.BibliographicalData.BibliographicalData;
+import TOPSECRET.domain.Edition.Edition;
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
+import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
+import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import TOPSECRET.services.*;
@@ -51,6 +54,8 @@ public class ListingRESTController {
     private final AuthorService authorService;
     private final GenreService genreService;
     private final ListingLinkProvider listingLinkProvider;
+    private final PublisherService publisherService;
+    private final ListingMapper listingMapper;
 
     /**
      * Creates a new {@code ListingRESTController}.
@@ -62,7 +67,7 @@ public class ListingRESTController {
      * @param listingLinkProvider the provider used to generate listing HATEOAS links
      */
     @Autowired
-    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider) {
+    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService, ListingMapper listingMapper) {
         this.biblioDataService = biblioDataService;
         this.publicationService = publicationService;
         this.listingService = listingService;
@@ -70,7 +75,8 @@ public class ListingRESTController {
         this.authorService = authorService;
         this.genreService = genreService;
         this.listingLinkProvider = listingLinkProvider;
-
+        this.publisherService = publisherService;
+        this.listingMapper = listingMapper;
     }
 
     /**
@@ -90,13 +96,16 @@ public class ListingRESTController {
     @PostMapping("")
     public ResponseEntity<ListingResponseDTO> createListing(@RequestBody ListingRequestDTO listingRequestDTO, @RequestParam String userId) {
 
-        UserId userIdVO = ListingMapper.toUserId(userId);
-        List<PublicationSampleId> itemsId = listingRequestDTO.getPublicationIds().stream().map(ListingMapper::toPublicationId).toList();
-        SaleType saleType = ListingMapper.toSaleType(listingRequestDTO.getSaleType());
-        Price price = ListingMapper.toPrice(listingRequestDTO.getPrice());
-        List<Picture> pictures = listingRequestDTO.getPictures().stream().map(ListingMapper::toPicture).toList();
-
+        System.out.println("DTO = " + listingRequestDTO);
         try {
+
+            UserId userIdVO = ListingMapper.toUserId(userId);
+            List<PublicationSampleId> itemsId = listingRequestDTO.getPublicationIds().stream().map(ListingMapper::toPublicationId).toList();
+            SaleType saleType = ListingMapper.toSaleType(listingRequestDTO.getSaleType());
+            Price price = ListingMapper.toPrice(listingRequestDTO.getPrice());
+            List<Picture> pictures = listingRequestDTO.getPictures().stream().map(ListingMapper::toPicture).toList();
+
+
             Listing listing = listingService.createAndSave(
                     listingRequestDTO.getListingTitle(),
                     itemsId,
@@ -144,11 +153,14 @@ public class ListingRESTController {
      *         or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ListingResponseDTO> findById(@PathVariable String id, @RequestParam String userId) {
-
+    public ResponseEntity<ListingDetailsDTO> findById(
+            @PathVariable String id,
+            @RequestParam String userId
+    ) {
         try {
             ListingId listingId = ListingMapper.toListingId(id);
             UserId userIdVO = ListingMapper.toUserId(userId);
+
             Listing listing = listingService.findById(listingId);
 
             List<PublicationSample> pubSamples = listing.getItemsId().stream()
@@ -157,13 +169,47 @@ public class ListingRESTController {
 
             List<BibliographicalData> bibliographicalDatas = getBibliographicalData(pubSamples);
 
-            ListingResponseDTO dto = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
+            List<Author> authors = bibliographicalDatas.stream()
+                    .flatMap(bd -> bd.getAuthors().stream())
+                    .distinct()
+                    .map(authorService::findById)
+                    .toList();
+
+            List<Genre> genres = bibliographicalDatas.stream()
+                    .flatMap(bd -> bd.getGenres().stream())
+                    .distinct()
+                    .map(genreService::findById)
+                    .toList();
+
+            List<Edition> editions = pubSamples.stream()
+                    .map(pub -> editionService.findById(pub.getEditionID()))
+                    .toList();
+
+            List<Publisher> publishers = editions.stream()
+                    .map(Edition::getPublisherID)
+                    .distinct()
+                    .map(publisherService::findById)
+                    .toList();
+
+            ListingDetailsDTO dto = ListingMapper.toListingDetailsDTO(
+                    listing,
+                    bibliographicalDatas,
+                    pubSamples,
+                    editions,
+                    authors,
+                    genres,
+                    publishers
+            );
 
             List<Link> links = new ArrayList<>(listingLinkProvider.getLinksForListings(userIdVO));
-            links.add(linkTo(methodOn(ListingRESTController.class).findById(id, userId)).withSelfRel());
+            links.add(linkTo(methodOn(ListingRESTController.class)
+                    .findById(id, userId))
+                    .withSelfRel());
+
             dto.add(links);
 
-            return ResponseEntity.status(HttpStatus.OK).body(dto);
+            return ResponseEntity.ok(dto);
+
         } catch (EntityNotFoundException | InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
@@ -173,7 +219,6 @@ public class ListingRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 
     /**

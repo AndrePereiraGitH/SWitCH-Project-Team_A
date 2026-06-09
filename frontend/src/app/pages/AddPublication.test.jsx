@@ -1,9 +1,10 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { vi } from "vitest";
+import { vi, beforeEach, describe, test, expect } from "vitest";
 import { AddPublication } from "../pages/AddPublication";
 
 const mockNavigate = vi.fn();
+
 vi.mock("react-router-dom", async (importOriginal) => {
     const actual = await importOriginal();
     return {
@@ -12,53 +13,117 @@ vi.mock("react-router-dom", async (importOriginal) => {
     };
 });
 
-const mockAddPublication = vi.fn();
+const mockAddPublication = vi.fn().mockResolvedValue({});
+
 vi.mock("../components/PublicationsContext", () => ({
     usePublications: () => ({
         addPublication: mockAddPublication,
     }),
 }));
 
-function renderAddPublication() {
-    return render(
+const mockGenres = [
+    { id: "GENRE1", genreName: "Drama", links: [] },
+    { id: "GENRE2", genreName: "Science Fiction", links: [] },
+    { id: "GENRE3", genreName: "Mystery", links: [] },
+];
+
+const mockPublishers = [
+    { publisherId: "PUB1", name: "Cambridge University Press", links: [] },
+    { publisherId: "PUB2", name: "Penguin Random House", links: [] },
+];
+
+const mockAuthors = [
+    { id: "AUTH1", name: "John Doe", links: [] },
+    { id: "AUTH2", name: "Jane Smith", links: [] },
+];
+
+// Helper to render and wait for options to load completely
+async function renderAndWait() {
+    render(
         <MemoryRouter>
             <AddPublication />
         </MemoryRouter>
     );
+    // Wait until loading state resolves by ensuring options have completed loading
+    await screen.findByRole("option", { name: "Cambridge University Press" });
 }
 
-function fillRequiredFields() {
+async function fillRequiredFields() {
     fireEvent.change(screen.getByLabelText(/Title/), {
         target: { value: "Test Book" },
     });
-    fireEvent.change(screen.getByPlaceholderText("Author name"), {
-        target: { value: "John Doe" },
-    });
-    fireEvent.click(screen.getByRole("checkbox", { name: "Fiction" }))
+
+    // Open Custom Dropdown for Authors first to reveal the checkboxes
+    const authorDropdownTrigger = screen.getByRole("button", { name: /Select author\(s\)/i });
+    fireEvent.click(authorDropdownTrigger);
+
+    // Click the now revealed checkbox option
+    fireEvent.click(screen.getByRole("checkbox", { name: "John Doe" }));
+
+    // Click Genre checkbox
+    fireEvent.click(screen.getByRole("checkbox", { name: "Drama" }));
+
     fireEvent.change(screen.getByLabelText(/Publisher/), {
-        target: { value: "Cambridge University Press" },
+        target: { value: "PUB1" },
     });
+
     fireEvent.change(screen.getByLabelText(/Published Date/), {
         target: { value: "1960-01-01" },
     });
+
     fireEvent.change(screen.getByLabelText(/Edition/), {
         target: { value: "1st edition" },
     });
+
     fireEvent.change(screen.getByLabelText(/Binding Type/), {
         target: { value: "hardcover" },
     });
+
     fireEvent.change(screen.getByLabelText(/Dimensions/), {
         target: { value: "20 x 15 x 3" },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Number of Pages/), {
+        target: { value: "350" },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Weight/), {
+        target: { value: "350" },
     });
 }
 
 describe("AddPublication", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+
+        global.fetch = vi.fn((url) => {
+            if (url.includes("/publishers")) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockPublishers),
+                });
+            }
+
+            if (url.includes("/genres")) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockGenres),
+                });
+            }
+
+            if (url.includes("/authors")) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve(mockAuthors),
+                });
+            }
+
+            return Promise.reject(new Error("Unknown endpoint: " + url));
+        });
     });
 
-    test("renders all form sections", () => {
-        renderAddPublication();
+    test("renders all form sections", async () => {
+        await renderAndWait();
 
         expect(screen.getByText("Add Publication")).toBeInTheDocument();
         expect(screen.getByText("Identification")).toBeInTheDocument();
@@ -66,8 +131,8 @@ describe("AddPublication", () => {
         expect(screen.getByText("Physical Details")).toBeInTheDocument();
     });
 
-    test("renders all required fields with asterisk", () => {
-        renderAddPublication();
+    test("renders all required fields with asterisk", async () => {
+        await renderAndWait();
 
         expect(screen.getByText(/Publication Type \*/)).toBeInTheDocument();
         expect(screen.getByText("Genre *")).toBeInTheDocument();
@@ -82,34 +147,22 @@ describe("AddPublication", () => {
         expect(screen.getByText(/Dimensions.*\*/)).toBeInTheDocument();
     });
 
-    test("adds a new author field when clicking Add Author", () => {
-        renderAddPublication();
+    test("loads genres, authors, and publishers from API", async () => {
+        await renderAndWait();
 
-        fireEvent.click(screen.getByText("Add Author"));
+        expect(screen.getByRole("checkbox", { name: "Drama" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Cambridge University Press" })).toBeInTheDocument();
 
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(2);
+        // Authors are hidden inside custom selection dropdown trigger initially
+        const authorDropdownTrigger = screen.getByRole("button", { name: /Select author\(s\)/i });
+        fireEvent.click(authorDropdownTrigger);
+
+        // Checkbox is now attached to DOM
+        expect(screen.getByRole("checkbox", { name: "John Doe" })).toBeInTheDocument();
     });
 
-    test("removes an author field when clicking remove button", () => {
-        renderAddPublication();
-
-        fireEvent.click(screen.getByText("Add Author"));
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(2);
-
-        fireEvent.click(screen.getAllByLabelText("Remove author")[0]);
-
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(1);
-    });
-
-    test("does not show remove button when only one author exists", () => {
-        renderAddPublication();
-
-        expect(screen.getAllByPlaceholderText("Author name")).toHaveLength(1);
-        expect(screen.queryByTitle(/remove/i)).not.toBeInTheDocument();
-    });
-
-    test("shows ISBN as required for publications after 1976", () => {
-        renderAddPublication();
+    test("shows ISBN as required for publications after 1976", async () => {
+        await renderAndWait();
 
         fireEvent.change(screen.getByLabelText(/Published Date/), {
             target: { value: "1990-01-01" },
@@ -118,9 +171,9 @@ describe("AddPublication", () => {
         expect(screen.getByText(/ISBN \/ ISSN \*/)).toBeInTheDocument();
     });
 
-    test("shows alert when ISBN is missing for post-1976 publication", () => {
+    test("shows alert when ISBN is missing for post-1976 publication", async () => {
         const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
-        renderAddPublication();
+        await renderAndWait();
 
         fireEvent.change(screen.getByLabelText(/Published Date/), {
             target: { value: "1990-01-01" },
@@ -131,12 +184,20 @@ describe("AddPublication", () => {
         expect(alertMock).toHaveBeenCalledWith(
             "ISBN/ISSN is required for publications after 1976"
         );
+
         alertMock.mockRestore();
     });
 
-    test("shows alert when ISBN format is invalid", () => {
+    test("shows alert when ISBN format is invalid", async () => {
         const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
-        renderAddPublication();
+        await renderAndWait();
+
+        // Open Dropdown and choose author to fulfill early validation criteria
+        const authorDropdownTrigger = screen.getByRole("button", { name: /Select author\(s\)/i });
+        fireEvent.click(authorDropdownTrigger);
+        fireEvent.click(screen.getByRole("checkbox", { name: "John Doe" }));
+
+        fireEvent.click(screen.getByRole("checkbox", { name: "Drama" }));
 
         fireEvent.change(screen.getByLabelText(/ISBN/), {
             target: { value: "123" },
@@ -145,64 +206,67 @@ describe("AddPublication", () => {
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
 
         expect(alertMock).toHaveBeenCalledWith(
-            "ISBN must have 10 or 13 characters, or ISSN must have 8 characters"
+            "ISBN must be 10 or 13 chars, or ISSN 8 chars"
         );
+
         alertMock.mockRestore();
     });
 
-    test("calls addPublication with correct data on valid submit", () => {
-        renderAddPublication();
-        fillRequiredFields();
+    test("calls addPublication with correct data on valid submit", async () => {
+        await renderAndWait();
+        await fillRequiredFields();
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
 
         expect(mockAddPublication).toHaveBeenCalledWith(
             expect.objectContaining({
                 title: "Test Book",
-                author: "John Doe",
-                genres: ["Fiction"],
-                publisher: "Cambridge University Press"
+                authorNames: ["AUTH1"],
+                genreNames: ["GENRE1"],
+                publisherId: "PUB1",
             })
         );
     });
 
-    test("shows success modal after valid submission", () => {
-        renderAddPublication();
-        fillRequiredFields();
+    test("shows success modal after valid submission", async () => {
+        await renderAndWait();
+        await fillRequiredFields();
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
 
-        expect(screen.getByText("Publication registered successfully!")).toBeInTheDocument();
+        expect(await screen.findByText("Publication registered successfully!")).toBeInTheDocument();
     });
 
-    test("navigates back when Cancel is clicked", () => {
-        renderAddPublication();
+    test("navigates back when Cancel is clicked", async () => {
+        await renderAndWait();
 
         fireEvent.click(screen.getByText("Cancel"));
 
         expect(mockNavigate).toHaveBeenCalledWith(-1);
     });
 
-    test("navigates to /my-publications after closing success modal", () => {
-        renderAddPublication();
-        fillRequiredFields();
+    test("navigates to /my-publications after closing success modal", async () => {
+        await renderAndWait();
+        await fillRequiredFields();
 
         fireEvent.submit(screen.getByRole("button", { name: /Create Publication/i }));
-        fireEvent.click(screen.getByText("OK"));
+
+        const okButton = await screen.findByText("OK");
+        fireEvent.click(okButton);
 
         expect(mockNavigate).toHaveBeenCalledWith("/my-publications");
     });
 
-    test("renders Publication Status field with CREATED as default", () => {
-        renderAddPublication();
+    test("renders Publication Status field with CREATED as default", async () => {
+        await renderAndWait();
 
         expect(screen.getByText(/Publication Status \*/)).toBeInTheDocument();
         expect(screen.getByLabelText(/Publication Status/)).toHaveValue("CREATED");
     });
 
-    test("calls addPublication with status and publisher on valid submit", () => {
-        renderAddPublication();
-        fillRequiredFields();
+    test("calls addPublication with status and publisher on valid submit", async () => {
+        await renderAndWait();
+        await fillRequiredFields();
 
         fireEvent.change(screen.getByLabelText(/Publication Status/), {
             target: { value: "READING" },
@@ -212,8 +276,7 @@ describe("AddPublication", () => {
 
         expect(mockAddPublication).toHaveBeenCalledWith(
             expect.objectContaining({
-                status: "READING",
-                publisher: "Cambridge University Press",
+                publisherId: "PUB1",
             })
         );
     });

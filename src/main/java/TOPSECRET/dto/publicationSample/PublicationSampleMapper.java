@@ -12,7 +12,6 @@ import TOPSECRET.dto.publicationSample.response.PublicationDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationDetailsDTO;
 import TOPSECRET.dto.publicationSample.response.PublicationReferenceDTO;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -102,6 +101,7 @@ public class PublicationSampleMapper {
      *
      * @param publication the publication sample domain object
      * @param bd          the bibliographical data domain object
+     * @param edition     the edition details of the publication
      * @param authors     the list of authors associated with the publication
      * @param genres      the list of genres associated with the publication
      * @param owner       the user who owns the publication sample
@@ -111,12 +111,14 @@ public class PublicationSampleMapper {
     public static PublicationDTO toPublicationDTO(
             PublicationSample publication,
             BibliographicalData bd,
+            Edition edition,
             List<Author> authors,
             List<Genre> genres,
             User owner) {
 
         Objects.requireNonNull(publication,"Publication cannot be null");
         Objects.requireNonNull(bd, "BibliographicalData cannot be null");
+        Objects.requireNonNull(edition, "Edition cannot be null");
         Objects.requireNonNull(authors,"Authors cannot be null");
         Objects.requireNonNull(genres,"Genres cannot be null");
         Objects.requireNonNull(owner,"Owner cannot be null");
@@ -128,9 +130,10 @@ public class PublicationSampleMapper {
                 bd.getOriginalLanguage().toString(),
                 genreTypes(genres),
                 owner.getUserName(),
-                publication.getLibraryID() != null ? publication.getLibraryID().getId() : null,  // libraryId
-                publication.getCondition().toString(),                                             // condition
-                publication.getCollecOfPubID() != null ? publication.getCollecOfPubID().getId() : null  // collectionId
+                publication.getLibraryID() != null ? publication.getLibraryID().getId() : null,
+                publication.getCondition().toString(),
+                publication.getCollecOfPubID() != null ? publication.getCollecOfPubID().getId() : null,
+                edition.getCode() != null ? edition.getCode().toString() : null
         );
     }
 
@@ -143,6 +146,7 @@ public class PublicationSampleMapper {
      *
      * @param publications          the list of publication samples
      * @param bds                   the list of bibliographical data objects
+     * @param editions              the list of edition objects
      * @param authorsPerPublication the list containing lists of authors for each publication
      * @param genresPerPublication  the list containing lists of genres for each publication
      * @param owners                the list of users who own the publication samples
@@ -152,6 +156,7 @@ public class PublicationSampleMapper {
     public static List<PublicationDTO> toPublicationDTOs(
             List<PublicationSample> publications,
             List<BibliographicalData> bds,
+            List<Edition> editions,
             List<List<Author>> authorsPerPublication,
             List<List<Genre>> genresPerPublication,
             List<User> owners) {
@@ -162,6 +167,7 @@ public class PublicationSampleMapper {
                 .mapToObj(i -> toPublicationDTO(
                         publications.get(i),
                         bds.get(i),
+                        editions.get(i),
                         authorsPerPublication.get(i),
                         genresPerPublication.get(i),
                         owners.get(i)
@@ -230,8 +236,7 @@ public class PublicationSampleMapper {
      * @return a new {@code UserId} instance corresponding to the provided string
      */
     public static UserId toUserId(String userId) {
-        UserId id = new UserId(userId);
-        return id;
+        return new UserId(userId);
     }
 
     /**
@@ -242,12 +247,9 @@ public class PublicationSampleMapper {
      * @return a list of {@link BibliographicalDataId} objects corresponding to the provided string IDs
      */
     public static List<BibliographicalDataId> toBibliographicalDataIds(List<String> bibliographicalDataId) {
-        List<BibliographicalDataId> ids =
-                bibliographicalDataId.stream()
-                        .map(PublicationSampleMapper::toBibliographicalDataId)
-                        .toList();
-
-        return ids;
+        return bibliographicalDataId.stream()
+                .map(PublicationSampleMapper::toBibliographicalDataId)
+                .toList();
     }
 
     /**
@@ -258,8 +260,7 @@ public class PublicationSampleMapper {
      * @return a {@link BibliographicalDataId} wrapper containing the specified ID
      */
     public static BibliographicalDataId toBibliographicalDataId(String bibliographicalDataId) {
-        BibliographicalDataId id = new BibliographicalDataId(bibliographicalDataId);
-        return id;
+        return new BibliographicalDataId(bibliographicalDataId);
     }
 
     /**
@@ -270,10 +271,7 @@ public class PublicationSampleMapper {
      * @return a list of {@link EditionId} objects corresponding to the provided string IDs
      */
     public static List<EditionId> toEditionIds(List<String> editionIds) {
-        List<EditionId> ids =
-                editionIds.stream().map(PublicationSampleMapper::toEditionId).toList();
-
-        return ids;
+        return editionIds.stream().map(PublicationSampleMapper::toEditionId).toList();
     }
 
     /**
@@ -284,8 +282,7 @@ public class PublicationSampleMapper {
      * @return a {@link CollectionOfPublicationsId} wrapper containing the specified ID
      */
     public static CollectionOfPublicationsId toCollectionOfPublicationsId(String collectionOfPublicationsId) {
-        CollectionOfPublicationsId id = new CollectionOfPublicationsId(collectionOfPublicationsId);
-        return id;
+        return new CollectionOfPublicationsId(collectionOfPublicationsId);
     }
 
     /**
@@ -295,8 +292,7 @@ public class PublicationSampleMapper {
      * @return the {@link PublicationSampleId} value object
      */
     public static PublicationSampleId toPubId(String id){
-        PublicationSampleId pubSampleId = new PublicationSampleId(id);
-        return  pubSampleId;
+        return new PublicationSampleId(id);
     }
 
     /**
@@ -306,8 +302,7 @@ public class PublicationSampleMapper {
      * @return the {@link BibliographicalDataId} value object
      */
     public static BibliographicalDataId toBdId(String id){
-        BibliographicalDataId bdId = new BibliographicalDataId(id);
-        return bdId;
+        return new BibliographicalDataId(id);
     }
 
     /**
@@ -317,8 +312,7 @@ public class PublicationSampleMapper {
      * @return the {@link EditionId} value object
      */
     public static EditionId toEditionId(String id){
-        EditionId editionId = new EditionId(id);
-        return editionId;
+        return new EditionId(id);
     }
 
     /**
@@ -332,8 +326,7 @@ public class PublicationSampleMapper {
      * @throws IllegalArgumentException if no matching {@link Condition} is found
      */
     public static Condition toCondition(String conditionString) {
-        Condition condition = Condition.fromString(conditionString);
-        return condition;
+        return Condition.fromString(conditionString);
     }
 
     // -------------------------------------------------------------------------

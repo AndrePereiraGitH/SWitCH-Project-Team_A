@@ -15,20 +15,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit tests for the {@link PublicationSampleAuthorizationPolicy} class.
- * <p>
- * This test suite verifies the access control logic for operations related to
- * publication samples. It ensures that only users possessing the
- * {@link UserRole#NORMAL_USER} role are granted authorization to perform
- * specific actions, such as creating, retrieving, and assigning publication samples.
- * </p>
- * <p>
- * The tests utilize Mockito to simulate both authorized and unauthorized users
- * by stubbing {@link User#getUserRoles()} directly inside each test's Arrange
- * block. This keeps stubs local to the tests that need them, satisfying
- * {@link MockitoExtension}'s strict stubbing rules and avoiding
- * {@code UnnecessaryStubbingException}.
- * </p>
+ * Unit tests for {@link PublicationSampleAuthorizationPolicy}.
+ *
+ * <p>Verifies the access control logic for operations related to publication samples,
+ * ensuring that only users with the appropriate roles are granted authorization.</p>
+ *
+ * <p>Tests are organized into the following sections:</p>
+ * <ul>
+ *   <li><b>canCreatePublicationSample</b> — creation authorization.</li>
+ *   <li><b>canFindByCollectionOfPublicationsId</b> — collection lookup authorization.</li>
+ *   <li><b>canFindPublicationsOwnedByUserId</b> — owner lookup authorization.</li>
+ *   <li><b>canFindPublicationsInLibrary</b> — library-assigned lookup authorization.</li>
+ *   <li><b>canFindPublicationsNotInLibrary</b> — non-library lookup authorization.</li>
+ *   <li><b>canFindByLibraryIdAndPublicationStatusNotIn</b> — status-filtered lookup authorization.</li>
+ *   <li><b>canFindAvailableForCollection</b> — collection eligibility lookup authorization.</li>
+ *   <li><b>canAddPublicationToLibrary</b> — library assignment authorization.</li>
+ *   <li><b>canAssignPublicationToCollection</b> — collection assignment authorization.</li>
+ * </ul>
  */
 @ExtendWith(MockitoExtension.class)
 class PublicationSampleAuthorizationPolicyTest {
@@ -41,6 +44,10 @@ class PublicationSampleAuthorizationPolicyTest {
 
     @InjectMocks
     private PublicationSampleAuthorizationPolicy policy;
+
+    // =========================================================================
+    // canCreatePublicationSample
+    // =========================================================================
 
     @Test
     void canCreatePublicationSample_shouldReturnTrue_whenUserIsNormalUser() {
@@ -66,6 +73,9 @@ class PublicationSampleAuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // =========================================================================
+    // canFindByCollectionOfPublicationsId
+    // =========================================================================
 
     @Test
     void canFindByCollectionOfPublicationsId_shouldReturnTrue_whenUserIsNormalUser() {
@@ -91,53 +101,93 @@ class PublicationSampleAuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // =========================================================================
+    // canFindPublicationsOwnedByUserId
+    // =========================================================================
+
     @Test
-    void canFindByUserIdAndLibraryIdIsNotNull_shouldReturnTrue_whenUserIsNormalUser() {
+    void canFindPublicationsOwnedByUserId_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
         when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
-        boolean result = policy.canFindByUserIdAndLibraryIdIsNotNull(authorizedUser);
+        boolean result = policy.canFindPublicationsOwnedByUserId(authorizedUser);
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void canFindByUserIdAndLibraryIdIsNotNull_shouldReturnFalse_whenUserIsNotNormalUser() {
+    void canFindPublicationsOwnedByUserId_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
         when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
-        boolean result = policy.canFindByUserIdAndLibraryIdIsNotNull(unauthorizedUser);
+        boolean result = policy.canFindPublicationsOwnedByUserId(unauthorizedUser);
 
         // Assert
         assertFalse(result);
     }
 
+    // =========================================================================
+    // canFindPublicationsInLibrary
+    // =========================================================================
+
     @Test
-    void canFindByUserIdAndLibraryIdIsNull_shouldReturnTrue_whenUserIsNormalUser() {
+    void canFindPublicationsInLibrary_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
         when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
         // Act
-        boolean result = policy.canFindByUserIdAndLibraryIdIsNull(authorizedUser);
+        boolean result = policy.canFindPublicationsInLibrary(authorizedUser);
 
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void canFindByUserIdAndLibraryIdIsNull_shouldReturnFalse_whenUserIsNotNormalUser() {
+    void canFindPublicationsInLibrary_shouldReturnFalse_whenUserIsNotNormalUser() {
         // Arrange
         when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
 
         // Act
-        boolean result = policy.canFindByUserIdAndLibraryIdIsNull(unauthorizedUser);
+        boolean result = policy.canFindPublicationsInLibrary(unauthorizedUser);
 
         // Assert
         assertFalse(result);
     }
+
+    // =========================================================================
+    // canFindPublicationsNotInLibrary
+    // =========================================================================
+
+    @Test
+    void canFindPublicationsNotInLibrary_shouldReturnTrue_whenUserIsNormalUser() {
+        // Arrange
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // Act
+        boolean result = policy.canFindPublicationsNotInLibrary(authorizedUser);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindPublicationsNotInLibrary_shouldReturnFalse_whenUserIsNotNormalUser() {
+        // Arrange
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
+
+        // Act
+        boolean result = policy.canFindPublicationsNotInLibrary(unauthorizedUser);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    // =========================================================================
+    // canFindByLibraryIdAndPublicationStatusNotIn
+    // =========================================================================
 
     @Test
     void canFindByLibraryIdAndPublicationStatusNotIn_shouldReturnTrue_whenUserIsNormalUser() {
@@ -163,6 +213,10 @@ class PublicationSampleAuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // =========================================================================
+    // canFindAvailableForCollection
+    // =========================================================================
+
     @Test
     void canFindAvailableForCollection_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
@@ -187,6 +241,10 @@ class PublicationSampleAuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // =========================================================================
+    // canAddPublicationToLibrary
+    // =========================================================================
+
     @Test
     void canAddPublicationToLibrary_shouldReturnTrue_whenUserIsNormalUser() {
         // Arrange
@@ -210,6 +268,10 @@ class PublicationSampleAuthorizationPolicyTest {
         // Assert
         assertFalse(result);
     }
+
+    // =========================================================================
+    // canAssignPublicationToCollection
+    // =========================================================================
 
     @Test
     void canAssignPublicationToCollection_shouldReturnTrue_whenUserIsNormalUser() {

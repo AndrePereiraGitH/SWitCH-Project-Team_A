@@ -63,7 +63,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 mock(CollectionOfPublicationsId.class);
 
         ResponseCollectionOfPublicationsDTO responseDTO =
-                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123",true);
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
         when(requestDouble.genreId()).thenReturn("genre-123");
@@ -118,7 +118,7 @@ class CollectionOfPublicationsRESTControllerTest {
                 mock(CollectionOfPublicationsId.class);
 
         ResponseCollectionOfPublicationsDTO responseDTO =
-                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123");
+                new ResponseCollectionOfPublicationsDTO("My Collection", "collection-123", true);
 
         when(requestDouble.collectionName()).thenReturn("My Collection");
         when(requestDouble.genreId()).thenReturn("genre-123");
@@ -257,8 +257,8 @@ class CollectionOfPublicationsRESTControllerTest {
     }
 
     // -------------------------------------------------------------------------
-// makeCollectionPublic
-// -------------------------------------------------------------------------
+    // makeCollectionPublic
+    // -------------------------------------------------------------------------
 
     @Test
     void makeCollectionPublic_shouldReturnOk_onSuccess()
@@ -280,7 +280,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         Link providerLink =
@@ -351,7 +352,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         when(collectionService.makeCollectionPublic(
@@ -527,9 +529,217 @@ class CollectionOfPublicationsRESTControllerTest {
         }
     }
 
-// -------------------------------------------------------------------------
-// makeCollectionPublicUntil
-// -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // makeCollectionPrivate
+    // -------------------------------------------------------------------------
+
+    @Test
+    void makeCollectionPrivate_shouldReturnOk_onSuccess()
+            throws Exception {
+
+        // ARRANGE
+        String collectionId = "collection-123";
+        String userId = "user-123";
+
+        CollectionOfPublicationsId collectionIdVO =
+                mock(CollectionOfPublicationsId.class);
+
+        UserId userIdVO =
+                mock(UserId.class);
+
+        CollectionOfPublications collectionDouble =
+                mock(CollectionOfPublications.class);
+
+        ResponseCollectionOfPublicationsDTO responseDTO =
+                new ResponseCollectionOfPublicationsDTO(
+                        "My Collection",
+                        "collection-123",
+                        false
+                );
+
+        Link providerLink =
+                Link.of("http://localhost/test")
+                        .withRel("provider-link");
+
+        when(collectionService.makeCollectionPrivate(
+                collectionIdVO,
+                userIdVO))
+                .thenReturn(true);
+
+        when(collectionService.findById(collectionIdVO))
+                .thenReturn(collectionDouble);
+
+        when(linkProvider.getLinksForCollectionOfPublications(userIdVO))
+                .thenReturn(new ArrayList<>(List.of(providerLink)));
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toCollectionId(any()))
+                    .thenReturn(collectionIdVO);
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenReturn(userIdVO);
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toDTO(any()))
+                    .thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPrivate(
+                            collectionId,
+                            userId);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK.value(),
+                    response.getStatusCode().value());
+
+            assertEquals(responseDTO,
+                    response.getBody());
+
+            assertTrue(response.getBody().hasLink("self"));
+            assertTrue(response.getBody().hasLink("provider-link"));
+        }
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldReturnBadRequest_onIllegalArgument()
+            throws Exception {
+
+        // ARRANGE
+        String collectionId = "collection-123";
+        String userId = "user-123";
+
+        CollectionOfPublicationsId collectionIdVO =
+                mock(CollectionOfPublicationsId.class);
+
+        UserId userIdVO =
+                mock(UserId.class);
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toCollectionId(any()))
+                    .thenReturn(collectionIdVO);
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(any()))
+                    .thenReturn(userIdVO);
+
+            when(collectionService.makeCollectionPrivate(
+                    collectionIdVO,
+                    userIdVO))
+                    .thenThrow(new IllegalArgumentException());
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPrivate(
+                            collectionId,
+                            userId);
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST.value(),
+                    response.getStatusCode().value());
+
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldReturnForbidden_onAccessDenied()
+            throws Exception {
+
+        // ARRANGE
+        String collectionId = "collection-123";
+        String userId = "user-123";
+
+        CollectionOfPublicationsId collectionIdVO =
+                mock(CollectionOfPublicationsId.class);
+
+        UserId userIdVO =
+                mock(UserId.class);
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toCollectionId(collectionId))
+                    .thenReturn(collectionIdVO);
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(userId))
+                    .thenReturn(userIdVO);
+
+            when(collectionService.makeCollectionPrivate(
+                    collectionIdVO,
+                    userIdVO))
+                    .thenThrow(new AccessDeniedException("denied"));
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPrivate(collectionId, userId);
+
+            // ASSERT
+            assertEquals(
+                    HttpStatus.FORBIDDEN.value(),
+                    response.getStatusCode().value()
+            );
+
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void makeCollectionPrivate_shouldReturnInternalServerError_onException()
+            throws Exception {
+
+        // ARRANGE
+        String collectionId = "collection-123";
+        String userId = "user-123";
+
+        CollectionOfPublicationsId collectionIdVO =
+                mock(CollectionOfPublicationsId.class);
+
+        UserId userIdVO =
+                mock(UserId.class);
+
+        try (MockedStatic<CollectionOfPublicationsMapper> mapperMock =
+                     mockStatic(CollectionOfPublicationsMapper.class)) {
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toCollectionId(collectionId))
+                    .thenReturn(collectionIdVO);
+
+            mapperMock.when(() ->
+                            CollectionOfPublicationsMapper.toUserId(userId))
+                    .thenReturn(userIdVO);
+
+            when(collectionService.makeCollectionPrivate(
+                    collectionIdVO,
+                    userIdVO))
+                    .thenThrow(new RuntimeException());
+
+            // ACT
+            ResponseEntity<ResponseCollectionOfPublicationsDTO> response =
+                    controller.makeCollectionPrivate(collectionId, userId);
+
+            // ASSERT
+            assertEquals(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    response.getStatusCode().value()
+            );
+
+            assertNull(response.getBody());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // makeCollectionPublicUntil
+    // -------------------------------------------------------------------------
 
     @Test
     void makeCollectionPublicUntil_shouldReturnOk_onSuccess()
@@ -553,7 +763,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         Link providerLink =
@@ -628,7 +839,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         when(collectionService.makeCollectionPublicUntil(
@@ -951,7 +1163,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO dto =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         List<CollectionOfPublications> collections =
@@ -1071,7 +1284,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO responseDTO =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         when(collectionService.findById(collectionIdVO))
@@ -1262,7 +1476,8 @@ class CollectionOfPublicationsRESTControllerTest {
         ResponseCollectionOfPublicationsDTO dto =
                 new ResponseCollectionOfPublicationsDTO(
                         "My Collection",
-                        "collection-123"
+                        "collection-123",
+                        true
                 );
 
         List<CollectionOfPublications> collections =
