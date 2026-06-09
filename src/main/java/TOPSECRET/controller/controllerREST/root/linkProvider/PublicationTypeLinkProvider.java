@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,19 +32,16 @@ public class PublicationTypeLinkProvider {
     }
 
     /**
-     * Returns the available links for PublicationType operations.
+     * Returns the available links for PublicationType creation.
      *
      * @param userId user performing the operation
      * @return list of HATEOAS links
      */
-    public List<Link> getLinksForPublicationType(UserId userId) {
+    public List<Link> getCreateLinks(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
 
         List<Link> links = new ArrayList<>();
-
-        links.add(linkTo(methodOn(PublicationTypeRestController.class)
-                .getAllPublicationTypes())
-                .withRel("get-all-publication-types")
-                );
 
         User user = userRepository.findByID(userId)
                 .orElseThrow(() ->
@@ -54,6 +52,23 @@ public class PublicationTypeLinkProvider {
                     .createPublicationType(null, null))
                     .withRel("create-publication-type"));
         }
+
+        return links;
+    }
+
+    /**
+     * Returns the available links for all PublicationTypes list.
+     *
+     * @return list of HATEOAS links
+     */
+    public List<Link> getPublicLinks() {
+
+        List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(PublicationTypeRestController.class)
+                .findAll())
+                .withRel("get-all-publication-types")
+        );
 
         return links;
     }
