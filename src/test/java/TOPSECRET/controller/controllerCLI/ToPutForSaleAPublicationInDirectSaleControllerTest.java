@@ -17,6 +17,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -160,7 +161,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.findByUserId(userIdDouble)).thenReturn(Optional.of(libraryDouble));
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double, pubSample2Double);
         when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn( userIdDouble))
@@ -186,7 +187,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.findByUserId(userIdDouble)).thenReturn(Optional.of(libraryDouble));
 
         when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))
                 .thenReturn(List.of());
@@ -207,7 +208,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.getByUserId(userIdDouble)).thenReturn(libraryDouble);
+        when(libraryRepoDouble.findByUserId(userIdDouble)).thenReturn(Optional.of(libraryDouble));
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double);
         when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))

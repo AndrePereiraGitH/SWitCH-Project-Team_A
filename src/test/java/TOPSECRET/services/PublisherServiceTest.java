@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ class PublisherServiceTest {
     // createAndSave - SUCCESS
     // =========================================================
     @Test
-    void givenValidData_whenCreateAndSave_thenReturnsPublisher() {
+    void givenValidData_whenCreateAndSave_thenReturnsPublisher() throws InstanceNotFoundException {
 
         // ARRANGE
         String name = "Pub";
@@ -78,7 +79,7 @@ class PublisherServiceTest {
     // createAndSave - USER NOT FOUND
     // =========================================================
     @Test
-    void givenUserNotFound_whenCreateAndSave_thenThrowsException() {
+    void givenUserNotFound_whenCreateAndSave_thenThrowsInstanceNotFoundException() {
 
         // ARRANGE
         String name = "Pub";
@@ -91,7 +92,7 @@ class PublisherServiceTest {
 
         // ACT + ASSERT
         assertThrows(
-                IllegalArgumentException.class,
+                InstanceNotFoundException.class,
                 () -> service.createAndSave(name, vat, contact, userId)
         );
     }

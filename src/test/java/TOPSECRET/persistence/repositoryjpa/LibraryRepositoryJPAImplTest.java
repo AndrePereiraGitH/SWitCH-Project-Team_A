@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,77 +37,100 @@ class LibraryRepositoryJPAImplTest {
     @Mock
     private LibraryDM libraryDMDouble;
 
+    // ============ Constructor Tests ============
+
     @Test
     void constructor_shouldThrowException_whenJpaRepositoryIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                new LibraryRepositoryJPAImpl(null, assembler)
-        );
+        // Arrange + Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> new LibraryRepositoryJPAImpl(null, assembler));
     }
 
     @Test
     void constructor_shouldThrowException_whenAssemblerIsNull() {
-        assertThrows(NullPointerException.class, () ->
-                new LibraryRepositoryJPAImpl(jpaRepository, null)
-        );
+        // Arrange + Act + Assert
+        assertThrows(NullPointerException.class,
+                () -> new LibraryRepositoryJPAImpl(jpaRepository, null));
     }
 
+    // ============ findByUserId ============
+
     @Test
-    void givenNullUserId_whenGetLibraryByUserId_thenThrowsIllegalArgumentException() {
+    void givenNullUserId_whenFindByUserId_thenThrowsIllegalArgumentException() {
+        // Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
-                () -> repository.getByUserId(null));
-
+                () -> repository.findByUserId(null));
     }
 
     @Test
-    void givenUserWithNoLibrary_whenGetLibraryByUserId_thenThrowsInstanceNotFoundException() {
-        // Arrange
-  UserId userId = mock(UserId.class);
-        when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
+    void givenExistingUserId_whenFindByUserId_thenReturnsLibrary() {
 
-        // Act & Assert
-        assertThrows(InstanceNotFoundException.class,
-                () -> repository.getByUserId(userId));
-    }
-
-    @Test
-    void givenExistingLibrary_whenGetLibraryByUserId_thenReturnsLibrary() throws Exception {
         // Arrange
-  UserId userId = mock(UserId.class);
-        when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
-        when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
+        UserId userId = mock(UserId.class);
+
+        when(jpaRepository.findByUserId(userId))
+                .thenReturn(Optional.of(libraryDMDouble));
+
+        when(assembler.toDomain(libraryDMDouble))
+                .thenReturn(libraryDouble);
 
         // Act
-        Library result = repository.getByUserId(userId);
+        Optional<Library> result = repository.findByUserId(userId);
 
         // Assert
-        assertSame(libraryDouble, result);
+        assertTrue(result.isPresent());
+        assertEquals(libraryDouble, result.get());
     }
+
+    @Test
+    void givenNonExistingUserId_whenFindByUserId_thenReturnsEmpty() {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        when(jpaRepository.findByUserId(userId))
+                .thenReturn(Optional.empty());
+
+        // Act
+        Optional<Library> result = repository.findByUserId(userId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    // ============ save ============
 
     @Test
     void givenNullLibrary_whenSave_thenThrowsIllegalArgumentException() {
-        // Arrange, Act & Assert
+        // Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.save(null));
     }
 
     @Test
     void givenUserWithExistingLibrary_whenSave_thenThrowsInstanceAlreadyExistsException() {
-        // Arrange
-  UserId userId = mock(UserId.class);
-        when(libraryDouble.getUserId()).thenReturn(userId);
-        when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
-        // Act & Assert
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        when(libraryDouble.getUserId()).thenReturn(userId);
+        when(jpaRepository.findByUserId(userId))
+                .thenReturn(Optional.of(libraryDMDouble));
+
+        // Act + Assert
         assertThrows(InstanceAlreadyExistsException.class,
                 () -> repository.save(libraryDouble));
     }
 
     @Test
     void givenValidLibrary_whenSave_thenReturnsSavedLibrary() throws Exception {
+
         // Arrange
-  UserId userId = mock(UserId.class);
+        UserId userId = mock(UserId.class);
+
         when(libraryDouble.getUserId()).thenReturn(userId);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
+
         when(assembler.toDM(libraryDouble)).thenReturn(libraryDMDouble);
         when(jpaRepository.save(libraryDMDouble)).thenReturn(libraryDMDouble);
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
@@ -120,17 +142,20 @@ class LibraryRepositoryJPAImplTest {
         assertSame(libraryDouble, result);
     }
 
+    // ============ existsByUserId ============
+
     @Test
     void givenNullUserId_whenExistsByUserId_thenThrowsIllegalArgumentException() {
-        // Arrange, Act & Assert
+        // Arrange + Act + Assert
         assertThrows(IllegalArgumentException.class,
                 () -> repository.existsByUserId(null));
     }
 
     @Test
     void givenUserWithNoLibrary_whenExistsByUserId_thenReturnsFalse() {
+
         // Arrange
-  UserId userId = mock(UserId.class);
+        UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
         // Act
@@ -142,8 +167,9 @@ class LibraryRepositoryJPAImplTest {
 
     @Test
     void givenUserWithLibrary_whenExistsByUserId_thenReturnsTrue() {
+
         // Arrange
-  UserId userId = mock(UserId.class);
+        UserId userId = mock(UserId.class);
         when(jpaRepository.findByUserId(userId)).thenReturn(Optional.of(libraryDMDouble));
 
         // Act
@@ -153,10 +179,11 @@ class LibraryRepositoryJPAImplTest {
         assertTrue(result);
     }
 
-    // ============ findAll Tests ============
+    // ============ findAll ============
 
     @Test
     void givenNoLibraries_whenFindAll_thenReturnsEmptyList() {
+
         // Arrange
         when(jpaRepository.findAll()).thenReturn(List.of());
 
@@ -169,6 +196,7 @@ class LibraryRepositoryJPAImplTest {
 
     @Test
     void givenOneLibrary_whenFindAll_thenReturnsOneLibrary() {
+
         // Arrange
         when(jpaRepository.findAll()).thenReturn(List.of(libraryDMDouble));
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
@@ -183,13 +211,14 @@ class LibraryRepositoryJPAImplTest {
 
     @Test
     void givenTwoLibraries_whenFindAll_thenReturnsBoth() {
-        // Arrange
-        LibraryDM libraryDMDouble2 = mock(LibraryDM.class);
-        Library libraryDouble2 = mock(Library.class);
 
-        when(jpaRepository.findAll()).thenReturn(List.of(libraryDMDouble, libraryDMDouble2));
+        // Arrange
+        LibraryDM dm2 = mock(LibraryDM.class);
+        Library lib2 = mock(Library.class);
+
+        when(jpaRepository.findAll()).thenReturn(List.of(libraryDMDouble, dm2));
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
-        when(assembler.toDomain(libraryDMDouble2)).thenReturn(libraryDouble2);
+        when(assembler.toDomain(dm2)).thenReturn(lib2);
 
         // Act
         List<Library> result = repository.findAll();
@@ -198,81 +227,35 @@ class LibraryRepositoryJPAImplTest {
         assertEquals(2, result.size());
     }
 
-// ============ findById Tests ============
+    // ============ findById ============
 
     @Test
     void givenExistingId_whenFindById_thenReturnsLibrary() {
-        // Arrange
-        LibraryId idDouble = mock(LibraryId.class);
 
-        when(jpaRepository.findById(idDouble)).thenReturn(Optional.of(libraryDMDouble));
+        // Arrange
+        LibraryId id = mock(LibraryId.class);
+
+        when(jpaRepository.findById(id)).thenReturn(Optional.of(libraryDMDouble));
         when(assembler.toDomain(libraryDMDouble)).thenReturn(libraryDouble);
 
         // Act
-        Optional<Library> result = repository.findById(idDouble);
+        Optional<Library> result = repository.findById(id);
 
         // Assert
         assertTrue(result.isPresent());
-        assertSame(libraryDouble, result.get());
+        assertEquals(libraryDouble, result.get());
     }
 
     @Test
     void givenNonExistingId_whenFindById_thenReturnsEmpty() {
-        // Arrange
-        LibraryId idDouble = mock(LibraryId.class);
-
-        when(jpaRepository.findById(idDouble)).thenReturn(Optional.empty());
-
-        // Act
-        Optional<Library> result = repository.findById(idDouble);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    // ============ findByUserId Tests ============
-
-    @Test
-    void givenNullUserId_whenFindByUserId_thenThrowsIllegalArgumentException() {
-
-        // Arrange, Act & Assert
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> repository.findByUserId(null)
-        );
-    }
-
-    @Test
-    void givenExistingUserId_whenFindByUserId_thenReturnsLibrary() {
 
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
+        LibraryId id = mock(LibraryId.class);
 
-        when(jpaRepository.findByUserId(userIdDouble))
-                .thenReturn(Optional.of(libraryDMDouble));
-
-        when(assembler.toDomain(libraryDMDouble))
-                .thenReturn(libraryDouble);
+        when(jpaRepository.findById(id)).thenReturn(Optional.empty());
 
         // Act
-        Optional<Library> result = repository.findByUserId(userIdDouble);
-
-        // Assert
-        assertTrue(result.isPresent());
-        assertSame(libraryDouble, result.get());
-    }
-
-    @Test
-    void givenNonExistingUserId_whenFindByUserId_thenReturnsEmpty() {
-
-        // Arrange
-        UserId userIdDouble = mock(UserId.class);
-
-        when(jpaRepository.findByUserId(userIdDouble))
-                .thenReturn(Optional.empty());
-
-        // Act
-        Optional<Library> result = repository.findByUserId(userIdDouble);
+        Optional<Library> result = repository.findById(id);
 
         // Assert
         assertTrue(result.isEmpty());

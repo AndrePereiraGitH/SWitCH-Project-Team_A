@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -185,21 +184,35 @@ class CollectionOfPublicationsRepositoryJpaImplTest {
     }
 
     @Test
-    void findById_shouldReturnCollection_whenCollectionExists() throws InstanceNotFoundException {
+    void findById_shouldReturnCollection_whenCollectionExists() {
         // arrange
         CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
         CollectionOfPublicationsDM collectionDM = mock(CollectionOfPublicationsDM.class);
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
         when(jpa.findById(id)).thenReturn(Optional.of(collectionDM));
-
         when(assembler.toDomain(collectionDM)).thenReturn(collection);
 
         // act
-        CollectionOfPublications result = repo.findById(id);
+        Optional<CollectionOfPublications> result = repo.findById(id);
 
         // assert
-        assertEquals(result, collection);
+        assertTrue(result.isPresent());
+        assertEquals(collection, result.get());
+    }
+
+    @Test
+    void findById_shouldReturnEmpty_whenCollectionDoesNotExist() {
+        // arrange
+        CollectionOfPublicationsId id = mock(CollectionOfPublicationsId.class);
+
+        when(jpa.findById(id)).thenReturn(Optional.empty());
+
+        // act
+        Optional<CollectionOfPublications> result = repo.findById(id);
+
+        // assert
+        assertTrue(result.isEmpty());
     }
 
     // ===========================================================

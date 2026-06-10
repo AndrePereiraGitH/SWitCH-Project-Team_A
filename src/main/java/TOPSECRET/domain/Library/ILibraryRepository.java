@@ -4,7 +4,6 @@ import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,19 +15,9 @@ import java.util.Optional;
  */
 public interface ILibraryRepository {
 
-    /**
-     * Retrieves the library associated with the specified username.
-     *
-     * @param userId the username of the user whose library is to be retrieved;
-     *                 must not be null or empty
-     * @return the {@link Library} associated with the given username
-     * @throws IllegalArgumentException  if {@code username} is null or empty
-     * @throws InstanceNotFoundException if no library is found for the specified username
-     */
-    Library getByUserId(UserId userId) throws InstanceNotFoundException;
 
     /**
-     * Adds a {@link Library}   to the repository.
+     * Adds a {@link Library} to the repository.
      *
      * @throws InstanceAlreadyExistsException if the Library already exists.
      */

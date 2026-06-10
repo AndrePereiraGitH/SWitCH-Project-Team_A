@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,7 +70,7 @@ public class PublisherService {
      */
     @Transactional
     public Publisher createAndSave(String name, String vatNumber, Contact contact, UserId userId)
-            throws AccessDeniedException {
+            throws AccessDeniedException, InstanceNotFoundException {
 
         Objects.requireNonNull(name, "Name cannot be null");
         Objects.requireNonNull(vatNumber, "VAT number cannot be null");
@@ -77,7 +78,7 @@ public class PublisherService {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         User user = userRepository.findByID(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+                .orElseThrow(() -> new InstanceNotFoundException("User not found with ID: " + userId));
 
         if (!authPolicy.canCreatePublisher(user)) {
             throw new AccessDeniedException("User does not have permission to create a publisher");

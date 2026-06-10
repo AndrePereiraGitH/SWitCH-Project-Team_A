@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -186,7 +187,7 @@ class LibraryServiceTest {
 // =========================================================
 
     @Test
-    void givenExistingId_whenFindById_thenReturnsLibrary() {
+    void givenExistingId_whenFindById_thenReturnsLibrary() throws InstanceNotFoundException {
 
         // ARRANGE
         LibraryId idDouble = mock(LibraryId.class);
@@ -213,7 +214,7 @@ class LibraryServiceTest {
 
         // ACT + ASSERT
         assertThrows(
-                IllegalArgumentException.class,
+                InstanceNotFoundException.class,
                 () -> service.findById(idDouble)
         );
     }
@@ -233,7 +234,7 @@ class LibraryServiceTest {
 // =========================================================
 
     @Test
-    void givenExistingUserId_whenFindByUserId_thenReturnsLibrary() {
+    void givenExistingUserId_whenFindByUserId_thenReturnsLibrary() throws InstanceNotFoundException {
 
         // ARRANGE
         UserId userIdDouble = mock(UserId.class);
@@ -260,7 +261,7 @@ class LibraryServiceTest {
 
         // ACT + ASSERT
         assertThrows(
-                IllegalArgumentException.class,
+                InstanceNotFoundException.class,
                 () -> service.findByUserId(userIdDouble)
         );
     }
