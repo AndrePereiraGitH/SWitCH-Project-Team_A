@@ -121,14 +121,15 @@ public class AppraisalEntityRESTController {
 
             List<ResponseAppraisalEntityDTO> apEnDTO = new ArrayList<>();
             for (AppraisalEntity apEn : apEnList){
-                apEnDTO.add(AppraisalEntityMapper.toDTO(apEn));
+                ResponseAppraisalEntityDTO dto = AppraisalEntityMapper.toDTO(apEn);
 
                 List<Link> links = new ArrayList<>(provider.getPublicLinks());
                 links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
                         .findById(apEn.id().toString()))
                         .withSelfRel());
 
-                apEnDTO.forEach(dto -> links.forEach(dto::add));
+                links.forEach(dto::add);
+                apEnDTO.add(dto);
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(apEnDTO);
