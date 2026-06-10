@@ -16,7 +16,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -88,7 +87,7 @@ public class CountryRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(CountryRESTController.class)
-                    .getCountry(country.id().getCountryID()))
+                    .findById(country.id().getCountryID()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -131,7 +130,7 @@ public class CountryRESTController {
                         CountryResponseDTO dto = CountryMapper.toDTO(country);
 
                         dto.add(linkTo(methodOn(CountryRESTController.class)
-                                .getCountry(country.id().toString()))
+                                .findById(country.id().toString()))
                                 .withSelfRel());
 
                         return dto;
@@ -178,22 +177,23 @@ public class CountryRESTController {
      *         or an error status if the operation fails
      */
     @GetMapping("/{id}")
-    public ResponseEntity<CountryResponseDTO> getCountry(@PathVariable String id) {
+    public ResponseEntity<CountryResponseDTO> findById(@PathVariable String id) {
 
         try {
-            Country country = service.findById(new CountryId(id));
+            CountryId countryId = CountryMapper.toCountryId(id);
+
+            Country country = service.findById(countryId);
 
             CountryResponseDTO result = CountryMapper.toDTO(country);
 
             result.add(linkTo(methodOn(CountryRESTController.class)
-                    .getCountry(id))
+                    .findById(id))
                     .withSelfRel());
 
-            result.add(linkTo(methodOn(CountryRESTController.class)
-                    .getCountries())
-                    .withRel("get-all-countries"));
+            return ResponseEntity.status(HttpStatus.OK).body(result);
 
-            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

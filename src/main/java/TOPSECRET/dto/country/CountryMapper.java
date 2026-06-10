@@ -1,6 +1,8 @@
 package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
+import TOPSECRET.domain.ValueObjects.CountryId;
+import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.country.response.CountryResponseDTO;
 
@@ -87,4 +89,15 @@ public class CountryMapper {
 
         return new UserId(userId);
     }
+
+    /**
+     * Converts a string ID into a {@link CountryId} value object.
+     *
+     * @param id the string representation of the country ID
+     * @return the {@link CountryId} value object
+     */
+    public static CountryId toCountryId(String id){
+        return new CountryId(id);
+    }
+
 }

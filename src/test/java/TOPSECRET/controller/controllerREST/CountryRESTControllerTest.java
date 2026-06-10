@@ -4,7 +4,6 @@ import TOPSECRET.controller.controllerREST.root.linkProvider.CountryLinkProvider
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.country.CountryMapper;
 import TOPSECRET.dto.country.request.RegisterCountryDTO;
 import TOPSECRET.dto.country.response.CountryResponseDTO;
 import TOPSECRET.services.CountryService;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -24,7 +22,6 @@ import javax.management.InstanceAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -275,7 +272,7 @@ class CountryRESTControllerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void getCountry_returnsOk_andBody() {
+    void findById_returnsOk_andBody() {
 
         // Arrange
         when(countryService.findById(any(CountryId.class)))
@@ -287,7 +284,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.getCountry("PORTUGAL");
+                controller.findById("PORTUGAL");
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -295,7 +292,7 @@ class CountryRESTControllerTest {
     }
 
     @Test
-    void getCountry_returnsCorrectCountryName() {
+    void findByIdName() {
 
         // Arrange
         when(countryService.findById(any(CountryId.class)))
@@ -307,14 +304,14 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.getCountry("PORTUGAL");
+                controller.findById("PORTUGAL");
 
         // Assert
         assertEquals("Portugal", response.getBody().getCountryName());
     }
 
     @Test
-    void getCountry_returnsNotFound() {
+    void findById_returnsNotFound() {
 
         // Arrange
         when(countryService.findById(any(CountryId.class)))
@@ -322,27 +319,24 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.getCountry("INVALID");
+                controller.findById("INVALID");
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    void getCountry_containsSelfAndGetCountriesLinks() {
+    void getCountry_containsSelfLinkOnly() {
 
-        //Arrange
         when(countryService.findById(any(CountryId.class)))
                 .thenReturn(country);
 
         when(country.getCountryName()).thenReturn("Portugal");
         when(country.id()).thenReturn(new CountryId("PORTUGAL"));
 
-        //Act
         ResponseEntity<CountryResponseDTO> response =
-                controller.getCountry("PORTUGAL");
+                controller.findById("PORTUGAL");
 
-        //Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         CountryResponseDTO dto = response.getBody();
@@ -350,18 +344,17 @@ class CountryRESTControllerTest {
         assertTrue(dto.getLinks().stream()
                 .anyMatch(l -> l.getRel().value().equals("self")));
 
-        assertTrue(dto.getLinks().stream()
+        assertFalse(dto.getLinks().stream()
                 .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
     }
-
     @Test
-    void getCountry_shouldReturnInternalServerError_onUnexpectedException() {
+    void findById_shouldReturnInternalServerError_onUnexpectedException() {
 
         when(countryService.findById(any(CountryId.class)))
                 .thenThrow(new RuntimeException());
 
         ResponseEntity<CountryResponseDTO> response =
-                controller.getCountry("PORTUGAL");
+                controller.findById("PORTUGAL");
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }

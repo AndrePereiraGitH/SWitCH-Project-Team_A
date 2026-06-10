@@ -10,7 +10,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.Link;
 
+import javax.management.InstanceNotFoundException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,7 +43,7 @@ class CountryLinkProviderTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void shouldReturnTwoLinks_whenUserHasPermission() {
+    void shouldReturnTwoLinks_whenUserHasPermission() throws InstanceNotFoundException{
 
         // ARRANGE
         UserId userId = mock(UserId.class);
@@ -50,10 +53,16 @@ class CountryLinkProviderTest {
         when(policy.canRegisterCountry(user)).thenReturn(true);
 
         // ACT
-        int result = provider.getLinks(userId).size();
+        List<Link> result = provider.getLinks(userId);
 
         // ASSERT
-        assertEquals(2, result);
+        assertEquals(2, result.size());
+
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
+
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("register-country")));
     }
 
     // -------------------------------------------------------------------------
@@ -61,7 +70,7 @@ class CountryLinkProviderTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void shouldReturnOnlyDefaultLink_whenUserHasNoPermission() {
+    void shouldReturnOnlyDefaultLink_whenUserHasNoPermission() throws InstanceNotFoundException{
 
         // ARRANGE
         UserId userId = mock(UserId.class);
@@ -71,10 +80,12 @@ class CountryLinkProviderTest {
         when(policy.canRegisterCountry(user)).thenReturn(false);
 
         // ACT
-        int result = provider.getLinks(userId).size();
+        List<Link> result = provider.getLinks(userId);
 
-        // ASSERT
-        assertEquals(1, result);
+        assertEquals(1, result.size());
+
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
     }
 
     // -------------------------------------------------------------------------
@@ -89,7 +100,7 @@ class CountryLinkProviderTest {
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(InstanceNotFoundException.class,
                 () -> provider.getLinks(userId));
     }
 }
