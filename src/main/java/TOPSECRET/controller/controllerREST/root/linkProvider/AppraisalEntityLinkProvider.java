@@ -1,6 +1,7 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.AppraisalEntityRESTController;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AppraisalEntityAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
@@ -10,6 +11,7 @@ import java.util.List;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -23,7 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * authorization rules defined in {@link AppraisalEntityAuthorizationPolicy}.</p>
  */
 @Component
-public class AppraisalEntityLinkProvider {
+public class AppraisalEntityLinkProvider implements RootLinkProvider {
 
     private final AppraisalEntityAuthorizationPolicy policy;
     private final IUserRepository repository;
@@ -87,6 +89,22 @@ public class AppraisalEntityLinkProvider {
         links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
                 .findAll())
                 .withRel("find-all"));
+
+        return links;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Aggregates links from all four groups in order:
+     * public, library, owner, and collection.</p>
+     */
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+        List<Link> links = new ArrayList<>();
+
+        links.addAll(getPublicLinks());
+        links.addAll(getAdminLinks(userId));
 
         return links;
     }

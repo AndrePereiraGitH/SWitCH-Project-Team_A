@@ -266,7 +266,7 @@ class AppraisalEntityRESTControllerTest {
     void findAll_shouldReturnOkStatus_whenNoEntitiesExist() {
         // ARRANGE
         when(service.findAll()).thenReturn(new ArrayList<>());
-        when(provider.getPublicLinks()).thenReturn(new ArrayList<>());
+        // provider.getPublicLinks() não é stubado — não é chamado com lista vazia
 
         // ACT
         ResponseEntity<List<ResponseAppraisalEntityDTO>> result = sut.findAll();
@@ -279,7 +279,6 @@ class AppraisalEntityRESTControllerTest {
     void findAll_shouldReturnEmptyList_whenNoEntitiesExist() {
         // ARRANGE
         when(service.findAll()).thenReturn(new ArrayList<>());
-        when(provider.getPublicLinks()).thenReturn(new ArrayList<>());
 
         // ACT
         ResponseEntity<List<ResponseAppraisalEntityDTO>> result = sut.findAll();
