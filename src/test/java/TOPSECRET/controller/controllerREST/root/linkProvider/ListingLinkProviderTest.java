@@ -175,7 +175,7 @@ class ListingLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldReturnFiveLinks_whenUserCanCreateListing()
+    void getLinks_shouldReturnSixLinks_whenUserCanCreateListing()
             throws InstanceNotFoundException {
 
         // Arrange
@@ -186,7 +186,7 @@ class ListingLinkProviderTest {
         List<Link> links = provider.getLinks(userId);
 
         // Assert
-        assertEquals(5, links.size());
+        assertEquals(6, links.size());
     }
 
     @Test

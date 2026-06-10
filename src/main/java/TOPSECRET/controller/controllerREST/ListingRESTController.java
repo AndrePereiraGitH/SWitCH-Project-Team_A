@@ -405,6 +405,10 @@ public class ListingRESTController {
 
         if (context == LinkContext.OWNER && userId != null) {
             links.addAll(listingLinkProvider.getOwnerLinks(userId));
+
+            if (listing.getSaleType().equals(SaleType.AUCTION)) {
+                links.addAll(listingLinkProvider.getAuctionLinks(userId));
+            }
         }
 
         links.add(linkTo(methodOn(ListingRESTController.class)

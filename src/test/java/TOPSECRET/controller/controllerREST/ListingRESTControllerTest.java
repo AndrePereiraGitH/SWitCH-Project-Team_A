@@ -77,6 +77,7 @@ class ListingRESTControllerTest {
         Price price = mock(Price.class);
         Picture picture = mock(Picture.class);
         Listing listing = fullListingGraphDouble();
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
         when(listingService.createAndSave(
@@ -113,6 +114,7 @@ class ListingRESTControllerTest {
         Price price = mock(Price.class);
         Picture picture = mock(Picture.class);
         Listing listing = fullListingGraphDouble();
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
         when(listingService.createAndSave(any(), any(), any(), any(), any(), any(), any()))
@@ -868,7 +870,8 @@ class ListingRESTControllerTest {
 
     private void links(ListingDetailsDTO dto, UserId userIdVO) throws InstanceNotFoundException {
         when(listingLinkProvider.getPublicLinks()).thenReturn(List.of(Link.of("/listings", "all")));
-        when(listingLinkProvider.getOwnerLinks(userIdVO)).thenReturn(List.of(Link.of("/users/user-1/listings", "owner-listings")));
+        when(listingLinkProvider.getOwnerLinks(userIdVO))
+                .thenReturn(List.of(Link.of("/users/user-1/listings", "owner-listings")));
         when(dto.add(any(Link.class))).thenReturn(dto);
     }
 

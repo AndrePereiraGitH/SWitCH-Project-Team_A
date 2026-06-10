@@ -1,5 +1,7 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
+
+import TOPSECRET.controller.controllerREST.AuctionRESTController;
 import TOPSECRET.controller.controllerREST.ListingRESTController;
 import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.ListingAuthorizationPolicy;
@@ -68,7 +70,26 @@ public class ListingLinkProvider implements RootLinkProvider {
             links.add(linkTo(methodOn(ListingRESTController.class)
                     .createListing(null, null))
                     .withRel("create-listing"));
+
         }
+
+        return links;
+    }
+
+
+    public List<Link> getAuctionLinks(UserId userId) throws InstanceNotFoundException {
+        User user = userRepo.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found"));
+
+        List<Link> links = new ArrayList<>();
+
+        if (authPolicy.canCreateListing(user)) {
+            links.add(linkTo(methodOn(AuctionRESTController.class)
+                    .createAuction(null, null))
+                    .withRel("create-auction"));
+
+        }
+
+
         return links;
     }
 
@@ -102,6 +123,7 @@ public class ListingLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
         links.addAll(getOwnerLinks(userId));
         links.addAll(getPublicLinks());
+        links.addAll(getAuctionLinks(userId));
 
         return links;
     }
