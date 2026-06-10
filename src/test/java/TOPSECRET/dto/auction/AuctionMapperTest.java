@@ -69,6 +69,8 @@ class AuctionMapperTest {
     @Test
     void shouldMapAuctionIdentifiers_whenAuctionIsClosed() {
         // Arrange
+        when(auctionId.getId()).thenReturn("auction-123");
+        when(listingId.getId()).thenReturn("listing-123");
         when(auction.id()).thenReturn(auctionId);
         when(auction.getListingId()).thenReturn(listingId);
         when(auction.getInitialPrice()).thenReturn(initialPrice);
@@ -80,8 +82,8 @@ class AuctionMapperTest {
         AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
 
         // Assert
-        assertEquals(auctionId.toString(), dto.getAuctionId());
-        assertEquals(listingId.toString(), dto.getListingId());
+        assertEquals("auction-123", dto.getAuctionId());
+        assertEquals("listing-123", dto.getListingId());
     }
 
     @Test
@@ -274,6 +276,8 @@ class AuctionMapperTest {
         // Arrange
         when(auction.id()).thenReturn(auctionId);
         when(auction.getListingId()).thenReturn(listingId);
+        when(auctionId.getId()).thenReturn("auction-123");
+        when(listingId.getId()).thenReturn("listing-123");
         when(auction.getAuctionStartDateTime()).thenReturn(start);
         when(auction.getAuctionEndDateTime()).thenReturn(end);
         when(auction.getClosedAt()).thenReturn(null);
@@ -291,7 +295,7 @@ class AuctionMapperTest {
 
         // Assert
         assertEquals(1, dtos.size());
-        assertEquals(auctionId.toString(), dtos.get(0).getAuctionId());
+        assertEquals("auction-123", dtos.get(0).getAuctionId());
     }
 
     @Test
