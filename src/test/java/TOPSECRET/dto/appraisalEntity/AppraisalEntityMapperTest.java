@@ -350,4 +350,55 @@ class AppraisalEntityMapperTest {
                 () -> AppraisalEntityMapper.toDTO(null)
         );
     }
+
+    @Test
+    void toApEnId_shouldReturnAppraisalEntityId_whenIdIsValid() {
+        // ARRANGE
+        String id = "ae-123";
+
+        // ACT
+        AppraisalEntityId result = AppraisalEntityMapper.toApEnId(id);
+
+        // ASSERT
+        assertNotNull(result);
+    }
+
+    @Test
+    void toApEnId_shouldPreserveIdValue_whenIdIsValid() {
+        // ARRANGE
+        String id = "ae-123";
+
+        // ACT
+        AppraisalEntityId result = AppraisalEntityMapper.toApEnId(id);
+
+        // ASSERT
+        assertEquals(id, result.getId());
+    }
+
+    @Test
+    void toApEnId_shouldThrowIllegalArgumentException_whenIdIsNull() {
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> AppraisalEntityMapper.toApEnId(null)
+        );
+    }
+
+    @Test
+    void toApEnId_shouldThrowIllegalArgumentException_whenIdIsBlank() {
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> AppraisalEntityMapper.toApEnId("   ")
+        );
+    }
+
+    @Test
+    void toApEnId_shouldThrowIllegalArgumentException_whenIdIsEmpty() {
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> AppraisalEntityMapper.toApEnId("")
+        );
+    }
 }

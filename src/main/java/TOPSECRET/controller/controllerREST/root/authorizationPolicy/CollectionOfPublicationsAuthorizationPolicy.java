@@ -53,18 +53,6 @@ public class CollectionOfPublicationsAuthorizationPolicy {
     }
 
     /**
-     * Determines whether the given user is authorized to view a collection of publications.
-     *
-     * @param user the user requesting the operation; must not be {@code null}
-     * @return {@code true} if the user holds the {@link UserRole#NORMAL_USER} role,
-     *         {@code false} otherwise
-     * @throws NullPointerException if {@code user} is {@code null}
-     */
-    public boolean canViewCollectionOfPublications(User user) {
-        return user.getUserRoles().contains(UserRole.NORMAL_USER);
-    }
-
-    /**
      * Determines whether the given user is authorized to view all collection of publications.
      *
      * @param user the user requesting the operation; must not be {@code null}
@@ -74,5 +62,17 @@ public class CollectionOfPublicationsAuthorizationPolicy {
      */
     public boolean canViewAllCollections(User user) {
         return user.getUserRoles().contains(UserRole.ADMIN);
+    }
+
+    /**
+     * Determines whether the given user is authorized to view their own collections.
+     *
+     * @param user the user requesting the operation; must not be {@code null}
+     * @return {@code true} if the user holds the {@link UserRole#NORMAL_USER} role,
+     *         {@code false} otherwise
+     * @throws NullPointerException if {@code user} is {@code null}
+     */
+    public boolean canViewOwnCollections(User user) {
+        return user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
 }

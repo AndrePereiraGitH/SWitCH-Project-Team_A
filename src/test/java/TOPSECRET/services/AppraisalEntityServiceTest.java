@@ -8,6 +8,7 @@ import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -163,7 +164,7 @@ class AppraisalEntityServiceTest {
         when(repository.findById(entityId)).thenReturn(Optional.of(entity));
 
         // ACT
-        Optional<AppraisalEntity> result = sut.findById(entityId);
+        Optional<AppraisalEntity> result = Optional.ofNullable(sut.findById(entityId));
 
         // ASSERT
         assertTrue(result.isPresent());
@@ -171,15 +172,15 @@ class AppraisalEntityServiceTest {
     }
 
     @Test
-    void findById_shouldReturnEmpty_whenNotFound() {
+    void findById_shouldThrowEntityNotFoundException_whenEntityDoesNotExist() {
         // ARRANGE
         when(repository.findById(entityId)).thenReturn(Optional.empty());
 
-        // ACT
-        Optional<AppraisalEntity> result = sut.findById(entityId);
-
-        // ASSERT
-        assertTrue(result.isEmpty());
+        // ACT + ASSERT
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> sut.findById(entityId)
+        );
     }
 
     @Test

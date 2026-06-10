@@ -151,50 +151,6 @@ class CollectionOfPublicationsAuthorizationPolicyTest {
         assertFalse(result);
     }
 
-
-    // -------------------------------------------------------------------------
-    // canViewCollectionOfPublications
-    // -------------------------------------------------------------------------
-
-    @Test
-    void canViewCollectionOfPublications_shouldReturnTrue_whenUserHasNormalUserRole() {
-        // ARRANGE
-        User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
-
-        // ACT
-        boolean result = policy.canViewCollectionOfPublications(user);
-
-        // ASSERT
-        assertTrue(result);
-    }
-
-    @Test
-    void canViewCollectionOfPublications_shouldReturnFalse_whenUserDoesNotHaveNormalUserRole() {
-        // ARRANGE
-        User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
-
-        // ACT
-        boolean result = policy.canViewCollectionOfPublications(user);
-
-        // ASSERT
-        assertFalse(result);
-    }
-
-    @Test
-    void canViewCollectionOfPublications_shouldReturnFalse_whenUserHasNoRoles() {
-        // ARRANGE
-        User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of());
-
-        // ACT
-        boolean result = policy.canViewCollectionOfPublications(user);
-
-        // ASSERT
-        assertFalse(result);
-    }
-
     // -------------------------------------------------------------------------
     // canViewAllCollections
     // -------------------------------------------------------------------------
@@ -233,6 +189,49 @@ class CollectionOfPublicationsAuthorizationPolicyTest {
 
         // ACT
         boolean result = policy.canViewAllCollections(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+// -------------------------------------------------------------------------
+// canViewOwnCollections
+// -------------------------------------------------------------------------
+
+    @Test
+    void canViewOwnCollections_shouldReturnTrue_whenUserHasNormalUserRole() {
+        // ARRANGE
+        User user = mock(User.class);
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // ACT
+        boolean result = policy.canViewOwnCollections(user);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewOwnCollections_shouldReturnFalse_whenUserHasAdminUserRole() {
+        // ARRANGE
+        User user = mock(User.class);
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        // ACT
+        boolean result = policy.canViewOwnCollections(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canViewOwnCollections_shouldReturnFalse_whenUserHasNoRoles() {
+        // ARRANGE
+        User user = mock(User.class);
+        when(user.getUserRoles()).thenReturn(Set.of());
+
+        // ACT
+        boolean result = policy.canViewOwnCollections(user);
 
         // ASSERT
         assertFalse(result);
