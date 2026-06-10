@@ -17,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -63,11 +62,10 @@ class AuctionRESTControllerTest {
 
     @Mock private AuctionService auctionServiceDouble;
     @Mock private ListingService listingServiceDouble;
+
     @Mock private AuctionLinkProvider auctionLinkProviderDouble;
 
     @InjectMocks private AuctionRESTController controller;
-
-    @Mock Link linkDouble;
 
     @Mock private Auction auctionDouble;
     @Mock private Listing listingDouble;
@@ -247,7 +245,7 @@ class AuctionRESTControllerTest {
     // =================================================================================================================
 
     @Test
-    void getAuctions_shouldReturn200_whenNoFilterProvided() throws Exception {
+    void getAuctions_shouldReturn200_whenNoFilterProvided() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -255,7 +253,7 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -264,7 +262,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenre() throws Exception {
+    void getAuctions_shouldReturn200_whenFilteredByGenre() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -272,14 +270,14 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(genre, null, null,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() throws Exception {
+    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -287,14 +285,14 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(genre, null, null,
-                null, true, userId);
+                null, true);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByAuthor() throws Exception {
+    void getAuctions_shouldReturn200_whenFilteredByAuthor() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -303,14 +301,14 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, author, null,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByPublisher() throws Exception {
+    void getAuctions_shouldReturn200_whenFilteredByPublisher() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -319,14 +317,14 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, publisher,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() throws Exception {
+    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -335,7 +333,7 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                bd, false, userId);
+                bd, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -352,14 +350,14 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    void getAuctions_shouldHandleDuplicateListingIds() throws Exception {
+    void getAuctions_shouldHandleDuplicateListingIds() {
         // Arrange
         Auction auctionDouble2 = mock(Auction.class);
         AuctionId auctionIdDouble2 = mock(AuctionId.class);
@@ -384,16 +382,15 @@ class AuctionRESTControllerTest {
         when(auctionDouble2.getClosedAt()).thenReturn(null);
 
         when(listingDouble.getListingTitle()).thenReturn("Listing Title");
-        when(listingDouble.getShortDescription()).thenReturn("Listing Description");
         when(listingServiceDouble.findById(any())).thenReturn(listingDouble);
-        when(auctionLinkProviderDouble.getLinksForAuction(any())).thenReturn(new ArrayList<>());
+        when(auctionLinkProviderDouble.getPublicLinks(any())).thenReturn(new ArrayList<>());
 
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble, auctionDouble2));
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -409,7 +406,7 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -423,7 +420,7 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false, userId);
+                null, false);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -501,7 +498,7 @@ class AuctionRESTControllerTest {
     // ============= Private Helper ====================================================================================
     // =================================================================================================================
 
-    private void setupAuctionDouble() throws Exception {
+    private void setupAuctionDouble() {
         when(auctionDouble.id()).thenReturn(auctionIdDouble);
         when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
         when(auctionDouble.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
@@ -511,8 +508,9 @@ class AuctionRESTControllerTest {
         when(auctionDouble.getClosedAt()).thenReturn(null);
         when(initialPriceDouble.getPrice()).thenReturn(BigDecimal.valueOf(100));
         when(listingDouble.getListingTitle()).thenReturn("Listing Title");
-        when(listingDouble.getShortDescription()).thenReturn("Listing Description");
         when(listingServiceDouble.findById(any())).thenReturn(listingDouble);
-        when(auctionLinkProviderDouble.getLinksForAuction(any())).thenReturn(new ArrayList<>(List.of(linkDouble)));
+        when(auctionDouble.getCurrentHighestBid()).thenReturn(null);
+        when(auctionDouble.getBidHistory()).thenReturn(List.of());
+        when(auctionLinkProviderDouble.getPublicLinks(any())).thenReturn(new ArrayList<>());
     }
 }
