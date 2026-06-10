@@ -12,8 +12,6 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.bibliographicalData.BibliographicalDataMapper;
-import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
