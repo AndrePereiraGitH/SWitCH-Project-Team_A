@@ -80,7 +80,7 @@ public class AuctionRESTController {
             Listing listing = listingService.findById(listingId);
             AuctionDTO responseDTO = AuctionMapper.toDTO(auction, listing);
 
-            List<Link> links = auctionLinkProvider.getPublicLinks(responseDTO);
+            List<Link> links = auctionLinkProvider.getPublicLinks();
 
             links.add(linkTo(methodOn(AuctionRESTController.class)
                     .getAuctionById(auction.id().getId(), userId))
@@ -200,7 +200,7 @@ public class AuctionRESTController {
                 dto.add(linkTo(methodOn(AuctionRESTController.class)
                         .getAuctionById(dto.getAuctionId(), null))
                         .withSelfRel());
-                dto.add(auctionLinkProvider.getPublicLinks(dto));
+                dto.add(auctionLinkProvider.getPublicLinks());
             });
 
             return ResponseEntity.ok(responseDTOs);
@@ -223,7 +223,7 @@ public class AuctionRESTController {
      *
      * @param auctionId the unique identifier of the auction to retrieve
      * @param userId    the identifier of the requesting user; optional —
-     * *               if provided, private HATEOAS links are included based on the user's permissions
+     *                  if provided, private HATEOAS links are included based on the user's permissions
      * @return {@code 200 OK} with the {@link AuctionDTO} and HATEOAS links,
      *         {@code 400 Bad Request} if the {@code auctionId} is invalid,
      *         {@code 404 Not Found} if the auction or its associated listing does not exist,
@@ -244,11 +244,11 @@ public class AuctionRESTController {
                     .getAuctionById(auctionId, userId))
                     .withSelfRel());
 
-            responseDTO.add(auctionLinkProvider.getPublicLinks(responseDTO));
+            responseDTO.add(auctionLinkProvider.getPublicLinks());
 
             if (userId != null) {
                 UserId userIdVO = AuctionMapper.toUserId(userId);
-                responseDTO.add(auctionLinkProvider.getPrivateLinks(responseDTO, userIdVO));
+                responseDTO.add(auctionLinkProvider.getPlaceBidLink(responseDTO, userIdVO));
             }
 
             return ResponseEntity.ok(responseDTO);

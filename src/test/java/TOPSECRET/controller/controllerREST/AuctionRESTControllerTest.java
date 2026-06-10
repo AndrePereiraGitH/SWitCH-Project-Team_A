@@ -245,7 +245,7 @@ class AuctionRESTControllerTest {
     // =================================================================================================================
 
     @Test
-    void getAuctions_shouldReturn200_whenNoFilterProvided() {
+    void getAuctions_shouldReturn200_whenNoFilterProvided() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -262,7 +262,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenre() {
+    void getAuctions_shouldReturn200_whenFilteredByGenre() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -277,7 +277,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() {
+    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -292,7 +292,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByAuthor() {
+    void getAuctions_shouldReturn200_whenFilteredByAuthor() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -308,7 +308,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByPublisher() {
+    void getAuctions_shouldReturn200_whenFilteredByPublisher() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -324,7 +324,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() {
+    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
@@ -383,7 +383,7 @@ class AuctionRESTControllerTest {
 
         when(listingDouble.getListingTitle()).thenReturn("Listing Title");
         when(listingServiceDouble.findById(any())).thenReturn(listingDouble);
-        when(auctionLinkProviderDouble.getPublicLinks(any())).thenReturn(new ArrayList<>());
+        when(auctionLinkProviderDouble.getPublicLinks()).thenReturn(new ArrayList<>());
 
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble, auctionDouble2));
@@ -493,12 +493,27 @@ class AuctionRESTControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
+    @Test
+    void getAuctionById_shouldReturn200_whenAuctionExistsAndUserIsNotAuthenticated() throws Exception {
+        // Arrange
+        setupAuctionDouble();
+        when(auctionServiceDouble.findById(any())).thenReturn(auctionDouble);
+
+        // Act
+        ResponseEntity<AuctionDTO> response = controller.getAuctionById(auctionId, null);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().getLinks().isEmpty());
+    }
+
 
     // =================================================================================================================
     // ============= Private Helper ====================================================================================
     // =================================================================================================================
 
-    private void setupAuctionDouble() {
+    private void setupAuctionDouble() throws InstanceNotFoundException {
         when(auctionDouble.id()).thenReturn(auctionIdDouble);
         when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
         when(auctionDouble.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
@@ -511,6 +526,6 @@ class AuctionRESTControllerTest {
         when(listingServiceDouble.findById(any())).thenReturn(listingDouble);
         when(auctionDouble.getCurrentHighestBid()).thenReturn(null);
         when(auctionDouble.getBidHistory()).thenReturn(List.of());
-        when(auctionLinkProviderDouble.getPublicLinks(any())).thenReturn(new ArrayList<>());
+        when(auctionLinkProviderDouble.getPublicLinks()).thenReturn(new ArrayList<>());
     }
 }
