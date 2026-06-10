@@ -1,6 +1,7 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.CollectionOfPublicationsRESTController;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.CollectionOfPublicationsAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
@@ -28,7 +29,7 @@ import java.util.Objects;
  * {@link CollectionOfPublicationsAuthorizationPolicy}.</p>
  */
 @Component
-public class CollectionOfPublicationsLinkProvider {
+public class CollectionOfPublicationsLinkProvider implements RootLinkProvider {
 
     private final CollectionOfPublicationsAuthorizationPolicy collectionPolicy;
     private final IUserRepository userRepo;
@@ -117,6 +118,26 @@ public class CollectionOfPublicationsLinkProvider {
                     .withRel("find-own-collections"));
         }
 
+        return links;
+    }
+
+    /**
+     * Returns all HATEOAS links available to the given user for the
+     * collection of publications resource.
+     *
+     * <p>Always includes public navigational links. Owner links are
+     * conditionally included based on the user's role.</p>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a list of {@link Link} instances available to the user;
+     * never {@code null}, may be empty
+     * @throws InstanceNotFoundException if the user cannot be resolved
+     */
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+        List<Link> links = new ArrayList<>();
+        links.addAll(getPublicLinks());
+        links.addAll(getOwnerLinks(userId));
         return links;
     }
 }

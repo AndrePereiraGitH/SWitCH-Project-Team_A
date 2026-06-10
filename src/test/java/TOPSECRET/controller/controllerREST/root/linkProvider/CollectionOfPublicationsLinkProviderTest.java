@@ -131,4 +131,58 @@ class CollectionOfPublicationsLinkProviderTest {
         assertThrows(NullPointerException.class,
                 () -> provider.getOwnerLinks(null));
     }
+
+    // -------------------------------------------------------------------------
+// getLinks
+// -------------------------------------------------------------------------
+
+    @Test
+    void getLinks_shouldReturnPublicAndOwnerLinks_whenUserHasAllPermissions()
+            throws InstanceNotFoundException {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(collectionPolicy.canCreateCollectionOfPublications(user)).thenReturn(true);
+        when(collectionPolicy.canViewOwnCollections(user)).thenReturn(true);
+
+        // ACT
+        List<Link> result = provider.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.size() > 3);
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all-public")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-own-collections")));
+    }
+
+    @Test
+    void getLinks_shouldReturnPublicLinksOnly_whenUserHasNoPermissions()
+            throws InstanceNotFoundException {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(collectionPolicy.canCreateCollectionOfPublications(user)).thenReturn(false);
+        when(collectionPolicy.canViewOwnCollections(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = provider.getLinks(userId);
+
+        // ASSERT
+        assertEquals(3, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all-public")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-public-by-genre")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-by-id")));
+    }
+
+    @Test
+    void getLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT & ASSERT
+        assertThrows(InstanceNotFoundException.class,
+                () -> provider.getLinks(userId));
+    }
 }
