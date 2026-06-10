@@ -17,6 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -51,8 +52,7 @@ public class PublicationTypeRestController {
     @Autowired
     public PublicationTypeRestController(
             PublicationTypeService publicationTypeService,
-            PublicationTypeLinkProvider publicationTypeLinkProvider
-    ) {
+            PublicationTypeLinkProvider publicationTypeLinkProvider) {
         this.service = publicationTypeService;
         this.publicationTypeLinkProvider = publicationTypeLinkProvider;
     }
@@ -89,14 +89,7 @@ public class PublicationTypeRestController {
             UserId id = PublicationTypeMapper.toUserId(userId);
             PublicationType publicationType = service.createAndSave(createPublicationTypeDTO.mediaFormat(), id);
 
-            PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
-
-            List<Link> links = publicationTypeLinkProvider.getLinksForPublicationType(id);
-            links.forEach(result::add);
-            result.add(linkTo(methodOn(PublicationTypeRestController.class)
-                    .getPublicationTypeId(publicationType.id().toString()))
-                    .withSelfRel()
-            );
+            PublicationTypeResponseDTO result = toPublicationTypeDTO(publicationType, id);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
@@ -127,27 +120,15 @@ public class PublicationTypeRestController {
      *         </ul>
      */
     @GetMapping("")
-    public ResponseEntity<List<PublicationTypeResponseDTO>> getAllPublicationTypes(){
+    public ResponseEntity<List<PublicationTypeResponseDTO>> findAll(){
 
         try {
             List<PublicationType> publicationTypes = service.findAll();
 
-            List<PublicationTypeResponseDTO> dtoList =
-                    publicationTypes.stream()
-                            .map(publicationType -> {
-                                PublicationTypeResponseDTO dto =
-                                        PublicationTypeMapper.toDTO(publicationType);
-                                dto.add(
-                                        linkTo(
-                                                methodOn(PublicationTypeRestController.class)
-                                                        .getPublicationTypeId(
-                                                                publicationType.id().toString()
-                                                        )
-                                        ).withSelfRel()
-                                );
-                                return dto;
-                            })
-                            .toList();
+            List<PublicationTypeResponseDTO> dtoList = new ArrayList<>();
+            for (PublicationType publicationType : publicationTypes) {
+                dtoList.add(toPublicationTypeDTO(publicationType));
+            }
 
             if(dtoList.isEmpty()){
                 return ResponseEntity.noContent().build();
@@ -181,7 +162,7 @@ public class PublicationTypeRestController {
      *         </ul>
      */
     @GetMapping("/{id}")
-    public ResponseEntity<PublicationTypeResponseDTO> getPublicationTypeId(
+    public ResponseEntity<PublicationTypeResponseDTO> findById(
             @PathVariable String id) {
 
         try {
@@ -189,22 +170,75 @@ public class PublicationTypeRestController {
 
             PublicationType publicationType = service.findById(publicationTypeId);
 
-            PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
+            PublicationTypeResponseDTO result = toPublicationTypeDTO(publicationType);
 
-            result.add(linkTo(methodOn(PublicationTypeRestController.class)
-                    .getPublicationTypeId(id))
-                    .withSelfRel());
-
-            result.add(linkTo(methodOn(PublicationTypeRestController.class)
-                    .getAllPublicationTypes())
-                    .withRel("get-all-publicationTypes"));
-
-            return ResponseEntity.ok(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    // =========================================================================
+    // Private helpers
+    // =========================================================================
+
+    /**
+     * Builds a {@link PublicationTypeResponseDTO} from a {@link PublicationType}
+     * for public endpoints.
+     *
+     * <p>Only public HATEOAS links and a self-link are attached.</p>
+     *
+     * @param publicationType the publication type to convert
+     * @return the populated DTO with public links attached
+     */
+    private PublicationTypeResponseDTO toPublicationTypeDTO(
+            PublicationType publicationType) {
+
+        PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
+
+        List<Link> links = publicationTypeLinkProvider.getPublicLinks();
+
+        links.add(linkTo(methodOn(PublicationTypeRestController.class)
+                        .findById(publicationType.id().toString()))
+                        .withSelfRel()
+        );
+
+        links.forEach(result::add);
+
+        return result;
+    }
+
+    /**
+     * Builds a {@link PublicationTypeResponseDTO} from a {@link PublicationType}
+     * for authenticated/contextual endpoints.
+     *
+     * <p>Public links are always attached. Additional links are added according
+     * to the permissions of the provided user.</p>
+     *
+     * @param publicationType the publication type to convert
+     * @param userId the requesting user
+     * @return the populated DTO with contextual links attached
+     */
+    private PublicationTypeResponseDTO toPublicationTypeDTO(
+            PublicationType publicationType,
+            UserId userId) {
+
+        PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
+
+        List<Link> links = new ArrayList<>(publicationTypeLinkProvider.getPublicLinks());
+
+        links.addAll(publicationTypeLinkProvider.getCreateLinks(userId));
+
+        links.add(linkTo(methodOn(PublicationTypeRestController.class)
+                        .findById(publicationType.id().toString()))
+                        .withSelfRel()
+        );
+
+        links.forEach(result::add);
+
+        return result;
     }
 }
