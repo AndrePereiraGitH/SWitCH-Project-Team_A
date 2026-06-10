@@ -6,6 +6,7 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.springframework.hateoas.Link;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import org.springframework.stereotype.Component;
 
 import javax.management.InstanceNotFoundException;
@@ -27,7 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * </ul>
  */
 @Component
-public class AuthorLinkProvider {
+public class AuthorLinkProvider implements RootLinkProvider {
 
     private final AuthorAuthorizationPolicy policy;
     private final IUserRepository repository;
@@ -43,6 +44,25 @@ public class AuthorLinkProvider {
     public AuthorLinkProvider(AuthorAuthorizationPolicy policy, IUserRepository repository) {
         this.policy = policy;
         this.repository = repository;
+    }
+
+    /**
+     * Aggregates all HATEOAS navigation links for the given user, combining
+     * public links and private links based on the user permissions.
+     *
+     * <p>This method implements {@link RootLinkProvider} and is called by the
+     * RootController to build the full set of hypermedia links for the API root response.</p>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return a list of all available {@link Link} instances for the given user
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
+     */
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+        List<Link> links = new ArrayList<>();
+        links.addAll(getPublicLinks());
+        links.addAll(getPrivateLinks(userId));
+        return links;
     }
 
     /**
