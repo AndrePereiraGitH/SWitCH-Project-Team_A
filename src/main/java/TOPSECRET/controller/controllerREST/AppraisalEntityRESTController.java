@@ -56,14 +56,16 @@ public class AppraisalEntityRESTController {
      * <p>The request DTO is converted into domain value objects before
      * delegating the creation process to the application service.</p>
      *
-     * <p>If the operation succeeds, a response DTO representing the
-     * created AppraisalEntity is returned with HTTP status
-     * {@code 201 CREATED}.</p>
+     * <p>The response is enriched with HATEOAS links according to
+     * the permissions of the requesting user.</p>
      *
      * @param dto request data used to create the AppraisalEntity
      * @param userId identifier of the user performing the operation
-     * @return a response entity containing the created AppraisalEntity
-     *         or an error status when the operation fails
+     * @return HTTP 201 with the {@link ResponseAppraisalEntityDTO} if created successfully,
+     *         HTTP 400 if the provided data is invalid,
+     *         HTTP 403 if the user does not have permission to perform this operation,
+     *         HTTP 404 if a referenced resource does not exist,
+     *         or HTTP 500 on unexpected error
      */
     @PostMapping("")
     public ResponseEntity<ResponseAppraisalEntityDTO> registerAppraisalEntity(
@@ -120,14 +122,14 @@ public class AppraisalEntityRESTController {
             List<ResponseAppraisalEntityDTO> apEnDTO = new ArrayList<>();
             for (AppraisalEntity apEn : apEnList){
                 apEnDTO.add(AppraisalEntityMapper.toDTO(apEn));
-            }
 
-            // Links
-            List<Link> links = new ArrayList<>(provider.getPublicLinks());
-            links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
-                    .findAll())
-                    .withSelfRel());
-            apEnDTO.forEach(dto -> links.forEach(dto::add));
+                List<Link> links = new ArrayList<>(provider.getPublicLinks());
+                links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
+                        .findById(apEn.id().toString()))
+                        .withSelfRel());
+
+                apEnDTO.forEach(dto -> links.forEach(dto::add));
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(apEnDTO);
 
@@ -163,7 +165,7 @@ public class AppraisalEntityRESTController {
             // Links
             List<Link> links = new ArrayList<>(provider.getPublicLinks());
             links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
-                    .findById(null))
+                    .findById(apEnId))
                     .withSelfRel());
 
             links.forEach(result::add);

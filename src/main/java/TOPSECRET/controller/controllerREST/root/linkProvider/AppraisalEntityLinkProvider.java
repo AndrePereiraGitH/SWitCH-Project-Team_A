@@ -7,7 +7,6 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import java.util.List;
 
-import TOPSECRET.dto.user.UserMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 

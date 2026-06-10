@@ -111,7 +111,12 @@ public class AppraisalEntityService {
     }
 
     /**
-     * Finds an AppraisalEntity by its identifier.
+     * Retrieves an AppraisalEntity by its unique identifier.
+     *
+     * @param id the unique identifier of the AppraisalEntity to retrieve
+     * @return the {@link AppraisalEntity} associated with the given identifier
+     * @throws IllegalArgumentException if the provided identifier is null
+     * @throws EntityNotFoundException if no AppraisalEntity exists with the given identifier
      */
     public AppraisalEntity findById(AppraisalEntityId id) {
 
