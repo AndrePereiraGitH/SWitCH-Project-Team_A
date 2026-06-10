@@ -9,6 +9,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.domain.ValueObjects.UserId;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -109,8 +110,7 @@ public class PublisherService {
     public Publisher findById(PublisherID id) {
         Objects.requireNonNull(id, "PublisherID cannot be null");
         return repository.findById(id)
-                .orElseThrow(() ->
-                new IllegalArgumentException("Publisher not found eith id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Publisher not found"));
     }
 
 }

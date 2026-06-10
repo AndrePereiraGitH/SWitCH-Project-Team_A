@@ -4,6 +4,7 @@ import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
+import TOPSECRET.dto.user.UserMapper;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;
@@ -41,7 +42,7 @@ class PublisherMapperTest {
 
         when(publisher.getName()).thenReturn("Test Publisher");
         when(publisher.id()).thenReturn(publisherID);
-        when(publisherID.getPublisherId()).thenReturn("PUB-1");
+        when(publisherID.getId()).thenReturn("PUB-1");
 
         ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
@@ -76,8 +77,8 @@ class PublisherMapperTest {
         when(p1.id()).thenReturn(id1);
         when(p2.id()).thenReturn(id2);
 
-        when(id1.getPublisherId()).thenReturn("PUB-1");
-        when(id2.getPublisherId()).thenReturn("PUB-2");
+        when(id1.getId()).thenReturn("PUB-1");
+        when(id2.getId()).thenReturn("PUB-2");
 
         List<Publisher> publishers = List.of(p1, p2);
 
@@ -109,7 +110,7 @@ class PublisherMapperTest {
 
         when(validPublisher.getName()).thenReturn("Test");
         when(validPublisher.id()).thenReturn(id);
-        when(id.getPublisherId()).thenReturn("PUB-1");
+        when(id.getId()).thenReturn("PUB-1");
 
         List<Publisher> publishers = Arrays.asList(validPublisher, null);
 
@@ -130,7 +131,7 @@ class PublisherMapperTest {
 
         when(publisher.getName()).thenReturn("Publisher");
         when(publisher.id()).thenReturn(id);
-        when(id.getPublisherId()).thenReturn("PUB-1");
+        when(id.getId()).thenReturn("PUB-1");
 
         List<ResponsePublisherDTO> result =
                 PublisherMapper.toDTOList(List.of(publisher));
@@ -227,7 +228,7 @@ class PublisherMapperTest {
         PublisherID result = PublisherMapper.toPublisherId(raw);
 
         assertNotNull(result);
-        assertEquals(raw, result.getPublisherId());
+        assertEquals(raw, result.getId());
     }
 
     @Test
@@ -247,7 +248,7 @@ class PublisherMapperTest {
 
         String raw = "user-456";
 
-        UserId result = PublisherMapper.toUserId(raw);
+        UserId result = UserMapper.toUserId(raw);
 
         assertNotNull(result);
         assertEquals(raw, result.getUserId());
@@ -256,12 +257,12 @@ class PublisherMapperTest {
     @Test
     void toUserId_shouldThrow_whenNull() {
 
-        assertThrows(Exception.class, () -> PublisherMapper.toUserId(null));
+        assertThrows(Exception.class, () -> UserMapper.toUserId(null));
     }
 
     @Test
     void toUserId_shouldThrow_whenBlank() {
 
-        assertThrows(Exception.class, () -> PublisherMapper.toUserId("  "));
+        assertThrows(Exception.class, () -> UserMapper.toUserId("  "));
     }
 }
