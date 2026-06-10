@@ -47,26 +47,21 @@ public class BibliographicalDataLinkProvider {
     }
 
     /**
-     * Generates a list of HATEOAS links available to the specified user.
+     * Creates and returns the collection of HATEOAS links available to a
+     * registered user for bibliographical data resources.
+     * <p>
+     * This method includes all public bibliographical data links and, depending
+     * on the user's authorization level, may also include links for privileged
+     * actions such as creating bibliographical data entries.
      *
-     * <p>The returned links depend on the user's authorization level:</p>
-     * <ul>
-     *     <li>All users receive a link for retrieving bibliographical data</li>
-     *     <li>Authorized users additionally receive a link for creating
-     *     bibliographical data</li>
-     * </ul>
-     *
-     * @param userId the identifier of the user requesting available actions
-     * @return a list of HATEOAS links available to the user
+     * @param userId the identifier of the registered user whose permissions
+     *               will be evaluated
+     * @return a {@link List} of {@link Link} objects containing the endpoints
+     *         accessible to the specified user
      */
-    public List<Link> getLinksForBibliographicalData(UserId userId){
+    public List<Link> getRegisteredUserLinksForBibliographicalData(UserId userId){
 
-        List<Link> links = new ArrayList<>();
-
-        // Public / universally available action
-        links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
-                .getAllBibliographicalData(null))
-                .withRel("get-bibliographical-data"));
+        List<Link> links = getPublicLinksForBibliographicalData();
 
         userRepo.findByID(userId).ifPresent(user -> {
 
@@ -77,6 +72,34 @@ public class BibliographicalDataLinkProvider {
                         .withRel("create-bibliographical-data"));
             }
         });
+
+        return links;
+    }
+
+    /**
+     * Creates and returns the collection of public HATEOAS links related to
+     * bibliographical data resources.
+     * <p>
+     * The generated links provide access to:
+     * <ul>
+     *   <li>Retrieving all bibliographical data entries</li>
+     *   <li>Retrieving a bibliographical data entry by its identifier</li>
+     * </ul>
+     *
+     * @return a {@link List} of {@link Link} objects containing the available
+     *         public bibliographical data endpoints
+     */
+    public List<Link> getPublicLinksForBibliographicalData (){
+
+        List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                .getAllBibliographicalData())
+                .withRel("get-bibliographical-data"));
+
+        links.add(linkTo(methodOn(BibliographicalDataRESTController.class)
+                .getBibliographicalDataById(null))
+                .withRel("get-bibliographical-data-by-id"));
 
         return links;
     }

@@ -5,7 +5,7 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
+import TOPSECRET.dto.bibliographicalData.response.ResponseBibliographicalDataDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -111,7 +111,7 @@ class BibliographicalDataMapperTest {
         when(bd.getTitle()).thenReturn("Title example");
 
         // Act
-        responseBibliographicalDataDTO dto = BibliographicalDataMapper.toDTO(bd, authorNames);
+        ResponseBibliographicalDataDTO dto = BibliographicalDataMapper.toDTO(bd, authorNames);
 
         // Assert
         assertEquals("BD1", dto.getBdId());
@@ -177,7 +177,7 @@ class BibliographicalDataMapperTest {
     @Test
     void toDTOsShouldReturnEmptyListWhenBibliographicalDataListIsEmpty() throws InstanceNotFoundException {
         // Act
-        List<responseBibliographicalDataDTO> result =
+        List<ResponseBibliographicalDataDTO> result =
                 BibliographicalDataMapper.toDTOs(List.of(), Map.of());
 
         // Assert
@@ -197,13 +197,13 @@ class BibliographicalDataMapperTest {
         when(bdDouble.getTitle()).thenReturn("Some title");
 
         // Act
-        List<responseBibliographicalDataDTO> result =
+        List<ResponseBibliographicalDataDTO> result =
                 BibliographicalDataMapper.toDTOs(
                         List.of(bdDouble),
                         Map.of(bdIdDouble, authorNames)
                 );
 
-        responseBibliographicalDataDTO dto = result.get(0);
+        ResponseBibliographicalDataDTO dto = result.get(0);
 
         // Assert
         assertEquals(1, result.size());
@@ -303,6 +303,18 @@ class BibliographicalDataMapperTest {
 
         // Assert
         assertEquals(id, result.getID());
+    }
+
+    @Test
+    void shouldThrowIllegalArgumentExceptionWhenInputIsInvalid() {
+        // Act
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> BibliographicalDataMapper.toBibliographicalDataId(null)
+        );
+
+        // Assert
+        assertTrue(exception.getMessage().contains("Id can't be null"));
     }
 
 

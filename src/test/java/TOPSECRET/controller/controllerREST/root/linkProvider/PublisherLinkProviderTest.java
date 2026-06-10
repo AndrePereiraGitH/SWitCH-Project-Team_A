@@ -9,10 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.Link;
 
+import javax.management.InstanceNotFoundException;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -27,52 +30,118 @@ class PublisherLinkProviderTest {
     @Mock
     private IUserRepository userRepo;
 
+    @Mock
+    private UserId userId;
+
+    @Mock
+    private User user;
+
     @InjectMocks
     private PublisherLinkProvider provider;
 
+    // =========================================================================
+    // getPublicLinks
+    // =========================================================================
+
     @Test
-    void shouldReturnGetAllAndCreatePublisherLinks_whenUserHasPermission() {
-        // ARRANGE
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
+    void shouldAlwaysReturnTwoPublicLinks() {
+        List<Link> links = provider.getPublicLinks();
+
+        assertEquals(2, links.size());
+        assertTrue(hasRel(links, "get-all-publishers"));
+        assertTrue(hasRel(links, "get-publisher"));
+    }
+
+    // =========================================================================
+    // getAdminLinks
+    // =========================================================================
+
+    @Test
+    void shouldReturnCreatePublisherLink_whenUserIsAdmin() throws InstanceNotFoundException {
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreatePublisher(user)).thenReturn(true);
 
-        // ACT
-        int result = provider.getLinksForPublisher(userId).size();
+        List<Link> links = provider.getAdminLinks(userId);
 
-        // ASSERT
-        assertEquals(2, result); // get-all-publishers + create-publisher
+        assertEquals(1, links.size());
+        assertTrue(hasRel(links, "create-publisher"));
     }
 
     @Test
-    void shouldReturnOnlyGetAllPublishersLink_whenUserHasNoPermission() {
-        // ARRANGE
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
+    void shouldReturnEmptyList_whenUserIsNotAdmin() throws InstanceNotFoundException {
 
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreatePublisher(user)).thenReturn(false);
 
-        // ACT
-        int result = provider.getLinksForPublisher(userId).size();
+        List<Link> links = provider.getAdminLinks(userId);
 
-        // ASSERT
-        assertEquals(1, result); // get-all-publishers only
+        assertTrue(links.isEmpty());
     }
 
     @Test
-    void shouldReturnOnlyGetAllPublishersLink_whenUserDoesNotExist() {
-        // ARRANGE
-        UserId userId = mock(UserId.class);
+    void shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
 
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
-        // ACT
-        int result = provider.getLinksForPublisher(userId).size();
+        assertThrows(InstanceNotFoundException.class,
+                () -> provider.getAdminLinks(userId));
+    }
 
-        // ASSERT
-        assertEquals(1, result); // get-all-publishers is always added
+    @Test
+    void shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        assertThrows(NullPointerException.class,
+                () -> provider.getAdminLinks(null));
+    }
+
+    // =========================================================================
+    // getLinks
+    // =========================================================================
+
+    @Test
+    void shouldReturnAllLinks_whenUserIsAdmin() throws InstanceNotFoundException {
+
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreatePublisher(user)).thenReturn(true);
+
+        List<Link> links = provider.getLinks(userId);
+
+        assertEquals(3, links.size());
+        assertTrue(hasRel(links, "get-all-publishers"));
+        assertTrue(hasRel(links, "get-publisher"));
+        assertTrue(hasRel(links, "create-publisher"));
+    }
+
+    @Test
+    void shouldReturnOnlyPublicLinks_whenUserIsNotAdmin() throws InstanceNotFoundException {
+
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreatePublisher(user)).thenReturn(false);
+
+        List<Link> links = provider.getLinks(userId);
+
+        assertEquals(2, links.size());
+        assertTrue(hasRel(links, "get-all-publishers"));
+        assertTrue(hasRel(links, "get-publisher"));
+        assertFalse(hasRel(links, "create-publisher"));
+    }
+
+    @Test
+    void shouldThrowInstanceNotFoundException_whenUserDoesNotExistOnGetLinks() {
+
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
+
+        assertThrows(InstanceNotFoundException.class,
+                () -> provider.getLinks(userId));
+    }
+
+    // =========================================================================
+    // Private helper
+    // =========================================================================
+
+    private boolean hasRel(List<Link> links, String rel) {
+        return links.stream()
+                .anyMatch(link -> link.getRel().value().equals(rel));
     }
 }
