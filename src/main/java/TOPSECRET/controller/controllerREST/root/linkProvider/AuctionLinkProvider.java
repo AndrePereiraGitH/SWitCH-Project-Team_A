@@ -64,7 +64,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(AuctionRESTController.class)
-                .getAuctions(null, null, null, null, false))
+                .getAuctions(null, null, null, null, null, false))
                 .withRel("get-auctions"));
 
         return links;

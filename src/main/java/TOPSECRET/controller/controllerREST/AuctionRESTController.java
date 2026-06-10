@@ -141,7 +141,7 @@ public class AuctionRESTController {
 
     /**
      * Retrieves a list of auctions, optionally filtered by genre, author, publisher,
-     * or bibliographical data, and optionally sorted by auction deadline.
+     * bibliographical data, or listing, and optionally sorted by auction deadline.
      *
      * <p>Filtering logic is delegated to {@link AuctionService#findAuctions}, which
      * resolves the appropriate chain of repositories based on the provided criterion.</p>
@@ -157,6 +157,7 @@ public class AuctionRESTController {
      * @param authorId              the author identifier to filter by; optional
      * @param publisherId           the publisher identifier to filter by; optional
      * @param bibliographicalDataId the bibliographical data identifier to filter by; optional
+     * @param listingId             the listing identifier to filter by; optional
      * @param sortByDeadline        whether to sort results by auction deadline ascending;
      *                              only applicable when filtering by genre; defaults to {@code false}
      * @return {@code 200 OK} with the list of {@link AuctionDTO} and HATEOAS links,
@@ -170,6 +171,7 @@ public class AuctionRESTController {
             @RequestParam(required = false) String authorId,
             @RequestParam(required = false) String publisherId,
             @RequestParam(required = false) String bibliographicalDataId,
+            @RequestParam(required = false) String listingId,
             @RequestParam(required = false, defaultValue = "false") boolean sortByDeadline) {
 
         try {
@@ -185,6 +187,9 @@ public class AuctionRESTController {
                             : null,
                     bibliographicalDataId != null
                             ? AuctionMapper.toBibliographicalDataId(bibliographicalDataId)
+                            : null,
+                    listingId != null
+                            ? AuctionMapper.toListingId(listingId)
                             : null,
                     sortByDeadline);
 

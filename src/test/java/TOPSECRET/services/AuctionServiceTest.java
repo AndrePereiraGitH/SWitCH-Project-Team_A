@@ -528,7 +528,7 @@ class AuctionServiceTest {
 
         // Act
         List<Auction> result = auctionService.findAuctions(null, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(List.of(auctionDouble), result);
@@ -545,7 +545,7 @@ class AuctionServiceTest {
 
         // Act
         List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(List.of(auctionDouble), result);
@@ -562,7 +562,7 @@ class AuctionServiceTest {
 
         // Act
         List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null,
-                null, true);
+                null, null, true);
 
         // Assert
         assertEquals(List.of(auctionDouble), result);
@@ -579,7 +579,7 @@ class AuctionServiceTest {
 
         // Act
         List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(List.of(auctionDouble), result);
@@ -596,7 +596,7 @@ class AuctionServiceTest {
 
         // Act
         List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(List.of(auctionDouble), result);
@@ -612,7 +612,7 @@ class AuctionServiceTest {
 
         // Act
         List<Auction> result = auctionService.findAuctions(null, null, null,
-                bdIdDouble, false);
+                bdIdDouble, null, false);
 
         // Assert
         assertEquals(List.of(auctionDouble), result);
@@ -625,7 +625,7 @@ class AuctionServiceTest {
 
         // Act
         List<Auction> result = auctionService.findAuctions(null, null, null,
-                null, false);
+                null,null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -637,7 +637,8 @@ class AuctionServiceTest {
         when(bdRepoDouble.findAllByGenreId(genreIdDouble)).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null, null, false);
+        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null,
+                null, null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -650,7 +651,8 @@ class AuctionServiceTest {
         when(pubSampleRepoDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null, null, false);
+        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null,
+                null, null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -664,7 +666,8 @@ class AuctionServiceTest {
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null, null, false);
+        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null,
+                null, null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -676,7 +679,8 @@ class AuctionServiceTest {
         when(bdRepoDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null, null, false);
+        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null,
+                null,null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -689,7 +693,8 @@ class AuctionServiceTest {
         when(pubSampleRepoDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null, null, false);
+        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null,
+                null,null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -703,7 +708,8 @@ class AuctionServiceTest {
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null, null, false);
+        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null,
+                null,null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -715,7 +721,8 @@ class AuctionServiceTest {
         when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble)).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble, null, false);
+        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble,
+                null,null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -728,7 +735,8 @@ class AuctionServiceTest {
         when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionIdDouble))).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble, null, false);
+        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble,
+                null,null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -742,7 +750,8 @@ class AuctionServiceTest {
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble, null, false);
+        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble,
+                null, null, false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -754,7 +763,8 @@ class AuctionServiceTest {
         when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdIdDouble)).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, null, null, bdIdDouble, false);
+        List<Auction> result = auctionService.findAuctions(null, null, null, bdIdDouble,
+                null,false);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -767,7 +777,34 @@ class AuctionServiceTest {
         when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
 
         // Act
-        List<Auction> result = auctionService.findAuctions(null, null, null, bdIdDouble, false);
+        List<Auction> result = auctionService.findAuctions(null, null, null, bdIdDouble,
+                null,false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnAuctions_whenFilteredByListingId() {
+        // Arrange
+        when(auctionRepoDouble.findByListingIdIn(List.of(listingIdDouble1))).thenReturn(List.of(auctionDouble));
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, null, null,
+                null, listingIdDouble1, false);
+
+        // Assert
+        assertEquals(List.of(auctionDouble), result);
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenListingHasNoAuctions() {
+        // Arrange
+        when(auctionRepoDouble.findByListingIdIn(List.of(listingIdDouble1))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, null, null,
+                null, listingIdDouble1, false);
 
         // Assert
         assertTrue(result.isEmpty());

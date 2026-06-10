@@ -248,12 +248,12 @@ class AuctionRESTControllerTest {
     void getAuctions_shouldReturn200_whenNoFilterProvided() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble));
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -265,12 +265,12 @@ class AuctionRESTControllerTest {
     void getAuctions_shouldReturn200_whenFilteredByGenre() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble));
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(genre, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -280,12 +280,12 @@ class AuctionRESTControllerTest {
     void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble));
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(genre, null, null,
-                null, true);
+                null, null, true);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -295,13 +295,13 @@ class AuctionRESTControllerTest {
     void getAuctions_shouldReturn200_whenFilteredByAuthor() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble));
         String author = "author-123";
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, author, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -311,13 +311,13 @@ class AuctionRESTControllerTest {
     void getAuctions_shouldReturn200_whenFilteredByPublisher() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble));
         String publisher = "publisher-123";
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, publisher,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -327,13 +327,13 @@ class AuctionRESTControllerTest {
     void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() throws InstanceNotFoundException {
         // Arrange
         setupAuctionDouble();
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble));
         String bd = "bd-123";
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                bd, false);
+                bd, null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -342,7 +342,7 @@ class AuctionRESTControllerTest {
     @Test
     void getAuctions_shouldReturn404_whenListingNotFound() {
         // Arrange
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble));
         when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
         when(listingServiceDouble.findById(listingIdDouble))
@@ -350,7 +350,7 @@ class AuctionRESTControllerTest {
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -385,12 +385,12 @@ class AuctionRESTControllerTest {
         when(listingServiceDouble.findById(any())).thenReturn(listingDouble);
         when(auctionLinkProviderDouble.getPublicLinks()).thenReturn(new ArrayList<>());
 
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenReturn(List.of(auctionDouble, auctionDouble2));
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -401,12 +401,12 @@ class AuctionRESTControllerTest {
     @Test
     void getAuctions_shouldReturn400_whenArgumentIsInvalid() {
         // Arrange
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenThrow(new IllegalArgumentException("Invalid argument"));
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -415,15 +415,30 @@ class AuctionRESTControllerTest {
     @Test
     void getAuctions_shouldReturn500_whenUnexpectedErrorOccurs() {
         // Arrange
-        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(Boolean.class)))
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
                 .thenThrow(new RuntimeException("Unexpected error"));
 
         // Act
         ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
-                null, false);
+                null, null, false);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void getAuctions_shouldReturn200_whenFilteredByListingId() throws InstanceNotFoundException {
+        // Arrange
+        setupAuctionDouble();
+        when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
+                .thenReturn(List.of(auctionDouble));
+
+        // Act
+        ResponseEntity<List<AuctionDTO>> response = controller.getAuctions(null, null, null,
+                null, listingId, false);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
 

@@ -243,7 +243,7 @@ public class AuctionService {
 
     /**
      * Retrieves a list of auctions optionally filtered by genre, author, publisher,
-     * or bibliographical data, and optionally sorted by auction deadline.
+     * bibliographical data or listingId and optionally sorted by auction deadline.
      *
      * <p>The filtering chain varies by criterion:</p>
      * <ul>
@@ -251,6 +251,7 @@ public class AuctionService {
      *   <li><b>author</b> — author → bibliographical data → publication samples → listings → auctions</li>
      *   <li><b>publisher</b> — publisher → editions → publication samples → listings → auctions</li>
      *   <li><b>bibliographicalData</b> — bibliographical data → publication samples → listings → auctions</li>
+     *   <li><b>listing</b> — listings → auctions</li>
      *   <li><b>none</b> — returns all auctions</li>
      * </ul>
      *
@@ -260,12 +261,13 @@ public class AuctionService {
      * @param authorId              the author identifier to filter by; optional
      * @param publisherId           the publisher identifier to filter by; optional
      * @param bibliographicalDataId the bibliographical data identifier to filter by; optional
+     * @param listingId             the listing identifier to filter by; optional
      * @param sortByDeadline        whether to sort results by auction deadline ascending;
      *                              only applicable when filtering by genre
      * @return a list of auctions matching the given criteria; empty if none found
      */
     public List<Auction> findAuctions(GenreId genreId, AuthorId authorId, PublisherID publisherId,
-                                      BibliographicalDataId bibliographicalDataId, boolean sortByDeadline) {
+                                      BibliographicalDataId bibliographicalDataId, ListingId listingId, boolean sortByDeadline) {
 
         if (genreId != null) {
             List<BibliographicalDataId> bdIds = bdRepo.findAllByGenreId(genreId);
@@ -288,6 +290,9 @@ public class AuctionService {
         } else if (bibliographicalDataId != null) {
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByBibliographicalDataId(bibliographicalDataId);
             return findAuctionsByPublicationSamples(pubSampleIds, false);
+
+        } else if (listingId != null) {
+            return auctionRepo.findByListingIdIn(List.of(listingId));
 
         } else {
             return auctionRepo.findAll();
