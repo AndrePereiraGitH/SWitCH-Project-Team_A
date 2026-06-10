@@ -5,7 +5,7 @@ import TOPSECRET.domain.ValueObjects.AuthorId;
 import TOPSECRET.domain.ValueObjects.BibliographicalDataId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
-import TOPSECRET.dto.bibliographicalData.response.responseBibliographicalDataDTO;
+import TOPSECRET.dto.bibliographicalData.response.ResponseBibliographicalDataDTO;
 
 import javax.management.InstanceNotFoundException;
 import java.util.*;
@@ -22,19 +22,19 @@ public final class BibliographicalDataMapper {
 
     /**
      * Converts a {@link BibliographicalData} entity into a
-     * {@link responseBibliographicalDataDTO}.
+     * {@link ResponseBibliographicalDataDTO}.
      *
      * <p>The resulting DTO includes the bibliographical data identifier,
      * title, and associated author names.</p>
      *
      * @param bd the bibliographical data entity to convert
      * @param authorNames the list of author names associated with the entity
-     * @return a {@link responseBibliographicalDataDTO} containing the mapped data
+     * @return a {@link ResponseBibliographicalDataDTO} containing the mapped data
      * @throws IllegalArgumentException if the bibliographical data entity is null
      * @throws InstanceNotFoundException if a required related instance
      *         cannot be found during mapping
      */
-    public static responseBibliographicalDataDTO toDTO(BibliographicalData bd, List<String> authorNames) throws InstanceNotFoundException {
+    public static ResponseBibliographicalDataDTO toDTO(BibliographicalData bd, List<String> authorNames) throws InstanceNotFoundException {
 
         if (bd == null){
             throw new IllegalArgumentException("Bibliographical data cannot be null");
@@ -44,7 +44,7 @@ public final class BibliographicalDataMapper {
             throw new IllegalArgumentException("Author names cannot be null");
         }
 
-        return new responseBibliographicalDataDTO(
+        return new ResponseBibliographicalDataDTO(
                 bd.id().getID(),
                 bd.getTitle(),
                 authorNames
@@ -67,14 +67,14 @@ public final class BibliographicalDataMapper {
      *                                  data entry
      * @throws InstanceNotFoundException if an error occurs while converting an entry
      */
-    public static List<responseBibliographicalDataDTO> toDTOs(
+    public static List<ResponseBibliographicalDataDTO> toDTOs(
             List<BibliographicalData> bibliographicalDataList,
             Map<BibliographicalDataId, List<String>> authorNamesMap) throws InstanceNotFoundException {
 
         Objects.requireNonNull(bibliographicalDataList, "Bibliographical data list can't be null");
         Objects.requireNonNull(authorNamesMap, "Author names map can't be null");
 
-        List<responseBibliographicalDataDTO> result = new ArrayList<>();
+        List<ResponseBibliographicalDataDTO> result = new ArrayList<>();
 
         for (BibliographicalData bd : bibliographicalDataList) {
             List<String> authorNames = authorNamesMap.get(bd.id());
@@ -139,7 +139,12 @@ public final class BibliographicalDataMapper {
      * @param id the user identifier as a string
      * @return a new {@link BibliographicalDataId} instance
      */
-    public static BibliographicalDataId toBibliographicalDataId (String id){ return new BibliographicalDataId(id); }
+    public static BibliographicalDataId toBibliographicalDataId (String id) throws IllegalArgumentException {
+        if (id == null){
+            throw new IllegalArgumentException("Id can't be null");
+        }
+        return new BibliographicalDataId(id);
+    }
 
     /**
      * Creates a {@link Locale} instance from the given string value.

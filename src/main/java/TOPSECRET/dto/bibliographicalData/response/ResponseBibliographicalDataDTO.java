@@ -17,7 +17,7 @@ import java.util.List;
 @ToString
 @Getter
 @AllArgsConstructor
-public class responseBibliographicalDataDTO extends RepresentationModel<responseBibliographicalDataDTO> {
+public class ResponseBibliographicalDataDTO extends RepresentationModel<ResponseBibliographicalDataDTO> {
 
     private final String bdId;
     private final String pubTitle;
