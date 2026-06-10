@@ -12,7 +12,6 @@ import TOPSECRET.persistence.repositoryjpa.jpa.ICollectionOfPublicationsReposito
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
-import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -82,15 +81,11 @@ public class CollectionOfPublicationsRepositoryJpaImpl implements ICollectionOfP
      * {@inheritDoc}
      */
     @Override
-    public CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
+    public Optional<CollectionOfPublications> findById(CollectionOfPublicationsId collectionId) {
         Objects.requireNonNull(collectionId, "CollectionOfPublications Id cannot be null");
 
-        Optional<CollectionOfPublicationsDM> collectionDM = collectionRepositoryJpa.findById(collectionId);
-
-        if (collectionDM.isEmpty()) {
-            throw new InstanceNotFoundException("Collection does not exists");
-        }
-        return collectionOfPublicationsAssembler.toDomain(collectionDM.get());
+        return collectionRepositoryJpa.findById(collectionId)
+                .map(collectionOfPublicationsAssembler::toDomain);
     }
 
     /**

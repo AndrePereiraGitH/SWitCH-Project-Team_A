@@ -3,8 +3,9 @@ package TOPSECRET.controller.controllerCLI;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.services.PublisherService;
+import org.springframework.security.access.AccessDeniedException;
 
-import java.nio.file.AccessDeniedException;
+import javax.management.InstanceNotFoundException;
 import java.util.Objects;
 
 /**
@@ -39,10 +40,9 @@ public class ToRegisterNewPublisherController {
      * @param contact   the publisher's contact information; must not be null
      * @param userId    the identifier of the user performing the registration; must not be null
      * @throws IllegalArgumentException if any business validation fails or the user is not found
-     * @throws AccessDeniedException    if the user does not have permission to register a publisher
      */
     public void registerPublisher(String name, String vatNumber, Contact contact, UserId userId)
-            throws AccessDeniedException {
+            throws AccessDeniedException, InstanceNotFoundException {
         Objects.requireNonNull(contact, "Contact information is required");
         Objects.requireNonNull(userId, "A valid User ID must be provided");
 

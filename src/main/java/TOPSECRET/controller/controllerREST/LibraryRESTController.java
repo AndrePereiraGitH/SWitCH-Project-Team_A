@@ -19,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -45,13 +46,14 @@ public class LibraryRESTController {
      * <p>This endpoint creates a new library associated with the given user.</p>
      *
      * @param requestLibraryDTO the validated request body containing the library creation data.
-     * @param userId the identifier of the user creating the library. Must not be blank.
+     * @param userId            the identifier of the user creating the library. Must not be blank.
      * @return a {@link ResponseEntity} containing the created {@link ResponseLibraryDTO}
      * and HTTP 201 status if successful, or an error status:
      * <ul>
-     *     <li>400 Bad Request – if input validation fails or arguments are invalid</li>
-     *     <li>403 Forbidden – if the user is not allowed to create a library</li>
-     *     <li>500 Internal Server Error – for unexpected failures</li>
+     *      * <li>404 Not Found – if the user does not exist</li>
+     *      * <li>409 Conflict – if a library already exists for the given user</li>  // também faltava este!
+     *      * <li>400 Bad Request – if input validation fails or arguments are invalid</li>
+     *      * <li>403 Forbidden – if the user is not allowed to create a library</li>
      * </ul>
      */
     @PostMapping
@@ -66,7 +68,7 @@ public class LibraryRESTController {
             Library library = libService.createAndSave(requestLibraryDTO.libraryName(), id);
             ResponseLibraryDTO response = LibraryMapper.toDTO(library);
 
-            response.add(libLinkProvider.getLinksForLibraries(id));
+            response.add(libLinkProvider.getOwnerLinks(id));
 
             response.add(linkTo(methodOn(LibraryRESTController.class)
                     .getLibrary(library.id().toString()))
@@ -74,12 +76,18 @@ public class LibraryRESTController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
         } catch (InstanceAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -101,6 +109,7 @@ public class LibraryRESTController {
      */
     @GetMapping
     public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries() {
+        // TODO: add libLinkProvider.getAdminLinks(userId) when we start Spring Security
 
         try {
             List<Library> libraries = libService.findAll();
@@ -164,6 +173,8 @@ public class LibraryRESTController {
             return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -178,6 +189,7 @@ public class LibraryRESTController {
      * <p>The returned resource includes HATEOAS links:</p>
      * <ul>
      *     <li>self link</li>
+     *     <li>owner links – actions available to the library owner</li>
      * </ul>
      *
      * @param userId the unique identifier of the user whose library is to be retrieved.
@@ -195,10 +207,13 @@ public class LibraryRESTController {
 
 
         try {
-            UserId userId2 = LibraryMapper.toUserId(userId);
+            UserId ownerId = LibraryMapper.toUserId(userId);
 
-            Library library = libService.findByUserId(userId2);
+            Library library = libService.findByUserId(ownerId);
+
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
+
+            result.add(libLinkProvider.getOwnerLinks(ownerId));
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
                     .getLibraryByUserId(userId))
@@ -208,8 +223,14 @@ public class LibraryRESTController {
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
     }
 }

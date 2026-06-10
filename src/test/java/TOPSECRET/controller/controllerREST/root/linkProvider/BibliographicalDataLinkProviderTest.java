@@ -31,22 +31,20 @@ class BibliographicalDataLinkProviderTest {
     BibliographicalDataLinkProvider provider;
 
     @Test
-    void shouldReturnOnlyUniversalLinksForBibliographicalDataWhenUserIsValidButNotAuthorized(){
-        // Arrange
-        User user = mock(User.class);
-        UserId userId = mock(UserId.class);
-
-        when(userRepository.findByID(userId)).thenReturn(Optional.ofNullable(user));
-
-        when(authorizationPolicy.canCreateBibliographicalData(user)).thenReturn(false);
-
+    void shouldReturnOnlyPublicLinksForBibliographicalDataWhenUserIsNotRegistered(){
         // Act
-        List<Link> result = provider.getLinksForBibliographicalData(userId);
+        List<Link> result = provider.getPublicLinksForBibliographicalData();
 
         // Assert
+        assertEquals(2, result.size());
+
         assertTrue(result.stream()
                 .anyMatch(link -> link.getRel().value()
                         .equals("get-bibliographical-data")));
+
+        assertTrue(result.stream()
+                .anyMatch(link -> link.getRel().value()
+                        .equals("get-bibliographical-data-by-id")));
 
         assertFalse(result.stream()
                 .anyMatch(link -> link.getRel().value()
@@ -63,14 +61,18 @@ class BibliographicalDataLinkProviderTest {
         when(authorizationPolicy.canCreateBibliographicalData(user)).thenReturn(true);
 
         // Act
-        List<Link> result = provider.getLinksForBibliographicalData(userId);
+        List<Link> result = provider.getRegisteredUserLinksForBibliographicalData(userId);
 
         // Assert
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
 
         assertTrue(result.stream()
                 .anyMatch(link -> link.getRel().value()
                         .equals("get-bibliographical-data")));
+
+        assertTrue(result.stream()
+                .anyMatch(link -> link.getRel().value()
+                        .equals("get-bibliographical-data-by-id")));
 
         assertTrue(result.stream()
                 .anyMatch(link -> link.getRel().value()

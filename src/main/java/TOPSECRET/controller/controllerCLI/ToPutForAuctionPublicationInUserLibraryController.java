@@ -61,21 +61,22 @@ public class ToPutForAuctionPublicationInUserLibraryController {
      * @param userId the identifier of the user whose library publications are to be retrieved
      * @return a list of DTOs representing the publication samples in the user's library
      * @throws IllegalArgumentException if {@code userId} is {@code null}
-     * @throws InstanceNotFoundException if the user has no library or if the bibliographical
-     * data for any publication sample cannot be found
+     * @throws InstanceNotFoundException if the user has no library
      */
-    public List<US016PublicationSampleDTO> getAllPublicationsInUserLibrary(UserId userId) throws InstanceNotFoundException {
+    public List<US016PublicationSampleDTO> getAllPublicationsInUserLibrary(UserId userId)
+            throws InstanceNotFoundException {
 
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null!");
         }
 
-        Library library = libraryRepo.getByUserId(userId);
-        if (library == null) {
-            throw new InstanceNotFoundException("There is no library for the userID: " + userId);
-        }
+        Library library = libraryRepo.findByUserId(userId)
+                .orElseThrow(() ->
+                        new InstanceNotFoundException("There is no library for userId: " + userId)
+                );
 
-        List<PublicationSample> samplesList = publicationSampleRepository.findByLibraryId(library.id());
+        List<PublicationSample> samplesList =
+                publicationSampleRepository.findByLibraryId(library.id());
 
         return mapper.fromDomainList(samplesList);
     }

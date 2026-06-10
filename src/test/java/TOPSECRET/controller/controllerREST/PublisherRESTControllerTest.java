@@ -19,6 +19,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ class PublisherRESTControllerTest {
     // CREATE - SUCCESS
     // ==========================================================
     @Test
-    void createPublisher_shouldReturnCreated_onSuccess() {
+    void createPublisher_shouldReturnCreated_onSuccess() throws InstanceNotFoundException {
 
         // Arrange
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
@@ -56,7 +57,7 @@ class PublisherRESTControllerTest {
         when(requestDTO.vatNumber()).thenReturn("123456789");
         when(publisher.id()).thenReturn(publisherID);
         when(publisherService.createAndSave(any(), any(), any(), any())).thenReturn(publisher);
-        when(publisherLinkProvider.getLinksForPublisher(userId)).thenReturn(List.of(providerLink));
+        when(publisherLinkProvider.getLinks(userId)).thenReturn(List.of(providerLink));
 
         try (MockedStatic<PublisherMapper> mapper = mockStatic(PublisherMapper.class)) {
 
@@ -83,8 +84,7 @@ class PublisherRESTControllerTest {
     // CREATE - BAD REQUEST
     // ==========================================================
     @Test
-    void createPublisher_shouldReturnBadRequest_onIllegalArgumentException() {
-
+    void createPublisher_shouldReturnBadRequest_onIllegalArgumentException() throws InstanceNotFoundException {
         // Arrange
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
 
@@ -111,7 +111,7 @@ class PublisherRESTControllerTest {
     // CREATE - FORBIDDEN
     // ==========================================================
     @Test
-    void createPublisher_shouldReturnForbidden_onAccessDeniedException() {
+    void createPublisher_shouldReturnForbidden_onAccessDeniedException() throws InstanceNotFoundException {
 
         // Arrange
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
@@ -140,7 +140,7 @@ class PublisherRESTControllerTest {
     // CREATE - INTERNAL ERROR
     // ==========================================================
     @Test
-    void createPublisher_shouldReturnInternalServerError_onException() {
+    void createPublisher_shouldReturnInternalServerError_onException() throws InstanceNotFoundException {
 
         // Arrange
         RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
@@ -161,6 +161,51 @@ class PublisherRESTControllerTest {
 
             // Assert
             assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+    // ==========================================================
+    // CREATE - NOT FOUND
+    // ==========================================================
+    @Test
+    void createPublisher_shouldReturnNotFound_whenUserDoesNotExist() throws InstanceNotFoundException {
+
+        RequestPublisherDTO requestDTO = mock(RequestPublisherDTO.class);
+        Publisher publisher = mock(Publisher.class);
+
+        when(requestDTO.name()).thenReturn("Publisher");
+        when(requestDTO.vatNumber()).thenReturn("123456789");
+        when(publisherService.createAndSave(any(), any(), any(), any())).thenReturn(publisher);
+        when(publisherLinkProvider.getLinks(any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException("User not found"));
+
+        try (MockedStatic<PublisherMapper> mapper = mockStatic(PublisherMapper.class)) {
+
+            mapper.when(() -> PublisherMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> PublisherMapper.toContact(any())).thenReturn(mock(Contact.class));
+
+            ResponseEntity<ResponsePublisherDTO> response =
+                    controller.createPublisher(requestDTO, "user-1");
+
+            assertEquals(NOT_FOUND, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    // ==========================================================
+    // GET BY ID - BAD REQUEST
+    // ==========================================================
+    @Test
+    void getPublisher_shouldReturnBadRequest_whenIdFormatIsInvalid() {
+
+        try (MockedStatic<PublisherMapper> mapper = mockStatic(PublisherMapper.class)) {
+
+            mapper.when(() -> PublisherMapper.toPublisherId(any()))
+                    .thenThrow(new IllegalArgumentException());
+
+            ResponseEntity<ResponsePublisherDTO> response = controller.getPublisher("invalid-id");
+
+            assertEquals(NOT_FOUND, response.getStatusCode());
             assertNull(response.getBody());
         }
     }

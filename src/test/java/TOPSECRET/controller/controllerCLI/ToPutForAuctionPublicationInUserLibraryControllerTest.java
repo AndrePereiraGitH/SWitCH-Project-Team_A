@@ -19,6 +19,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -115,10 +116,11 @@ class ToPutForAuctionPublicationInUserLibraryControllerTest {
     }
 
     @Test
-    void getAllPublicationsInUserLibrary_shouldThrow_whenLibraryDoesNotExist() throws InstanceNotFoundException {
+    void getAllPublicationsInUserLibrary_shouldThrow_whenLibraryDoesNotExist()  {
 
         // arrange
-        when(libraryRepo.getByUserId(userId)).thenReturn(null);
+        when(libraryRepo.findByUserId(userId))
+                .thenReturn(Optional.empty());
 
         // act + assert
         InstanceNotFoundException ex = assertThrows(
@@ -126,14 +128,14 @@ class ToPutForAuctionPublicationInUserLibraryControllerTest {
                 () -> controller.getAllPublicationsInUserLibrary(userId)
         );
 
-        assertEquals("There is no library for the userID: " + userId, ex.getMessage());
+        assertEquals("There is no library for userId: " + userId, ex.getMessage());
     }
 
     @Test
     void getAllPublicationsInUserLibrary_shouldReturnEmptyList_whenLibraryHasNoPublications() throws Exception {
 
         // arrange
-        when(libraryRepo.getByUserId(userId)).thenReturn(library);
+        when(libraryRepo.findByUserId(userId)).thenReturn(Optional.of(library));
         when(library.id()).thenReturn(libraryId);
         when(publicationSampleRepository.findByLibraryId(libraryId)).thenReturn(List.of());
         when(mapper.fromDomainList(List.of())).thenReturn(List.of());
@@ -152,7 +154,7 @@ class ToPutForAuctionPublicationInUserLibraryControllerTest {
         // arrange
         US016PublicationSampleDTO dto = mock(US016PublicationSampleDTO.class);
 
-        when(libraryRepo.getByUserId(userId)).thenReturn(library);
+        when(libraryRepo.findByUserId(userId)).thenReturn(Optional.of(library));
         when(library.id()).thenReturn(libraryId);
         when(publicationSampleRepository.findByLibraryId(libraryId))
                 .thenReturn(List.of(publicationSample));
@@ -218,7 +220,7 @@ class ToPutForAuctionPublicationInUserLibraryControllerTest {
     }
 
     @Test
-    void createAuctionListing_shouldThrow_whenListingAlreadyExists() throws Exception {
+    void createAuctionListing_shouldThrow_whenListingAlreadyExists() {
 
         // arrange
         LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);
