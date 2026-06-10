@@ -7,7 +7,6 @@ import TOPSECRET.domain.ValueObjects.LibraryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
 import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,21 +40,6 @@ public class LibraryRepositoryMem implements ILibraryRepository {
         }
 
         _libraries.put(library.id().toString(), library);
-        return library;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-
-    public Library getByUserId(UserId userId) throws InstanceNotFoundException {
-        if (userId == null) {
-            throw new NullPointerException("Username cannot be null");
-        }
-        Library library = _libraries.get(userId.getUserId());
-        if (library == null) {
-            throw new InstanceNotFoundException("This user does not have a library");
-        }
         return library;
     }
 
