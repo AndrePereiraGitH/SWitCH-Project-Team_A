@@ -630,4 +630,146 @@ class AuctionServiceTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenGenreHasNoBibliographicalData() {
+        // Arrange
+        when(bdRepoDouble.findAllByGenreId(genreIdDouble)).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenGenreHasNoPublicationSamples() {
+        // Arrange
+        when(bdRepoDouble.findAllByGenreId(genreIdDouble)).thenReturn(List.of(bdIdDouble));
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenGenreHasNoListings() {
+        // Arrange
+        when(bdRepoDouble.findAllByGenreId(genreIdDouble)).thenReturn(List.of(bdIdDouble));
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of(pubSampleIdDouble));
+        when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(genreIdDouble, null, null, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenAuthorHasNoBibliographicalData() {
+        // Arrange
+        when(bdRepoDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenAuthorHasNoPublicationSamples() {
+        // Arrange
+        when(bdRepoDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of(bdIdDouble));
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenAuthorHasNoListings() {
+        // Arrange
+        when(bdRepoDouble.findIdByAuthorId(authorIdDouble)).thenReturn(List.of(bdIdDouble));
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataIdIn(List.of(bdIdDouble))).thenReturn(List.of(pubSampleIdDouble));
+        when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, authorIdDouble, null, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenPublisherHasNoEditions() {
+        // Arrange
+        when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble)).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenPublisherHasNoPublicationSamples() {
+        // Arrange
+        when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble)).thenReturn(List.of(editionIdDouble));
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionIdDouble))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenPublisherHasNoListings() {
+        // Arrange
+        when(editionRepoDouble.findIdsByPublisherId(publisherIdDouble)).thenReturn(List.of(editionIdDouble));
+        when(pubSampleRepoDouble.findIdsByEditionIdIn(List.of(editionIdDouble))).thenReturn(List.of(pubSampleIdDouble));
+        when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, null, publisherIdDouble, null, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenBibliographicalDataHasNoPublicationSamples() {
+        // Arrange
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdIdDouble)).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, null, null, bdIdDouble, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAuctions_shouldReturnEmptyList_whenBibliographicalDataHasNoListings() {
+        // Arrange
+        when(pubSampleRepoDouble.findIdsByBibliographicalDataId(bdIdDouble)).thenReturn(List.of(pubSampleIdDouble));
+        when(listingRepoDouble.findAllByAuctionAndPublicationSampleIdIn(List.of(pubSampleIdDouble))).thenReturn(List.of());
+
+        // Act
+        List<Auction> result = auctionService.findAuctions(null, null, null, bdIdDouble, false);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
 }

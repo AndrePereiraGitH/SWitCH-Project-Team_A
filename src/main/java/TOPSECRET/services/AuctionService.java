@@ -269,31 +269,53 @@ public class AuctionService {
 
         if (genreId != null) {
             List<BibliographicalDataId> bdIds = bdRepo.findAllByGenreId(genreId);
+            if (bdIds.isEmpty()) return List.of();
+
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByBibliographicalDataIdIn(bdIds);
+            if (pubSampleIds.isEmpty()) return List.of();
+
             List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
+            if (listings.isEmpty()) return List.of();
             List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
+
             return sortByDeadline
                     ? auctionRepo.findByListingIdInOrderByAuctionDeadlineAsc(listingIds)
                     : auctionRepo.findByListingIdIn(listingIds);
 
         } else if (authorId != null) {
             List<BibliographicalDataId> bdIds = bdRepo.findIdByAuthorId(authorId);
+            if (bdIds.isEmpty()) return List.of();
+
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByBibliographicalDataIdIn(bdIds);
+            if (pubSampleIds.isEmpty()) return List.of();
+
             List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
+            if (listings.isEmpty()) return List.of();
             List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
+
             return auctionRepo.findByListingIdIn(listingIds);
 
         } else if (publisherId != null) {
             List<EditionId> editionIds = editionRepo.findIdsByPublisherId(publisherId);
+            if (editionIds.isEmpty()) return List.of();
+
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByEditionIdIn(editionIds);
+            if (pubSampleIds.isEmpty()) return List.of();
+
             List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
+            if (listings.isEmpty()) return List.of();
             List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
+
             return auctionRepo.findByListingIdIn(listingIds);
 
         } else if (bibliographicalDataId != null) {
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByBibliographicalDataId(bibliographicalDataId);
+            if (pubSampleIds.isEmpty()) return List.of();
+
             List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
+            if (listings.isEmpty()) return List.of();
             List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
+
             return auctionRepo.findByListingIdIn(listingIds);
 
         } else {
