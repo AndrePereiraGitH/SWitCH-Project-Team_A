@@ -1,0 +1,50 @@
+@startuml
+autonumber
+hide footbox
+title As a User, I want to get the list of publications in my library (Main)
+
+actor User
+participant ":UI" as UI
+participant ":PublicationSampleRESTController" as Ctrl
+participant ":PublicationSampleMapper" as Mapper
+participant ":PublicationSampleService" as Service
+participant "publicationDTOS: List<PublicationDTO>" as ListDTO
+
+User -> UI : I want to see a list of the publications in my library
+activate UI
+UI --> User : Enter your userId
+deactivate UI
+User -> UI : userId
+activate UI
+
+UI -> Ctrl : GET /publicationSamples/in-library?userId={userId}
+activate Ctrl
+
+Ctrl -> Mapper : toUserId(userId)
+activate Mapper
+Mapper --> Ctrl : id: UserId
+deactivate Mapper
+
+Ctrl -> Service : findPublicationsInLibrary(id)
+activate Service
+
+ref over Service
+[[2_FindPublicationsInLibrary.puml Find Publications in Library]]
+end ref
+
+Service --> Ctrl : publications
+deactivate Service
+
+Ctrl -->> ListDTO ** : <<create>>
+
+ref over Ctrl
+[[3_BuildResponse.puml Build Response]]
+end ref
+
+Ctrl --> UI : 200 OK\n body: publicationDTOS
+deactivate Ctrl
+
+UI --> User : Display list of publications
+deactivate UI
+
+@enduml

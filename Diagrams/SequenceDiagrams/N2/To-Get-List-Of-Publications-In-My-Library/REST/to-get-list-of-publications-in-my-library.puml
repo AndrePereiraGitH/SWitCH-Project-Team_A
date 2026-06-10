@@ -14,11 +14,17 @@ participant ":PublicationSampleAuthorizationPolicy" as Policy
 participant ":IPublicationSampleRepository" as PubRepo
 participant "publications: List<PublicationSample>" as publications
 participant ":BibliographicalDataService" as BDService
+participant "bd: BibliographicalData" as bd
 participant ":EditionService" as EditionService
+participant "edition: Edition" as edition
 participant ":AuthorService" as AuthorService
+participant "authors: List<Author>" as authors
 participant ":GenreService" as GenreService
+participant "genres: List<Genre>" as genres
 participant ":UserService" as UserService
+participant "owner: User" as owner
 participant ":PublicationSampleLinkProvider" as LinkProvider
+participant "links: List<Link>" as links
 participant "result: PublicationDTO" as pubDTO
 participant "publicationDTOS: List<PublicationDTO>" as ListDTO
 
@@ -76,27 +82,32 @@ loop for each pbSample in publications
 
     Ctrl -> BDService : findById(pbSample.getBibliographicalDataID())
     activate BDService
-    BDService --> Ctrl : bd: BibliographicalData
+    BDService -->> bd ** : <<create>>
+    BDService --> Ctrl : bd
     deactivate BDService
 
     Ctrl -> EditionService : findById(pbSample.getEditionID())
     activate EditionService
-    EditionService --> Ctrl : edition: Edition
+    EditionService -->> edition ** : <<create>>
+    EditionService --> Ctrl : edition
     deactivate EditionService
 
     Ctrl -> AuthorService : findById(authorId) [for each author in bd]
     activate AuthorService
-    AuthorService --> Ctrl : authors: List<Author>
+    AuthorService -->> authors ** : <<create>>
+    AuthorService --> Ctrl : authors
     deactivate AuthorService
 
     Ctrl -> GenreService : findById(genreId) [for each genre in bd]
     activate GenreService
-    GenreService --> Ctrl : genres: List<Genre>
+    GenreService -->> genres ** : <<create>>
+    GenreService --> Ctrl : genres
     deactivate GenreService
 
     Ctrl -> UserService : findByID(pbSample.getOwnerID())
     activate UserService
-    UserService --> Ctrl : owner: User
+    UserService -->> owner ** : <<create>>
+    UserService --> Ctrl : owner
     deactivate UserService
 
     Ctrl -> Mapper : toPublicationDTO(pbSample, bd, edition, authors, genres, owner)
@@ -107,6 +118,7 @@ loop for each pbSample in publications
 
     Ctrl -> LinkProvider : getPublicLinks()
     activate LinkProvider
+    LinkProvider -->> links ** : <<create>>
     LinkProvider --> Ctrl : links
     deactivate LinkProvider
 
@@ -122,7 +134,7 @@ loop for each pbSample in publications
 
 end
 
-Ctrl --> UI : 200 OK\n body: List<PublicationDTO>
+Ctrl --> UI : 200 OK\n body: publicationsDTOS
 deactivate Ctrl
 
 UI --> User : Display list of publications

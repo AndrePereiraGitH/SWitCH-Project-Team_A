@@ -1,0 +1,44 @@
+@startuml
+autonumber
+hide footbox
+title Find Publications in Library
+
+participant ":PublicationSampleService" as Service
+participant ":IUserRepository" as UserRepo
+participant "user: Optional<User>" as user
+participant ":PublicationSampleAuthorizationPolicy" as Policy
+participant ":IPublicationSampleRepository" as PubRepo
+participant "publications: List<PublicationSample>" as publications
+
+note over Service #E3F2FD
+<b>Navigation</b>
+---
+[[1_MainDiagram.puml Return to Main Diagram]]
+end note
+
+Service -> UserRepo : findByID(id)
+activate UserRepo
+UserRepo -->> user ** : <<create>>
+UserRepo --> Service : user
+deactivate UserRepo
+
+alt user not found
+    Service --> Service : throw EntityNotFoundException
+end
+
+Service -> Policy : canFindPublicationsInLibrary(user)
+activate Policy
+Policy --> Service : boolean
+deactivate Policy
+
+alt not allowed
+    Service --> Service : throw AccessDeniedException
+end
+
+Service -> PubRepo : findPublicationsInLibrary(id)
+activate PubRepo
+PubRepo -->> publications ** : <<create>>
+PubRepo --> Service : publications
+deactivate PubRepo
+
+@enduml
