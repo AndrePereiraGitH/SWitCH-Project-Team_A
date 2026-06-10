@@ -165,4 +165,42 @@ describe("Library Component", () => {
             expect(screen.getByText("In Lib Book")).toBeInTheDocument();
         });
     });
+
+    // ── Sorting ──
+    describe("Sorting", () => {
+        beforeEach(() => {
+            mockUseLibrary.mockReturnValue({ library: mockLibraryObj, loading: false, error: null });
+            mockUsePublications.mockReturnValue({
+                publications: [
+                    { id: "1", title: "Zen and the Art", author: "Pirsig", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "111" },
+                    { id: "2", title: "Anna Karenina", author: "Tolstoy", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "222" },
+                    { id: "3", title: "Middlemarch", author: "Eliot", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "333" },
+                ],
+                addToLibrary: vi.fn(),
+            });
+        });
+
+        test("renders sort select with Default option", () => {
+            renderLibrary();
+            expect(screen.getByDisplayValue("Default")).toBeInTheDocument();
+        });
+
+        test("sorts by title ascending", () => {
+            renderLibrary();
+            fireEvent.change(screen.getByDisplayValue("Default"), { target: { value: "title" } });
+            const cards = screen.getAllByTestId("book-card");
+            expect(cards[0]).toHaveTextContent("Anna Karenina");
+            expect(cards[1]).toHaveTextContent("Middlemarch");
+            expect(cards[2]).toHaveTextContent("Zen and the Art");
+        });
+
+        test("sorts by author ascending", () => {
+            renderLibrary();
+            fireEvent.change(screen.getByDisplayValue("Default"), { target: { value: "author" } });
+            const cards = screen.getAllByTestId("book-card");
+            expect(cards[0]).toHaveTextContent("Eliot");
+            expect(cards[1]).toHaveTextContent("Pirsig");
+            expect(cards[2]).toHaveTextContent("Tolstoy");
+        });
+    });
 });
