@@ -1,0 +1,26 @@
+@startuml
+hide footbox
+autonumber
+title Find User by Username
+
+participant ":LibraryService" as Service
+participant ":UserRepository" as UserRepo
+participant "user: Optional<User>" as user
+
+note over Service #E3F2FD
+<b>Navigation</b>
+---
+[[1_MainDiagram.puml Return to Main Diagram]]
+end note
+
+Service -> UserRepo : findByUsername(username)
+activate UserRepo
+UserRepo -->> user ** : <<create>>
+UserRepo --> Service : user
+deactivate UserRepo
+
+alt user not found
+    Service --> Service : throw IllegalArgumentException
+end
+
+@enduml

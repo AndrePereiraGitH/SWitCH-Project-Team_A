@@ -59,12 +59,18 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class PublicationSampleServiceTest {
 
-    @Mock private IPublicationSampleRepository publicationSampleRepository;
-    @Mock private ICollectionOfPublicationsRepository collectionOfPublicationsRepository;
-    @Mock private IUserRepository userRepository;
-    @Mock private PublicationSampleFactory factory;
-    @Mock private PublicationSampleAuthorizationPolicy policy;
-    @Mock private ILibraryRepository libraryRepository;
+    @Mock
+    private IPublicationSampleRepository publicationSampleRepository;
+    @Mock
+    private ICollectionOfPublicationsRepository collectionOfPublicationsRepository;
+    @Mock
+    private IUserRepository userRepository;
+    @Mock
+    private PublicationSampleFactory factory;
+    @Mock
+    private PublicationSampleAuthorizationPolicy policy;
+    @Mock
+    private ILibraryRepository libraryRepository;
 
     @InjectMocks
     private PublicationSampleService service;
@@ -444,7 +450,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(userId);
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId)).thenReturn(samples);
 
@@ -463,7 +469,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(otherUserId);
 
         // Act & Assert
@@ -769,7 +775,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(userId);
         when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(inCollection, notInCollection));
@@ -794,7 +800,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(userId);
         when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(s1, s2));
@@ -815,7 +821,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(userId);
         when(publicationSampleRepository.findPublicationsInLibrary(userId))
                 .thenReturn(List.of(sample));
@@ -837,7 +843,7 @@ class PublicationSampleServiceTest {
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(true);
-        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(collection);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.getOwnerId()).thenReturn(otherUserId);
 
         // Act & Assert

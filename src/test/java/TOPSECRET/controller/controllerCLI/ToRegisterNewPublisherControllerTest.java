@@ -11,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
 
+import javax.management.InstanceNotFoundException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -56,7 +58,7 @@ class ToRegisterNewPublisherControllerTest {
     }
 
     @Test
-    void shouldPropagateExceptionWhenPublisherAlreadyExists() throws AccessDeniedException {
+    void shouldPropagateExceptionWhenPublisherAlreadyExists() throws AccessDeniedException, InstanceNotFoundException {
         // Arrange
         String name = "Publisher1";
         String vatNumber = "123456789";
@@ -72,7 +74,7 @@ class ToRegisterNewPublisherControllerTest {
     }
 
     @Test
-    void shouldPropagateAccessDeniedExceptionWhenUserIsNotAuthorized() throws AccessDeniedException {
+    void shouldPropagateAccessDeniedExceptionWhenUserIsNotAuthorized() throws AccessDeniedException, InstanceNotFoundException {
         // Arrange
         String name = "Publisher1";
         String vatNumber = "123456789";

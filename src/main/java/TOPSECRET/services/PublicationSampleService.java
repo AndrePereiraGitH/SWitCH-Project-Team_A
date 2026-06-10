@@ -260,7 +260,8 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId);
+        CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
         if(!collectionOfPublications.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Access denied");
@@ -414,7 +415,8 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId);
+        CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
         if(!collectionOfPublications.getOwnerId().equals(userId)) {
             throw new AccessDeniedException("Access denied");

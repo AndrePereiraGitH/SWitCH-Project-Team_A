@@ -7,6 +7,7 @@ import TOPSECRET.domain.AppraisalEntity.IAppraisalEntityRepository;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -110,15 +111,22 @@ public class AppraisalEntityService {
     }
 
     /**
-     * Finds an AppraisalEntity by its identifier.
+     * Retrieves an AppraisalEntity by its unique identifier.
+     *
+     * @param id the unique identifier of the AppraisalEntity to retrieve
+     * @return the {@link AppraisalEntity} associated with the given identifier
+     * @throws IllegalArgumentException if the provided identifier is null
+     * @throws EntityNotFoundException if no AppraisalEntity exists with the given identifier
      */
-    public Optional<AppraisalEntity> findById(AppraisalEntityId id) {
+    public AppraisalEntity findById(AppraisalEntityId id) {
 
         if (id == null) {
             throw new IllegalArgumentException("ID cannot be null");
         }
 
-        return repository.findById(id);
+        AppraisalEntity ap = repository.findById(id).orElseThrow(EntityNotFoundException::new);
+
+        return ap;
     }
 
     /**
