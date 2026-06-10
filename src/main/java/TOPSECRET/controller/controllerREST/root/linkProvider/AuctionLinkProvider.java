@@ -3,6 +3,7 @@ package TOPSECRET.controller.controllerREST.root.linkProvider;
 import TOPSECRET.controller.controllerREST.AuctionRESTController;
 import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AuctionAuthorizationPolicy;
+import TOPSECRET.domain.Enum.AuctionStatus;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
@@ -93,7 +94,7 @@ public class AuctionLinkProvider implements RootLinkProvider {
 
         List<Link> links = new ArrayList<>();
 
-        if (policy.canPlaceBid(user) && dto.getAuctionStatus().equals("ACTIVE")) {
+        if (policy.canPlaceBid(user) && dto.getAuctionStatus().equals(AuctionStatus.ACTIVE.name())) {
             links.add(linkTo(methodOn(AuctionRESTController.class)
                     .placeBid(dto.getAuctionId(), null, null))
                     .withRel("place-bid"));
