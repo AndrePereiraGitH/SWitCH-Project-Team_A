@@ -195,6 +195,64 @@ class AuthorLinkProviderTest {
     }
 
     // =========================================================
+    // getLinks — aggregates public and private
+    // =========================================================
+
+    @Test
+    void getLinks_shouldReturnPublicAndPrivateLinks_whenUserCanCreateAuthor()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertEquals(3, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-author")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("create-author")));
+    }
+
+    @Test
+    void getLinks_shouldReturnPublicLinksOnly_whenUserCannotCreateAuthor()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-author")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+        assertTrue(result.stream().noneMatch(l -> l.getRel().value().equals("create-author")));
+    }
+
+    @Test
+    void getLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
+        when(repository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(InstanceNotFoundException.class,
+                () -> sut.getLinks(userId));
+    }
+
+    // =========================================================
     // getPrivateLinks — error cases
     // =========================================================
 

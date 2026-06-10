@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
@@ -76,7 +78,7 @@ public class AuthorRESTController {
      */
     @PostMapping("")
     public ResponseEntity<AuthorDTO> createAuthor(
-            @RequestBody CreateAuthorDTO dto,
+            @RequestBody @Valid CreateAuthorDTO dto,
             @RequestParam String userId) {
 
         try {
