@@ -529,7 +529,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -551,7 +551,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertEquals(1, response.getBody().size());
@@ -573,7 +573,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertSame(dto, response.getBody().get(0));
@@ -592,7 +592,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -611,7 +611,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -629,7 +629,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertTrue(response.getBody().isEmpty());
@@ -645,7 +645,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("");
+                    controller.findListingsByPublication("");
 
             // Assert
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -664,7 +664,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -683,7 +683,7 @@ class ListingRESTControllerTest {
 
             // Act
             ResponseEntity<List<ListingDetailsDTO>> response =
-                    controller.findByBibliographicalDataId("bd-1");
+                    controller.findListingsByPublication("bd-1");
 
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -703,7 +703,7 @@ class ListingRESTControllerTest {
             mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
             toDetailsDTODouble(mockedMapper, listing, dto);
 
-            controller.findByBibliographicalDataId("bd-1");
+            controller.findListingsByPublication("bd-1");
 
             // Assert
             mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(
@@ -730,7 +730,7 @@ class ListingRESTControllerTest {
             mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
             toDetailsDTODouble(mockedMapper, listing, dto);
 
-            controller.findByBibliographicalDataId("bd-1");
+            controller.findListingsByPublication("bd-1");
 
             // Assert
             mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(

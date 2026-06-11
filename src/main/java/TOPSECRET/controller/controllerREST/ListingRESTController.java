@@ -222,7 +222,7 @@ public class ListingRESTController {
      *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/by-publication/{bibliographicalDataId}")
-    public ResponseEntity<List<ListingDetailsDTO>> findByBibliographicalDataId
+    public ResponseEntity<List<ListingDetailsDTO>> findListingsByPublication
     (@PathVariable String bibliographicalDataId) {
 
         try{
