@@ -156,7 +156,7 @@ public class ListingRESTController {
 
             ListingDetailsDTO dto = convertIntoListingDetailsDTO(listing, LinkContext.PUBLIC, null);
 
-            return ResponseEntity.ok(dto);
+            return ResponseEntity.status(HttpStatus.OK).body(dto);
 
         } catch (EntityNotFoundException | InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

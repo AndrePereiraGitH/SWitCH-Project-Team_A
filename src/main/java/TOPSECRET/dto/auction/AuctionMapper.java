@@ -19,11 +19,13 @@ import java.util.Objects;
  *
  * <p>This class is stateless and provides only static methods — it cannot be instantiated.</p>
  *
- * <p>Denormalized fields from the Listing aggregate ({@code listingTitle}, {@code listingDescription})
- * are resolved by the caller and passed explicitly, keeping this mapper free of any repository dependency.</p>
+ * <p>Denormalized field from the Listing aggregate ({@code listingTitle})
+ * is resolved by the caller and passed explicitly, keeping this mapper free of any repository dependency.</p>
  *
- * <p>Fields {@code buyoutPrice}, {@code finalPrice} and {@code closedAt} may be {@code null} —
- * the former if the auction has no buyout price, the latter two if the auction has not yet ended.</p>
+ * <p>Fields {@code buyoutPrice}, {@code finalPrice}, {@code closedAt} and
+ * {@code currentHighestBid} may be {@code null} —
+ * the former if the auction has no buyout price, the latter three if the auction
+ * has not yet ended or no bids have been placed yet.</p>
  *
  * @see AuctionDTO
  */
@@ -40,7 +42,7 @@ public class AuctionMapper {
     /**
      * Converts an {@link Auction} domain object into an {@link AuctionDTO}.
      *
-     * <p>Denormalized fields ({@code listingTitle}, {@code listingDescription}) are sourced
+     * <p>Denormalized field ({@code listingTitle} is sourced
      * from the provided {@link Listing} and included in the response for display convenience.</p>
      *
      * @param auction the auction to convert; must not be {@code null}
@@ -54,17 +56,18 @@ public class AuctionMapper {
         Objects.requireNonNull(listing, "Listing can't be null");
 
         return new AuctionDTO(
-                auction.id().toString(),
-                auction.getListingId().toString(),
+                auction.id().getId(),
+                auction.getListingId().getId(),
                 listing.getListingTitle(),
-                listing.getShortDescription(),
                 auction.getAuctionStartDateTime(),
                 auction.getAuctionEndDateTime(),
                 auction.getClosedAt(),
                 auction.getInitialPrice().getPrice(),
                 auction.getBuyoutPrice() != null ? auction.getBuyoutPrice().getPrice() : null,
                 auction.getFinalPrice() != null ? auction.getFinalPrice().getPrice() : null,
-                auction.getAuctionStatus().toString()
+                auction.getAuctionStatus().toString(),
+                auction.getCurrentHighestBid() != null ? auction.getCurrentHighestBid().getValue().getPrice() : null,
+                auction.getBidHistory().size()
         );
     }
 

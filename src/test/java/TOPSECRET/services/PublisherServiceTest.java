@@ -9,6 +9,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.domain.ValueObjects.UserId;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -189,7 +190,7 @@ class PublisherServiceTest {
 
         // ACT + ASSERT
         assertThrows(
-                IllegalArgumentException.class,
+                EntityNotFoundException.class,
                 () -> service.findById(id)
         );
     }

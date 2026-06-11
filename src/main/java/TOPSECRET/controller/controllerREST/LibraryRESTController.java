@@ -7,6 +7,7 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.library.LibraryMapper;
 import TOPSECRET.dto.library.request.RequestLibraryDTO;
 import TOPSECRET.dto.library.response.ResponseLibraryDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.LibraryService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,7 +64,7 @@ public class LibraryRESTController {
 
 
         try {
-            UserId id = LibraryMapper.toUserId(userId);
+            UserId id = UserMapper.toUserId(userId);
 
             Library library = libService.createAndSave(requestLibraryDTO.libraryName(), id);
             ResponseLibraryDTO response = LibraryMapper.toDTO(library);
@@ -123,10 +124,6 @@ public class LibraryRESTController {
                         return dto;
                     })
                     .toList();
-
-            if (response.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
 
             return ResponseEntity.ok(response);
 
@@ -207,7 +204,7 @@ public class LibraryRESTController {
 
 
         try {
-            UserId ownerId = LibraryMapper.toUserId(userId);
+            UserId ownerId = UserMapper.toUserId(userId);
 
             Library library = libService.findByUserId(ownerId);
 

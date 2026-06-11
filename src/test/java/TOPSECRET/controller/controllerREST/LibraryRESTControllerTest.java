@@ -7,6 +7,7 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.library.LibraryMapper;
 import TOPSECRET.dto.library.request.RequestLibraryDTO;
 import TOPSECRET.dto.library.response.ResponseLibraryDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.LibraryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,10 +48,16 @@ class LibraryRESTControllerTest {
     private RequestLibraryDTO requestDTO;
 
     @Mock
+    ResponseLibraryDTO responseDTO;
+
+    @Mock
     private Library library;
 
     @Mock
     private LibraryId libraryId;
+
+    @Mock
+    UserId userId;
 
     @InjectMocks
     private LibraryRESTController controller;
@@ -232,15 +239,14 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getAllLibraries_shouldReturnNoContent_whenEmpty() {
+    void getAllLibraries_shouldReturnOK_whenEmpty() {
 
         when(libService.findAll()).thenReturn(List.of());
 
         ResponseEntity<List<ResponseLibraryDTO>> response =
                 controller.getAllLibraries();
 
-        assertEquals(NO_CONTENT, response.getStatusCode());
-        assertNull(response.getBody());
+        assertEquals(OK, response.getStatusCode());
     }
 
     // =========================================================
@@ -286,10 +292,6 @@ class LibraryRESTControllerTest {
                                             throws InstanceNotFoundException {
 
         // Arrange
-        Library library = mock(Library.class);
-        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
-        LibraryId libraryId = mock(LibraryId.class);
-
         when(libService.findById(any(LibraryId.class)))
                 .thenReturn(library);
 
@@ -299,7 +301,7 @@ class LibraryRESTControllerTest {
                     LibraryMapper.toLibraryId(LIBRARY_ID)
             ).thenReturn(libraryId);
 
-            mapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(dto);
+            mapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(responseDTO);
 
             // Act
             ResponseEntity<ResponseLibraryDTO> response =
@@ -307,7 +309,7 @@ class LibraryRESTControllerTest {
 
             // Assert
             assertEquals(OK, response.getStatusCode());
-            assertEquals(dto, response.getBody());
+            assertEquals(responseDTO, response.getBody());
         }
     }
 
@@ -375,34 +377,21 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getLibraryByUserId_shouldReturnOk_whenFound()
-                                        throws InstanceNotFoundException {
+    void getLibraryByUserId_shouldReturnOk_whenFound() throws InstanceNotFoundException {
 
-        // Arrange
-        Library library = mock(Library.class);
-        ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
-        UserId userId = mock(UserId.class);
+        when(libService.findByUserId(any(UserId.class))).thenReturn(library);
 
-        when(libService.findByUserId(any(UserId.class)))
-                .thenReturn(library);
+        try (MockedStatic<LibraryMapper> libraryMapper = mockStatic(LibraryMapper.class);
+             MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
 
-        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(USER_ID)).thenReturn(userId);
+            libraryMapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(responseDTO);
 
-            mapper.when(() ->
-                    LibraryMapper.toUserId(USER_ID)
-            ).thenReturn(userId);
-
-            mapper.when(() ->
-                    LibraryMapper.toDTO(library)
-            ).thenReturn(dto);
-
-            // Act
             ResponseEntity<ResponseLibraryDTO> response =
                     controller.getLibraryByUserId(USER_ID);
 
-            // Assert
             assertEquals(OK, response.getStatusCode());
-            assertEquals(dto, response.getBody());
+            assertEquals(responseDTO, response.getBody());
         }
     }
 

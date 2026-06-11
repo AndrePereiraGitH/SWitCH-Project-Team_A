@@ -429,7 +429,7 @@ class ListingMapperTest {
     void toPublisherId_shouldReturnPublisherId() {
         PublisherID result = ListingMapper.toPublisherId("PUBLISHER-001");
 
-        assertEquals("PUBLISHER-001", result.getPublisherId());
+        assertEquals("PUBLISHER-001", result.getId());
     }
 
     @Test

@@ -37,7 +37,8 @@ public class ListingDataInitializer implements ApplicationRunner {
         listingRepository.save(buildAuctionListingMultipleItems());
         listingRepository.save(buildDirectSaleListingWithPictures());
         listingRepository.save(buildAuctionListingWithBids()); // Added to support AuctionDataInitializer
-        log.info("[ListingDataInitializer] Done — {} listings seeded.", 4);
+        listingRepository.save(buildAuctionListingToPostAuction());
+        log.info("[ListingDataInitializer] Done — {} listings seeded.", 5);
     }
 
     private Listing buildDirectSaleListing() {
@@ -84,5 +85,12 @@ public class ListingDataInitializer implements ApplicationRunner {
                 List.of(),
                 LocalDate.now()
         );
+    }
+
+    private Listing buildAuctionListingToPostAuction() {
+        return listingFactory.create(new ListingId("listing-005"), "Java for dummies",
+                List.of(new PublicationSampleId("pub-sample-001")),
+                SaleType.AUCTION, new Price(BigDecimal.valueOf(10.00)), "Very good condition", new UserId("user-001"),
+                List.of(new Picture("https://example.com/images.jpg")), LocalDate.now());
     }
 }
