@@ -19,6 +19,9 @@ export function Explore() {
   const [genres, setGenres] = useState([]);
   const [sales, setSales] = useState([]);
 
+  const [filterAuthor, setFilterAuthor] = useState("all");
+  
+
   const [bidModalOpen, setBidModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -73,7 +76,12 @@ export function Explore() {
     return sale.genre?.map(getGenreName).join(", ") ?? "";
   };
 
+  const authors = [...new Set(
+    sales.map(sale => sale.author).filter(author => author && author !== "Unknown")
+  )];
+
   const filteredSales = sales.filter(sale => {
+    
     const matchesSearch =
       sale.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       sale.author?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -89,7 +97,11 @@ export function Explore() {
       (saleType === "direct" && !sale.isAuction) ||
       (saleType === "auction" && sale.isAuction);
 
-    return matchesSearch && matchesGenre && matchesType && matchesSaleType;
+    const matchesAuthor = filterAuthor === "all" || sale.author === filterAuthor;
+
+
+
+    return matchesSearch && matchesGenre && matchesType && matchesSaleType && matchesAuthor;
   });
 
   return (
@@ -178,7 +190,25 @@ export function Explore() {
               </select>
             </div>
           </div>
+          <div>
+            <label className="block mb-2 text-sm font-semibold text-foreground">
+              Author
+            </label>
+            <select
+              value={filterAuthor}
+              onChange={(e) => setFilterAuthor(e.target.value)}
+              className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">All Authors</option>
+              {authors.map(author => (
+                <option key={author} value={author}>
+                  {author}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+        
 
         <div className="mb-4 flex justify-between items-center">
           <p className="text-muted-foreground">
