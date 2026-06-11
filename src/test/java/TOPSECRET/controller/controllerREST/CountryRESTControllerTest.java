@@ -196,7 +196,7 @@ class CountryRESTControllerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void getCountries_returnsOk_andCorrectData() {
+    void findAll_returnsOk_andCorrectData() {
 
         // Arrange
         when(country.getCountryName()).thenReturn("Portugal");
@@ -206,7 +206,7 @@ class CountryRESTControllerTest {
 
         // Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.findAll();
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -215,7 +215,7 @@ class CountryRESTControllerTest {
     }
 
     @Test
-    void getCountries_invalidInput_returnsBadRequest() {
+    void findAll_invalidInput_returnsBadRequest() {
 
         //Arrange
         when(countryService.findAll())
@@ -223,14 +223,14 @@ class CountryRESTControllerTest {
 
         //Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.findAll();
 
         //Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    void getCountries_unexpectedError_returnsInternalServerError() {
+    void findAll_unexpectedError_returnsInternalServerError() {
 
         //Arrange
         when(countryService.findAll())
@@ -238,31 +238,31 @@ class CountryRESTControllerTest {
 
         //Act
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.findAll();
 
         //Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
-    void getCountries_shouldReturnNoContent_whenEmpty() {
+    void findAll_shouldReturnNoContent_whenEmpty() {
 
         when(countryService.findAll()).thenReturn(List.of());
 
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.findAll();
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
     }
 
     @Test
-    void getCountries_shouldReturnInternalServerError_onException() {
+    void findAll_shouldReturnInternalServerError_onException() {
 
         when(countryService.findAll()).thenThrow(new RuntimeException());
 
         ResponseEntity<List<CountryResponseDTO>> response =
-                controller.getCountries();
+                controller.findAll();
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }

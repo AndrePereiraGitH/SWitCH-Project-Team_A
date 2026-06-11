@@ -2,12 +2,9 @@ package TOPSECRET.dto.country;
 
 import TOPSECRET.domain.Country.Country;
 import TOPSECRET.domain.ValueObjects.CountryId;
-import TOPSECRET.domain.ValueObjects.PublicationSampleId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.country.response.CountryResponseDTO;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -48,29 +45,6 @@ public class CountryMapper {
                 country.getCountryName()
         );
     }
-
-    /**
-     * Converts a list of {@link Country} domain entities into a list
-     * of {@link CountryResponseDTO} objects.
-     *
-     * <p>Each country in the provided collection is individually mapped
-     * using {@link #toDTO(Country)}.</p>
-     *
-     * @param countries the list of domain entities to convert
-     * @return a list of response DTOs representing the given countries
-     * @throws NullPointerException if {@code countries} is null
-     */
-    public static List<CountryResponseDTO> toDTOs(List<Country> countries){
-            Objects.requireNonNull(countries, "Countries list cannot be null");
-
-            List<CountryResponseDTO> dtos = new ArrayList<>();
-
-            for (Country country : countries){
-                dtos.add(toDTO(country));
-            }
-
-            return dtos;
-        }
 
     /**
      * Converts a raw {@link String} representation of a user identifier

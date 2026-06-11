@@ -79,7 +79,11 @@ public class CountryLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(CountryRESTController.class)
-                .getCountries())
+                .findById(null))
+                .withRel("find-country-by-id"));
+
+        links.add(linkTo(methodOn(CountryRESTController.class)
+                .findAll())
                 .withRel("get-all-countries"));
 
         return links;

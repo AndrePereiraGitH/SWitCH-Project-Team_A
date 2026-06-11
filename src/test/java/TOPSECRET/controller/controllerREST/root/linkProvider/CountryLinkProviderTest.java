@@ -1,7 +1,6 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.CountryAuthorizationPolicy;
-import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
@@ -15,7 +14,6 @@ import org.springframework.hateoas.Link;
 import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -35,6 +33,12 @@ class CountryLinkProviderTest {
     @Mock
     private IUserRepository repository;
 
+    @Mock
+    private User user;
+
+    @Mock
+    private UserId userId;
+
     @InjectMocks
     private CountryLinkProvider provider;
 
@@ -46,9 +50,6 @@ class CountryLinkProviderTest {
     void shouldReturnTwoLinks_whenUserHasPermission() throws InstanceNotFoundException{
 
         // ARRANGE
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterCountry(user)).thenReturn(true);
 
@@ -56,7 +57,7 @@ class CountryLinkProviderTest {
         List<Link> result = provider.getLinks(userId);
 
         // ASSERT
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
 
         assertTrue(result.stream()
                 .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
@@ -73,16 +74,14 @@ class CountryLinkProviderTest {
     void shouldReturnOnlyDefaultLink_whenUserHasNoPermission() throws InstanceNotFoundException{
 
         // ARRANGE
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterCountry(user)).thenReturn(false);
 
         // ACT
         List<Link> result = provider.getLinks(userId);
 
-        assertEquals(1, result.size());
+        //ASSERT
+        assertEquals(2, result.size());
 
         assertTrue(result.stream()
                 .anyMatch(l -> l.getRel().value().equals("get-all-countries")));
@@ -96,7 +95,6 @@ class CountryLinkProviderTest {
     void shouldThrowException_whenUserDoesNotExist() {
 
         // ARRANGE
-        UserId userId = mock(UserId.class);
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
