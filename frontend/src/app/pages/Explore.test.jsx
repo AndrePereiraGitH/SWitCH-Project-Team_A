@@ -94,10 +94,10 @@ describe("Explore", () => {
     }
 
     const getGenreSelect = () => screen.getAllByRole("combobox")[0];
-    const getSaleTypeSelect = () => {
-        const selects = screen.getAllByRole("combobox");
-        return selects[selects.length - 1]; // Assume the last combobox is Sale Type
-    };
+    const getPublicationTypeSelect = () => screen.getAllByRole("combobox")[1];
+    const getSaleTypeSelect = () => screen.getAllByRole("combobox")[2];
+    const getAuthorSelect = () => screen.getAllByRole("combobox")[3];
+    
 
     // ── API loading ──
     describe("API loading", () => {
@@ -158,6 +158,41 @@ describe("Explore", () => {
             expect(
                 screen.getByText("No books found with the selected filters")
             ).toBeInTheDocument();
+        });
+
+        test("renders author filter options", async () => {
+            await renderLoadedExplore();
+
+            expect(screen.getByRole("option", { name: "All Authors" })).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: "Dan Brown" })).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: "J.K. Rowling" })).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: "George R.R. Martin" })).toBeInTheDocument();
+        });
+
+        test("filters by author", async () => {
+            await renderLoadedExplore();
+
+            fireEvent.change(getAuthorSelect(), {
+                target: { value: "J.K. Rowling" },
+            });
+
+            expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
+            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
+            expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
+        });
+
+        test("genre, sale type and author work together", async () => {
+            await renderLoadedExplore();
+
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+            fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+            fireEvent.change(getAuthorSelect(), {
+                target: { value: "George R.R. Martin" },
+            });
+
+            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
+            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
         });
     });
 });
