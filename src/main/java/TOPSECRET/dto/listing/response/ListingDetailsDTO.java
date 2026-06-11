@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = false)
@@ -18,7 +18,8 @@ public class ListingDetailsDTO extends RepresentationModel<ListingDetailsDTO> {
    private String listingTitle;
    private List<String> authors;
    private List<String> genre;
-   private BigDecimal price;
+   private String price;
+   private LocalDate publicationDate;
    private String condition;
    private String saleType;
    private String picture;
@@ -29,5 +30,6 @@ public class ListingDetailsDTO extends RepresentationModel<ListingDetailsDTO> {
    private Integer year;
    private Integer pages;
    private String language;
+
 
 }
