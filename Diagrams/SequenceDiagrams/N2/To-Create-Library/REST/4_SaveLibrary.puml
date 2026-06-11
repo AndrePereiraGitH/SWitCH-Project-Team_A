@@ -1,0 +1,20 @@
+@startuml
+hide footbox
+autonumber
+title Save Library
+
+participant ":LibraryService" as Service
+participant ":LibraryRepository" as LibRepo
+
+note over Service #E3F2FD
+<b>Navigation</b>
+---
+[[1_MainDiagram.puml Return to Main Diagram]]
+end note
+
+Service -> LibRepo : save(library)
+activate LibRepo
+LibRepo --> Service : library
+deactivate LibRepo
+
+@enduml

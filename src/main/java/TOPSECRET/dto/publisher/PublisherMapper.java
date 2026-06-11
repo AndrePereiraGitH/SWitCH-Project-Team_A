@@ -36,7 +36,7 @@ public final class PublisherMapper {
 
         return new ResponsePublisherDTO(
                 publisher.getName(),
-                publisher.id().getPublisherId()
+                publisher.id().getId()
         );
     }
 
@@ -100,14 +100,5 @@ public final class PublisherMapper {
      */
     public static PublisherID toPublisherId(String publisherId) {
         return new PublisherID(publisherId);
-    }
-    /**
-     * Converts a string value into a {@link UserId}.
-     *
-     * @param userId the userId value as a string
-     * @return a {@link UserId} value object
-     */
-    public static UserId toUserId(String userId) {
-        return new UserId(userId);
     }
 }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Unit tests for {@link ToAddPublicationToLibraryController}.
@@ -66,8 +67,8 @@ class ToAddPublicationToLibraryControllerTest {
         publication1 = mock(PublicationSample.class);
         publication2 = mock(PublicationSample.class);
 
-        when(libraryRepositoryDouble.getByUserId(userIdDouble))
-                .thenReturn(libraryDouble);
+        when(libraryRepositoryDouble.findByUserId(userIdDouble))
+                .thenReturn(Optional.of(libraryDouble));
 
         when(libraryDouble.id())
                 .thenReturn(libraryIdDouble);

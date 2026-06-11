@@ -9,12 +9,14 @@ on:
       - main
       - teamA_1
       - teamA_2
+      - frontend
+
   push:
     branches:
       - main
       - teamA_1
       - teamA_2
-  workflow_dispatch:
+      - frontend
 
 permissions:
   contents: read
@@ -89,6 +91,7 @@ jobs:
       - name: PMD (report)
         if: always()
         run: mvn pmd:check --no-transfer-progress || true
+
 
       - name: Semgrep SAST scan (gate)
         run: |

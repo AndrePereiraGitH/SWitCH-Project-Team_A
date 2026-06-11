@@ -1,6 +1,9 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
+
+import TOPSECRET.controller.controllerREST.AuctionRESTController;
 import TOPSECRET.controller.controllerREST.ListingRESTController;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.ListingAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -25,7 +29,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * are available for the given user.</p>
  */
 @Component
-public class ListingLinkProvider {
+public class ListingLinkProvider implements RootLinkProvider {
 
     private final ListingAuthorizationPolicy authPolicy;
     private final IUserRepository userRepo;
@@ -55,27 +59,12 @@ public class ListingLinkProvider {
      * @return a list of HATEOAS links available to the user
      * @throws InstanceNotFoundException if no user exists with the given identifier
      */
-    public List<Link> getLinksForListings(UserId userId) throws InstanceNotFoundException {
+    public List<Link> getOwnerLinks(UserId userId) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
         List<Link> links = new ArrayList<>();
-
-        User user = userRepo.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found"));
-
-
-        links.add(linkTo(methodOn(ListingRESTController.class)
-                .findById(null, null))
-                .withRel("find-by-id"));
-
-        links.add(linkTo(methodOn(ListingRESTController.class)
-                .findAll(null))
-                .withRel("find-all"));
-
-        links.add(linkTo(methodOn(ListingRESTController.class)
-                .getAllDirectSaleByGenre(null, null))
-                .withRel("get-all-direct-sale-by-genre"));
-
-        links.add(linkTo(methodOn(ListingRESTController.class)
-                .getAllDirectSaleByPublisher(null, null))
-                .withRel("get-all-direct-sale-by-publisher"));
+        User user = resolveUser(userId);
 
         if (authPolicy.canCreateListing(user)) {
             links.add(linkTo(methodOn(ListingRESTController.class)
@@ -83,6 +72,66 @@ public class ListingLinkProvider {
                     .withRel("create-listing"));
 
         }
+
         return links;
+    }
+
+
+    public List<Link> getAuctionLinks(UserId userId) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = resolveUser(userId);
+
+        List<Link> links = new ArrayList<>();
+
+        if (authPolicy.canCreateListing(user)) {
+            links.add(linkTo(methodOn(AuctionRESTController.class)
+                    .createAuction(null, null))
+                    .withRel("create-auction"));
+
+        }
+
+
+        return links;
+    }
+
+    public List<Link> getPublicLinks() {
+
+        List<Link> links = new ArrayList<>();
+
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .findById(null))
+                .withRel("find-by-id"));
+
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .findAll())
+                .withRel("find-all"));
+
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .getAllDirectSaleByGenre(null))
+                .withRel("get-all-direct-sale-by-genre"));
+
+        links.add(linkTo(methodOn(ListingRESTController.class)
+                .getAllDirectSaleByPublisher(null))
+                .withRel("get-all-direct-sale-by-publisher"));
+
+        return links;
+
+    }
+
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+
+        List<Link> links = new ArrayList<>();
+        links.addAll(getOwnerLinks(userId));
+        links.addAll(getPublicLinks());
+        links.addAll(getAuctionLinks(userId));
+
+        return links;
+    }
+
+    private User resolveUser(UserId userId) throws InstanceNotFoundException {
+        return userRepo.findByID(userId).orElseThrow(() ->new InstanceNotFoundException("User not found"));
     }
 }

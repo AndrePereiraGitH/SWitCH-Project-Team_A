@@ -1,0 +1,31 @@
+@startuml
+hide footbox
+autonumber
+title Build Response
+
+participant ":LibraryRESTController" as Ctrl
+participant ":LibraryMapper" as Mapper
+participant "response: ResponseLibraryDTO" as response
+participant ":LibraryLinkProvider" as LibLinkProvider
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1_MainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> Mapper : toDTO(library)
+activate Mapper
+Mapper -->> response ** : <<create>>
+Mapper --> Ctrl : response
+deactivate Mapper
+
+Ctrl -> LibLinkProvider : getLinksForLibraries(library.userId())
+activate LibLinkProvider
+LibLinkProvider --> Ctrl : links
+deactivate LibLinkProvider
+
+Ctrl -> Ctrl : response.add(links)
+Ctrl -> Ctrl : response.add(selfLink(library.id()))
+
+@enduml
