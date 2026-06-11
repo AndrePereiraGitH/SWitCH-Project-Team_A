@@ -32,38 +32,62 @@ export function Explore() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [genresRes, listingsRes] = await Promise.all([
+        const [genresRes, listingsRes, auctionsRes] = await Promise.all([
           fetch(`${API_BASE_URL}/genres`),
           fetch(`${API_BASE_URL}/listings?userId=${CURRENT_USER_ID}`),
+          fetch(`${API_BASE_URL}/auctions`),
         ]);
 
-        if (!genresRes.ok || !listingsRes.ok) {
+        if (!genresRes.ok || !listingsRes.ok || !auctionsRes.ok) {
           throw new Error("Failed to fetch explore data");
         }
 
         const genresData = await genresRes.json();
         const listingsData = await listingsRes.json();
+        const auctionsData = await auctionsRes.json();
+
+        const terminalStatuses = ["ENDED_WITH_WINNER", "ENDED_WITHOUT_BIDS", "BOUGHT_OUT", "CANCELLED"];
+        const auctionsByListingId = Object.fromEntries(
+            auctionsData
+                .filter(a => ["ACTIVE", "DRAFT", "SCHEDULED"].includes(a.auctionStatus))
+                .map(a => [a.listingId, a])
+        );
 
         setGenres(genresData);
-        setSales(listingsData.map(mapListingToSale));
+        setSales(
+            listingsData
+                .filter(listing => {
+                    if (listing.saleType !== "AUCTION") return true;
+                    const auction = auctionsByListingId[listing.id];
+                    return auction != null;
+                })
+                .map(listing => mapListingToSale(listing, auctionsByListingId))
+        );
+
       } catch (error) {
-        console.error("Error loading genres/listings:", error);
+          console.error("Error loading genres/listings:", error);
       }
     }
 
     fetchData();
   }, []);
 
-  const mapListingToSale = (listing) => ({
-    id: listing.id,
-    title: listing.listingTile ?? listing.listingTitle,
-    author: listing.authors?.join(", ") ?? "Unknown",
-    genre: listing.genre ?? [],
-    price: Number(listing.price),
-    condition: listing.condition,
-    isAuction: listing.saleType === "AUCTION",
-    type: "book",
-  });
+  const mapListingToSale = (listing, auctionsByListingId = {}) => {
+      const auction = auctionsByListingId[listing.id];
+      return{
+          id: listing.id,
+          title: listing.listingTile ?? listing.listingTitle,
+          author: listing.authors?.join(", ") ?? "Unknown",
+          genre: listing.genre ?? [],
+          price: listing.saleType === "AUCTION" && auction
+              ? Number(auction.currentHighestBid ?? auction.initialPrice)
+              : Number(listing.price),
+          condition: listing.condition,
+          isAuction: listing.saleType === "AUCTION",
+          auctionStatus: auction?.auctionStatus ?? null,
+          type: "book",
+      }
+  };
 
   const getGenreName = (genreId) => {
     return genres.find(g => g.id === genreId)?.genreName ?? genreId;
@@ -224,17 +248,41 @@ export function Explore() {
                 </div>
 
                 <div className="mt-3">
-                  {sale.isAuction ? (
-                    <button
-                      onClick={() => {
-                        setSelectedItem(sale);
-                        setBidModalOpen(true);
-                      }}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold"
-                    >
-                      <Tag className="w-5 h-5" />
-                      Make Offer
-                    </button>
+                    {sale.isAuction ? (
+                        sale.auctionStatus === "ACTIVE" ? (
+                            <button
+                                onClick={async () => {
+                                    const auctionRes = await fetch(
+                                        `${API_BASE_URL}/auctions?listingId=${sale.id}`
+                                    );
+                                    if (auctionRes.ok) {
+                                        const auctions = await auctionRes.json();
+                                        const auction = auctions[0];
+                                        if (auction) {
+                                            setSelectedItem({
+                                                ...sale,
+                                                auctionId: auction.auctionId,
+                                                price: Number(auction.currentHighestBid ?? auction.initialPrice),
+                                                buyoutPrice: auction.buyoutPrice != null ? Number(auction.buyoutPrice) : null,
+                                            });
+                                            setBidModalOpen(true);
+                                        }
+                                    }
+                                }}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold"
+                            >
+                                <Tag className="w-5 h-5" />
+                                Make Offer
+                            </button>
+                        ) : (
+                            <button
+                                disabled
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-muted text-muted-foreground rounded-xl font-semibold cursor-not-allowed"
+                            >
+                                <Tag className="w-5 h-5" />
+                                {sale.auctionStatus === "SCHEDULED" ? "Starts Soon" : "Not Available"}
+                            </button>
+                        )
                   ) : (
                     <button
                       onClick={() => {
@@ -266,16 +314,54 @@ export function Explore() {
           }}
           itemTitle={selectedItem.title}
           currentBid={selectedItem.price}
-          buyoutPrice={selectedItem.price * 1.5}
-          onSubmitBid={(amount) => {
-            console.log("Bid submitted:", amount);
+          buyoutPrice={selectedItem.buyoutPrice}
+          onSubmitBid={async (amount, onError) => {
+              const res = await fetch(
+                  `${API_BASE_URL}/auctions/${selectedItem.auctionId}/bids?bidderId=${CURRENT_USER_ID}`,
+                  {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ value: amount })
+                  }
+              );
+              if (res.status === 204) {
+                  setBidModalOpen(false);
+                  // renders the marketplace page
+                  setSales(prev => prev.map(s =>
+                      s.id === selectedItem.id
+                          ? { ...s, price: amount }
+                          : s
+                  ));
+                  setSelectedItem(null);
+              } else if (res.status === 400) {
+                  onError?.("Invalid bid. Please try a higher amount.");
+              } else {
+                  onError?.("Something went wrong. Please try again.");
+              }
           }}
-          onBuyNow={() => {
-            addToCart({
-              id: selectedItem.id,
-              title: selectedItem.title,
-              price: selectedItem.price * 1.5,
-            });
+          onBuyNow={async () => {
+              const res = await fetch(
+                  `${API_BASE_URL}/auctions/${selectedItem.auctionId}/bids?bidderId=${CURRENT_USER_ID}`,
+                  {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ value: selectedItem.buyoutPrice })
+                  }
+              );
+              if (res.status === 204) {
+                  setBidModalOpen(false);
+                  setSales(prev => prev.map(s =>
+                      s.id === selectedItem.id
+                          ? {...s, price: selectedItem.buyoutPrice}
+                          : s
+                  ));
+                  addToCart({
+                      id: selectedItem.id,
+                      title: selectedItem.title,
+                      price: selectedItem.buyoutPrice
+                  });
+                  setSelectedItem(null);
+              }
           }}
         />
       )}

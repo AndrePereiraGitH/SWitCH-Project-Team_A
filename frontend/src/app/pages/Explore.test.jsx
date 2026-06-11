@@ -56,6 +56,19 @@ const mockListings = [
     },
 ];
 
+const mockAuctions = [
+    {
+        auctionId: "auction-001",
+        listingId: "2",
+        initialPrice: "18.00",
+        buyoutPrice: null,
+        currentHighestBid: null,
+        auctionStartDateTime: "2026-06-01T10:00:00",
+        auctionEndDateTime: "2026-06-20T10:00:00",
+        auctionStatus: "ACTIVE",
+    }
+];
+
 // ── Setup ─────────────────────────────────────────────────────────────────────
 
 describe("Explore", () => {
@@ -70,6 +83,9 @@ describe("Explore", () => {
             // FIX: Changed from /sales to /listings
             if (url.includes("/listings")) {
                 return { ok: true, json: async () => mockListings };
+            }
+            if (url.includes("/auctions")) {
+                return { ok: true, json: async () => mockAuctions };
             }
             return { ok: false, status: 404 };
         });
@@ -101,16 +117,17 @@ describe("Explore", () => {
 
     // ── API loading ──
     describe("API loading", () => {
-        test("fetches genres and listings on mount", async () => {
+        test("fetches genres, listings and auctions on mount", async () => {
             await renderLoadedExplore();
 
             await waitFor(() => {
-                expect(global.fetch).toHaveBeenCalledTimes(2);
+                expect(global.fetch).toHaveBeenCalledTimes(3);
             });
 
             expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/genres"));
             // FIX: Ensure test expects the correct URL string check too
             expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/listings"));
+            expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/auctions"));
         });
     });
 
