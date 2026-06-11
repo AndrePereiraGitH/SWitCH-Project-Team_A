@@ -337,9 +337,9 @@ class ListingRepositoryJpaImplTest {
     }
 
 
-// ===========================================================
-// findAllByDirectSaleAndPublicationSampleIdIn
-// ===========================================================
+    // ===========================================================
+    // findAllByDirectSaleAndPublicationSampleIdIn
+    // ===========================================================
 
     @Test
     void findAllByDirectSaleAndPublicationSampleIdIn_shouldThrowNullPointerException_whenIdsIsNull() {
@@ -460,5 +460,88 @@ class ListingRepositoryJpaImplTest {
         assertEquals(
                 "List of PublicationSampleIds cannot be null",
                 ex.getMessage());
+    }
+
+    // ===========================================================
+    // findByPublicationSampleIdIn
+    // ===========================================================
+
+    @Test
+    void findByPublicationSampleIdIn_shouldThrowNullPointerException_whenPublicationSampleIdsIsNull() {
+        // Act + Assert
+        NullPointerException ex = assertThrows(NullPointerException.class,
+                () -> repo.findByPublicationSampleIdIn(null));
+
+        assertEquals("List of PublicationSampleIds cannot be null", ex.getMessage());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnEmptyList_whenNoListingsFound() {
+        // Arrange
+        PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1))).thenReturn(List.of());
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pbId_1));
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnEmptyList_whenInputListIsEmpty() {
+        // Arrange
+        when(jpa.findAllByItemsId(List.of())).thenReturn(List.of());
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of());
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnListing_whenSingleIdMatches() {
+        // Arrange
+        PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
+
+        ListingDM dm1 = mock(ListingDM.class);
+        Listing listing_1 = mock(Listing.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1))).thenReturn(List.of(dm1));
+        when(assembler.toDomain(dm1)).thenReturn(listing_1);
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pbId_1));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertSame(listing_1, result.get(0));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnMultipleListings_whenMultipleIdsMatch() {
+        // Arrange
+        PublicationSampleId pbId_1 = mock(PublicationSampleId.class);
+        PublicationSampleId pbId_2 = mock(PublicationSampleId.class);
+
+        ListingDM dm1 = mock(ListingDM.class);
+        ListingDM dm2 = mock(ListingDM.class);
+
+        Listing listing_1 = mock(Listing.class);
+        Listing listing_2 = mock(Listing.class);
+
+        when(jpa.findAllByItemsId(List.of(pbId_1, pbId_2))).thenReturn(List.of(dm1, dm2));
+        when(assembler.toDomain(dm1)).thenReturn(listing_1);
+        when(assembler.toDomain(dm2)).thenReturn(listing_2);
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pbId_1, pbId_2));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(listing_1));
+        assertTrue(result.contains(listing_2));
     }
 }
