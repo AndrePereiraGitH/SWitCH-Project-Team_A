@@ -440,6 +440,7 @@ public class ListingRESTController {
         ListingDetailsDTO dto = ListingMapper.toListingDetailsDTO(
                 listing,
                 pubSamples,
+                bibliographicalDatas,
                 editions,
                 authors,
                 genres,

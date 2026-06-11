@@ -14,10 +14,11 @@ import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
 
 import java.math.BigDecimal;
 import java.util.List;
+
 
 
 /**
@@ -92,6 +93,7 @@ public class ListingMapper {
     public static ListingDetailsDTO toListingDetailsDTO(
             Listing listing,
             List<PublicationSample> pubSamples,
+            List<BibliographicalData> bds,
             List<Edition> editions,
             List<Author> authors,
             List<Genre> genres,
@@ -117,7 +119,8 @@ public class ListingMapper {
                 getEditionCode(edition),
                 getEditionYear(edition),
                 getNumberOfPages(edition),
-                getEditionLanguage(edition)
+                getEditionLanguage(edition),
+                getBibliographicalDataIds(bds)
         );
     }
 
@@ -293,6 +296,14 @@ public class ListingMapper {
     private static List<String> getBibliographicalTitles(List<BibliographicalData> bibliographicalDatas) {
         return bibliographicalDatas.stream()
                 .map(BibliographicalData::getTitle)
+                .toList();
+    }
+
+
+    private static List<String> getBibliographicalDataIds(List<BibliographicalData> bds) {
+        return bds.stream()
+                .map(BibliographicalData::id)
+                .map(Object::toString)
                 .toList();
     }
 

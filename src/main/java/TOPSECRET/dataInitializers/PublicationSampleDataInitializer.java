@@ -41,13 +41,14 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
         publicationSampleRepository.save(buildGoodConditionBookSample());
         publicationSampleRepository.save(buildWornMagazineSample());
         publicationSampleRepository.save(buildFairConditionBookSample());
+        publicationSampleRepository.save(buildSecondLordOfTheRingsSample());
 
-        log.info("[PublicationSampleDataInitializer] Done — {} publication samples seeded.", 4);
+        log.info("[PublicationSampleDataInitializer] Done — {} publication samples seeded.", 5);
     }
 
     /**
-     * A brand-new copy of a modern book, owned by user-001.
-     * In library-001 and collection-001.
+     * A poor-condition copy of The Lord of the Rings, owned by user-001.
+     * In library-001 and collection-001. Used by listing-001 (direct sale).
      */
     private PublicationSample buildNewBookSample() {
         return publicationSampleFactory.create(
@@ -62,8 +63,8 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
     }
 
     /**
-     * A good-condition copy of a vintage book, owned by user-002.
-     * In library-002 and collection-002.
+     * A poor-condition copy of Dom Quixote, owned by user-002.
+     * In library-002 and collection-002. Used by listing-002 and listing-004.
      */
     private PublicationSample buildGoodConditionBookSample() {
         return publicationSampleFactory.create(
@@ -78,8 +79,8 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
     }
 
     /**
-     * A worn copy of a magazine, owned by user-002.
-     * In library-002, no collection.
+     * A poor-condition copy of Os Lusíadas, owned by user-002.
+     * In library-002, no collection. Used by listing-002.
      */
     private PublicationSample buildWornMagazineSample() {
         return publicationSampleFactory.create(
@@ -94,8 +95,8 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
     }
 
     /**
-     * A fair-condition collector's edition book, owned by user-003.
-     * In library-003 and collection-003.
+     * A poor-condition copy of Foundation, owned by user-003.
+     * In library-003 and collection-003. Used by listing-003.
      */
     private PublicationSample buildFairConditionBookSample() {
         return publicationSampleFactory.create(
@@ -107,5 +108,21 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
                 Condition.POOR,
                 new LibraryId("library-003"),
                 new CollectionOfPublicationsId("collection-003"));
+    }
+
+    /**
+     * A second copy of The Lord of the Rings, owned by user-001.
+     * In library-001, no collection. Used by listing-005 (auction).
+     */
+    private PublicationSample buildSecondLordOfTheRingsSample() {
+        return publicationSampleFactory.create(
+                new PublicationSampleId("pub-sample-005"),
+                new BibliographicalDataId("bd-001"),
+                new UserId("user-001"),
+                PublicationStatus.READ,
+                new EditionId("edition-001"),
+                Condition.VERY_GOOD,
+                new LibraryId("library-001"),
+                null);
     }
 }
