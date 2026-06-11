@@ -3,8 +3,8 @@ package TOPSECRET.controller.controllerREST.root.linkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.AuctionAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
-import TOPSECRET.domain.ValueObjects.AuctionId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.auction.response.AuctionDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,8 +26,12 @@ import static org.mockito.Mockito.when;
  * <p>Verifies that HATEOAS links are conditionally included based on the
  * requesting user's permissions, including:</p>
  * <ul>
- *     <li>{@code getLinksForAuction} — always includes a {@code get-auctions} link;
- *         includes a {@code create-auction} link only when the user has permission;</li>
+ *     <li>{@code getPublicLinks} — always includes the {@code get-auctions} link,
+ *         regardless of authentication status;</li>
+ *     <li>{@code getPlaceBidLink} — includes {@code place-bid} only when
+ *         the user has permission and the auction status is {@code ACTIVE};
+ *         returns an empty list when the user lacks permission or the auction
+ *         is not {@code ACTIVE};</li>
  *     <li>throws {@link InstanceNotFoundException} when the user does not exist.</li>
  * </ul>
  */
@@ -47,52 +51,102 @@ class AuctionLinkProviderTest {
     private UserId userIdDouble;
 
     @Mock
-    private AuctionId auctionIdDouble;
+    private AuctionDTO dtoDouble;
 
     @InjectMocks
     private AuctionLinkProvider linkProvider;
 
     // =================================================================================================================
-    // =========== getLinksForAuction ==================================================================================
+    // =========== getPublicLinks ======================================================================================
     // =================================================================================================================
 
     @Test
-    void getLinksForAuction_shouldIncludeCreateAuctionLink_whenUserHasPermission() throws InstanceNotFoundException {
-        // Arrange
-        when(userRepoDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(policyDouble.canCreateAuction(userDouble)).thenReturn(true);
-
+    void getPublicLinks_shouldAlwaysIncludeGetAuctionsLinks() {
         // Act
-        List<Link> links = linkProvider.getLinksForAuction(userIdDouble);
-
-        // Assert
-        assertEquals(2, links.size());
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-auctions")));
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("create-auction")));
-    }
-
-    @Test
-    void getLinksForAuction_shouldReturnEmptyList_whenUserDoesNotHavePermission() throws InstanceNotFoundException {
-        // Arrange
-        when(userRepoDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(policyDouble.canCreateAuction(userDouble)).thenReturn(false);
-
-        // Act
-        List<Link> links = linkProvider.getLinksForAuction(userIdDouble);
+        List<Link> links = linkProvider.getPublicLinks();
 
         // Assert
         assertEquals(1, links.size());
         assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-auctions")));
-        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-auction")));
+    }
+
+    // =================================================================================================================
+    // =========== getPlaceBidLink =====================================================================================
+    // =================================================================================================================
+
+    @Test
+    void getPlaceBidLink_shouldIncludePlaceBidLink_whenUserHasPermissionAndAuctionIsActive() throws InstanceNotFoundException {
+        // Arrange
+        when(dtoDouble.getAuctionId()).thenReturn("auction-123");
+        when(dtoDouble.getAuctionStatus()).thenReturn("ACTIVE");
+        when(userRepoDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policyDouble.canPlaceBid(userDouble)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPlaceBidLink(dtoDouble, userIdDouble);
+
+        // Assert
+        assertEquals(1, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("place-bid")));
     }
 
     @Test
-    void getLinksForAuction_shouldThrow_whenUserNotFound() {
+    void getPlaceBidLink_shouldNotIncludePlaceBidLink_whenUserLacksPermission() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepoDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policyDouble.canPlaceBid(userDouble)).thenReturn(false);
+
+        // Act
+        List<Link> links = linkProvider.getPlaceBidLink(dtoDouble, userIdDouble);
+
+        // Assert
+        assertTrue(links.isEmpty());
+    }
+
+    @Test
+    void getPlaceBidLink_shouldNotIncludePlaceBidLink_whenAuctionIsNotActive() throws InstanceNotFoundException {
+        // Arrange
+        when(dtoDouble.getAuctionStatus()).thenReturn("ENDED_WITH_WINNER");
+        when(userRepoDouble.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policyDouble.canPlaceBid(userDouble)).thenReturn(true);
+
+        // Act
+        List<Link> links = linkProvider.getPlaceBidLink(dtoDouble, userIdDouble);
+
+        // Assert
+        assertTrue(links.isEmpty());
+    }
+
+    @Test
+    void getPlaceBidLink_shouldThrow_whenUserNotFound() {
         // Arrange
         when(userRepoDouble.findByID(userIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
         assertThrows(InstanceNotFoundException.class,
-                () -> linkProvider.getLinksForAuction(userIdDouble));
+                () -> linkProvider.getPlaceBidLink(dtoDouble, userIdDouble));
+    }
+
+    // =================================================================================================================
+    // =========== getLinks ============================================================================================
+    // =================================================================================================================
+
+    @Test
+    void getLinks_shouldReturnPublicLinks_whenCalled() throws InstanceNotFoundException {
+        // Act
+        List<Link> links = linkProvider.getLinks(userIdDouble);
+
+        // Assert
+        assertEquals(1, links.size());
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("get-auctions")));
+    }
+
+    @Test
+    void getLinks_shouldNotIncludePlaceBidLink() throws InstanceNotFoundException {
+        // Act
+        List<Link> links = linkProvider.getLinks(userIdDouble);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("place-bid")));
     }
 }

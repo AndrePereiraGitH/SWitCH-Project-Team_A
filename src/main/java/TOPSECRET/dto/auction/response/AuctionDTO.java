@@ -14,13 +14,11 @@ import java.time.LocalDateTime;
  *
  * <p>Contains the auction's own data ({@code auctionId}, {@code listingId}, {@code auctionStartDateTime},
  * {@code auctionEndDateTime}, {@code closedAt}, {@code initialPrice}, {@code buyoutPrice},
- * {@code finalPrice}, {@code auctionStatus}), as well as denormalized fields sourced
- * from the Listing aggregate ({@code listingTitle}, {@code listingDescription})
- * included for display convenience.</p>
+ * {@code finalPrice}, {@code auctionStatus}, {@code currentHighestBid}, {@code numberOfBids}),
+ * as well as {@code listingTitle} sourced from the Listing aggregate, included for display convenience.</p>
  *
- * <p>Fields {@code buyoutPrice}, {@code finalPrice} and {@code closedAt} may be {@code null} —
- * the former if the auction has no buyout price, the latter two if the auction
- * has not yet ended.</p>
+ * <p>Fields {@code buyoutPrice}, {@code finalPrice}, {@code closedAt} and {@code currentHighestBid}
+ * may be {@code null}.</p>
  *
  * <p>Equality is based solely on this class's own fields, excluding inherited
  * fields from {@link RepresentationModel} ({@code callSuper = false}).</p>
@@ -38,7 +36,6 @@ public class AuctionDTO extends RepresentationModel<AuctionDTO> {
     String listingId;
 
     String listingTitle;
-    String listingDescription;
 
     LocalDateTime auctionStartDateTime;
     LocalDateTime auctionEndDateTime;
@@ -49,4 +46,7 @@ public class AuctionDTO extends RepresentationModel<AuctionDTO> {
     BigDecimal finalPrice;
 
     String auctionStatus;
+
+    BigDecimal currentHighestBid;
+    int numberOfBids;
 }
