@@ -9,8 +9,10 @@ import TOPSECRET.persistence.repositoryjpa.jpa.IUserRepositoryJPA;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * JPA-backed implementation of {@link IUserRepository}.
@@ -80,5 +82,16 @@ public class UserRepositoryJPAImpl implements IUserRepository {
 
         return userRepositoryJpa.findByUserName(username)
                 .map(UserDM::getId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<User> findAll() {
+        return userRepositoryJpa.findAll()
+                .stream()
+                .map(assembler::toDomain)
+                .collect(Collectors.toList());
     }
 }

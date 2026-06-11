@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -97,6 +98,39 @@ public class UserRESTController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves all users in the system.
+     *
+     * <p>Returns the full list of users, each enriched with public HATEOAS links
+     * and a self-link pointing back to this endpoint.</p>
+     *
+     * @return HTTP 200 with the list of user DTOs (may be empty),
+     *         or HTTP 500 on unexpected error
+     */
+    @GetMapping
+    public ResponseEntity<List<ResponseUserDTO>> getAllUsers() {
+
+        try {
+            List<User> users = userService.findAll();
+            List<ResponseUserDTO> result = new ArrayList<>();
+
+            for (User user : users) {
+                result.add(UserMapper.toDTO(user));
+            }
+
+            List<Link> publicLinks = new ArrayList<>(userLinkProvider.getPublicLinks());
+            publicLinks.add(linkTo(methodOn(UserRESTController.class)
+                    .getAllUsers()).withSelfRel());
+
+            result.forEach(dto -> publicLinks.forEach(dto::add));
+
+            return ResponseEntity.ok(result);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
