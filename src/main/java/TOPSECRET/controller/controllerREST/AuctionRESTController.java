@@ -80,10 +80,10 @@ public class AuctionRESTController {
             Listing listing = listingService.findById(listingId);
             AuctionDTO responseDTO = AuctionMapper.toDTO(auction, listing);
 
-            List<Link> links = auctionLinkProvider.getLinksForAuction(sellerId);
+            List<Link> links = auctionLinkProvider.getPublicLinks();
 
             links.add(linkTo(methodOn(AuctionRESTController.class)
-                    .getAuctionById(auction.id().toString(), userId))
+                    .getAuctionById(auction.id().getId(), userId))
                     .withSelfRel());
 
             links.forEach(responseDTO::add);
@@ -141,7 +141,7 @@ public class AuctionRESTController {
 
     /**
      * Retrieves a list of auctions, optionally filtered by genre, author, publisher,
-     * or bibliographical data, and optionally sorted by auction deadline.
+     * bibliographical data, or listing, and optionally sorted by auction deadline.
      *
      * <p>Filtering logic is delegated to {@link AuctionService#findAuctions}, which
      * resolves the appropriate chain of repositories based on the provided criterion.</p>
@@ -157,9 +157,9 @@ public class AuctionRESTController {
      * @param authorId              the author identifier to filter by; optional
      * @param publisherId           the publisher identifier to filter by; optional
      * @param bibliographicalDataId the bibliographical data identifier to filter by; optional
+     * @param listingId             the listing identifier to filter by; optional
      * @param sortByDeadline        whether to sort results by auction deadline ascending;
      *                              only applicable when filtering by genre; defaults to {@code false}
-     * @param userId                the identifier of the requesting user
      * @return {@code 200 OK} with the list of {@link AuctionDTO} and HATEOAS links,
      *         {@code 400 Bad Request} if any parameter is invalid,
      *         {@code 404 Not Found} if a referenced listing does not exist,
@@ -171,12 +171,10 @@ public class AuctionRESTController {
             @RequestParam(required = false) String authorId,
             @RequestParam(required = false) String publisherId,
             @RequestParam(required = false) String bibliographicalDataId,
-            @RequestParam(required = false, defaultValue = "false") boolean sortByDeadline,
-            @RequestParam String userId) {
+            @RequestParam(required = false) String listingId,
+            @RequestParam(required = false, defaultValue = "false") boolean sortByDeadline) {
 
         try {
-            UserId id = AuctionMapper.toUserId(userId);
-
             List<Auction> auctions = auctionService.findAuctions(
                     genreId != null
                             ? AuctionMapper.toGenreId(genreId)
@@ -190,6 +188,9 @@ public class AuctionRESTController {
                     bibliographicalDataId != null
                             ? AuctionMapper.toBibliographicalDataId(bibliographicalDataId)
                             : null,
+                    listingId != null
+                            ? AuctionMapper.toListingId(listingId)
+                            : null,
                     sortByDeadline);
 
             Map<ListingId, Listing> listingMap = auctions.stream()
@@ -200,20 +201,18 @@ public class AuctionRESTController {
 
             List<AuctionDTO> responseDTOs = AuctionMapper.toDTOs(auctions, listingMap);
 
-            List<Link> links = auctionLinkProvider.getLinksForAuction(id);
-
             responseDTOs.forEach(dto -> {
-                links.forEach(dto::add);
                 dto.add(linkTo(methodOn(AuctionRESTController.class)
-                        .getAuctionById(dto.getAuctionId(), userId))
+                        .getAuctionById(dto.getAuctionId(), null))
                         .withSelfRel());
+                dto.add(auctionLinkProvider.getPublicLinks());
             });
 
             return ResponseEntity.ok(responseDTOs);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } catch (InstanceNotFoundException | EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -228,30 +227,34 @@ public class AuctionRESTController {
      * self-referential link identifying the resource.</p>
      *
      * @param auctionId the unique identifier of the auction to retrieve
-     * @param userId    the identifier of the requesting user
+     * @param userId    the identifier of the requesting user; optional —
+     *                  if provided, private HATEOAS links are included based on the user's permissions
      * @return {@code 200 OK} with the {@link AuctionDTO} and HATEOAS links,
      *         {@code 400 Bad Request} if the {@code auctionId} is invalid,
      *         {@code 404 Not Found} if the auction or its associated listing does not exist,
      *         {@code 500 Internal Server Error} for unexpected errors
      */
     @GetMapping("/{auctionId}")
-    public ResponseEntity<AuctionDTO> getAuctionById(@PathVariable String auctionId, @RequestParam String userId) {
+    public ResponseEntity<AuctionDTO> getAuctionById(@PathVariable String auctionId,
+                                                     @RequestParam(required = false) String userId) {
 
         try {
             AuctionId auctionIdVO = AuctionMapper.toAuctionId(auctionId);
-            UserId userIdVO = AuctionMapper.toUserId(userId);
             Auction auction = auctionService.findById(auctionIdVO);
             Listing listing = listingService.findById(auction.getListingId());
 
             AuctionDTO responseDTO = AuctionMapper.toDTO(auction, listing);
 
-            List<Link> links = auctionLinkProvider.getLinksForAuction(userIdVO);
-
-            links.add(linkTo(methodOn(AuctionRESTController.class)
+            responseDTO.add(linkTo(methodOn(AuctionRESTController.class)
                     .getAuctionById(auctionId, userId))
                     .withSelfRel());
 
-            links.forEach(responseDTO::add);
+            responseDTO.add(auctionLinkProvider.getPublicLinks());
+
+            if (userId != null) {
+                UserId userIdVO = AuctionMapper.toUserId(userId);
+                responseDTO.add(auctionLinkProvider.getPlaceBidLink(responseDTO, userIdVO));
+            }
 
             return ResponseEntity.ok(responseDTO);
 

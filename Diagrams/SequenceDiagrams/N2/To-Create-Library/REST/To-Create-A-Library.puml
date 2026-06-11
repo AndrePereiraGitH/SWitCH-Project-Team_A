@@ -1,0 +1,88 @@
+@startuml
+hide footbox
+autonumber
+title To create a library (Main)
+
+actor User
+participant ":UI" as UI
+participant ":LibraryRESTController" as Ctrl
+participant ":LibraryMapper" as Mapper
+participant "response: ResponseLibraryDTO" as response
+participant ":LibraryLinkProvider" as LibLinkProvider
+participant ":LibraryService" as Service
+participant ":UserRepository" as UserRepo
+participant "user: Optional<User>" as user
+participant ":LibraryPolicy" as Policy
+participant ":LibraryFactory" as Factory
+participant "library: Library" as library
+participant ":LibraryRepository" as LibRepo
+
+User -> UI : I want to create a library.
+activate UI
+UI --> User : What name?
+deactivate UI
+User -> UI : libraryName, username
+activate UI
+
+UI -> Ctrl : POST /libraries?username={username}\n body: { libraryName }
+activate Ctrl
+
+Ctrl -> Service : createAndSave(libraryName, username)
+activate Service
+
+Service -> UserRepo : findByUsername(username)
+activate UserRepo
+UserRepo -->> user ** : <<create>>
+UserRepo --> Service : user
+deactivate UserRepo
+
+alt user not found
+    Service --> Ctrl : IllegalArgumentException
+    Ctrl --> UI : 400 Bad Request
+end
+
+Service -> Policy : canCreateLibrary(user)
+activate Policy
+Policy --> Service : boolean
+deactivate Policy
+
+alt not allowed
+    Service --> Ctrl : AccessDeniedException
+    Ctrl --> UI : 403 Forbidden
+end
+
+Service -> Factory : create(libraryName, user.id())
+activate Factory
+Factory -->> library ** : <<create>>
+Factory --> Service : library
+deactivate Factory
+
+Service -> LibRepo : save(library)
+activate LibRepo
+LibRepo --> Service : library
+deactivate LibRepo
+
+Service --> Ctrl : library
+deactivate Service
+
+Ctrl -> Mapper : toDTO(library)
+activate Mapper
+Mapper -->> response ** : <<create>>
+Mapper --> Ctrl : response
+deactivate Mapper
+
+Ctrl -> LibLinkProvider : getLinksForLibraries(library.userId())
+activate LibLinkProvider
+LibLinkProvider --> Ctrl : links
+deactivate LibLinkProvider
+
+Ctrl -> Ctrl : response.add(links)
+Ctrl -> Ctrl : response.add(selfLink(library.id()))
+
+Ctrl --> UI : 201 Created\n body: ResponseLibraryDTO
+deactivate Ctrl
+
+UI --> User : Your library was created
+deactivate UI
+
+@enduml

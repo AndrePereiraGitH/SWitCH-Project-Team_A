@@ -1,6 +1,7 @@
 package TOPSECRET.dto.auction;
 
 import TOPSECRET.domain.Auction.Auction;
+import TOPSECRET.domain.Auction.Bid;
 import TOPSECRET.domain.Enum.AuctionStatus;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.ValueObjects.*;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.when;
  *   <li>Correct mapping of {@code closedAt} and {@code finalPrice}, including the {@code null} case for open auctions</li>
  *   <li>Extraction of {@link BigDecimal} values from {@code Price} Value Objects</li>
  *   <li>Conversion of {@link AuctionStatus} enum to its {@link String} representation</li>
- *   <li>Correct resolution of denormalized Listing fields ({@code listingTitle}, {@code listingDescription})</li>
+ *   <li>Correct resolution of denormalized Listing field ({@code listingTitle})</li>
  *   <li>Correct conversion of primitive identifiers to Value Objects ({@link AuctionId},
  *       {@link ListingId}, {@link UserId}, {@link GenreId}, {@link AuthorId},
  *       {@link PublisherID}, {@link BibliographicalDataId} and {@link Price}),
@@ -54,6 +55,8 @@ class AuctionMapperTest {
     private Price buyoutPrice;
     @Mock
     private Price finalPrice;
+    @Mock
+    private Bid highestBid;
 
     private final LocalDateTime start = LocalDateTime.of(2026, 5, 1, 10, 0);
     private final LocalDateTime end = LocalDateTime.of(2026, 5, 10, 10, 0);
@@ -66,20 +69,21 @@ class AuctionMapperTest {
     @Test
     void shouldMapAuctionIdentifiers_whenAuctionIsClosed() {
         // Arrange
+        when(auctionId.getId()).thenReturn("auction-123");
+        when(listingId.getId()).thenReturn("listing-123");
         when(auction.id()).thenReturn(auctionId);
         when(auction.getListingId()).thenReturn(listingId);
         when(auction.getInitialPrice()).thenReturn(initialPrice);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
 
         // Act
         AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
 
         // Assert
-        assertEquals(auctionId.toString(), dto.getAuctionId());
-        assertEquals(listingId.toString(), dto.getListingId());
+        assertEquals("auction-123", dto.getAuctionId());
+        assertEquals("listing-123", dto.getListingId());
     }
 
     @Test
@@ -90,7 +94,6 @@ class AuctionMapperTest {
         when(auction.getInitialPrice()).thenReturn(initialPrice);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
 
         // Act
@@ -98,7 +101,6 @@ class AuctionMapperTest {
 
         // Assert
         assertEquals("Listing Title", dto.getListingTitle());
-        assertEquals("Listing Description", dto.getListingDescription());
     }
 
     @Test
@@ -112,7 +114,6 @@ class AuctionMapperTest {
         when(auction.getInitialPrice()).thenReturn(initialPrice);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
 
         // Act
@@ -134,7 +135,6 @@ class AuctionMapperTest {
         when(auction.getFinalPrice()).thenReturn(finalPrice);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
         when(buyoutPrice.getPrice()).thenReturn(BigDecimal.valueOf(500));
         when(finalPrice.getPrice()).thenReturn(BigDecimal.valueOf(500));
@@ -156,7 +156,6 @@ class AuctionMapperTest {
         when(auction.getInitialPrice()).thenReturn(initialPrice);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ENDED_WITH_WINNER);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
 
         // Act
@@ -179,7 +178,6 @@ class AuctionMapperTest {
         when(auction.getFinalPrice()).thenReturn(null);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
 
         // Act
@@ -205,7 +203,6 @@ class AuctionMapperTest {
         when(auction.getFinalPrice()).thenReturn(null);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
         when(buyoutPrice.getPrice()).thenReturn(BigDecimal.valueOf(500));
 
@@ -229,6 +226,47 @@ class AuctionMapperTest {
         assertThrows(NullPointerException.class, () -> AuctionMapper.toDTO(auction, null));
     }
 
+    @Test
+    void shouldMapCurrentHighestBid_whenBidsExist() {
+        // Arrange
+        when(auction.id()).thenReturn(auctionId);
+        when(auction.getListingId()).thenReturn(listingId);
+        when(auction.getInitialPrice()).thenReturn(initialPrice);
+        when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
+        when(auction.getCurrentHighestBid()).thenReturn(highestBid);
+        when(auction.getBidHistory()).thenReturn(List.of(highestBid));
+        when(highestBid.getValue()).thenReturn(initialPrice);
+        when(listing.getListingTitle()).thenReturn("Listing Title");
+        when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(150));
+
+        // Act
+        AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
+
+        // Assert
+        assertEquals(BigDecimal.valueOf(150), dto.getCurrentHighestBid());
+        assertEquals(1, dto.getNumberOfBids());
+    }
+
+    @Test
+    void shouldMapNullCurrentHighestBid_whenNoBidsExist() {
+        // Arrange
+        when(auction.id()).thenReturn(auctionId);
+        when(auction.getListingId()).thenReturn(listingId);
+        when(auction.getInitialPrice()).thenReturn(initialPrice);
+        when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
+        when(auction.getCurrentHighestBid()).thenReturn(null);
+        when(auction.getBidHistory()).thenReturn(List.of());
+        when(listing.getListingTitle()).thenReturn("Listing Title");
+        when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
+
+        // Act
+        AuctionDTO dto = AuctionMapper.toDTO(auction, listing);
+
+        // Assert
+        assertNull(dto.getCurrentHighestBid());
+        assertEquals(0, dto.getNumberOfBids());
+    }
+
     // =================================================================================================================
     // =========== toDTOs ==============================================================================================
     // =================================================================================================================
@@ -238,6 +276,8 @@ class AuctionMapperTest {
         // Arrange
         when(auction.id()).thenReturn(auctionId);
         when(auction.getListingId()).thenReturn(listingId);
+        when(auctionId.getId()).thenReturn("auction-123");
+        when(listingId.getId()).thenReturn("listing-123");
         when(auction.getAuctionStartDateTime()).thenReturn(start);
         when(auction.getAuctionEndDateTime()).thenReturn(end);
         when(auction.getClosedAt()).thenReturn(null);
@@ -246,7 +286,6 @@ class AuctionMapperTest {
         when(auction.getFinalPrice()).thenReturn(null);
         when(auction.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
         when(listing.getListingTitle()).thenReturn("Listing Title");
-        when(listing.getShortDescription()).thenReturn("Listing Description");
         when(initialPrice.getPrice()).thenReturn(BigDecimal.valueOf(100));
 
         Map<ListingId, Listing> listingMap = Map.of(listingId, listing);
@@ -256,7 +295,7 @@ class AuctionMapperTest {
 
         // Assert
         assertEquals(1, dtos.size());
-        assertEquals(auctionId.toString(), dtos.get(0).getAuctionId());
+        assertEquals("auction-123", dtos.get(0).getAuctionId());
     }
 
     @Test
