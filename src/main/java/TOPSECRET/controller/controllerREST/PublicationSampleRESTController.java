@@ -570,6 +570,36 @@ public class PublicationSampleRESTController {
         }
     }
 
+    @GetMapping("{collectionId}/publication-sample")
+    public ResponseEntity<List<PublicationDTO>> findPublicationSampleInSharedCollection(
+            @PathVariable("collectionId") String collectionId,
+            @RequestParam String userId) {
+
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
+
+            List<PublicationSample> pbSampleList = publicationSampleService.findPublicationsInPublicCollection(cpId, id);
+
+            List<PublicationDTO> publicationDTOS = new ArrayList<>();
+            for(PublicationSample pbSample : pbSampleList){
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.OWNER));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
+
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     // =========================================================================
     // PATCH — domain operations
     // =========================================================================
