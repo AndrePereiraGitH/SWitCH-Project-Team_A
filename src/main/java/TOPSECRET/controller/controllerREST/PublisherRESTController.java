@@ -8,8 +8,10 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.publisher.PublisherMapper;
 import TOPSECRET.dto.publisher.request.RequestPublisherDTO;
 import TOPSECRET.dto.publisher.response.ResponsePublisherDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.PublisherService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -29,8 +32,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * REST Controller for managing Publisher resources.
  *
  * <p>This controller provides endpoints for the lifecycle of a {@link Publisher},
- * including creation and management of publisher entities. It integrates with
+ * including creation and retrieval of publisher entities. It integrates with
  * HATEOAS to provide dynamic hypermedia links based on the requester's permissions.</p>
+ *
+ * <p>Endpoints are grouped into two categories:</p>
+ * <ul>
+ *   <li><b>POST</b> — creation of a new publisher; requires admin privileges.</li>
+ *   <li><b>GET</b> — retrieval by identity or full collection; publicly accessible.</li>
+ * </ul>
  */
 @RestController
 @Tag(name = "Publishers", description = "Publisher management endpoints")
@@ -56,8 +65,9 @@ public class PublisherRESTController {
      * <p>Responses:</p>
      * <ul>
      *     <li>201 Created – Publisher successfully created</li>
-     *     <li>400 Bad Request – invalid input data</li>
+     *     <li>400 Bad Request – invalid input data or user not found</li>
      *     <li>403 Forbidden – user is not authorized to perform this action</li>
+     *     <li>404 Not Found – user does not exist</li>
      *     <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      *
@@ -72,7 +82,7 @@ public class PublisherRESTController {
             @NotBlank @RequestParam String userId) {
 
         try {
-            UserId id = PublisherMapper.toUserId(userId);
+            UserId id = UserMapper.toUserId(userId);
 
             Contact contact = PublisherMapper.toContact(requestPublisherDTO);
 
@@ -89,7 +99,7 @@ public class PublisherRESTController {
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(PublisherRESTController.class)
-                    .getPublisher(publisher.id().getPublisherId()))
+                    .getPublisher(publisher.id().getId()))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -108,18 +118,20 @@ public class PublisherRESTController {
     /**
      * Retrieves all publishers registered in the system.
      *
-     * <p>Each returned publisher is enriched with a self-link to its individual resource endpoint.</p>
+     * <p>Each returned publisher is enriched with public HATEOAS navigational links
+     * and a self-link pointing to its individual resource endpoint.</p>
+     *
+     * <p>No authentication required.</p>
      *
      * <p>Responses:</p>
      * <ul>
-     *     <li>200 OK – list of publishers returned</li>
-     *     <li>204 No Content – no publishers exist</li>
+     *     <li>200 OK – list of publishers returned; may be empty</li>
      *     <li>400 Bad Request – invalid request parameters</li>
      *     <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      *
      * @return a {@link ResponseEntity} containing a list of {@link ResponsePublisherDTO}
-     * or an appropriate HTTP status if none exist or an error occurs
+     * or an appropriate HTTP error status
      */
     @GetMapping
     public ResponseEntity<List<ResponsePublisherDTO>> getAllPublishers() {
@@ -127,19 +139,18 @@ public class PublisherRESTController {
         try {
             List<Publisher> publishers = publisherService.findAll();
 
+            List<Link> publicLinks = new ArrayList<>(publisherLinkProvider.getPublicLinks());
+
             List<ResponsePublisherDTO> result = publishers.stream()
                     .map(publisher -> {
                         ResponsePublisherDTO dto = PublisherMapper.toDTO(publisher);
+                        publicLinks.forEach(dto::add);
                         dto.add(linkTo(methodOn(PublisherRESTController.class)
                                 .getPublisher(publisher.id().getId()))
                                 .withSelfRel());
                         return dto;
                     })
                     .toList();
-
-            if (result.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
 
             return ResponseEntity.ok(result);
 
@@ -153,17 +164,20 @@ public class PublisherRESTController {
     /**
      * Retrieves a single Publisher by its unique identifier.
      *
-     * <p>The returned resource is enriched with HATEOAS links to itself and to the full
-     * collection of publishers.</p>
+     * <p>The returned resource is enriched with public HATEOAS navigational links
+     * and a self-link pointing to this endpoint.</p>
+     *
+     * <p>No authentication required.</p>
      *
      * <p>Responses:</p>
      * <ul>
      *     <li>200 OK – publisher found and returned</li>
+     *     <li>400 Bad Request – invalid ID format</li>
      *     <li>404 Not Found – no publisher exists for the given ID</li>
      *     <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      *
-     * @param id the {@link PublisherID} of the publisher to retrieve
+     * @param id the unique identifier of the publisher to retrieve
      * @return a {@link ResponseEntity} containing the {@link ResponsePublisherDTO}
      * or an appropriate HTTP error status
      */
@@ -171,23 +185,24 @@ public class PublisherRESTController {
     public ResponseEntity<ResponsePublisherDTO> getPublisher(
             @NotBlank @PathVariable String id) {
 
-
         try {
             PublisherID publisherId = PublisherMapper.toPublisherId(id);
             Publisher publisher = publisherService.findById(publisherId);
             ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
-            result.add(linkTo(methodOn(PublisherRESTController.class)
-                    .getPublisher(publisherId.getPublisherId()))
-                    .withSelfRel());
+
+            List<Link> links = new ArrayList<>(publisherLinkProvider.getPublicLinks());
+            links.forEach(result::add);
 
             result.add(linkTo(methodOn(PublisherRESTController.class)
-                    .getAllPublishers())
-                    .withRel("get-all-publishers"));
+                    .getPublisher(publisherId.getId()))
+                    .withSelfRel());
 
             return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
