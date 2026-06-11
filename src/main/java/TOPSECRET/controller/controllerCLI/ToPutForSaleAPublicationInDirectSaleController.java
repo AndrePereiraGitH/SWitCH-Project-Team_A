@@ -4,7 +4,6 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Listing.Listing;
-import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
 import TOPSECRET.domain.ValueObjects.Price;
@@ -79,16 +78,25 @@ public class ToPutForSaleAPublicationInDirectSaleController {
      * Retrieves all library publication samples that are eligible to be put for sale
      * in a direct sale listing and converts them into DTOs for UI presentation.
      *
+     * @param userId the identifier of the user whose library publications are to be retrieved
      * @return a list of {@link US015PublicationSampleDTO} representing the available publications
+     * @throws IllegalArgumentException if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if the user has no library
      */
+    public List<US015PublicationSampleDTO> findLibraryPublicationsAvailableForSale(UserId userId)
+            throws InstanceNotFoundException {
 
-    public List<US015PublicationSampleDTO> findLibraryPublicationsAvailableForSale(UserId userId) throws InstanceNotFoundException {
+        if (userId == null) {
+            throw new IllegalArgumentException("UserId cannot be null");
+        }
 
-        if (userId == null) throw new IllegalArgumentException("UserId cannot be null");
+        Library library = _libraryRepo.findByUserId(userId)
+                .orElseThrow(() ->
+                        new InstanceNotFoundException("No library found for userId: " + userId)
+                );
 
-        Library library = _libraryRepo.getByUserId(userId);
-
-        List<PublicationSample> availablePubSamples = _pubSampleService.findByLibraryIdAndPublicationStatusNotIn(userId);
+        List<PublicationSample> availablePubSamples =
+                _pubSampleService.findByLibraryIdAndPublicationStatusNotIn(userId);
 
         return _pubSampleMapper.toDTOs(availablePubSamples);
     }
@@ -112,10 +120,9 @@ public class ToPutForSaleAPublicationInDirectSaleController {
      * @return the newly created {@link Listing}
      *
      * @throws IllegalArgumentException if any of the required parameters are {@code null} or invalid
-     * @throws InstanceAlreadyExistsException if a listing already exists for any of the selected publications
      */
     public Listing createDirectSaleListing(String listingTitle, List<PublicationSampleId> pubSampleIds,
-                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) throws InstanceAlreadyExistsException, AccessDeniedException {
+                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures){
 
         if (listingTitle == null || listingTitle.isBlank())
             throw new IllegalArgumentException("Listing title cannot be null or blank.");

@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -68,7 +69,7 @@ public class PublisherRESTController {
     @PostMapping
     public ResponseEntity<ResponsePublisherDTO> createPublisher(
             @Valid @RequestBody RequestPublisherDTO requestPublisherDTO,
-           @NotBlank @RequestParam String userId) {
+            @NotBlank @RequestParam String userId) {
 
         try {
             UserId id = PublisherMapper.toUserId(userId);
@@ -84,7 +85,7 @@ public class PublisherRESTController {
 
             ResponsePublisherDTO result = PublisherMapper.toDTO(publisher);
 
-            List<Link> links = publisherLinkProvider.getLinksForPublisher(id);
+            List<Link> links = publisherLinkProvider.getLinks(id);
             links.forEach(result::add);
 
             result.add(linkTo(methodOn(PublisherRESTController.class)
@@ -93,6 +94,8 @@ public class PublisherRESTController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (AccessDeniedException e) {

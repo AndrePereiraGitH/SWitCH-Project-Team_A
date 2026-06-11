@@ -1,0 +1,49 @@
+@startuml
+hide footbox
+autonumber
+title To create a library (Main)
+
+actor User
+participant ":UI" as UI
+participant ":LibraryRESTController" as Ctrl
+participant ":LibraryService" as Service
+
+User -> UI : I want to create a library.
+activate UI
+UI --> User : What name?
+deactivate UI
+User -> UI : libraryName, username
+activate UI
+
+UI -> Ctrl : POST /libraries?username={username}\n body: { libraryName }
+activate Ctrl
+
+Ctrl -> Service : createAndSave(libraryName, username)
+activate Service
+
+ref over Service
+[[2_FindUserByUsername.puml Find User by Username]]
+end ref
+
+ref over Service
+[[3_CheckPolicyAndCreate.puml Check Policy and Create Library]]
+end ref
+
+ref over Service
+[[4_SaveLibrary.puml Save Library]]
+end ref
+
+Service --> Ctrl : library
+deactivate Service
+
+ref over Ctrl
+[[5_BuildResponse.puml Build Response]]
+end ref
+
+Ctrl --> UI : 201 Created\n body: ResponseLibraryDTO
+deactivate Ctrl
+
+UI --> User : Your library was created
+deactivate UI
+
+@enduml
