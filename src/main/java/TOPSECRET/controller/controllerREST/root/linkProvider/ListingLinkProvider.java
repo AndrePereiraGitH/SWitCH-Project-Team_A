@@ -64,7 +64,7 @@ public class ListingLinkProvider implements RootLinkProvider {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         List<Link> links = new ArrayList<>();
-        User user = userRepo.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found"));
+        User user = resolveUser(userId);
 
         if (authPolicy.canCreateListing(user)) {
             links.add(linkTo(methodOn(ListingRESTController.class)
@@ -78,7 +78,10 @@ public class ListingLinkProvider implements RootLinkProvider {
 
 
     public List<Link> getAuctionLinks(UserId userId) throws InstanceNotFoundException {
-        User user = userRepo.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found"));
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = resolveUser(userId);
 
         List<Link> links = new ArrayList<>();
 
@@ -126,5 +129,9 @@ public class ListingLinkProvider implements RootLinkProvider {
         links.addAll(getAuctionLinks(userId));
 
         return links;
+    }
+
+    private User resolveUser(UserId userId) throws InstanceNotFoundException {
+        return userRepo.findByID(userId).orElseThrow(() ->new InstanceNotFoundException("User not found"));
     }
 }
