@@ -56,7 +56,7 @@ public class ListingRESTController {
     private enum LinkContext {
         OWNER,
         PUBLIC
-    };
+    }
 
     /**
      * Creates a new {@code ListingRESTController}.
@@ -201,6 +201,51 @@ public class ListingRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
+    }
+
+    /**
+     * Retrieves all listings (direct sale and auction) associated with the given
+     * bibliographical data identifier.
+     *
+     * <p>Resolves the publication samples linked to the bibliographical data entry,
+     * then returns all listings that contain any of those samples, regardless of
+     * sale type.</p>
+     *
+     * <p>No authentication is required — this endpoint is publicly accessible.</p>
+     *
+     * @param bibliographicalDataId the unique identifier of the bibliographical data
+     *                              (publication) used to filter listings; must not be
+     *                              {@code null} or blank
+     * @return {@code 200 OK} with the list of matching {@link ListingDetailsDTO} objects,
+     *         {@code 400 BAD REQUEST} if the identifier is invalid,
+     *         {@code 404 NOT FOUND} if no related data is found,
+     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     */
+    @GetMapping("/by-publication/{bibliographicalDataId}")
+    public ResponseEntity<List<ListingDetailsDTO>> findByBibliographicalDataId
+    (@PathVariable String bibliographicalDataId) {
+
+        try{
+            BibliographicalDataId bdId = ListingMapper.toBibliographicalDataId(bibliographicalDataId);
+
+            List<PublicationSampleId> allPublicationIdsWithSpecificBdId = publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId));
+
+            List<Listing> allListingsWithSpecificBdId = listingService.findByPublicationSampleIdIn(allPublicationIdsWithSpecificBdId);
+
+            List<ListingDetailsDTO> dtos = new ArrayList<>();
+
+            for (Listing listing : allListingsWithSpecificBdId) {
+                dtos.add(convertIntoListingDetailsDTO(listing, LinkContext.PUBLIC, null));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(dtos);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**

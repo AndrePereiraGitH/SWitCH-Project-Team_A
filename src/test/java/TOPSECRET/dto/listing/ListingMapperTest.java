@@ -490,6 +490,39 @@ class ListingMapperTest {
         assertThrows(Exception.class, () -> ListingMapper.toPublisherId(null));
     }
 
+    // =========================================================================
+    // toBibliographicalDataId
+    // =========================================================================
+
+    @Test
+    void toBibliographicalDataId_shouldReturnBibliographicalDataId_whenIdIsValid() {
+        BibliographicalDataId result = ListingMapper.toBibliographicalDataId("BD-001");
+
+        assertEquals("BD-001", result.getID());
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldReturnEquivalentValueObject_whenIdIsValid() {
+        BibliographicalDataId result = ListingMapper.toBibliographicalDataId("BD-001");
+
+        assertEquals(new BibliographicalDataId("BD-001"), result);
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldThrowException_whenIdIsNull() {
+        assertThrows(Exception.class, () -> ListingMapper.toBibliographicalDataId(null));
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldThrowException_whenIdIsBlank() {
+        assertThrows(Exception.class, () -> ListingMapper.toBibliographicalDataId("   "));
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldThrowException_whenIdIsEmpty() {
+        assertThrows(Exception.class, () -> ListingMapper.toBibliographicalDataId(""));
+    }
+
     private ListingDetailsDTO mockListingDetailsDTO() {
         return ListingMapper.toListingDetailsDTO(
                 mockListing(),

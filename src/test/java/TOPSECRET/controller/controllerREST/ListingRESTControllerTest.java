@@ -511,6 +511,242 @@ class ListingRESTControllerTest {
     }
 
     // ============================================================================
+    // --------------  findListingsByPublication  ---------------------------------
+    // ============================================================================
+
+    @Test
+    void findListingsByPublication_shouldReturnOkStatus_whenListingsExist() throws Exception {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        publicationSearchFlow(bdId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnOneDto_whenListingsExist() throws Exception {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        publicationSearchFlow(bdId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertEquals(1, response.getBody().size());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnExpectedDto_whenListingsExist() throws Exception {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        publicationSearchFlow(bdId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertSame(dto, response.getBody().get(0));
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnOkWithEmptyBody_whenNoPublicationSamplesExist() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                    .thenReturn(List.of());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertTrue(response.getBody().isEmpty());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnOkStatus_whenNoListingsExist() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        publicationSearchFlowWithoutListings(bdId);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnEmptyBody_whenNoListingsExist() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        publicationSearchFlowWithoutListings(bdId);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertTrue(response.getBody().isEmpty());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnBadRequest_whenBdIdIsInvalid() {
+        // Arrange
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId(""))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("");
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnNotFound_whenRelatedDataDoesNotExist() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                    .thenThrow(new EntityNotFoundException());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                    .thenThrow(new RuntimeException());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldPassGenresToMapper() throws Exception {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        publicationSearchFlow(bdId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(
+                    eq(listing),
+                    anyList(),
+                    anyList(),
+                    anyList(),
+                    argThat(genres -> !genres.isEmpty()),
+                    anyList()
+            ));
+        }
+    }
+
+    @Test
+    void findListingsByPublication_shouldPassAuthoresToMapper() throws Exception {
+        // Arrange
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        publicationSearchFlow(bdId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toBibliographicalDataId("bd-1")).thenReturn(bdId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            controller.findByBibliographicalDataId("bd-1");
+
+            // Assert
+            mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(
+                    eq(listing),
+                    anyList(),
+                    anyList(),
+                    argThat(authors -> !authors.isEmpty()),
+                    anyList(),
+                    anyList()
+            ));
+        }
+    }
+
+
+
+    // ============================================================================
     // --------------  getAllDirectSaleByGenre  -----------------------------------
     // ============================================================================
 
@@ -921,6 +1157,24 @@ class ListingRESTControllerTest {
         when(publicationService.findIdsByEditionIdIn(List.of(editionId)))
                 .thenReturn(List.of(publicationSampleId));
         when(listingService.findAllDirectSaleAndPublicationSampleIdIn(List.of(publicationSampleId)))
+                .thenReturn(List.of());
+    }
+
+    private void publicationSearchFlow(BibliographicalDataId bdId, Listing listing) {
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+
+        when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                .thenReturn(List.of(publicationSampleId));
+        when(listingService.findByPublicationSampleIdIn(List.of(publicationSampleId)))
+                .thenReturn(List.of(listing));
+    }
+
+    private void publicationSearchFlowWithoutListings(BibliographicalDataId bdId) {
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+
+        when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                .thenReturn(List.of(publicationSampleId));
+        when(listingService.findByPublicationSampleIdIn(List.of(publicationSampleId)))
                 .thenReturn(List.of());
     }
 

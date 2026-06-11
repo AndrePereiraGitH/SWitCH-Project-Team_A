@@ -205,6 +205,17 @@ public class ListingMapper {
     }
 
     /**
+     * Converts a {@link String} to a {@link BibliographicalDataId}.
+     *
+     * @param id the string representation of the identifier; must not be {@code null}
+     * @return the corresponding {@link BibliographicalDataId}
+     */
+    public static BibliographicalDataId toBibliographicalDataId(String id) {
+        BibliographicalDataId bdId = new BibliographicalDataId(id);
+        return bdId;
+    }
+
+    /**
      * Retrieves the listing identifier.
      *
      * @param listing the listing whose identifier should be extracted
