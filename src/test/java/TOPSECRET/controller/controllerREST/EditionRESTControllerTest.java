@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST;
 
 import TOPSECRET.controller.controllerREST.root.linkProvider.EditionLinkProvider;
 import TOPSECRET.domain.Edition.Edition;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.EditionId;
 import TOPSECRET.domain.ValueObjects.PublicationTypeId;
 import TOPSECRET.domain.ValueObjects.PublisherID;
@@ -29,11 +30,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
 
+/**
+ * Unit tests for {@link EditionRESTController}.
+ *
+ * <p>Updated for Sprint 7: {@code provider.getLinks(userId)} replaced by
+ * {@code provider.getPublicLinks()} and {@code provider.getPrivateLinks(userId)}.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class EditionRESTControllerTest {
 
@@ -50,7 +55,7 @@ class EditionRESTControllerTest {
     private EditionRESTController controller;
 
     // =========================================================
-    // CREATE SUCCESS
+    // CREATE — SUCCESS
     // =========================================================
 
     @Test
@@ -61,16 +66,19 @@ class EditionRESTControllerTest {
         UserId userId = mock(UserId.class);
 
         Edition edition = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
         EditionDTO responseDTO = mock(EditionDTO.class);
         Link link = mock(Link.class);
 
-        when(provider.getLinks(userId)).thenReturn(List.of(link));
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("edition-1");
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
             mapper.when(() -> EditionMapper.toUserId(userIdStr)).thenReturn(userId);
             mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
             stubCreateDTO(mapper, edition);
+            stubProviderLinks(userId, List.of(link), List.of());
 
             // ACT
             ResponseEntity<EditionDTO> response =
@@ -82,73 +90,72 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // CREATE — LINKS ADICIONADOS (provider + selfRel = 2)
-    // =========================================================
-
     @Test
-    void shouldAddLinksToResponseDTOOnCreate() throws Exception {
+    void shouldAddPublicAndPrivateLinksToResponseDTOOnCreate() throws Exception {
 
         // ARRANGE
         String userIdStr = "user-001";
         UserId userId = mock(UserId.class);
 
         Edition edition = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
         EditionDTO responseDTO = buildEditionDTO("1");
-        Link providerLink = Link.of("/editions", "find-all-editions");
 
-        when(provider.getLinks(userId)).thenReturn(List.of(providerLink));
+        Link publicLink = Link.of("/editions", "find-all-editions");
+        Link privateLink = Link.of("/editions", "create-edition");
+
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("1");
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
             mapper.when(() -> EditionMapper.toUserId(userIdStr)).thenReturn(userId);
             mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
             stubCreateDTO(mapper, edition);
+            stubProviderLinks(userId, List.of(publicLink), List.of(privateLink));
 
             // ACT
-            ResponseEntity<EditionDTO> response =
-                    controller.createEdition(createDTO, userIdStr);
+            controller.createEdition(createDTO, userIdStr);
 
-            // ASSERT
-            assertNotNull(response.getBody());
-            assertEquals(2, response.getBody().getLinks().toList().size());
+            // ASSERT — public link + private link + selfRel = 3
+            assertEquals(3, responseDTO.getLinks().toList().size());
         }
     }
 
-    // =========================================================
-    // CREATE — PROVIDER LINK COM REL CORRETO
-    // =========================================================
-
     @Test
-    void shouldAddProviderLinkWithCorrectRelOnCreate() throws Exception {
+    void shouldAddCreateEditionRelOnCreate() throws Exception {
 
         // ARRANGE
         String userIdStr = "user-001";
         UserId userId = mock(UserId.class);
 
         Edition edition = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
         EditionDTO responseDTO = buildEditionDTO("1");
-        Link providerLink = Link.of("/editions", "find-all-editions");
 
-        when(provider.getLinks(userId)).thenReturn(List.of(providerLink));
+        Link privateLink = Link.of("/editions", "create-edition");
+
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("1");
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
             mapper.when(() -> EditionMapper.toUserId(userIdStr)).thenReturn(userId);
             mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
             stubCreateDTO(mapper, edition);
+            stubProviderLinks(userId, List.of(), List.of(privateLink));
 
             // ACT
             controller.createEdition(createDTO, userIdStr);
 
             // ASSERT
             assertTrue(responseDTO.getLinks().toList().stream()
-                    .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
+                    .anyMatch(l -> l.getRel().value().equals("create-edition")));
         }
     }
 
     // =========================================================
-    // CREATE FORBIDDEN
+    // CREATE — ERROR CASES
     // =========================================================
 
     @Test
@@ -172,10 +179,6 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // CREATE BAD REQUEST
-    // =========================================================
-
     @Test
     void shouldReturnBadRequestWhenIllegalArgumentOnCreate() throws Exception {
 
@@ -196,10 +199,6 @@ class EditionRESTControllerTest {
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
-
-    // =========================================================
-    // CREATE INTERNAL SERVER ERROR
-    // =========================================================
 
     @Test
     void shouldReturnInternalServerErrorOnCreateWhenUnexpectedExceptionOccurs()
@@ -224,7 +223,7 @@ class EditionRESTControllerTest {
     }
 
     // =========================================================
-    // FIND BY ID SUCCESS
+    // FIND BY ID — SUCCESS
     // =========================================================
 
     @Test
@@ -236,7 +235,10 @@ class EditionRESTControllerTest {
         Edition edition = mock(Edition.class);
         EditionDTO responseDTO = mock(EditionDTO.class);
 
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("edition-1");
         when(service.findById(editionId)).thenReturn(edition);
+        when(provider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -244,8 +246,7 @@ class EditionRESTControllerTest {
             mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
 
             // ACT
-            ResponseEntity<EditionDTO> response =
-                    controller.findById(rawId);
+            ResponseEntity<EditionDTO> response = controller.findById(rawId);
 
             // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -253,12 +254,8 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // FIND BY ID — 2 LINKS (selfRel + find-all)
-    // =========================================================
-
     @Test
-    void shouldAddTwoLinksToResponseDTOWhenFindingById() {
+    void shouldAddSelfRelAndPublicLinksWhenFindingById() {
 
         // ARRANGE
         String rawId = "edition-1";
@@ -266,7 +263,11 @@ class EditionRESTControllerTest {
         Edition edition = mock(Edition.class);
         EditionDTO responseDTO = buildEditionDTO("1");
 
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("edition-1");
         when(service.findById(editionId)).thenReturn(edition);
+        when(provider.getPublicLinks()).thenReturn(
+                List.of(Link.of("/editions", "find-all-editions")));
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -276,44 +277,16 @@ class EditionRESTControllerTest {
             // ACT
             controller.findById(rawId);
 
-            // ASSERT
-            assertEquals(2, responseDTO.getLinks().toList().size());
-        }
-    }
-
-    // =========================================================
-    // FIND BY ID — RELS CORRETOS
-    // =========================================================
-
-    @Test
-    void shouldAddSelfRelAndFindAllRelWhenFindingById() {
-
-        // ARRANGE
-        String rawId = "edition-1";
-        EditionId editionId = mock(EditionId.class);
-        Edition edition = mock(Edition.class);
-        EditionDTO responseDTO = buildEditionDTO("1");
-
-        when(service.findById(editionId)).thenReturn(edition);
-
-        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
-
-            mapper.when(() -> EditionMapper.toEditionId(rawId)).thenReturn(editionId);
-            mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
-
-            // ACT
-            controller.findById(rawId);
-
-            // ASSERT
+            // ASSERT — public link + selfRel = 2
             List<Link> links = responseDTO.getLinks().toList();
             assertEquals(2, links.size());
             assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
-            assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+            assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-all-editions")));
         }
     }
 
     // =========================================================
-    // FIND BY ID NOT FOUND
+    // FIND BY ID — ERROR CASES
     // =========================================================
 
     @Test
@@ -330,17 +303,12 @@ class EditionRESTControllerTest {
                     .thenThrow(new IllegalArgumentException("Edition not found"));
 
             // ACT
-            ResponseEntity<EditionDTO> response =
-                    controller.findById(rawId);
+            ResponseEntity<EditionDTO> response = controller.findById(rawId);
 
             // ASSERT
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         }
     }
-
-    // =========================================================
-    // FIND BY ID INTERNAL SERVER ERROR
-    // =========================================================
 
     @Test
     void shouldReturnInternalServerErrorWhenFindByIdThrowsUnexpectedException() {
@@ -355,8 +323,7 @@ class EditionRESTControllerTest {
             when(service.findById(editionId)).thenThrow(new RuntimeException());
 
             // ACT
-            ResponseEntity<EditionDTO> response =
-                    controller.findById(rawId);
+            ResponseEntity<EditionDTO> response = controller.findById(rawId);
 
             // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -364,7 +331,7 @@ class EditionRESTControllerTest {
     }
 
     // =========================================================
-    // FIND ALL SUCCESS
+    // FIND ALL — SUCCESS
     // =========================================================
 
     @Test
@@ -385,6 +352,7 @@ class EditionRESTControllerTest {
         EditionDTO dto2 = buildEditionDTO("2");
 
         when(service.findAll()).thenReturn(List.of(e1, e2));
+        when(provider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -392,8 +360,7 @@ class EditionRESTControllerTest {
             mapper.when(() -> EditionMapper.toDTO(e2)).thenReturn(dto2);
 
             // ACT
-            ResponseEntity<List<EditionDTO>> response =
-                    controller.findAll();
+            ResponseEntity<List<EditionDTO>> response = controller.findAll();
 
             // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -402,27 +369,6 @@ class EditionRESTControllerTest {
             assertTrue(response.getBody().containsAll(List.of(dto1, dto2)));
         }
     }
-
-    // =========================================================
-    // FIND ALL NO CONTENT
-    // =========================================================
-
-    @Test
-    void shouldReturnNoContentWhenNoEditionsExist() {
-
-        // ARRANGE
-        when(service.findAll()).thenReturn(List.of());
-
-        // ACT
-        ResponseEntity<List<EditionDTO>> response = controller.findAll();
-
-        // ASSERT
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-    }
-
-    // =========================================================
-    // FIND ALL — SELF LINK EM CADA DTO
-    // =========================================================
 
     @Test
     void shouldAddSelfLinkToEachDTOWhenFindingAll() {
@@ -435,6 +381,7 @@ class EditionRESTControllerTest {
 
         EditionDTO dto1 = buildEditionDTO("1");
         when(service.findAll()).thenReturn(List.of(e1));
+        when(provider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -450,8 +397,21 @@ class EditionRESTControllerTest {
     }
 
     // =========================================================
-    // FIND ALL INTERNAL SERVER ERROR
+    // FIND ALL — ERROR CASES
     // =========================================================
+
+    @Test
+    void shouldReturnNoContentWhenNoEditionsExist() {
+
+        // ARRANGE
+        when(service.findAll()).thenReturn(List.of());
+
+        // ACT
+        ResponseEntity<List<EditionDTO>> response = controller.findAll();
+
+        // ASSERT
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+    }
 
     @Test
     void shouldReturnInternalServerErrorWhenFindAllThrowsUnexpectedException() {
@@ -473,12 +433,12 @@ class EditionRESTControllerTest {
     @Test
     void shouldReturnEditionIdsByPublisherIdSuccessfully() {
 
+        // ARRANGE
         String rawPublisherId = "publisher-1";
         PublisherID publisherID = mock(PublisherID.class);
 
         EditionId editionId1 = mock(EditionId.class);
         EditionId editionId2 = mock(EditionId.class);
-
         when(editionId1.getID()).thenReturn("edition-1");
         when(editionId2.getID()).thenReturn("edition-2");
 
@@ -492,14 +452,14 @@ class EditionRESTControllerTest {
 
             mapper.when(() -> EditionMapper.toPublisherId(rawPublisherId))
                     .thenReturn(publisherID);
-            mapper.when(() -> EditionMapper.toEditionIdDTO(editionId1))
-                    .thenReturn(dto1);
-            mapper.when(() -> EditionMapper.toEditionIdDTO(editionId2))
-                    .thenReturn(dto2);
+            mapper.when(() -> EditionMapper.toEditionIdDTO(editionId1)).thenReturn(dto1);
+            mapper.when(() -> EditionMapper.toEditionIdDTO(editionId2)).thenReturn(dto2);
 
+            // ACT
             ResponseEntity<List<EditionIdResponseDTO>> response =
                     controller.findEditionIdsByPublisherId(rawPublisherId);
 
+            // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertEquals(2, response.getBody().size());
@@ -507,10 +467,6 @@ class EditionRESTControllerTest {
             assertTrue(response.getBody().contains(dto2));
         }
     }
-
-    // =========================================================
-    // FIND EDITION IDS BY PUBLISHER ID — NO CONTENT
-    // =========================================================
 
     @Test
     void shouldReturnNoContentWhenNoEditionIdsFoundForPublisher() {
@@ -535,10 +491,6 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // FIND EDITION IDS BY PUBLISHER ID — BAD REQUEST
-    // =========================================================
-
     @Test
     void shouldReturnBadRequestWhenPublisherIdIsInvalidForIdLookup() {
 
@@ -558,10 +510,6 @@ class EditionRESTControllerTest {
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
-
-    // =========================================================
-    // FIND EDITION IDS BY PUBLISHER ID — INTERNAL SERVER ERROR
-    // =========================================================
 
     @Test
     void shouldReturnInternalServerErrorWhenFindIdsByPublisherIdThrowsUnexpectedException() {
@@ -605,6 +553,7 @@ class EditionRESTControllerTest {
         EditionDTO dto1 = buildEditionDTO("edition-1");
 
         when(service.findByPublisherId(publisherID)).thenReturn(List.of(e1));
+        when(provider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -623,12 +572,40 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // FIND BY PUBLISHER ID — LINKS (selfRel + find-by-publisher)
-    // =========================================================
+    @Test
+    void shouldReturnMappedEditionDTOWhenFindingByPublisherId() {
+
+        // ARRANGE
+        String rawPublisherId = "publisher-1";
+        PublisherID publisherID = mock(PublisherID.class);
+
+        Edition edition = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("edition-1");
+
+        EditionDTO dto = buildEditionDTO("edition-1");
+        when(service.findByPublisherId(publisherID)).thenReturn(List.of(edition));
+        when(provider.getPublicLinks()).thenReturn(List.of());
+
+        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
+
+            mapper.when(() -> EditionMapper.toPublisherId(rawPublisherId))
+                    .thenReturn(publisherID);
+            mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(dto);
+
+            // ACT
+            ResponseEntity<List<EditionDTO>> response =
+                    controller.findByPublisherId(rawPublisherId);
+
+            // ASSERT
+            assertNotNull(response.getBody());
+            assertSame(dto, response.getBody().get(0));
+        }
+    }
 
     @Test
-    void shouldAddSelfRelAndFindByPublisherRelWhenFindingByPublisherId() {
+    void shouldAddSelfRelWhenFindingByPublisherId() {
 
         // ARRANGE
         String rawPublisherId = "publisher-1";
@@ -640,8 +617,8 @@ class EditionRESTControllerTest {
         when(id1.getID()).thenReturn("edition-1");
 
         EditionDTO dto1 = buildEditionDTO("edition-1");
-
         when(service.findByPublisherId(publisherID)).thenReturn(List.of(e1));
+        when(provider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -653,17 +630,10 @@ class EditionRESTControllerTest {
             controller.findByPublisherId(rawPublisherId);
 
             // ASSERT
-            List<Link> links = dto1.getLinks().toList();
-            assertEquals(2, links.size());
-            assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
-            assertTrue(links.stream()
-                    .anyMatch(l -> l.getRel().value().equals("find-by-publisher")));
+            assertTrue(dto1.getLinks().toList().stream()
+                    .anyMatch(l -> l.getRel().value().equals("self")));
         }
     }
-
-    // =========================================================
-    // FIND BY PUBLISHER ID — NO CONTENT
-    // =========================================================
 
     @Test
     void shouldReturnNoContentWhenNoEditionsFoundForPublisher() {
@@ -688,10 +658,6 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // FIND BY PUBLISHER ID — BAD REQUEST
-    // =========================================================
-
     @Test
     void shouldReturnBadRequestWhenPublisherIdIsInvalid() {
 
@@ -711,10 +677,6 @@ class EditionRESTControllerTest {
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
-
-    // =========================================================
-    // FIND BY PUBLISHER ID — INTERNAL SERVER ERROR
-    // =========================================================
 
     @Test
     void shouldReturnInternalServerErrorWhenFindByPublisherIdThrowsUnexpectedException() {
@@ -756,8 +718,8 @@ class EditionRESTControllerTest {
         when(id1.getID()).thenReturn("edition-1");
 
         EditionDTO dto1 = buildEditionDTO("edition-1");
-
         when(service.findByPublicationTypeId(publicationTypeId)).thenReturn(List.of(e1));
+        when(provider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -776,12 +738,40 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // FIND BY PUBLICATION TYPE ID — LINKS (selfRel + find-by-publication-type)
-    // =========================================================
+    @Test
+    void shouldReturnMappedEditionDTOWhenFindingByPublicationTypeId() {
+
+        // ARRANGE
+        String rawTypeId = "type-1";
+        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
+
+        Edition edition = mock(Edition.class);
+        EditionId editionId = mock(EditionId.class);
+        when(edition.id()).thenReturn(editionId);
+        when(editionId.getID()).thenReturn("edition-1");
+
+        EditionDTO dto = buildEditionDTO("edition-1");
+        when(service.findByPublicationTypeId(publicationTypeId)).thenReturn(List.of(edition));
+        when(provider.getPublicLinks()).thenReturn(List.of());
+
+        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
+
+            mapper.when(() -> EditionMapper.toPublicationTypeId(rawTypeId))
+                    .thenReturn(publicationTypeId);
+            mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(dto);
+
+            // ACT
+            ResponseEntity<List<EditionDTO>> response =
+                    controller.findByPublicationTypeId(rawTypeId);
+
+            // ASSERT
+            assertNotNull(response.getBody());
+            assertSame(dto, response.getBody().get(0));
+        }
+    }
 
     @Test
-    void shouldAddSelfRelAndFindByPublicationTypeRelWhenFindingByPublicationTypeId() {
+    void shouldAddSelfRelWhenFindingByPublicationTypeId() {
 
         // ARRANGE
         String rawTypeId = "type-1";
@@ -793,8 +783,8 @@ class EditionRESTControllerTest {
         when(id1.getID()).thenReturn("edition-1");
 
         EditionDTO dto1 = buildEditionDTO("edition-1");
-
         when(service.findByPublicationTypeId(publicationTypeId)).thenReturn(List.of(e1));
+        when(provider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
@@ -806,17 +796,10 @@ class EditionRESTControllerTest {
             controller.findByPublicationTypeId(rawTypeId);
 
             // ASSERT
-            List<Link> links = dto1.getLinks().toList();
-            assertEquals(2, links.size());
-            assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
-            assertTrue(links.stream()
-                    .anyMatch(l -> l.getRel().value().equals("find-by-publication-type")));
+            assertTrue(dto1.getLinks().toList().stream()
+                    .anyMatch(l -> l.getRel().value().equals("self")));
         }
     }
-
-    // =========================================================
-    // FIND BY PUBLICATION TYPE ID — NO CONTENT
-    // =========================================================
 
     @Test
     void shouldReturnNoContentWhenNoEditionsFoundForPublicationType() {
@@ -841,10 +824,6 @@ class EditionRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // FIND BY PUBLICATION TYPE ID — BAD REQUEST
-    // =========================================================
-
     @Test
     void shouldReturnBadRequestWhenPublicationTypeIdIsInvalid() {
 
@@ -864,10 +843,6 @@ class EditionRESTControllerTest {
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
-
-    // =========================================================
-    // FIND BY PUBLICATION TYPE ID — INTERNAL SERVER ERROR
-    // =========================================================
 
     @Test
     void shouldReturnInternalServerErrorWhenFindByPublicationTypeIdThrowsUnexpectedException() {
@@ -894,80 +869,23 @@ class EditionRESTControllerTest {
     }
 
     // =========================================================
-    // FIND BY PUBLISHER ID — MAPPED DTO
-    // =========================================================
-
-    @Test
-    void shouldReturnMappedEditionDTOWhenFindingByPublisherId() {
-
-        String rawPublisherId = "publisher-1";
-        PublisherID publisherID = mock(PublisherID.class);
-
-        Edition edition = mock(Edition.class);
-        EditionId editionId = mock(EditionId.class);
-
-        when(edition.id()).thenReturn(editionId);
-        when(editionId.getID()).thenReturn("edition-1");
-
-        EditionDTO dto = buildEditionDTO("edition-1");
-
-        when(service.findByPublisherId(publisherID)).thenReturn(List.of(edition));
-
-        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
-
-            mapper.when(() -> EditionMapper.toPublisherId(rawPublisherId))
-                    .thenReturn(publisherID);
-            mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(dto);
-
-            ResponseEntity<List<EditionDTO>> response =
-                    controller.findByPublisherId(rawPublisherId);
-
-            assertNotNull(response.getBody());
-            assertSame(dto, response.getBody().get(0));
-        }
-    }
-
-    // =========================================================
-    // FIND BY PUBLICATION TYPE ID — MAPPED DTO
-    // =========================================================
-
-    @Test
-    void shouldReturnMappedEditionDTOWhenFindingByPublicationTypeId() {
-
-        String rawTypeId = "type-1";
-        PublicationTypeId publicationTypeId = mock(PublicationTypeId.class);
-
-        Edition edition = mock(Edition.class);
-        EditionId editionId = mock(EditionId.class);
-
-        when(edition.id()).thenReturn(editionId);
-        when(editionId.getID()).thenReturn("edition-1");
-
-        EditionDTO dto = buildEditionDTO("edition-1");
-
-        when(service.findByPublicationTypeId(publicationTypeId)).thenReturn(List.of(edition));
-
-        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
-
-            mapper.when(() -> EditionMapper.toPublicationTypeId(rawTypeId))
-                    .thenReturn(publicationTypeId);
-            mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(dto);
-
-            ResponseEntity<List<EditionDTO>> response =
-                    controller.findByPublicationTypeId(rawTypeId);
-
-            assertNotNull(response.getBody());
-            assertSame(dto, response.getBody().get(0));
-        }
-    }
-
-    // =========================================================
     // HELPERS
     // =========================================================
 
     /**
-     * Configura os mocks estáticos do EditionMapper para que service.createAndSave()
-     * seja chamado com sucesso, retornando a edition fornecida.
+     * Stubs provider public and private links for create-endpoint tests.
+     * Uses doAnswer to bypass the checked InstanceNotFoundException on getPrivateLinks.
+     */
+    private void stubProviderLinks(UserId userId, List<Link> publicLinks, List<Link> privateLinks)
+            throws Exception {
+        when(provider.getPublicLinks()).thenReturn(publicLinks);
+        lenient().doAnswer(inv -> privateLinks).when(provider).getCreateLinks(userId);
+        lenient().doAnswer(inv -> privateLinks).when(provider).getCreateLinks(any());
+    }
+
+    /**
+     * Stubs EditionMapper static methods so service.createAndSave() succeeds,
+     * returning the provided edition.
      */
     private void stubCreateDTO(MockedStatic<EditionMapper> mapper, Edition edition)
             throws Exception {
@@ -985,8 +903,8 @@ class EditionRESTControllerTest {
     }
 
     /**
-     * Configura os mocks estáticos do EditionMapper e faz service.createAndSave()
-     * lançar a exceção fornecida.
+     * Stubs EditionMapper static methods and makes service.createAndSave()
+     * throw the provided exception.
      */
     private void stubCreateDTOThrows(MockedStatic<EditionMapper> mapper,
                                      Exception exception) throws Exception {
@@ -1004,24 +922,13 @@ class EditionRESTControllerTest {
     }
 
     /**
-     * Cria um {@link EditionDTO} com valores stub para uso nos testes.
+     * Builds an {@link EditionDTO} with stub values for use in link-assertion tests.
      */
     private EditionDTO buildEditionDTO(String editionId) {
         return new EditionDTO(
-                editionId,
-                "1",
-                "CODE-001",
-                "type-1",
-                "publisher-1",
-                "Book",
-                "pt",
-                LocalDate.of(2024, 1, 1),
-                "Hardcover",
-                20.0,
-                15.0,
-                3.0,
-                500.0,
-                300
+                editionId, "1", "CODE-001", "type-1", "publisher-1",
+                "Book", "pt", LocalDate.of(2024, 1, 1),
+                "Hardcover", 20.0, 15.0, 3.0, 500.0, 300
         );
     }
 }
