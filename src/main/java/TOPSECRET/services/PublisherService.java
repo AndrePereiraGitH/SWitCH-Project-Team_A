@@ -9,11 +9,13 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.Contact;
 import TOPSECRET.domain.ValueObjects.PublisherID;
 import TOPSECRET.domain.ValueObjects.UserId;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,7 +71,7 @@ public class PublisherService {
      */
     @Transactional
     public Publisher createAndSave(String name, String vatNumber, Contact contact, UserId userId)
-            throws AccessDeniedException {
+            throws AccessDeniedException, InstanceNotFoundException {
 
         Objects.requireNonNull(name, "Name cannot be null");
         Objects.requireNonNull(vatNumber, "VAT number cannot be null");
@@ -77,7 +79,7 @@ public class PublisherService {
         Objects.requireNonNull(userId, "UserId cannot be null");
 
         User user = userRepository.findByID(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+                .orElseThrow(() -> new InstanceNotFoundException("User not found with ID: " + userId));
 
         if (!authPolicy.canCreatePublisher(user)) {
             throw new AccessDeniedException("User does not have permission to create a publisher");
@@ -108,8 +110,7 @@ public class PublisherService {
     public Publisher findById(PublisherID id) {
         Objects.requireNonNull(id, "PublisherID cannot be null");
         return repository.findById(id)
-                .orElseThrow(() ->
-                new IllegalArgumentException("Publisher not found eith id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Publisher not found"));
     }
 
 }
