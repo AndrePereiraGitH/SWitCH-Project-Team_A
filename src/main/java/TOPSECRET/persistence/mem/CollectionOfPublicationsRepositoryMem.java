@@ -7,10 +7,10 @@ import TOPSECRET.domain.CollectionOfPublications.CollectionOfPublicationsFactory
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
-import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -85,16 +85,16 @@ public class CollectionOfPublicationsRepositoryMem implements ICollectionOfPubli
      * {@inheritDoc}
      */
     @Override
-    public CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
+    public Optional<CollectionOfPublications> findById(CollectionOfPublicationsId collectionId) {
 
         Objects.requireNonNull(collectionId, "CollectionId cannot be null");
 
         for (CollectionOfPublications collectionOfPublications : _collectionOfPublicationsList) {
             if (collectionOfPublications.id().equals(collectionId)) {
-                return collectionOfPublications;
+                return Optional.of(collectionOfPublications);
             }
         }
-        throw new InstanceNotFoundException("collection not found by Id: " + collectionId);
+        return Optional.empty();
     }
 
     /**

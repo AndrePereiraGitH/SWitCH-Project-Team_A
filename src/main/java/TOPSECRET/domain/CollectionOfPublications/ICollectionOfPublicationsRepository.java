@@ -4,8 +4,8 @@ import TOPSECRET.domain.ValueObjects.CollectionOfPublicationsId;
 import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 
-import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface for managing {@link CollectionOfPublications} aggregates.
@@ -63,7 +63,7 @@ public interface ICollectionOfPublicationsRepository {
      * @return the collection of publications with the given identifier
      * @throws NullPointerException if {@code collectionId} is null
      */
-    CollectionOfPublications findById(CollectionOfPublicationsId collectionId) throws InstanceNotFoundException;
+    Optional<CollectionOfPublications> findById(CollectionOfPublicationsId collectionId);
 
     /**
      * Returns all collections owned by a given user.

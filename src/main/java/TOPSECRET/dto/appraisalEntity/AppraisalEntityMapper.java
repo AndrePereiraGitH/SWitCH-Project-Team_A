@@ -155,4 +155,14 @@ public final class AppraisalEntityMapper {
 
         );
     }
+
+    /**
+     * Converts a string ID into a {@link AppraisalEntityId} value object.
+     *
+     * @param id the string representation of the publication sample ID
+     * @return the {@link AppraisalEntityId} value object
+     */
+    public static AppraisalEntityId toApEnId(String id){
+        return new AppraisalEntityId(id);
+    }
 }

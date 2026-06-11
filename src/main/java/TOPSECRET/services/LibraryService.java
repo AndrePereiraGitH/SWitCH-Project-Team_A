@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,24 +83,24 @@ public class LibraryService {
     /**
      * Retrieves a {@link Library} by its unique identifier.
      */
-    public Library findById(LibraryId id) {
+    public Library findById(LibraryId id) throws InstanceNotFoundException {
         Objects.requireNonNull(id, "LibraryID cannot be null");
 
         return _libraryRepository.findById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Library not found with id: " + id));
+                        new InstanceNotFoundException("Library not found with id: " + id));
     }
 
     /**
      * Finds and returns the {@link Library} associated with the given user ID.
      */
-    public Library findByUserId(UserId userId) {
+    public Library findByUserId(UserId userId) throws InstanceNotFoundException {
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
         return _libraryRepository.findByUserId(userId)
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Library not found for user: " + userId));
+                        new InstanceNotFoundException("Library not found for user: " + userId));
     }
 }

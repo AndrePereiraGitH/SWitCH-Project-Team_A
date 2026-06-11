@@ -6,15 +6,22 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.appraisalEntity.AppraisalEntityMapper;
 import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.AppraisalEntityService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.security.access.AccessDeniedException;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 /**
@@ -49,47 +56,129 @@ public class AppraisalEntityRESTController {
      * <p>The request DTO is converted into domain value objects before
      * delegating the creation process to the application service.</p>
      *
-     * <p>If the operation succeeds, a response DTO representing the
-     * created AppraisalEntity is returned with HTTP status
-     * {@code 201 CREATED}.</p>
+     * <p>The response is enriched with HATEOAS links according to
+     * the permissions of the requesting user.</p>
      *
      * @param dto request data used to create the AppraisalEntity
      * @param userId identifier of the user performing the operation
-     * @return a response entity containing the created AppraisalEntity
-     *         or an error status when the operation fails
+     * @return HTTP 201 with the {@link ResponseAppraisalEntityDTO} if created successfully,
+     *         HTTP 400 if the provided data is invalid,
+     *         HTTP 403 if the user does not have permission to perform this operation,
+     *         HTTP 404 if a referenced resource does not exist,
+     *         or HTTP 500 on unexpected error
      */
     @PostMapping("")
     public ResponseEntity<ResponseAppraisalEntityDTO> registerAppraisalEntity(
             @RequestBody RequestAppraisalEntityDTO dto,
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
 
         try {
             Contact contact = AppraisalEntityMapper.toContact(dto);
             List<PublicationTypeId> pubs = AppraisalEntityMapper.toPubTypeIds(dto);
             List<GenreId> genres = AppraisalEntityMapper.toGenreIds(dto);
+            UserId id = UserMapper.toUserId(userId);
 
             AppraisalEntity apEn = service.createAndSave(
                     dto.name(),
                     contact,
                     pubs,
                     genres,
-                    userId
+                    id
             );
 
             ResponseAppraisalEntityDTO result = AppraisalEntityMapper.toDTO(apEn);
 
             // Links
-            List<Link> links = provider.getLinks(userId);
+            List<Link> links = provider.getAdminLinks(id);
             links.forEach(result::add);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves all appraisal entities in the system.
+     *
+     * <p>Each item in the returned list is enriched with a self-link and public
+     * navigational links. No authentication required.</p>
+     *
+     * @return HTTP 200 with a list of {@link ResponseAppraisalEntityDTO}, or an error status
+     */
+    @GetMapping("")
+    public ResponseEntity<List<ResponseAppraisalEntityDTO>> findAll () {
+
+        try {
+            List<AppraisalEntity> apEnList = service.findAll();
+
+            List<ResponseAppraisalEntityDTO> apEnDTO = new ArrayList<>();
+            for (AppraisalEntity apEn : apEnList){
+                ResponseAppraisalEntityDTO dto = AppraisalEntityMapper.toDTO(apEn);
+
+                List<Link> links = new ArrayList<>(provider.getPublicLinks());
+                links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
+                        .findById(apEn.id().toString()))
+                        .withSelfRel());
+
+                links.forEach(dto::add);
+                apEnDTO.add(dto);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(apEnDTO);
+
+        }catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Retrieves an appraisal entity by its unique identifier.
+     *
+     * <p>Returns the publication sample enriched with a self-link and public
+     * navigational links. No authentication required.</p>
+     *
+     * @param apEnId the unique identifier of the appraisal entity to retrieve
+     * @return HTTP 200 with the {@link ResponseAppraisalEntityDTO}, HTTP 404 if not found, or HTTP 500 on error
+     */
+    @GetMapping("/{appraisalEntityId}")
+    public ResponseEntity<ResponseAppraisalEntityDTO> findById (
+            @PathVariable("appraisalEntityId") String apEnId){
+
+        try{
+            AppraisalEntityId id = AppraisalEntityMapper.toApEnId(apEnId);
+
+            AppraisalEntity apEn = service.findById(id);
+
+            ResponseAppraisalEntityDTO result = AppraisalEntityMapper.toDTO(apEn);
+
+            // Links
+            List<Link> links = new ArrayList<>(provider.getPublicLinks());
+            links.add(linkTo(methodOn(AppraisalEntityRESTController.class)
+                    .findById(apEnId))
+                    .withSelfRel());
+
+            links.forEach(result::add);
+
+            return ResponseEntity.status(HttpStatus.OK).body(result);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }
