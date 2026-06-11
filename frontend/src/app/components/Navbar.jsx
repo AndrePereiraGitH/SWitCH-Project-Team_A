@@ -86,7 +86,7 @@ export function Navbar() {
             <Link to="/explore" className={getLinkClass("/explore")}>
               Marketplace
             </Link>
-            <Link to="/community" className={getLinkClass("/community")}>
+            <Link to="/shared-lists" className={getLinkClass("/shared-lists")}>
               Community
             </Link>
           </div>
