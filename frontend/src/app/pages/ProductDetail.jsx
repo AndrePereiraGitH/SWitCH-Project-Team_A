@@ -31,15 +31,46 @@ export function ProductDetail() {
         }
 
         const data = await response.json();
+        const isAuction = data.saleType === "AUCTION";
+
+        let auctionId = null;
+        let currentBid = Number(data.price);
+        let buyoutPrice = null;
+        let auctionStartDate = null;
+        let auctionEndDate = null;
+        let auctionStatus = null;
+
+        if (isAuction) {
+            const auctionResponse = await fetch(
+                `${API_BASE_URL}/auctions?listingId=${productId}`
+            );
+
+            if (auctionResponse.ok) {
+                const auctions = await auctionResponse.json();
+                const auction = auctions[0];
+                if (auction) {
+                    auctionId      = auction.auctionId;
+                    currentBid     = Number(auction.currentHighestBid ?? auction.initialPrice);
+                    buyoutPrice    = auction.buyoutPrice != null ? Number(auction.buyoutPrice) : null;
+                    auctionStartDate = new Date(auction.auctionStartDateTime);
+                    auctionEndDate = new Date(auction.auctionEndDateTime);
+                    auctionStatus  = auction.auctionStatus;
+                }
+            }
+        }
 
         setProduct({
             id: data.id,
+            auctionId,
             title: data.listingTitle,
             author: data.authors?.join(", ") ?? "Unknown",
             genre: data.genre ?? [],
-            price: Number(data.price),
+            price: currentBid,
+            buyoutPrice,
+            auctionStartDate,
+            auctionEndDate,
             condition: data.condition,
-            isAuction: data.saleType === "AUCTION",
+            isAuction,
             picture: data.picture,
             description: data.shortDescription ?? "",
             type: "book",
@@ -51,12 +82,13 @@ export function ProductDetail() {
             year: data.year ?? "N/A",
             pages: data.pages ?? "N/A",
             language: data.language ?? "N/A",
+            auctionStatus,
         });
         } catch (error) {
-        console.error("Error fetching listing details:", error);
-        setProduct(null);
+            console.error("Error fetching listing details:", error);
+            setProduct(null);
         } finally {
-        setLoading(false);
+            setLoading(false);
         }
     }
 
@@ -150,13 +182,31 @@ export function ProductDetail() {
                             {/* Auction Timer */}
                             {product.isAuction && product.auctionEndDate && (
                                 <div className="bg-accent/10 border border-accent/20 rounded-xl p-4 mb-4">
-                                    <div className="flex items-center gap-2 mb-2">
+                                    {product.auctionStartDate && (
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <Calendar className="w-5 h-5 text-accent" />
+                                            <div>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {product.auctionStartDate > new Date() ? "Starts" : "Started"}
+                                                </p>
+                                                <p className="text-sm text-foreground font-bold">
+                                                    {product.auctionStartDate.toLocaleDateString()} {product.auctionStartDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div className="flex items-center gap-2">
                                         <Calendar className="w-5 h-5 text-accent" />
-                                        <span className="font-semibold text-accent">Auction Ends</span>
+                                        <div>
+                                            <p className="text-xs text-muted-foreground">Auction Ends</p>
+                                            <p className="text-sm text-foreground font-bold">
+                                                {product.auctionEndDate.toLocaleDateString()} {product.auctionEndDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit"})}
+                                            </p>
+                                            <p className="text-sm text-foreground font-bold">
+                                                {formatAuctionTime(product.auctionEndDate)}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <p className="text-sm text-foreground font-bold">
-                                        {formatAuctionTime(product.auctionEndDate)}
-                                    </p>
                                 </div>
                             )}
 
@@ -210,9 +260,9 @@ export function ProductDetail() {
                                         <span className="text-sm text-muted-foreground">(Current Offer)</span>
                                     )}
                                 </div>
-                                {product.isAuction && (
+                                {product.isAuction && product.buyoutPrice && (
                                     <p className="text-sm text-muted-foreground mt-1">
-                                        Buyout Price: €{(product.price * 1.5).toFixed(2)}
+                                        Buyout Price: €{(product.buyoutPrice).toFixed(2)}
                                     </p>
                                 )}
                             </div>
@@ -267,13 +317,23 @@ export function ProductDetail() {
                             {/* Action Buttons */}
                             <div className="flex gap-4">
                                 {product.isAuction ? (
-                                    <button
-                                        onClick={() => setBidModalOpen(true)}
-                                        className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold text-lg shadow-lg"
-                                    >
-                                        <Tag className="w-6 h-6" />
-                                        Make Offer
-                                    </button>
+                                        product.auctionStatus === "ACTIVE" ? (
+                                            <button
+                                                onClick={() => setBidModalOpen(true)}
+                                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold text-lg shadow-lg"
+                                            >
+                                                <Tag className="w-6 h-6" />
+                                                Make Offer
+                                            </button>
+                                        ) : (
+                                            <button
+                                                disabled
+                                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-muted text-muted-foreground rounded-xl font-semibold text-lg cursor-not-allowed"
+                                            >
+                                                <Tag className="w-6 h-6" />
+                                                {product.auctionStatus === "SCHEDULED" ? "Starts Soon" : "Auction Ended"}
+                                            </button>
+                                        )
                                 ) : (
                                     <button
                                         onClick={() => {
@@ -302,16 +362,48 @@ export function ProductDetail() {
                     onClose={() => setBidModalOpen(false)}
                     itemTitle={product.title}
                     currentBid={product.price}
-                    buyoutPrice={product.price * 1.5}
-                    onSubmitBid={(amount) => {
-                        console.log("Bid submitted:", amount);
+                    buyoutPrice={product.buyoutPrice}
+                    onSubmitBid={async (amount, onError) => {
+                        const res = await fetch(
+                            `${API_BASE_URL}/auctions/${product.auctionId}/bids?bidderId=${CURRENT_USER_ID}`,
+                            {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ value: amount })
+                            }
+                        );
+                        if (res.status === 204) {
+                            setBidModalOpen(false);
+                            // update the displayed price
+                            setProduct(prev => ({ ...prev, price: amount }));
+                        } else if (res.status === 400) {
+                            onError?.("Invalid bid. Please try a higher amount.");
+                        } else {
+                            onError?.("Something went wrong. Please try again.");
+                        }
                     }}
-                    onBuyNow={() => {
-                        addToCart({
-                            id: product.id,
-                            title: product.title,
-                            price: product.price * 1.5
-                        });
+                    onBuyNow={async () => {
+                        const res = await fetch(
+                            `${API_BASE_URL}/auctions/${product.auctionId}/bids?bidderId=${CURRENT_USER_ID}`,
+                            {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ value: product.buyoutPrice })
+                            }
+                        );
+                        if (res.status === 204) {
+                            setBidModalOpen(false);
+                            setProduct(prev => ({
+                                ...prev,
+                                price: product.buyoutPrice,
+                                auctionStatus: "BOUGHT_OUT"
+                            }));
+                            addToCart({
+                                id: product.id,
+                                title: product.title,
+                                price: product.buyoutPrice
+                            });
+                        }
                     }}
                 />
             )}
