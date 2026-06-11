@@ -36,8 +36,8 @@ export function Library() {
         })
         .sort((a, b) => {
             if (sortBy === "none") return 0;
-            const aVal = (sortBy === "author" ? a.author : a.title) ?? "";
-            const bVal = (sortBy === "author" ? b.author : b.title) ?? "";
+            const aVal = (sortBy === "author" ? a.author : sortBy === "type" ? a.type : sortBy === "isbn" ? (a.isbn ?? a.code ?? "") : a.title) ?? "";
+            const bVal = (sortBy === "author" ? b.author : sortBy === "type" ? b.type : sortBy === "isbn" ? (b.isbn ?? b.code ?? "") : b.title) ?? "";
             return aVal.localeCompare(bVal);
         });
 
@@ -161,6 +161,8 @@ export function Library() {
                                     <option value="none">Default</option>
                                     <option value="title">Title</option>
                                     <option value="author">Author</option>
+                                    <option value="type">Type</option>
+                                    <option value="isbn">ISBN/ISSN</option>
                                 </select>
                             </div>
                             <div className="flex-1">
