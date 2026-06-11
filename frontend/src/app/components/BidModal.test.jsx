@@ -77,7 +77,7 @@ describe("BidModal — Interactions", () => {
         expect(onClose).toHaveBeenCalled();
     });
 
-    test("submitting a valid bid calls onSubmitBid with the value", () => {
+    test("submitting a valid bid calls onSubmitBid with the value", async () => {
         const onSubmitBid = vi.fn();
         const onClose = vi.fn();
         renderModal({ onSubmitBid, onClose, currentBid: 10 });
@@ -86,8 +86,19 @@ describe("BidModal — Interactions", () => {
         fireEvent.change(input, { target: { value: "15" } });
         fireEvent.submit(input.closest("form"));
 
-        expect(onSubmitBid).toHaveBeenCalledWith(15);
-        expect(onClose).toHaveBeenCalled();
+        expect(onSubmitBid).toHaveBeenCalledWith(15, expect.any(Function));
+        expect(onClose).not.toHaveBeenCalled();
+    });
+
+    test("shows error message when onSubmitBid calls the error callback", async () => {
+        const onSubmitBid = vi.fn((amount, onError) => onError("Something went wrong. Please try again."));
+        renderModal({ onSubmitBid, currentBid: 10 });
+
+        const input = screen.getByRole("spinbutton");
+        fireEvent.change(input, { target: { value: "15" } });
+        fireEvent.submit(input.closest("form"));
+
+        expect(await screen.findByText("Something went wrong. Please try again.")).toBeInTheDocument();
     });
 
     test("does not call onSubmitBid if bid is lower than currentBid", () => {
@@ -101,7 +112,7 @@ describe("BidModal — Interactions", () => {
         expect(onSubmitBid).not.toHaveBeenCalled();
     });
 
-    test("Buy Now button calls onBuyNow and closes the modal", () => {
+    test("Buy Now button calls onBuyNow and does not call onClose directly", async () => {
         const onBuyNow = vi.fn();
         const onClose = vi.fn();
         renderModal({ onBuyNow, onClose });
@@ -109,7 +120,7 @@ describe("BidModal — Interactions", () => {
         fireEvent.click(screen.getByText("Buy Now"));
 
         expect(onBuyNow).toHaveBeenCalled();
-        expect(onClose).toHaveBeenCalled();
+        expect(onClose).not.toHaveBeenCalled(); // onClose é controlado pelo pai
     });
 
 });
