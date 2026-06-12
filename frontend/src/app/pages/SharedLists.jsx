@@ -5,6 +5,21 @@ import { api } from "../../api/client";
 
 const API_BASE_URL = "http://localhost:8081";
 
+/**
+ * SharedLists page component.
+ *
+ * Displays all publicly shared publication collections retrieved from the backend.
+ * Allows the user to filter collections by genre.
+ * Navigates to {@link SharedListDetail} when a collection card is clicked.
+ *
+ * Endpoints used:
+ * - GET /collection-of-publications/public/all
+ * - GET /collection-of-publications/public/genre/{genreId}
+ *
+ * @component
+ * @returns {JSX.Element} The shared lists discovery page.
+ */
+
 export function SharedLists() {
     const navigate = useNavigate();
 

@@ -11,6 +11,22 @@ const LANGUAGE_DISPLAY = {
     fr: "French", de: "German", it: "Italian",
 };
 
+/**
+ * SharedListDetail page component.
+ *
+ * Displays the publications inside a specific publicly shared collection.
+ * Reads the collection ID from the URL parameter and fetches the publications
+ * from the backend. Shows an error banner if the collection is not public or
+ * does not exist. Opens a detail modal when a publication card is clicked.
+ *
+ * Endpoint used:
+ * - GET /publicationSamples/{collectionId}/publication-sample?userId={userId}
+ *
+ * @component
+ * @returns {JSX.Element} The shared list detail page.
+ */
+
+
 export function SharedListDetail() {
     const navigate = useNavigate();
     const { listId } = useParams();
