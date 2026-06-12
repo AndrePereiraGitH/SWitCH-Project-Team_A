@@ -862,6 +862,245 @@ class ListingRESTControllerTest {
         }
     }
 
+    // ============================================================================
+    // --------------  findListingsByGenre (US062)  -------------------------------
+    // ============================================================================
+
+    @Test
+    void findListingsByGenre_shouldReturnOkStatus_whenListingsExist() throws Exception {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        genreSearchFlowAllSaleTypes(genreId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnOneDto_whenListingsExist() throws Exception {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        genreSearchFlowAllSaleTypes(genreId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertEquals(1, response.getBody().size());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnExpectedDto_whenListingsExist() throws Exception {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        genreSearchFlowAllSaleTypes(genreId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertSame(dto, response.getBody().get(0));
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnOkWithEmptyBody_whenNoPublicationSamplesExist() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            when(biblioDataService.findAllByGenreId(genreId)).thenReturn(List.of(bdId));
+            when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                    .thenReturn(List.of());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertTrue(response.getBody().isEmpty());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnOkStatus_whenNoListingsExist() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        genreSearchFlowAllSaleTypesWithoutListings(genreId);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnEmptyBody_whenNoListingsExist() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        genreSearchFlowAllSaleTypesWithoutListings(genreId);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertTrue(response.getBody().isEmpty());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnBadRequest_whenGenreIdIsInvalid() {
+        // Arrange
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId(""))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("");
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnNotFound_whenRelatedDataDoesNotExist() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            when(biblioDataService.findAllByGenreId(genreId)).thenThrow(new EntityNotFoundException());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            when(biblioDataService.findAllByGenreId(genreId)).thenThrow(new RuntimeException());
+
+            // Act
+            ResponseEntity<List<ListingDetailsDTO>> response =
+                    controller.findListingsByGenre("genre-1");
+
+            // Assert
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldPassGenresToMapper() throws Exception {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        genreSearchFlowAllSaleTypes(genreId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            controller.findListingsByGenre("genre-1");
+
+            // Assert
+            mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(
+                    eq(listing),
+                    anyList(),
+                    anyList(),
+                    anyList(),
+                    anyList(),
+                    argThat(genres -> !genres.isEmpty()),
+                    anyList()
+            ));
+        }
+    }
+
+    @Test
+    void findListingsByGenre_shouldPassAuthorsToMapper() throws Exception {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        Listing listing = fullListingGraphDouble();
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+        genreSearchFlowAllSaleTypes(genreId, listing);
+        publicLinks(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toGenreId("genre-1")).thenReturn(genreId);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            controller.findListingsByGenre("genre-1");
+
+            // Assert
+            mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(
+                    eq(listing),
+                    anyList(),
+                    anyList(),
+                    argThat(authors -> !authors.isEmpty()),
+                    anyList(),
+                    anyList(),
+                    anyList()
+            ));
+        }
+    }
+
+
+
+
     @Test
     void getAllDirectSaleByPublisher_shouldReturnOkStatus_whenListingsExist() throws Exception {
         // Arrange
@@ -1196,5 +1435,27 @@ class ListingRESTControllerTest {
                 anyList(),
                 anyList()
         )).thenReturn(dto);
+    }
+
+    private void genreSearchFlowAllSaleTypes(GenreId genreId, Listing listing) {
+        BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+
+        when(biblioDataService.findAllByGenreId(genreId)).thenReturn(List.of(bibliographicalDataId));
+        when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId)))
+                .thenReturn(List.of(publicationSampleId));
+        when(listingService.findByPublicationSampleIdIn(List.of(publicationSampleId)))
+                .thenReturn(List.of(listing));
+    }
+
+    private void genreSearchFlowAllSaleTypesWithoutListings(GenreId genreId) {
+        BibliographicalDataId bibliographicalDataId = mock(BibliographicalDataId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+
+        when(biblioDataService.findAllByGenreId(genreId)).thenReturn(List.of(bibliographicalDataId));
+        when(publicationService.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId)))
+                .thenReturn(List.of(publicationSampleId));
+        when(listingService.findByPublicationSampleIdIn(List.of(publicationSampleId)))
+                .thenReturn(List.of());
     }
 }

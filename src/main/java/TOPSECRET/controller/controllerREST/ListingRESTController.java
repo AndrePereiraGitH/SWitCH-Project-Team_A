@@ -285,6 +285,55 @@ public class ListingRESTController {
         }
     }
 
+
+    /**
+     * Retrieves all listings (direct sale and auction) associated with publications
+     * of the given genre.
+     *
+     * <p>Resolves bibliographical data for the genre, then the publication samples
+     * linked to that data, then all listings containing any of those samples,
+     * regardless of sale type.</p>
+     *
+     * <p>No authentication is required — this endpoint is publicly accessible.</p>
+     *
+     * @param genreId the identifier of the genre used to filter listings; must not be
+     *                {@code null} or blank
+     * @return {@code 200 OK} with the list of matching {@link ListingDetailsDTO} objects,
+     *         {@code 400 BAD REQUEST} if the identifier is invalid,
+     *         {@code 404 NOT FOUND} if no related data is found,
+     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     */
+    @GetMapping("/genre/{genreId}")
+    public ResponseEntity<List<ListingDetailsDTO>> findListingsByGenre(@PathVariable String genreId) {
+
+        try {
+            GenreId genId = ListingMapper.toGenreId(genreId);
+
+            List<BibliographicalDataId> genreBiblioData = biblioDataService.findAllByGenreId(genId);
+            List<PublicationSampleId> genrePublicationSamples =
+                    publicationService.findIdsByBibliographicalDataIdIn(genreBiblioData);
+
+            if (genrePublicationSamples.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(List.of());
+            }
+
+            List<Listing> genreListings = listingService.findByPublicationSampleIdIn(genrePublicationSamples);
+
+            List<ListingDetailsDTO> dtos = new ArrayList<>();
+            for (Listing listing : genreListings) {
+                dtos.add(convertIntoListingDetailsDTO(listing, LinkContext.PUBLIC, null));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(dtos);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     /**
      * Retrieves all direct-sale listings associated with a given publisher.
      *
