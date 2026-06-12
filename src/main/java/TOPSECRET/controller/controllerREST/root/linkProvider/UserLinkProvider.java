@@ -27,7 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  *
  * <p>Links are grouped into two categories:</p>
  * <ul>
- *   <li><b>Public</b> — always included; no authorization required.</li>
+ *   <li><b>Public</b> — always empty; no user-related links are universally public.</li>
  *   <li><b>Admin</b> — included only when the user has the ADMIN role.</li>
  * </ul>
  */
@@ -53,33 +53,23 @@ public class UserLinkProvider implements RootLinkProvider {
      * Generates public HATEOAS links available to any caller,
      * regardless of the requesting user's identity or permissions.
      *
-     * <p>The following links are always included:</p>
-     * <ul>
-     *   <li>{@code get-user} — retrieve a user by their ID.</li>
-     *   <li>{@code get-all-users} — retrieve all users.</li>
-     * </ul>
+     * <p>No public links are exposed for the User resource.
+     * All user-related links require authorization.</p>
      *
-     * @return a list of public {@link Link} instances; never {@code null}
+     * @return an empty list; never {@code null}
      */
+
     public List<Link> getPublicLinks() {
-        List<Link> links = new ArrayList<>();
-
-        links.add(linkTo(methodOn(UserRESTController.class)
-                .getUser(null))
-                .withRel("get-user"));
-
-        links.add(linkTo(methodOn(UserRESTController.class)
-                .getAllUsers())
-                .withRel("get-all-users"));
-
-        return links;
+        return new ArrayList<>();
     }
 
     /**
      * Generates admin-scoped HATEOAS links based on the requesting user's permissions.
      *
-     * <p>The following link is conditionally included:</p>
+     * <p>The following links are conditionally included:</p>
      * <ul>
+     *   <li>{@code get-user} — retrieve a user by their ID (ADMIN only).</li>
+     *   <li>{@code get-all-users} — retrieve all users (ADMIN only).</li>
      *   <li>{@code register-user} — register a new user (ADMIN only).</li>
      * </ul>
      *
@@ -94,6 +84,12 @@ public class UserLinkProvider implements RootLinkProvider {
         User user = resolveUser(userId);
 
         if (authPolicy.canRegisterUser(user)) {
+            links.add(linkTo(methodOn(UserRESTController.class)
+                    .getUser(null))
+                    .withRel("get-user"));
+            links.add(linkTo(methodOn(UserRESTController.class)
+                    .getAllUsers())
+                    .withRel("get-all-users"));
             links.add(linkTo(methodOn(UserRESTController.class)
                     .registerUser(null, null))
                     .withRel("register-user"));

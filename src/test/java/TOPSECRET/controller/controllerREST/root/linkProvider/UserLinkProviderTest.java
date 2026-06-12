@@ -40,14 +40,12 @@ class UserLinkProviderTest {
     // ================================================================
 
     @Test
-    void getPublicLinks_shouldReturnTwoLinks() {
+    void getPublicLinks_shouldReturnEmptyList() {
         // Act
         List<Link> result = sut.getPublicLinks();
 
         // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-user")));
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-all-users")));
+        assertTrue(result.isEmpty());
     }
 
     // ================================================================
@@ -55,7 +53,7 @@ class UserLinkProviderTest {
     // ================================================================
 
     @Test
-    void getAdminLinks_shouldReturnOneLink_whenUserIsAdmin() throws InstanceNotFoundException {
+    void getAdminLinks_shouldReturnThreeLinks_whenUserIsAdmin() throws InstanceNotFoundException {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
@@ -67,8 +65,10 @@ class UserLinkProviderTest {
         List<Link> result = sut.getAdminLinks(userIdDouble);
 
         // Assert
-        assertEquals(1, result.size());
-        assertEquals("register-user", result.get(0).getRel().value());
+        assertEquals(3, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-user")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-all-users")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("register-user")));
     }
 
     @Test
@@ -122,7 +122,7 @@ class UserLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldReturnTwoLinks_whenUserIsNotAdmin() throws InstanceNotFoundException {
+    void getLinks_shouldReturnEmptyList_whenUserIsNotAdmin() throws InstanceNotFoundException {
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
@@ -134,9 +134,7 @@ class UserLinkProviderTest {
         List<Link> result = sut.getLinks(userIdDouble);
 
         // Assert
-        assertEquals(2, result.size());
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-user")));
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-all-users")));
+        assertTrue(result.isEmpty());
     }
 
     @Test
