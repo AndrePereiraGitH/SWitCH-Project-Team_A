@@ -4,14 +4,17 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { BookCard } from "../components/BookCard";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
+import { usePurchases } from "../components/PurchasesContext";
 import { API_BASE_URL, CURRENT_USER_ID } from "../../api/constants";
 
 export function Explore() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { soldItemIds } = usePurchases();
   const [searchParams] = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 100]);
   const [filterGenre, setFilterGenre] = useState("all");
   const [filterType, setFilterType] = useState("all");
   const [saleType, setSaleType] = useState("all");
@@ -89,7 +92,10 @@ export function Explore() {
       (saleType === "direct" && !sale.isAuction) ||
       (saleType === "auction" && sale.isAuction);
 
-    return matchesSearch && matchesGenre && matchesType && matchesSaleType;
+    const matchesPrice =
+        sale.price >= priceRange[0] && sale.price <= priceRange[1];
+
+    return matchesSearch && matchesGenre && matchesType && matchesSaleType && matchesPrice;
   });
 
   return (
@@ -178,6 +184,41 @@ export function Explore() {
               </select>
             </div>
           </div>
+
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-6">
+          <label className="block mb-4 font-semibold text-foreground flex items-center gap-2">
+            <span>Price Range</span>
+            <span className="text-sm font-normal text-muted-foreground">
+      (€{priceRange[0]} - €{priceRange[1]})
+    </span>
+          </label>
+          <div className="space-y-3">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium w-12">Min</span>
+              <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={priceRange[0]}
+                  onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                  className="flex-1 accent-primary"
+              />
+              <span className="text-sm font-bold w-16 text-right">€{priceRange[0]}</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium w-12">Max</span>
+              <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={priceRange[1]}
+                  onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                  className="flex-1 accent-primary"
+              />
+              <span className="text-sm font-bold w-16 text-right">€{priceRange[1]}</span>
+            </div>
+          </div>
+        </div>
         </div>
 
         <div className="mb-4 flex justify-between items-center">
@@ -220,11 +261,19 @@ export function Explore() {
                     condition={sale.condition}
                     isAuction={sale.isAuction}
                     auctionEndDate={sale.auctionEndDate}
+                    isSold={soldItemIds.has(sale.id)}
                   />
                 </div>
 
                 <div className="mt-3">
-                  {sale.isAuction ? (
+                  {soldItemIds.has(sale.id) ? (
+                      <button
+                          disabled
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
+                      >
+                        Sold
+                      </button>
+                  ) : sale.isAuction ? (
                     <button
                       onClick={() => {
                         setSelectedItem(sale);
