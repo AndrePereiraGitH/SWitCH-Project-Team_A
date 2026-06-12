@@ -17,9 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -120,13 +121,12 @@ public class UserRESTController {
             List<ResponseUserDTO> result = new ArrayList<>();
 
             for (User user : users) {
-                result.add(UserMapper.toDTO(user));
+                ResponseUserDTO dto = UserMapper.toDTO(user);
+                dto.add(linkTo(methodOn(UserRESTController.class)
+                        .getUser(user.id().getUserId())).withSelfRel());
+                result.add(dto);
             }
-
             List<Link> publicLinks = new ArrayList<>(userLinkProvider.getPublicLinks());
-            publicLinks.add(linkTo(methodOn(UserRESTController.class)
-                    .getAllUsers()).withSelfRel());
-
             result.forEach(dto -> publicLinks.forEach(dto::add));
 
             return ResponseEntity.ok(result);
@@ -143,8 +143,10 @@ public class UserRESTController {
      * based on the requester's permissions.</p>
      *
      * @param id the unique identifier of the user to retrieve
-     * @return HTTP 200 with the user DTO, HTTP 404 if not found, or HTTP 500 on error
+     * @return HTTP 200 with the user DTO, HTTP 400 if the ID is malformed,
+     *         HTTP 404 if not found, or HTTP 500 on error
      */
+
     @GetMapping("/{id}")
     public ResponseEntity<ResponseUserDTO> getUser(@PathVariable String id) {
 
@@ -164,6 +166,8 @@ public class UserRESTController {
             return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

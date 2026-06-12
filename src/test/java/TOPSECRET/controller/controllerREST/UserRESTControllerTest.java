@@ -18,10 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -214,11 +215,13 @@ class UserRESTControllerTest {
 
         // Arrange
         User userDouble = mock(User.class);
+        UserId userIdDouble = mock(UserId.class);
         ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
+        when(userDouble.id()).thenReturn(userIdDouble);
+        when(userIdDouble.getUserId()).thenReturn("user-001");
         when(userService.findAll()).thenReturn(List.of(userDouble));
-        when(userLinkProvider.getPublicLinks())
-                .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
+        when(userLinkProvider.getPublicLinks()).thenReturn(List.of());
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toDTO(userDouble)).thenReturn(responseDTO);
@@ -300,6 +303,27 @@ class UserRESTControllerTest {
     }
 
     // ================================================================
+    // GET /users/{id} — 400 BAD REQUEST
+    // ================================================================
+
+    @Test
+    void getUser_shouldReturnBadRequest_whenMalformedId() {
+
+        // Arrange
+        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<ResponseUserDTO> response = controller.getUser("id-invalido");
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    // ================================================================
     // GET /users/{id} — 404 NOT FOUND
     // ================================================================
 
@@ -307,7 +331,7 @@ class UserRESTControllerTest {
     void getUser_shouldReturnNotFound_whenUserDoesNotExist() {
 
         // Arrange
-        when(userService.findByID(any(UserId.class))).thenThrow(new IllegalArgumentException());
+        when(userService.findByID(any(UserId.class))).thenThrow(new NoSuchElementException());
 
         // Act
         ResponseEntity<ResponseUserDTO> response = controller.getUser("user-001");
