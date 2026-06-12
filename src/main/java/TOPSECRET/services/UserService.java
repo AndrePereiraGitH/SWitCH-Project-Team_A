@@ -11,8 +11,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 
@@ -63,7 +64,7 @@ public class UserService {
      */
     @Transactional
     public User createAndSave(String username, Profile profile, Set<UserRole> userRoles, UserId requesterId)
-            throws InstanceAlreadyExistsException, AccessDeniedException {
+            throws InstanceAlreadyExistsException {
 
         User requester = userRepository.findByID(requesterId)
                 .orElseThrow(() -> new IllegalArgumentException("Requester not found: " + requesterId));
@@ -86,12 +87,12 @@ public class UserService {
      * @param userId the identifier to search for; must not be {@code null}
      * @return the {@link User} with the given identifier
      * @throws NullPointerException     if {@code userId} is {@code null}
-     * @throws IllegalArgumentException if no user exists with the given identifier
+     * @throws NoSuchElementException if no user exists with the given identifier
      */
     public User findByID(UserId userId) {
         Objects.requireNonNull(userId, "UserId cannot be null.");
         User user = userRepository.findByID(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
         return user;
     }
 
