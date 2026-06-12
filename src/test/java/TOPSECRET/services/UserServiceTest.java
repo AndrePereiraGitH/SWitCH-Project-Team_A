@@ -14,7 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,7 +48,7 @@ class UserServiceTest {
 
     @Test
     void createAndSave_shouldReturnSavedUser_whenRequesterIsAuthorized()
-            throws InstanceAlreadyExistsException, AccessDeniedException {
+            throws InstanceAlreadyExistsException {
 
         // Arrange
         String username = "newuser";
@@ -136,6 +137,7 @@ class UserServiceTest {
 
     @Test
     void findByID_shouldReturnUser_whenUserExists() {
+
         // Arrange
         UserId userIdDouble = mock(UserId.class);
         User userDouble = mock(User.class);
@@ -149,37 +151,18 @@ class UserServiceTest {
     }
 
     // ================================================================
-// findByID — success
-// ================================================================
+    // findByID — not found
+    // ================================================================
 
     @Test
-    void findByID_shouldReturnUser_whenFound() {
+    void findByID_shouldThrowNoSuchElementException_whenUserNotFound() {
 
-        // ARRANGE
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-
-        // ACT
-        User result = service.findByID(userId);
-
-        // ASSERT
-        assertSame(user, result);
-    }
-
-// ================================================================
-// findByID — not found
-// ================================================================
-
-    @Test
-    void findByID_shouldThrowIllegalArgument_whenUserNotFound() {
-
-        // ARRANGE
+        // Arrange
         UserId userId = mock(UserId.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.empty());
 
-        // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
+        // Act + Assert
+        assertThrows(NoSuchElementException.class,
                 () -> service.findByID(userId));
     }
 
@@ -190,7 +173,7 @@ class UserServiceTest {
     @Test
     void findByID_shouldThrowNullPointerException_whenUserIdIsNull() {
 
-        // ACT + ASSERT
+        // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> service.findByID(null));
     }
@@ -201,6 +184,7 @@ class UserServiceTest {
 
     @Test
     void existsByUsername_shouldReturnTrue_whenUsernameExists() {
+
         // Arrange
         String username = "existinguser";
         when(userRepository.existsByUsername(username)).thenReturn(true);
@@ -218,6 +202,7 @@ class UserServiceTest {
 
     @Test
     void existsByUsername_shouldReturnFalse_whenUsernameDoesNotExist() {
+
         // Arrange
         String username = "nonexistent";
         when(userRepository.existsByUsername(username)).thenReturn(false);
@@ -235,6 +220,7 @@ class UserServiceTest {
 
     @Test
     void existsByUsername_shouldThrowNullPointerException_whenUsernameIsNull() {
+
         // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> service.existsByUsername(null));
@@ -246,6 +232,7 @@ class UserServiceTest {
 
     @Test
     void findIdByUsername_shouldReturnUserId_whenUsernameExists() {
+
         // Arrange
         String username = "existinguser";
         UserId userIdDouble = mock(UserId.class);
@@ -264,6 +251,7 @@ class UserServiceTest {
 
     @Test
     void findIdByUsername_shouldThrowIllegalArgumentException_whenUsernameDoesNotExist() {
+
         // Arrange
         String username = "nonexistent";
         when(userRepository.findIdByUsername(username)).thenReturn(Optional.empty());
@@ -279,6 +267,7 @@ class UserServiceTest {
 
     @Test
     void findIdByUsername_shouldThrowNullPointerException_whenUsernameIsNull() {
+
         // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> service.findIdByUsername(null));
