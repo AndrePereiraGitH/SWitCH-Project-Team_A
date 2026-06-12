@@ -83,9 +83,39 @@ const mockPublicationListings = [
     },
 ];
 
+const mockFantasyGenreListings = [
+    {
+        id: "2",
+        listingTitle: "Harry Potter and the Philosopher's Stone",
+        authors: ["J.K. Rowling"],
+        genre: ["fantasy"],
+        price: 18,
+        condition: "Very Good",
+        saleType: "AUCTION",
+    },
+    {
+        id: "3",
+        listingTitle: "Game of Thrones",
+        authors: ["George R.R. Martin"],
+        genre: ["fantasy"],
+        price: 15,
+        condition: "Good",
+        saleType: "DIRECT",
+    },
+    {
+        id: "6",
+        listingTitle: "The Lord of the Rings - Auction",
+        authors: ["J. R. R. Tolkien"],
+        genre: ["fantasy"],
+        price: 10.00,
+        condition: "Very Good",
+        saleType: "AUCTION",
+    },
+];
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function setupFetch({ publicationListings = null } = {}) {
+function setupFetch({ publicationListings = null, genreListings = null } = {}) {
     global.fetch = vi.fn(async (url) => {
         if (url.includes("/genres")) {
             return { ok: true, json: async () => mockGenres };
@@ -97,6 +127,12 @@ function setupFetch({ publicationListings = null } = {}) {
             return {
                 ok: true,
                 json: async () => publicationListings ?? mockPublicationListings,
+            };
+        }
+        if (url.includes("/listings/genre/")) {
+            return {
+                ok: true,
+                json: async () => genreListings ?? mockFantasyGenreListings,
             };
         }
         if (url.includes("/listings")) {
@@ -139,11 +175,6 @@ describe("Explore", () => {
             expect(screen.getByText("Explore Sales")).toBeInTheDocument();
         });
 
-        test("renders search input", async () => {
-            await renderLoadedExplore();
-            expect(screen.getByPlaceholderText("Search by title or author...")).toBeInTheDocument();
-        });
-
         test("renders all listings on load", async () => {
             await renderLoadedExplore();
             expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
@@ -169,15 +200,9 @@ describe("Explore", () => {
             await renderLoadedExplore();
 
             await waitFor(() => {
-                expect(global.fetch).toHaveBeenCalledWith(
-                    expect.stringContaining("/genres")
-                );
-                expect(global.fetch).toHaveBeenCalledWith(
-                    expect.stringContaining("/listings")
-                );
-                expect(global.fetch).toHaveBeenCalledWith(
-                    expect.stringContaining("/bibliographicalDatas")
-                );
+                expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/genres"));
+                expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/listings"));
+                expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/bibliographicalDatas"));
             });
         });
 
@@ -203,59 +228,100 @@ describe("Explore", () => {
         });
     });
 
-    // ── Genre filter ──
-    describe("Genre filter", () => {
-        test("filters by genre", async () => {
+    // ── Genre filter (US062) ──
+    describe("Genre filter (US062)", () => {
+        test("calls genre endpoint when genre selected", async () => {
             await renderLoadedExplore();
             fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
-            expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
-            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
-            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
+
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalledWith(
+                    expect.stringContaining("/listings/genre/fantasy")
+                );
+            });
         });
 
-        test("shows all listings when genre reset to all", async () => {
+        test("shows listings returned by genre endpoint", async () => {
             await renderLoadedExplore();
             fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
-            fireEvent.change(getGenreSelect(), { target: { value: "all" } });
-            expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
-        });
-    });
 
-    // ── Sale type filter ──
-    describe("Sale type filter", () => {
-        test("filters by direct sale", async () => {
-            await renderLoadedExplore();
-            fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
-            expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
-            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
-            expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
+                expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+                expect(screen.getByText("The Lord of the Rings - Auction")).toBeInTheDocument();
+            });
         });
 
-        test("filters by auction", async () => {
+        test("includes both direct sale and auction listings for the genre", async () => {
             await renderLoadedExplore();
-            fireEvent.change(getSaleTypeSelect(), { target: { value: "auction" } });
-            expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
-            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
-            expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
-        });
-    });
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
 
-    // ── Author filter ──
-    describe("Author filter", () => {
-        test("renders author options from listings", async () => {
-            await renderLoadedExplore();
-            expect(screen.getByRole("option", { name: "All Authors" })).toBeInTheDocument();
-            expect(screen.getByRole("option", { name: "Dan Brown" })).toBeInTheDocument();
-            expect(screen.getByRole("option", { name: "J.K. Rowling" })).toBeInTheDocument();
-            expect(screen.getByRole("option", { name: "George R.R. Martin" })).toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.getAllByText("Direct Sale").length).toBeGreaterThan(0);
+                expect(screen.getAllByText("Auction").length).toBeGreaterThan(0);
+            });
         });
 
-        test("filters by author", async () => {
+        test("shows filtered by genre label", async () => {
             await renderLoadedExplore();
-            fireEvent.change(getAuthorSelect(), { target: { value: "J.K. Rowling" } });
-            expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
-            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
-            expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(screen.getByText(/filtered by genre/i)).toBeInTheDocument();
+            });
+        });
+
+        test("shows clear genre filter button when genre selected", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(screen.getByText("Clear genre filter")).toBeInTheDocument();
+            });
+        });
+
+        test("restores all listings when genre filter cleared", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(screen.getByText("The Lord of the Rings - Auction")).toBeInTheDocument();
+            });
+
+            fireEvent.click(screen.getByText("Clear genre filter"));
+
+            await waitFor(() => {
+                expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
+                expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            });
+        });
+
+        test("disables publication filter when genre selected", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(getPublicationSelect()).toBeDisabled();
+            });
+        });
+
+        test("disables author filter when genre selected", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(getAuthorSelect()).toBeDisabled();
+            });
+        });
+
+        test("shows empty state when genre endpoint returns no listings", async () => {
+            setupFetch({ genreListings: [] });
+            await renderLoadedExplore();
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(screen.getByText(/No items found/i)).toBeInTheDocument();
+            });
         });
     });
 
@@ -316,16 +382,6 @@ describe("Explore", () => {
             });
         });
 
-        test("resets genre and author filters when publication selected", async () => {
-            await renderLoadedExplore();
-            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
-            fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
-
-            await waitFor(() => {
-                expect(getGenreSelect().value).toBe("all");
-            });
-        });
-
         test("disables genre filter when publication selected", async () => {
             await renderLoadedExplore();
             fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
@@ -355,20 +411,83 @@ describe("Explore", () => {
         });
     });
 
-    // ── Combined filters ──
-    describe("Combined filters", () => {
-        test("genre and sale type work together", async () => {
+    // ── Genre and Publication filters are mutually exclusive ──
+    describe("Genre and Publication mutual exclusivity", () => {
+        test("selecting a publication resets genre filter to all", async () => {
             await renderLoadedExplore();
             fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
-            fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
-            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
-            expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
-            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
+
+            await waitFor(() => {
+                expect(screen.getByText(/filtered by genre/i)).toBeInTheDocument();
+            });
+
+            fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+
+            await waitFor(() => {
+                expect(getGenreSelect().value).toBe("all");
+                expect(screen.getByText(/filtered by publication/i)).toBeInTheDocument();
+            });
         });
 
-        test("genre, sale type and author work together", async () => {
+        test("selecting a genre resets publication filter to all", async () => {
             await renderLoadedExplore();
+            fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+
+            await waitFor(() => {
+                expect(screen.getByText(/filtered by publication/i)).toBeInTheDocument();
+            });
+
             fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(getPublicationSelect().value).toBe("all");
+                expect(screen.getByText(/filtered by genre/i)).toBeInTheDocument();
+            });
+        });
+    });
+
+    // ── Sale type filter ──
+    describe("Sale type filter", () => {
+        test("filters by direct sale", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+            expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
+            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
+        });
+
+        test("filters by auction", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getSaleTypeSelect(), { target: { value: "auction" } });
+            expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
+            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
+            expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
+        });
+    });
+
+    // ── Author filter ──
+    describe("Author filter", () => {
+        test("renders author options from listings", async () => {
+            await renderLoadedExplore();
+            expect(screen.getByRole("option", { name: "All Authors" })).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: "Dan Brown" })).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: "J.K. Rowling" })).toBeInTheDocument();
+            expect(screen.getByRole("option", { name: "George R.R. Martin" })).toBeInTheDocument();
+        });
+
+        test("filters by author", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getAuthorSelect(), { target: { value: "J.K. Rowling" } });
+            expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
+            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
+            expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
+        });
+    });
+
+    // ── Combined filters ──
+    describe("Combined filters", () => {
+        test("sale type and author work together", async () => {
+            await renderLoadedExplore();
             fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
             fireEvent.change(getAuthorSelect(), { target: { value: "George R.R. Martin" } });
             expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
@@ -376,9 +495,22 @@ describe("Explore", () => {
             expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
         });
 
+        test("genre filter combined with sale type filter", async () => {
+            await renderLoadedExplore();
+            fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+            await waitFor(() => {
+                expect(screen.getByText("The Lord of the Rings - Auction")).toBeInTheDocument();
+            });
+
+            fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+
+            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
+        });
+
         test("no results when filters produce empty set", async () => {
             await renderLoadedExplore();
-            fireEvent.change(getGenreSelect(), { target: { value: "mystery" } });
             const search = screen.getByPlaceholderText("Search by title or author...");
             fireEvent.change(search, { target: { value: "xyznotfound" } });
             expect(screen.getByText(/No items found/i)).toBeInTheDocument();

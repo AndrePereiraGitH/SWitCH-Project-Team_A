@@ -22,7 +22,7 @@ export function Explore() {
   const [publications, setPublications] = useState([]);
   const [sales, setSales] = useState([]);
   const [allSales, setAllSales] = useState([]);
-  const [loadingPublication, setLoadingPublication] = useState(false);
+  const [loadingFilter, setLoadingFilter] = useState(false);
 
   const [bidModalOpen, setBidModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -67,32 +67,46 @@ export function Explore() {
     fetchData();
   }, []);
 
-  // Fetch listings by publication when filter changes
+  // Fetch listings by genre or publication when either filter changes
   useEffect(() => {
-    if (filterPublication === "all") {
+    if (filterPublication !== "all") {
+      fetchByPublication(filterPublication);
+    } else if (filterGenre !== "all") {
+      fetchByGenre(filterGenre);
+    } else {
       setSales(allSales);
-      return;
     }
+  }, [filterGenre, filterPublication, allSales]);
 
-    async function fetchByPublication() {
-      setLoadingPublication(true);
-      try {
-        const res = await fetch(
-            `${API_BASE_URL}/listings/by-publication/${filterPublication}`
-        );
-        if (!res.ok) throw new Error(`Failed: ${res.status}`);
-        const data = await res.json();
-        setSales(data.map(mapListingToSale));
-      } catch (error) {
-        console.error("Error fetching listings by publication:", error);
-        setSales([]);
-      } finally {
-        setLoadingPublication(false);
-      }
+  async function fetchByPublication(bdId) {
+    setLoadingFilter(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/listings/by-publication/${bdId}`);
+      if (!res.ok) throw new Error(`Failed: ${res.status}`);
+      const data = await res.json();
+      setSales(data.map(mapListingToSale));
+    } catch (error) {
+      console.error("Error fetching listings by publication:", error);
+      setSales([]);
+    } finally {
+      setLoadingFilter(false);
     }
+  }
 
-    fetchByPublication();
-  }, [filterPublication]);
+  async function fetchByGenre(genreId) {
+    setLoadingFilter(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/listings/genre/${genreId}`);
+      if (!res.ok) throw new Error(`Failed: ${res.status}`);
+      const data = await res.json();
+      setSales(data.map(mapListingToSale));
+    } catch (error) {
+      console.error("Error fetching listings by genre:", error);
+      setSales([]);
+    } finally {
+      setLoadingFilter(false);
+    }
+  }
 
   const mapListingToSale = (listing) => ({
     id: listing.id,
@@ -122,13 +136,15 @@ export function Explore() {
     setSaleType("all");
   };
 
+  const handleGenreChange = (e) => {
+    setFilterGenre(e.target.value);
+    setFilterPublication("all");
+  };
+
   const filteredSales = sales.filter(sale => {
     const matchesSearch =
         sale.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         sale.author?.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesGenre =
-        filterGenre === "all" || sale.genre?.includes(filterGenre);
 
     const matchesType =
         filterType === "all" || sale.type === filterType;
@@ -141,8 +157,18 @@ export function Explore() {
     const matchesAuthor =
         filterAuthor === "all" || sale.author === filterAuthor;
 
-    return matchesSearch && matchesGenre && matchesType && matchesSaleType && matchesAuthor;
+    return matchesSearch && matchesType && matchesSaleType && matchesAuthor;
   });
+
+  const activeFilterLabel =
+      filterPublication !== "all" ? "publication" :
+          filterGenre !== "all" ? "genre" :
+              null;
+
+  const clearActiveFilter = () => {
+    setFilterPublication("all");
+    setFilterGenre("all");
+  };
 
   return (
       <div className="min-h-screen bg-background pt-24 pb-12">
@@ -186,7 +212,7 @@ export function Explore() {
                 <label className="block mb-2 text-sm font-semibold text-foreground">Genre</label>
                 <select
                     value={filterGenre}
-                    onChange={(e) => setFilterGenre(e.target.value)}
+                    onChange={handleGenreChange}
                     disabled={filterPublication !== "all"}
                     className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -202,7 +228,8 @@ export function Explore() {
                 <select
                     value={filterPublication}
                     onChange={handlePublicationChange}
-                    className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={filterGenre !== "all"}
+                    className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="all">All Publications</option>
                   {publications.map(pub => (
@@ -242,7 +269,7 @@ export function Explore() {
                 <select
                     value={filterAuthor}
                     onChange={(e) => setFilterAuthor(e.target.value)}
-                    disabled={filterPublication !== "all"}
+                    disabled={filterPublication !== "all" || filterGenre !== "all"}
                     className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="all">All Authors</option>
@@ -256,24 +283,24 @@ export function Explore() {
 
           <div className="mb-4 flex justify-between items-center">
             <p className="text-muted-foreground">
-              {loadingPublication ? "Loading…" : (
+              {loadingFilter ? "Loading…" : (
                   <>
                     {filteredSales.length}{" "}
                     {filteredSales.length === 1 ? "result" : "results"} found
-                    {filterPublication !== "all" && (
+                    {activeFilterLabel && (
                         <span className="ml-2 text-primary font-medium">
-                                        — filtered by publication
+                                        — filtered by {activeFilterLabel}
                                     </span>
                     )}
                   </>
               )}
             </p>
-            {filterPublication !== "all" && (
+            {activeFilterLabel && (
                 <button
-                    onClick={() => setFilterPublication("all")}
+                    onClick={clearActiveFilter}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors underline"
                 >
-                  Clear publication filter
+                  Clear {activeFilterLabel} filter
                 </button>
             )}
           </div>
