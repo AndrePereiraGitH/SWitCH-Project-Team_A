@@ -78,7 +78,7 @@ class EditionRESTControllerTest {
             mapper.when(() -> EditionMapper.toUserId(userIdStr)).thenReturn(userId);
             mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
             stubCreateDTO(mapper, edition);
-            stubProviderLinks(userId, List.of(link), List.of());
+            stubProviderLinks(userId, List.of(link));
 
             // ACT
             ResponseEntity<EditionDTO> response =
@@ -93,7 +93,6 @@ class EditionRESTControllerTest {
     @Test
     void shouldAddPublicAndPrivateLinksToResponseDTOOnCreate() throws Exception {
 
-        // ARRANGE
         String userIdStr = "user-001";
         UserId userId = mock(UserId.class);
 
@@ -109,23 +108,38 @@ class EditionRESTControllerTest {
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
-            mapper.when(() -> EditionMapper.toUserId(userIdStr)).thenReturn(userId);
-            mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
-            stubCreateDTO(mapper, edition);
-            stubProviderLinks(userId, List.of(publicLink), List.of(privateLink));
+            mapper.when(() -> EditionMapper.toUserId(userIdStr))
+                    .thenReturn(userId);
 
-            // ACT
+            mapper.when(() -> EditionMapper.toDTO(edition))
+                    .thenReturn(responseDTO);
+
+            stubCreateDTO(mapper, edition);
+
+            stubProviderLinks(
+                    userId,
+                    List.of(publicLink, privateLink)
+            );
+
             controller.createEdition(createDTO, userIdStr);
 
-            // ASSERT — public link + private link + selfRel = 3
+            // public + create + self
             assertEquals(3, responseDTO.getLinks().toList().size());
+
+            assertTrue(responseDTO.getLinks().toList().stream()
+                    .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
+
+            assertTrue(responseDTO.getLinks().toList().stream()
+                    .anyMatch(l -> l.getRel().value().equals("create-edition")));
+
+            assertTrue(responseDTO.getLinks().toList().stream()
+                    .anyMatch(l -> l.getRel().value().equals("self")));
         }
     }
 
     @Test
     void shouldAddCreateEditionRelOnCreate() throws Exception {
 
-        // ARRANGE
         String userIdStr = "user-001";
         UserId userId = mock(UserId.class);
 
@@ -140,15 +154,21 @@ class EditionRESTControllerTest {
 
         try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
-            mapper.when(() -> EditionMapper.toUserId(userIdStr)).thenReturn(userId);
-            mapper.when(() -> EditionMapper.toDTO(edition)).thenReturn(responseDTO);
-            stubCreateDTO(mapper, edition);
-            stubProviderLinks(userId, List.of(), List.of(privateLink));
+            mapper.when(() -> EditionMapper.toUserId(userIdStr))
+                    .thenReturn(userId);
 
-            // ACT
+            mapper.when(() -> EditionMapper.toDTO(edition))
+                    .thenReturn(responseDTO);
+
+            stubCreateDTO(mapper, edition);
+
+            stubProviderLinks(
+                    userId,
+                    List.of(privateLink)
+            );
+
             controller.createEdition(createDTO, userIdStr);
 
-            // ASSERT
             assertTrue(responseDTO.getLinks().toList().stream()
                     .anyMatch(l -> l.getRel().value().equals("create-edition")));
         }
@@ -868,6 +888,8 @@ class EditionRESTControllerTest {
         }
     }
 
+
+
     // =========================================================
     // HELPERS
     // =========================================================
@@ -876,11 +898,10 @@ class EditionRESTControllerTest {
      * Stubs provider public and private links for create-endpoint tests.
      * Uses doAnswer to bypass the checked InstanceNotFoundException on getPrivateLinks.
      */
-    private void stubProviderLinks(UserId userId, List<Link> publicLinks, List<Link> privateLinks)
+    private void stubProviderLinks(UserId userId, List<Link> links)
             throws Exception {
-        when(provider.getPublicLinks()).thenReturn(publicLinks);
-        lenient().doAnswer(inv -> privateLinks).when(provider).getCreateLinks(userId);
-        lenient().doAnswer(inv -> privateLinks).when(provider).getCreateLinks(any());
+
+        when(provider.getLinks(userId)).thenReturn(links);
     }
 
     /**

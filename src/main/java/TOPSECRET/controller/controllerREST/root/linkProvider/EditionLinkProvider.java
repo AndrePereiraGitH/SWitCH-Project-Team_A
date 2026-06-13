@@ -103,6 +103,20 @@ public class EditionLinkProvider implements RootLinkProvider {
         return links;
     }
 
+    /**
+     * Returns the HATEOAS links available to a publisher user.
+     *
+     * <p>The returned links depend on the permissions granted by the current
+     * policy. If the user is authorized to search editions by publisher ID,
+     * a {@code find-by-publisher-id} link is included in the result.</p>
+     *
+     * @param userId the identifier of the user for whom publisher links are requested;
+     *               must not be {@code null}
+     * @return a list of publisher-related links available to the specified user;
+     *         never {@code null}
+     * @throws NullPointerException if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user exists for the given {@code userId}
+     */
     public List<Link> getPublisherLinks(UserId userId) throws InstanceNotFoundException {
         Objects.requireNonNull(userId, "UserId cannot be null");
         List<Link> links = new ArrayList<>();
@@ -117,6 +131,20 @@ public class EditionLinkProvider implements RootLinkProvider {
         return links;
     }
 
+    /**
+     * Builds the publication-type-related HATEOAS links available to the specified user.
+     *
+     * <p>The returned links are determined by the permissions granted to the user.
+     * If the user is authorized to search editions by publication type ID, a
+     * {@code find-by-publication-type-id} link is included in the result.</p>
+     *
+     * @param userId the identifier of the user for whom publication type links are requested;
+     *               must not be {@code null}
+     * @return a list of publication-type-related links available to the specified user;
+     *         never {@code null}
+     * @throws NullPointerException if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user exists for the given {@code userId}
+     */
     public List<Link> getPublicationTypeLinks (UserId userId) throws InstanceNotFoundException {
         Objects.requireNonNull(userId, "UserId cannot be null");
         List<Link> links = new ArrayList<>();

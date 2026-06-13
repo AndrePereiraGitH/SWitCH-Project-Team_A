@@ -52,7 +52,8 @@ public class EditionAuthorizationPolicy {
      *         by publisher ID; {@code false} otherwise
      */
     public boolean canFindByPublisherId(User user) {
-        boolean result = user.getUserRoles().contains(UserRole.NORMAL_USER);
+        boolean result = user.getUserRoles().contains(UserRole.ADMIN)
+                || user.getUserRoles().contains(UserRole.NORMAL_USER);
         return result;
     }
 
@@ -68,7 +69,8 @@ public class EditionAuthorizationPolicy {
      *         by publication type ID; {@code false} otherwise
      */
     public boolean canFindByPublicationTypeId(User user) {
-        boolean result = user.getUserRoles().contains(UserRole.NORMAL_USER);
+        boolean result = user.getUserRoles().contains(UserRole.ADMIN)
+                || user.getUserRoles().contains(UserRole.NORMAL_USER);
         return result;
     }
 }

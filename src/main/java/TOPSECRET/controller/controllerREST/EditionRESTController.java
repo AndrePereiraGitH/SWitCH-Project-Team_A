@@ -96,6 +96,8 @@ public class EditionRESTController {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
@@ -189,13 +191,13 @@ public class EditionRESTController {
 
             List<Edition> editions = service.findByPublisherId(id);
 
+            if (editions.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
             List<EditionDTO> result = new ArrayList<>();
             for (Edition edition : editions) {
                 result.add(toEditionDTO(edition));
-            }
-
-            if (result.isEmpty()) {
-                return ResponseEntity.noContent().build();
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -266,13 +268,13 @@ public class EditionRESTController {
 
             List<Edition> editions = service.findByPublicationTypeId(id);
 
+            if (editions.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
             List<EditionDTO> result = new ArrayList<>();
             for (Edition edition : editions) {
                 result.add(toEditionDTO(edition));
-            }
-
-            if (result.isEmpty()) {
-                return ResponseEntity.noContent().build();
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -322,11 +324,12 @@ public class EditionRESTController {
      * @return the populated {@link EditionDTO} with public and private links attached
      * @throws InstanceNotFoundException if the associated user is not found by the link provider
      */
-    private EditionDTO toEditionDTO(Edition edition, UserId userId) throws InstanceNotFoundException {
+    private EditionDTO toEditionDTO(Edition edition, UserId userId)
+            throws InstanceNotFoundException {
+
         EditionDTO result = EditionMapper.toDTO(edition);
 
-        List<Link> links = new ArrayList<>(provider.getPublicLinks());
-        links.addAll(provider.getCreateLinks(userId));
+        List<Link> links = new ArrayList<>(provider.getLinks(userId));
 
         links.add(linkTo(methodOn(EditionRESTController.class)
                 .findById(edition.id().getID()))
