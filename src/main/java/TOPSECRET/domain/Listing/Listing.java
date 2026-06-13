@@ -36,6 +36,7 @@ public class Listing implements AggregateRoot<ListingId> {
     private final Price _price;
     private final String _shortDescription;
     private final UserId _sellerId;
+    private UserId _buyerId;
     private final List<Picture> _pictures;
     private final LocalDate _publicationDate;
     private ListingStatus _listingStatus;
@@ -82,6 +83,7 @@ public class Listing implements AggregateRoot<ListingId> {
         _price = validatePrice(price);
         _shortDescription = validateDescription(shortDescription);
         _sellerId = validateSellerId(sellerId);
+        _buyerId = null;
         _pictures = List.copyOf(validatePictures(pictures));
         _publicationDate = LocalDate.now();
         _listingStatus = ListingStatus.ACTIVE;
@@ -118,6 +120,7 @@ public class Listing implements AggregateRoot<ListingId> {
                       Price price,
                       String shortDescription,
                       UserId sellerId,
+                      UserId buyerId,
                       List<Picture> pictures,
                       LocalDate publicationDate,
                       ListingStatus listingStatus) {
@@ -129,6 +132,7 @@ public class Listing implements AggregateRoot<ListingId> {
         _price = validatePrice(price);
         _shortDescription = validateDescription(shortDescription);
         _sellerId = validateSellerId(sellerId);
+        _buyerId = buyerId;
         _pictures = List.copyOf(validatePictures(pictures));
         _publicationDate = Objects.requireNonNull(publicationDate, "Publication date cannot be null.");
         _listingStatus = Objects.requireNonNull(listingStatus, "Listing status cannot be null.");
@@ -178,14 +182,18 @@ public class Listing implements AggregateRoot<ListingId> {
     }
 
     /**
-     * Marks the current listing as sold.
+     * Marks the current listing as sold by the given buyer.
      * <p>
      * This method transitions the internal state of the listing by setting
-     * its status to {@link ListingStatus#SOLD}.
+     * its status to {@link ListingStatus#SOLD} and recording the buyer's identity.
      *
+     * @param buyerId the identifier of the user who purchased this listing; must not be {@code null}
      * @return the current {@link Listing} instance updated to the sold state
+     * @throws NullPointerException if {@code buyerId} is {@code null}
      */
-    public Listing markListingAsSold(){
+    public Listing markListingAsSold(UserId buyerId){
+        Objects.requireNonNull(buyerId, "Buyer ID cannot be null.");
+        _buyerId = buyerId;
         _listingStatus = ListingStatus.SOLD;
         return this;
     }
@@ -232,6 +240,15 @@ public class Listing implements AggregateRoot<ListingId> {
         return _listingStatus;
     }
 
+    /**
+     * Returns the identifier of the user who purchased this listing.
+     *
+     * @return the buyer's {@link UserId}, or {@code null} if the listing has not been sold
+     */
+    public UserId getBuyerId() {
+        return _buyerId;
+    }
+
     @Override
     public ListingId id() {
         return _listingId;
@@ -252,16 +269,16 @@ public class Listing implements AggregateRoot<ListingId> {
     @Override
     public boolean sameAs(Object object) {
         if (!(object instanceof Listing)) return false;
-
         Listing other = (Listing) object;
-
         return this._listingTitle.equals(other._listingTitle)
                 && this._itemsId.equals(other._itemsId)
                 && this._saleType.equals(other._saleType)
                 && this._price.equals(other._price)
                 && this._shortDescription.equals(other._shortDescription)
                 && this._sellerId.equals(other._sellerId)
-                && this._pictures.equals(other._pictures);
+                && this._pictures.equals(other._pictures)
+                && this._listingStatus == other._listingStatus
+                && Objects.equals(this._buyerId, other._buyerId);
     }
 
 

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,7 +39,8 @@ class ListingDMTest {
     private List<PublicationSampleId> severalItemList;
     private PublicationSampleId pubId_1;
     private PublicationSampleId pubId_2;
-    private UserId userId;
+    private UserId sellerId;
+    private UserId buyerId;
     private LocalDate date;
     private ListingStatus listingStatus;
 
@@ -51,7 +51,8 @@ class ListingDMTest {
         pubId_2 = mock(PublicationSampleId.class);
         oneItemList = List.of(pubId_1);
         severalItemList = List.of(pubId_1, pubId_2);
-        userId = mock(UserId.class);
+        sellerId = mock(UserId.class);
+        buyerId = mock(UserId.class);
         date = LocalDate.now();
         listingStatus = ListingStatus.ACTIVE;
     }
@@ -68,7 +69,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 oneItemList,
-                userId,
+                sellerId,
+                null,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -78,6 +80,29 @@ class ListingDMTest {
 
         // Assert
         assertNotNull(dm);
+    }
+
+    @Test
+    void shouldCreateSoldListingWithBuyerId() {
+
+        // Act
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                oneItemList,
+                sellerId,
+                buyerId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                ListingStatus.SOLD);
+
+        // Assert
+        assertNotNull(dm);
+        assertEquals(buyerId, dm.getBuyerId());
+        assertEquals(ListingStatus.SOLD, dm.getListingStatus());
     }
 
     @Test
@@ -101,7 +126,8 @@ class ListingDMTest {
                 new ListingDM(null,
                         description,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         pictures,
@@ -119,7 +145,8 @@ class ListingDMTest {
                         listingId,
                         null,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         pictures,
@@ -137,11 +164,13 @@ class ListingDMTest {
                         listingId,
                         description,
                         null,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         pictures,
-                        price,date,
+                        price,
+                        date,
                         listingStatus));
     }
 
@@ -155,6 +184,7 @@ class ListingDMTest {
                         description,
                         oneItemList,
                         null,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         pictures,
@@ -172,7 +202,8 @@ class ListingDMTest {
                         listingId,
                         description,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         null,
                         title,
                         pictures,
@@ -190,7 +221,8 @@ class ListingDMTest {
                         listingId,
                         description,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         null,
                         pictures,
@@ -208,7 +240,8 @@ class ListingDMTest {
                         listingId,
                         description,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         null,
@@ -226,7 +259,8 @@ class ListingDMTest {
                         listingId,
                         description,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         pictures,
@@ -244,7 +278,8 @@ class ListingDMTest {
                         listingId,
                         description,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         pictures,
@@ -262,13 +297,35 @@ class ListingDMTest {
                         listingId,
                         description,
                         oneItemList,
-                        userId,
+                        sellerId,
+                        buyerId,
                         SaleType.DIRECT_SALE,
                         title,
                         pictures,
                         price,
                         date,
                         null));
+    }
+
+    @Test
+    void shouldNotThrowWhenBuyerIdIsNull() {
+
+        // Act
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                oneItemList,
+                sellerId,
+                null,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
+
+        // Assert
+        assertNull(dm.getBuyerId());
     }
 
     // =========================================================================
@@ -282,7 +339,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -304,7 +362,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -320,13 +379,14 @@ class ListingDMTest {
     }
 
     @Test
-    void getUserId_shouldReturnUserId() {
+    void getSellerId_shouldReturnSellerId() {
         // Arrange
         ListingDM dm = new ListingDM(
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -338,7 +398,30 @@ class ListingDMTest {
         UserId result = dm.getSellerId();
 
         // Assert
-        assertEquals(userId, result);
+        assertEquals(sellerId, result);
+    }
+
+    @Test
+    void getBuyerId_shouldReturnBuyerId() {
+        // Arrange
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                sellerId,
+                buyerId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
+
+        // Act
+        UserId result = dm.getBuyerId();
+
+        // Assert
+        assertEquals(buyerId, result);
     }
 
     @Test
@@ -348,7 +431,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -370,7 +454,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -392,7 +477,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -414,7 +500,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -437,7 +524,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -459,7 +547,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
@@ -481,7 +570,8 @@ class ListingDMTest {
                 listingId,
                 description,
                 severalItemList,
-                userId,
+                sellerId,
+                buyerId,
                 SaleType.DIRECT_SALE,
                 title,
                 pictures,
