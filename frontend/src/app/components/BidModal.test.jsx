@@ -120,7 +120,31 @@ describe("BidModal — Interactions", () => {
         fireEvent.click(screen.getByText("Buy Now"));
 
         expect(onBuyNow).toHaveBeenCalled();
-        expect(onClose).not.toHaveBeenCalled(); // onClose é controlado pelo pai
+        expect(onClose).not.toHaveBeenCalled();
+    });
+
+    test("shows error when bid amount is empty", async () => {
+        const onSubmitBid = vi.fn();
+        renderModal({ onSubmitBid, currentBid: 10 });
+
+        const input = screen.getByRole("spinbutton");
+        fireEvent.change(input, { target: { value: "" } });
+        fireEvent.submit(input.closest("form"));
+
+        expect(onSubmitBid).not.toHaveBeenCalled();
+        expect(await screen.findByText("Please enter a valid bid amount.")).toBeInTheDocument();
+    });
+
+    test("shows error when bid is equal to currentBid", async () => {
+        const onSubmitBid = vi.fn();
+        renderModal({ onSubmitBid, currentBid: 10 });
+
+        const input = screen.getByRole("spinbutton");
+        fireEvent.change(input, { target: { value: "10" } });
+        fireEvent.submit(input.closest("form"));
+
+        expect(onSubmitBid).not.toHaveBeenCalled();
+        expect(await screen.findByText("Bid must be higher than the current bid of €10.00")).toBeInTheDocument();
     });
 
     test("does not call onSubmitBid if bid exceeds buyout price", async () => {
