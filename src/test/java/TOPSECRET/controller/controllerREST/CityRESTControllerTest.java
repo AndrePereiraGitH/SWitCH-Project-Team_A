@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +32,13 @@ import static org.mockito.Mockito.*;
  *
  * <p>Validates HTTP responses, exception handling and DTO mapping
  * for both the city creation and city retrieval endpoints.</p>
+ *
+ * <p>Tests are grouped into three categories:</p>
+ * <ul>
+ *   <li><b>POST</b> — creation of a new city, including authorization and error scenarios.</li>
+ *   <li><b>GET (collection)</b> — retrieval of all cities, including empty and error scenarios.</li>
+ *   <li><b>GET (by identity)</b> — retrieval of a single city by identifier, including error scenarios.</li>
+ * </ul>
  */
 @ExtendWith(MockitoExtension.class)
 class CityRESTControllerTest {
@@ -154,6 +162,29 @@ class CityRESTControllerTest {
     }
 
     @Test
+    void createCity_shouldReturnInternalServerError_whenInstanceNotFound() throws Exception {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        RequestCityDTO dto = mock(RequestCityDTO.class);
+        when(dto.countryName()).thenReturn("Portugal");
+        when(dto.cityName()).thenReturn("Porto");
+
+        CityId doubleCityId = mock(CityId.class);
+        when(doubleCityId.getCityID()).thenReturn("1");
+        when(city.id()).thenReturn(doubleCityId);
+        when(city.getCityName()).thenReturn("Porto");
+        when(service.createAndSave("Portugal", "Porto", userId)).thenReturn(city);
+        when(provider.getLinks(userId)).thenThrow(new InstanceNotFoundException("User not found"));
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.createCity(dto, userId);
+
+        // ASSERT
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    @Test
     void getCities_shouldReturnOk_whenCitiesExist() {
 
         // ARRANGE
@@ -187,7 +218,7 @@ class CityRESTControllerTest {
     }
 
     @Test
-    void getCities_shouldReturnForbidden_whenIllegalArgument() {
+    void getCities_shouldReturnBadRequest_whenIllegalArgument() {
         // ARRANGE
         CityRESTController sut = new CityRESTController(service, provider);
         when(service.findAll()).thenThrow(new IllegalArgumentException());
@@ -196,7 +227,7 @@ class CityRESTControllerTest {
         ResponseEntity<List<ResponseCityDTO>> result = sut.getCities();
 
         // ASSERT
-        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
         assertNull(result.getBody());
     }
 

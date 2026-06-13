@@ -122,6 +122,23 @@ public class ListingRepositoryJpaImpl implements IListingRepository {
         return listOfPublicationSampleIds;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Listing> findByPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds) {
+
+        Objects.requireNonNull(publicationSampleIds, "List of PublicationSampleIds cannot be null");
+
+        List<Listing> allListingsWithSpecificPubIds = listingRepositoryJpa.findAllByItemsId(publicationSampleIds)
+                .stream()
+                .map(assembler::toDomain)
+                .toList();
+
+
+        return allListingsWithSpecificPubIds;
+    }
+
 
     // =========================================================================
     // Domain Operations
