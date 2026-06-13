@@ -89,20 +89,17 @@ class EditionAuthorizationPolicyTest {
     }
 
     @Test
-    void canFindByPublisherId_shouldReturnFalse_whenUserIsAdmin() {
+    void canFindByPublisherId_shouldReturnTrue_whenUserIsAdmin() {
 
-        // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
 
         when(user.getUserRoles())
                 .thenReturn(Set.of(UserRole.ADMIN));
 
-        // ACT
         boolean result = sut.canFindByPublisherId(user);
 
-        // ASSERT
-        assertFalse(result);
+        assertTrue(result);
     }
 
     @Test
@@ -143,20 +140,17 @@ class EditionAuthorizationPolicyTest {
     }
 
     @Test
-    void canFindByPublicationTypeId_shouldReturnFalse_whenUserIsAdmin() {
+    void canFindByPublicationTypeId_shouldReturnTrue_whenUserIsAdmin() {
 
-        // ARRANGE
         EditionAuthorizationPolicy sut = new EditionAuthorizationPolicy();
         User user = mock(User.class);
 
         when(user.getUserRoles())
                 .thenReturn(Set.of(UserRole.ADMIN));
 
-        // ACT
         boolean result = sut.canFindByPublicationTypeId(user);
 
-        // ASSERT
-        assertFalse(result);
+        assertTrue(result);
     }
 
     @Test
