@@ -10,6 +10,10 @@ export function BidModal({ isOpen, onClose, itemTitle, currentBid, buyoutPrice, 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (bidAmount > currentBid) {
+        if (buyoutPrice && bidAmount > buyoutPrice) {
+            setBidError(`Bid cannot exceed the buyout price`);
+            return;
+        }
         setBidError(null);
         await onSubmitBid(bidAmount, (error) => setBidError(error));
     }

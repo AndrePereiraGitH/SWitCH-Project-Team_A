@@ -123,4 +123,15 @@ describe("BidModal — Interactions", () => {
         expect(onClose).not.toHaveBeenCalled(); // onClose é controlado pelo pai
     });
 
+    test("does not call onSubmitBid if bid exceeds buyout price", async () => {
+        const onSubmitBid = vi.fn();
+        renderModal({ onSubmitBid, currentBid: 10, buyoutPrice: 25 });
+
+        const input = screen.getByRole("spinbutton");
+        fireEvent.change(input, { target: { value: "30" } });
+        fireEvent.submit(input.closest("form"));
+
+        expect(onSubmitBid).not.toHaveBeenCalled();
+        expect(await screen.findByText("Bid cannot exceed the buyout price")).toBeInTheDocument();
+    });
 });
