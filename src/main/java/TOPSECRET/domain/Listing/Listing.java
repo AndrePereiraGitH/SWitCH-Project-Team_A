@@ -38,7 +38,7 @@ public class Listing implements AggregateRoot<ListingId> {
     private final UserId _sellerId;
     private final List<Picture> _pictures;
     private final LocalDate _publicationDate;
-    private final ListingStatus _listingStatus;
+    private ListingStatus _listingStatus;
 
     // ============================================================
     // ============== CONSTRUCTOR =================================
@@ -93,7 +93,7 @@ public class Listing implements AggregateRoot<ListingId> {
      * from persistence.
      *
      * <p>This constructor is protected and intended for use by the domain factory only,
-     * via {@link ListingFactory#create(ListingId, String, List, SaleType, Price, String, UserId, List, LocalDate)}.
+     * via {@link ListingFactory#create(ListingId, String, List, SaleType, Price, String, UserId, List, LocalDate, ListingStatus)}.
      * Unlike the creation constructor, this does not generate a new identifier —
      * it uses the {@link ListingId} provided.
      *
@@ -175,6 +175,19 @@ public class Listing implements AggregateRoot<ListingId> {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Marks the current listing as sold.
+     * <p>
+     * This method transitions the internal state of the listing by setting
+     * its status to {@link ListingStatus#SOLD}.
+     *
+     * @return the current {@link Listing} instance updated to the sold state
+     */
+    public Listing markListingAsSold(){
+        _listingStatus = ListingStatus.SOLD;
+        return this;
     }
 
 

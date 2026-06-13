@@ -882,4 +882,46 @@ class ListingTest {
 
     }
 
+    // ========== markListingAsSold TESTS ==========
+
+    @Test
+    void markListingAsSold_shouldChangeStatusToSold() {
+        // Arrange
+        Listing validListing = listingFactory.create(
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                validPictures
+        );
+
+        // Act
+        validListing.markListingAsSold();
+
+        // Assert
+        assertEquals(ListingStatus.SOLD, validListing.getListingStatus(), "Listing status should be updated to SOLD.");
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnSameInstance() {
+        // Arrange
+        Listing validListing = listingFactory.create(
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                validPictures
+        );
+
+        // Act
+        Listing returnedListing = validListing.markListingAsSold();
+
+        // Assert
+        assertSame(validListing, returnedListing, "Method should return the same Listing instance to support method chaining.");
+    }
+
 }
