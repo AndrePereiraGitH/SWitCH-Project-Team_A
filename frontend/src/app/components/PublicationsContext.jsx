@@ -20,17 +20,12 @@ export function PublicationsProvider({ children }) {
         setLoading(true);
         setError(null);
         try {
-            const [notInLibRes, inLibRes] = await Promise.all([
-                fetch(`${BASE_URL}/publicationSamples/not-in-library?userId=${CURRENT_USER_ID}`),
-                fetch(`${BASE_URL}/publicationSamples/in-library?userId=${CURRENT_USER_ID}`),
-            ]);
-            if (!notInLibRes.ok) throw new Error(`GET not-in-library failed: ${notInLibRes.status}`);
+            const res = await fetch(
+                `${BASE_URL}/publicationSamples/my-publications?userId=${CURRENT_USER_ID}`
+            );
+            if (!res.ok) throw new Error(`GET my-publications failed: ${res.status}`);
 
-            const notInLib = await notInLibRes.json();
-            const inLib = inLibRes.ok ? await inLibRes.json() : [];
-
-            console.log("not-in-library count:", notInLib.length, notInLib);
-            console.log("in-library count:", inLib.length, inLib);
+            const pubs = await res.json();
 
             const enrich = (p) => ({
                 ...p,
@@ -40,10 +35,7 @@ export function PublicationsProvider({ children }) {
                 condition: prettifyCondition(p.condition),
             });
 
-            setPublications([
-                ...notInLib.map(enrich),
-                ...inLib.map(enrich),
-            ]);
+            setPublications(pubs.map(enrich));
         } catch (e) {
             console.error("[PublicationsContext] refresh failed:", e);
             setError(e.message);

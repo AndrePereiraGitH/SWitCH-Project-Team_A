@@ -432,7 +432,98 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findIdsByPublicationSampleIdIn()
+    //  findByPublicationSampleIdIn()
+    // =========================================================================
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnListings_whenMatchingPublicationSamplesExist() {
+        // Arrange
+        PublicationSampleId sampleId1 = mock(PublicationSampleId.class);
+        PublicationSampleId sampleId2 = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId1, sampleId2);
+
+        Listing listing1 = mock(Listing.class);
+        Listing listing2 = mock(Listing.class);
+        List<Listing> listings = List.of(listing1, listing2);
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(listings);
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertSame(listings, result);
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnEmptyList_whenNoListingsMatch() {
+        // Arrange
+        List<PublicationSampleId> sampleIds = List.of(mock(PublicationSampleId.class));
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(List.of());
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnBothDirectSaleAndAuctionListings() {
+        // Arrange
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId);
+
+        Listing directSaleListing = mock(Listing.class);
+        Listing auctionListing = mock(Listing.class);
+        List<Listing> listings = List.of(directSaleListing, auctionListing);
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(listings);
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertSame(listings, result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldThrowIllegalArgumentException_whenListIsNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findByPublicationSampleIdIn(null));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldThrowIllegalArgumentException_whenListIsEmpty() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findByPublicationSampleIdIn(List.of()));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnSingleListing_whenOnlyOneMatches() {
+        // Arrange
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId);
+
+        Listing listing = mock(Listing.class);
+        List<Listing> listings = List.of(listing);
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(listings);
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertSame(listings, result);
+        assertEquals(1, result.size());
+    }
+
+    // =========================================================================
+    //  findByAuctionAndPublicationSampleIdIn
     // =========================================================================
 
     @Test
