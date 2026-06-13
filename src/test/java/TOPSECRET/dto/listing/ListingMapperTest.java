@@ -24,164 +24,588 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for the {@link ListingMapper} class.
+ * <p>
+ * This test suite verifies the correct mapping of domain entities
+ * (e.g., Listing, BibliographicalData, Edition) to their corresponding
+ * Data Transfer Objects (DTOs). It also tests the conversion of raw
+ * strings into strongly-typed domain Value Objects.
+ * </p>
+ */
 class ListingMapperTest {
 
-    private final ListingMapper mapper = new ListingMapper();
-
-    // ============================================================
-    // --------------  toResponseDTO  -----------------------------
-    // ============================================================
-
     @Test
-    void toResponseDTO_shouldMapAllFieldsCorrectly() {
-
-        // arrange
-        Listing listing = mock(Listing.class);
-
-        ListingId listingId = mock(ListingId.class);
-        UserId sellerId = mock(UserId.class);
-
-        BibliographicalData data1 = mock(BibliographicalData.class);
-        BibliographicalData data2 = mock(BibliographicalData.class);
-
-        Price priceDouble = mock(Price.class);
-
-        Picture picture1 = mock(Picture.class);
-        Picture picture2 = mock(Picture.class);
-
-        LocalDate publicationDate = LocalDate.now();
-
-        when(listing.id()).thenReturn(listingId);
-        when(listingId.getId()).thenReturn("id1");
-
-        when(listing.getListingTitle()).thenReturn("listing title");
-
-        when(data1.getTitle()).thenReturn("data title 1");
-        when(data2.getTitle()).thenReturn("data title 1");
-
-        when(listing.getPrice()).thenReturn(priceDouble);
-
-        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(priceDouble.getPrice()).thenReturn(new BigDecimal("10.00"));
-
-        when(listing.getShortDescription()).thenReturn("short description");
-
-        when(listing.getSellerId()).thenReturn(sellerId);
-        when(sellerId.getUserId()).thenReturn("joao");
-
-        when(picture1.getPicture()).thenReturn("pic1.jpg");
-        when(picture2.getPicture()).thenReturn("pic2.jpg");
-        when(listing.getPictures()).thenReturn(List.of(picture1, picture2));
-
-        when(listing.getPublicationDate()).thenReturn(publicationDate);
-
-        // act
-
-        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, List.of());
-
-        // assert
-
-        assertEquals(result.getId(), listingId.getId());
-
-    }
-
-    @Test
-    void toResponseDTO_shouldMapBibliographicalDataTitlesCorrectly() {
-
+    void toResponseDTO_shouldMapId() {
         // Arrange
-        Listing listing = mock(Listing.class);
-
-        ListingId listingId = mock(ListingId.class);
-        UserId sellerId = mock(UserId.class);
-        Price price = mock(Price.class);
-        Picture picture = mock(Picture.class);
-
-        BibliographicalData data1 = mock(BibliographicalData.class);
-        BibliographicalData data2 = mock(BibliographicalData.class);
-
-        LocalDate publicationDate = LocalDate.now();
-
-        when(listing.id()).thenReturn(listingId);
-        when(listingId.getId()).thenReturn("id1");
-
-        when(listing.getListingTitle()).thenReturn("listing title");
-
-        when(data1.getTitle()).thenReturn("data title 1");
-        when(data2.getTitle()).thenReturn("data title 2");
-
-        when(listing.getPrice()).thenReturn(price);
-        when(price.getPrice()).thenReturn(new BigDecimal("10.00"));
-
-        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(listing.getShortDescription()).thenReturn("short description");
-
-        when(listing.getSellerId()).thenReturn(sellerId);
-        when(sellerId.getUserId()).thenReturn("joao");
-
-        when(picture.getPicture()).thenReturn("pic1.jpg");
-        when(listing.getPictures()).thenReturn(List.of(picture));
-
-        when(listing.getPublicationDate()).thenReturn(publicationDate);
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
 
         // Act
-        ListingResponseDTO result =
-                mapper.toResponseDTO(listing, List.of(data1, data2));
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
 
         // Assert
-        assertNotNull(result);
-        assertEquals("id1", result.getId());
+        assertEquals("listing-1", result.getId());
     }
 
-    // ============================================================
-    // --------------  toResponseExploreDTO  -----------------------------
-    // ============================================================
+    @Test
+    void toResponseDTO_shouldMapListingTitle() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
+
+        // Assert
+        assertEquals("Clean Code", result.getListingTitle());
+    }
 
     @Test
-    void toResponseExploreDTO_shouldMapListingToExploreResponseDTO() {
+    void toResponseDTO_shouldMapBibliographicalTitles() {
         // Arrange
-        Listing listing = mock(Listing.class);
-        ListingId listingId = mock(ListingId.class);
-        Price price = mock(Price.class);
-        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
-        GenreId genreId = mock(GenreId.class);
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
 
-        when(listing.id()).thenReturn(listingId);
-        when(listingId.getId()).thenReturn("listing-1");
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
 
-        when(listing.getListingTitle()).thenReturn("Clean Code");
+        // Assert
+        assertEquals(List.of("Clean Code Book"), result.getPublicationTitles());
+    }
 
-        when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
-        when(genreId.getID()).thenReturn("genre-1");
+    @Test
+    void toResponseDTO_shouldMapSaleType() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
 
-        when(listing.getPrice()).thenReturn(price);
-        when(price.getPrice()).thenReturn(new BigDecimal("25.00"));
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
 
-        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        // Assert
+        assertEquals(SaleType.DIRECT_SALE.toString(), result.getSaleType());
+    }
 
-        List<BibliographicalData> bd = List.of(bibliographicalData);
+    @Test
+    void toResponseDTO_shouldMapPrice() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
+
+        // Assert
+        assertEquals("24.99", result.getPrice());
+    }
+
+    @Test
+    void toResponseDTO_shouldMapShortDescription() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
+
+        // Assert
+        assertEquals("A book about clean code.", result.getDescription());
+    }
+
+    @Test
+    void toResponseDTO_shouldMapSellerId() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
+
+        // Assert
+        assertEquals("user-1", result.getSellerId());
+    }
+
+    @Test
+    void toResponseDTO_shouldMapPictures() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
+
+        // Assert
+        assertEquals(List.of("image.jpg"), result.getPictures());
+    }
+
+    @Test
+    void toResponseDTO_shouldMapPublicationDate() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+
+        // Act
+        ListingResponseDTO result = ListingMapper.toResponseDTO(listing, bibliographicalDatas);
+
+        // Assert
+        assertEquals(LocalDate.of(2024, 1, 10), result.getPublicationDate());
+    }
+
+    @Test
+    void toResponseExploreDTO_shouldMapId() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
         List<String> authors = List.of("Robert C. Martin");
         Condition condition = Condition.GOOD;
 
         // Act
-        ListingResponseExploreDTO result =
-                ListingMapper.toResponseExploreDTO(listing, bd, authors, condition);
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
 
         // Assert
         assertEquals("listing-1", result.getId());
+    }
+
+    @Test
+    void toResponseExploreDTO_shouldMapListingTitle() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
+
+        // Assert
         assertEquals("Clean Code", result.getListingTitle());
+    }
+
+    @Test
+    void toResponseExploreDTO_shouldMapAuthors() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
+
+        // Assert
         assertEquals(List.of("Robert C. Martin"), result.getAuthors());
+    }
+
+    @Test
+    void toResponseExploreDTO_shouldMapGenre() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
+
+        // Assert
         assertEquals(List.of("genre-1"), result.getGenre());
-        assertEquals("25.00", result.getPrice());
+    }
+
+    @Test
+    void toResponseExploreDTO_shouldMapPrice() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
+
+        // Assert
+        assertEquals("24.99", result.getPrice());
+    }
+
+    @Test
+    void toResponseExploreDTO_shouldMapCondition() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
+
+        // Assert
         assertEquals(Condition.GOOD.getDescription(), result.getCondition());
+    }
+
+    @Test
+    void toResponseExploreDTO_shouldMapSaleType() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
+
+        // Assert
         assertEquals(SaleType.DIRECT_SALE.toString(), result.getSaleType());
     }
 
-    // ============================================================
-    // --------------  toPublicationId  ---------------------------
-    // ============================================================
+    @Test
+    void toResponseExploreDTO_shouldMapPicture() {
+        // Arrange
+        Listing listing = mockListing();
+        List<BibliographicalData> bibliographicalDatas = List.of(mockBibliographicalData());
+        List<String> authors = List.of("Robert C. Martin");
+        Condition condition = Condition.GOOD;
+
+        // Act
+        ListingResponseExploreDTO result = ListingMapper.toResponseExploreDTO(listing, bibliographicalDatas, authors, condition);
+
+        // Assert
+        assertEquals("image.jpg", result.getPicture());
+    }
 
     @Test
-    void toPublicationIdShouldReturnPublicationSampleId() {
+    void toListingDetailsDTO_shouldMapId() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("listing-1", result.getId());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapListingTitle() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("Clean Code", result.getListingTitle());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapAuthors() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(List.of("Robert C. Martin"), result.getAuthors());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapGenre() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(List.of("Software"), result.getGenre());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapPrice() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("24.99", result.getPrice());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapPublicationDate() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(LocalDate.of(2024, 1, 10), result.getPublicationDate());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapCondition() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(Condition.GOOD.toString(), result.getCondition());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapSaleType() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(SaleType.DIRECT_SALE.toString(), result.getSaleType());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapPicture() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("image.jpg", result.getPicture());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapShortDescription() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("A book about clean code.", result.getShortDescription());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapSellerId() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("user-1", result.getSellerId());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapPublisher() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("Prentice Hall", result.getPublisher());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapIsbn() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals("9780132350884", result.getIsbn());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapYear() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(2008, result.getYear());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapPages() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(464, result.getPages());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapLanguage() {
+        // Arrange
+        ListingDetailsDTO result;
+
+        // Act
+        result = mockListingDetailsDTO();
+
+        // Assert
+        assertEquals(Locale.ENGLISH.getDisplayLanguage(), result.getLanguage());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseUnknownCondition_whenSampleIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+        List<PublicationSample> pubSamples = List.of();
+        List<BibliographicalData> bds = List.of();
+        List<Edition> editions = List.of();
+        List<Author> authors = List.of();
+        List<Genre> genres = List.of();
+        List<Publisher> publishers = List.of();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, pubSamples, bds, editions, authors, genres, publishers
+        );
+
+        // Assert
+        assertEquals("Unknown", result.getCondition());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseEmptyPicture_whenPicturesAreEmpty() {
+        // Arrange
+        Listing listing = mockListingWithoutPictures();
+        List<PublicationSample> pubSamples = List.of();
+        List<BibliographicalData> bds = List.of();
+        List<Edition> editions = List.of();
+        List<Author> authors = List.of();
+        List<Genre> genres = List.of();
+        List<Publisher> publishers = List.of();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, pubSamples, bds, editions, authors, genres, publishers
+        );
+
+        // Assert
+        assertEquals("", result.getPicture());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseDefaultPublisher_whenPublisherIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+        List<PublicationSample> pubSamples = List.of();
+        List<BibliographicalData> bds = List.of();
+        List<Edition> editions = List.of();
+        List<Author> authors = List.of();
+        List<Genre> genres = List.of();
+        List<Publisher> publishers = List.of();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, pubSamples, bds, editions, authors, genres, publishers
+        );
+
+        // Assert
+        assertEquals("N/A", result.getPublisher());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseDefaultIsbn_whenEditionIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+        List<PublicationSample> pubSamples = List.of();
+        List<BibliographicalData> bds = List.of();
+        List<Edition> editions = List.of();
+        List<Author> authors = List.of();
+        List<Genre> genres = List.of();
+        List<Publisher> publishers = List.of();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, pubSamples, bds, editions, authors, genres, publishers
+        );
+
+        // Assert
+        assertEquals("N/A", result.getIsbn());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseNullYear_whenEditionIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+        List<PublicationSample> pubSamples = List.of();
+        List<BibliographicalData> bds = List.of();
+        List<Edition> editions = List.of();
+        List<Author> authors = List.of();
+        List<Genre> genres = List.of();
+        List<Publisher> publishers = List.of();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, pubSamples, bds, editions, authors, genres, publishers
+        );
+
+        // Assert
+        assertNull(result.getYear());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseNullPages_whenEditionIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+        List<PublicationSample> pubSamples = List.of();
+        List<BibliographicalData> bds = List.of();
+        List<Edition> editions = List.of();
+        List<Author> authors = List.of();
+        List<Genre> genres = List.of();
+        List<Publisher> publishers = List.of();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, pubSamples, bds, editions, authors, genres, publishers
+        );
+
+        // Assert
+        assertNull(result.getPages());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldUseDefaultLanguage_whenEditionIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+        List<PublicationSample> pubSamples = List.of();
+        List<BibliographicalData> bds = List.of();
+        List<Edition> editions = List.of();
+        List<Author> authors = List.of();
+        List<Genre> genres = List.of();
+        List<Publisher> publishers = List.of();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, pubSamples, bds, editions, authors, genres, publishers
+        );
+
+        // Assert
+        assertEquals("N/A", result.getLanguage());
+    }
+
+    @Test
+    void toPublicationId_shouldReturnPublicationSampleId() {
         // Arrange
         String id = "PUB-001";
 
@@ -189,12 +613,8 @@ class ListingMapperTest {
         PublicationSampleId result = ListingMapper.toPublicationId(id);
 
         // Assert
-        assertEquals(id, result.getID());
+        assertEquals("PUB-001", result.getID());
     }
-
-    // ============================================================
-    // --------------  toListingId  -------------------------------
-    // ============================================================
 
     @Test
     void toListingId_shouldReturnListingId() {
@@ -205,12 +625,8 @@ class ListingMapperTest {
         ListingId result = ListingMapper.toListingId(id);
 
         // Assert
-        assertEquals(id, result.getId());
+        assertEquals("LISTING-001", result.getId());
     }
-
-    // ============================================================
-    // --------------  toGenreId  ---------------------------------
-    // ============================================================
 
     @Test
     void toGenreId_shouldReturnGenreId() {
@@ -221,12 +637,8 @@ class ListingMapperTest {
         GenreId result = ListingMapper.toGenreId(id);
 
         // Assert
-        assertEquals(id, result.getID());
+        assertEquals("GENRE-001", result.getID());
     }
-
-    // ============================================================
-    // --------------  toUserId  ----------------------------------
-    // ============================================================
 
     @Test
     void toUserId_shouldReturnUserId() {
@@ -237,15 +649,23 @@ class ListingMapperTest {
         UserId result = ListingMapper.toUserId(id);
 
         // Assert
-        assertEquals(id, result.getUserId());
+        assertEquals("USER-001", result.getUserId());
     }
 
-    // ============================================================
-    // --------------  toSaleType  --------------------------------
-    // ============================================================
+    @Test
+    void toPublisherId_shouldReturnPublisherId() {
+        // Arrange
+        String id = "PUBLISHER-001";
+
+        // Act
+        PublisherID result = ListingMapper.toPublisherId(id);
+
+        // Assert
+        assertEquals("PUBLISHER-001", result.getId());
+    }
 
     @Test
-    void toSaleTypeShouldReturnDirectSaleWhenValueIsDirectSale() {
+    void toSaleType_shouldReturnDirectSale() {
         // Arrange
         String saleType = "Direct Sale";
 
@@ -257,7 +677,7 @@ class ListingMapperTest {
     }
 
     @Test
-    void toSaleTypeShouldReturnAuctionWhenValueIsAuction() {
+    void toSaleType_shouldReturnAuction() {
         // Arrange
         String saleType = "Auction";
 
@@ -269,245 +689,252 @@ class ListingMapperTest {
     }
 
     @Test
-    void toSaleTypeShouldThrowExceptionWhenValueIsInvalid() {
+    void toSaleType_shouldThrowException_whenValueIsInvalid() {
         // Arrange
         String saleType = "Invalid";
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class,
-                () -> ListingMapper.toSaleType(saleType));
+        assertThrows(IllegalArgumentException.class, () -> ListingMapper.toSaleType(saleType));
     }
 
     @Test
-    void toSaleTypeShouldThrowExceptionWhenValueIsNull() {
+    void toSaleType_shouldThrowException_whenValueIsNull() {
         // Arrange
         String saleType = null;
 
         // Act & Assert
-        assertThrows(Exception.class,
-                () -> ListingMapper.toSaleType(saleType));
+        assertThrows(Exception.class, () -> ListingMapper.toSaleType(saleType));
     }
 
-    // ============================================================
-    // --------------  toPrice  -----------------------------------
-    // ============================================================
-
     @Test
-    void toPriceShouldReturnPriceWhenValueIsValidDecimal() {
+    void toPrice_shouldReturnPrice() {
         // Arrange
-        String price = "10.50";
+        String priceValue = "10.50";
 
         // Act
-        Price result = ListingMapper.toPrice(price);
+        Price result = ListingMapper.toPrice(priceValue);
 
         // Assert
         assertEquals(new BigDecimal("10.50"), result.getPrice());
     }
 
     @Test
-    void toPriceShouldThrowExceptionWhenValueIsInvalid() {
+    void toPrice_shouldThrowException_whenValueIsInvalid() {
         // Arrange
-        String price = "abc";
+        String invalidPrice = "abc";
 
         // Act & Assert
-        assertThrows(NumberFormatException.class,
-                () -> ListingMapper.toPrice(price));
+        assertThrows(NumberFormatException.class, () -> ListingMapper.toPrice(invalidPrice));
     }
 
     @Test
-    void toPriceShouldThrowExceptionWhenValueIsNull() {
+    void toPrice_shouldThrowException_whenValueIsNull() {
         // Arrange
-        String price = null;
+        String nullPrice = null;
 
         // Act & Assert
-        assertThrows(Exception.class,
-                () -> ListingMapper.toPrice(price));
+        assertThrows(Exception.class, () -> ListingMapper.toPrice(nullPrice));
     }
-
-    // ============================================================
-    // --------------  toPicture  ---------------------------------
-    // ============================================================
 
     @Test
     void toPicture_shouldReturnPicture() {
         // Arrange
-        String pictureValue = "image-url.jpg";
+        String pictureUrl = "image-url.jpg";
 
         // Act
-        Picture result = ListingMapper.toPicture(pictureValue);
+        Picture result = ListingMapper.toPicture(pictureUrl);
 
         // Assert
-        assertEquals(new Picture(pictureValue), result);
+        assertEquals(new Picture("image-url.jpg"), result);
     }
 
     @Test
     void toPicture_shouldThrowException_whenValueIsNull() {
         // Arrange
-        String pictureValue = null;
+        String nullPicture = null;
 
         // Act & Assert
-        assertThrows(Exception.class,
-                () -> ListingMapper.toPicture(pictureValue));
-    }
-    // ============================================================
-    // --------------  toPublisherId  ---------------------------------
-    // ============================================================
-
-    @Test
-    void toPublisherId_shouldReturn_PublisherId() {
-        // arrange
-        String publisherId = "publisherId";
-
-        // act
-        PublisherID result = ListingMapper.toPublisherId(publisherId);
-
-        // assert
-        assertEquals(new PublisherID(publisherId), result);
+        assertThrows(Exception.class, () -> ListingMapper.toPicture(nullPicture));
     }
 
     @Test
-    void toPublisherId_shouldThrow_whenPublisherIdIsNull() {
-        // act + assert
-        assertThrows(Exception.class, () -> ListingMapper.toPublisherId(null));
-    }
-
-    // ============================================================
-// --------------  toListingDetailsDTO  ------------------------
-// ============================================================
-
-    @Test
-    void toListingDetailsDTO_shouldMapAllFieldsCorrectly() {
+    void toPublisherId_shouldThrowException_whenValueIsNull() {
         // Arrange
+        String nullPublisherId = null;
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> ListingMapper.toPublisherId(nullPublisherId));
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldReturnBibliographicalDataId_whenIdIsValid() {
+        // Arrange
+        String validId = "BD-001";
+
+        // Act
+        BibliographicalDataId result = ListingMapper.toBibliographicalDataId(validId);
+
+        // Assert
+        assertEquals("BD-001", result.getID());
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldReturnEquivalentValueObject_whenIdIsValid() {
+        // Arrange
+        String validId = "BD-001";
+
+        // Act
+        BibliographicalDataId result = ListingMapper.toBibliographicalDataId(validId);
+
+        // Assert
+        assertEquals(new BibliographicalDataId("BD-001"), result);
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldThrowException_whenIdIsNull() {
+        // Arrange
+        String nullId = null;
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> ListingMapper.toBibliographicalDataId(nullId));
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldThrowException_whenIdIsBlank() {
+        // Arrange
+        String blankId = "   ";
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> ListingMapper.toBibliographicalDataId(blankId));
+    }
+
+    @Test
+    void toBibliographicalDataId_shouldThrowException_whenIdIsEmpty() {
+        // Arrange
+        String emptyId = "";
+
+        // Act & Assert
+        assertThrows(Exception.class, () -> ListingMapper.toBibliographicalDataId(emptyId));
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper Methods for Mocking
+    // -------------------------------------------------------------------------
+
+    private ListingDetailsDTO mockListingDetailsDTO() {
+        Listing listing = mockListing();
+        List<PublicationSample> samples = List.of(mockPublicationSample());
+        List<BibliographicalData> bds = List.of(mockBibliographicalData());
+        List<Edition> editions = List.of(mockEdition());
+        List<Author> authors = List.of(mockAuthor());
+        List<Genre> genres = List.of(mockGenre());
+        List<Publisher> publishers = List.of(mockPublisher());
+
+        return ListingMapper.toListingDetailsDTO(listing, samples, bds, editions, authors, genres, publishers);
+    }
+
+    private Listing mockListing() {
         Listing listing = mock(Listing.class);
         ListingId listingId = mock(ListingId.class);
-        UserId sellerId = mock(UserId.class);
         Price price = mock(Price.class);
+        UserId sellerId = mock(UserId.class);
         Picture picture = mock(Picture.class);
-
-        PublicationSample sample = mock(PublicationSample.class);
-        Edition edition = mock(Edition.class);
-        Publisher publisher = mock(Publisher.class);
-        Author author = mock(Author.class);
-        Genre genre = mock(Genre.class);
-
-        Code code = mock(Code.class);
-        PhysicalAttributes physicalAttributes = mock(PhysicalAttributes.class);
 
         when(listing.id()).thenReturn(listingId);
         when(listingId.getId()).thenReturn("listing-1");
-
         when(listing.getListingTitle()).thenReturn("Clean Code");
-
-        when(author.getName()).thenReturn("Robert C. Martin");
-        when(genre.getGenreType()).thenReturn("Software");
-
         when(listing.getPrice()).thenReturn(price);
         when(price.getPrice()).thenReturn(new BigDecimal("24.99"));
-
-        when(sample.getCondition()).thenReturn(Condition.GOOD);
-
+        when(listing.getPublicationDate()).thenReturn(LocalDate.of(2024, 1, 10));
         when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-
         when(picture.getPicture()).thenReturn("image.jpg");
         when(listing.getPictures()).thenReturn(List.of(picture));
-
         when(listing.getShortDescription()).thenReturn("A book about clean code.");
-
         when(listing.getSellerId()).thenReturn(sellerId);
         when(sellerId.getUserId()).thenReturn("user-1");
 
-        when(publisher.getName()).thenReturn("Prentice Hall");
-
-        when(edition.getCode()).thenReturn(code);
-        when(code.toString()).thenReturn("9780132350884");
-
-        when(edition.getEditionDate()).thenReturn(LocalDate.of(2008, 8, 1));
-
-        when(edition.getPhysicalAttributes()).thenReturn(physicalAttributes);
-        when(physicalAttributes.getNumberOfPages()).thenReturn(464);
-
-        when(edition.getEditionLanguage()).thenReturn(Locale.ENGLISH);
-
-        // Act
-        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
-                listing,
-                List.of(),
-                List.of(sample),
-                List.of(edition),
-                List.of(author),
-                List.of(genre),
-                List.of(publisher)
-        );
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("listing-1", result.getId());
-        assertEquals("Clean Code", result.getListingTitle());
-        assertEquals(List.of("Robert C. Martin"), result.getAuthors());
-        assertEquals(List.of("Software"), result.getGenre());
-        assertEquals(new BigDecimal("24.99"), result.getPrice());
-        assertEquals(Condition.GOOD.toString(), result.getCondition());
-        assertEquals(SaleType.DIRECT_SALE.toString(), result.getSaleType());
-        assertEquals("image.jpg", result.getPicture());
-        assertEquals("A book about clean code.", result.getShortDescription());
-        assertEquals("user-1", result.getSellerId());
-        assertEquals("Prentice Hall", result.getPublisher());
-        assertEquals("9780132350884", result.getIsbn());
-        assertEquals(2008, result.getYear());
-        assertEquals(464, result.getPages());
-        assertEquals(Locale.ENGLISH.getDisplayLanguage(), result.getLanguage());
+        return listing;
     }
 
-    @Test
-    void toListingDetailsDTO_shouldUseDefaultValues_whenOptionalDataIsMissing() {
-        // Arrange
+    private Listing mockListingWithoutPictures() {
         Listing listing = mock(Listing.class);
         ListingId listingId = mock(ListingId.class);
-        UserId sellerId = mock(UserId.class);
         Price price = mock(Price.class);
+        UserId sellerId = mock(UserId.class);
 
         when(listing.id()).thenReturn(listingId);
         when(listingId.getId()).thenReturn("listing-1");
-
-        when(listing.getListingTitle()).thenReturn("Listing title");
-
+        when(listing.getListingTitle()).thenReturn("Clean Code");
         when(listing.getPrice()).thenReturn(price);
-        when(price.getPrice()).thenReturn(new BigDecimal("10.00"));
-
-        when(listing.getSaleType()).thenReturn(SaleType.AUCTION);
+        when(price.getPrice()).thenReturn(new BigDecimal("24.99"));
+        when(listing.getPublicationDate()).thenReturn(LocalDate.of(2024, 1, 10));
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
         when(listing.getPictures()).thenReturn(List.of());
-        when(listing.getShortDescription()).thenReturn("Short description");
-
+        when(listing.getShortDescription()).thenReturn("A book about clean code.");
         when(listing.getSellerId()).thenReturn(sellerId);
-        when(sellerId.getUserId()).thenReturn("seller-1");
+        when(sellerId.getUserId()).thenReturn("user-1");
 
-        // Act
-        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
-                listing,
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of(),
-                List.of()
-        );
+        return listing;
+    }
 
-        // Assert
-        assertNotNull(result);
-        assertEquals("listing-1", result.getId());
-        assertEquals("Listing title", result.getListingTitle());
-        assertEquals(List.of(), result.getAuthors());
-        assertEquals(List.of(), result.getGenre());
-        assertEquals(new BigDecimal("10.00"), result.getPrice());
-        assertEquals("Unknown", result.getCondition());
-        assertEquals(SaleType.AUCTION.toString(), result.getSaleType());
-        assertEquals("", result.getPicture());
-        assertEquals("Short description", result.getShortDescription());
-        assertEquals("seller-1", result.getSellerId());
-        assertEquals("N/A", result.getPublisher());
-        assertEquals("N/A", result.getIsbn());
-        assertNull(result.getYear());
-        assertNull(result.getPages());
-        assertEquals("N/A", result.getLanguage());
+    private BibliographicalData mockBibliographicalData() {
+        BibliographicalData bibliographicalData = mock(BibliographicalData.class);
+        GenreId genreId = mock(GenreId.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+
+        when(bibliographicalData.getTitle()).thenReturn("Clean Code Book");
+        when(bibliographicalData.getGenres()).thenReturn(List.of(genreId));
+        when(genreId.getID()).thenReturn("genre-1");
+        when(bibliographicalData.id()).thenReturn(bdId);
+        when(bdId.toString()).thenReturn("bd-1");
+
+        return bibliographicalData;
+    }
+
+    private PublicationSample mockPublicationSample() {
+        PublicationSample sample = mock(PublicationSample.class);
+
+        when(sample.getCondition()).thenReturn(Condition.GOOD);
+
+        return sample;
+    }
+
+    private Edition mockEdition() {
+        Edition edition = mock(Edition.class);
+        Code code = mock(Code.class);
+        PhysicalAttributes physicalAttributes = mock(PhysicalAttributes.class);
+
+        when(edition.getCode()).thenReturn(code);
+        when(code.toString()).thenReturn("9780132350884");
+        when(edition.getEditionDate()).thenReturn(LocalDate.of(2008, 8, 1));
+        when(edition.getPhysicalAttributes()).thenReturn(physicalAttributes);
+        when(physicalAttributes.getNumberOfPages()).thenReturn(464);
+        when(edition.getEditionLanguage()).thenReturn(Locale.ENGLISH);
+
+        return edition;
+    }
+
+    private Author mockAuthor() {
+        Author author = mock(Author.class);
+
+        when(author.getName()).thenReturn("Robert C. Martin");
+
+        return author;
+    }
+
+    private Genre mockGenre() {
+        Genre genre = mock(Genre.class);
+
+        when(genre.getGenreType()).thenReturn("Software");
+
+        return genre;
+    }
+
+    private Publisher mockPublisher() {
+        Publisher publisher = mock(Publisher.class);
+
+        when(publisher.getName()).thenReturn("Prentice Hall");
+
+        return publisher;
     }
 }

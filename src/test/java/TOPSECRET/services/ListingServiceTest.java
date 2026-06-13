@@ -5,10 +5,13 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,6 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.AuthorizationServiceException;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -46,10 +51,30 @@ class ListingServiceTest {
     private IUserRepository userRepository;
 
     @Mock
+    private IPublicationSampleRepository publicationRepository;
+
+    @Mock
     private ListingAuthorizationPolicy policy;
 
     @InjectMocks
     private ListingService service;
+
+    @BeforeEach
+    void setUp() {
+        listingRepository = mock(IListingRepository.class);
+        listingFactory = mock(ListingFactory.class);
+        userRepository = mock(IUserRepository.class);
+        publicationRepository = mock(IPublicationSampleRepository.class);
+        policy = mock(ListingAuthorizationPolicy.class);
+
+        service = new ListingService(
+                listingRepository,
+                listingFactory,
+                userRepository,
+                publicationRepository,
+                policy
+        );
+    }
 
 
     // =========================================================================
@@ -61,7 +86,7 @@ class ListingServiceTest {
 
         //Act + Assert
         assertThrows(NullPointerException.class,
-                () -> new ListingService(null, listingFactory, userRepository, policy));
+                () -> new ListingService(null, listingFactory, userRepository, publicationRepository, policy));
     }
 
     @Test
@@ -69,7 +94,7 @@ class ListingServiceTest {
 
         //Act + Assert
         assertThrows(NullPointerException.class,
-                () -> new ListingService(listingRepository, null, userRepository, policy));
+                () -> new ListingService(listingRepository, null, userRepository, publicationRepository, policy));
     }
 
 
@@ -78,54 +103,81 @@ class ListingServiceTest {
     // =========================================================================
 
     @Test
-    void createAndSave_shouldReturnSavedListing() throws AccessDeniedException {
-        // Arrange
-        String title = "title";
-        List<PublicationSampleId> itemsId = List.of(mock(PublicationSampleId.class));
-        SaleType saleType  = mock(SaleType.class);
-        Price price = mock(Price.class);
-        String description = "description";
-        UserId sellerId = mock(UserId.class);
-        List<Picture> pictures = List.of(mock(Picture.class));
+    void createAndSave_shouldReturnSavedListing_whenUserCanCreateAndOwnsPublications() {
 
+        String title = "Listing title";
+        SaleType saleType = SaleType.DIRECT_SALE;
+        Price price = mock(Price.class);
+        String description = "Short description";
+        UserId sellerId = mock(UserId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Picture picture = mock(Picture.class);
+
+        User user = mock(User.class);
+        PublicationSample publicationSample = mock(PublicationSample.class);
         Listing createdListing = mock(Listing.class);
         Listing savedListing = mock(Listing.class);
-        User user = mock(User.class);
+
+        List<PublicationSampleId> itemsId = List.of(publicationSampleId);
+        List<Picture> pictures = List.of(picture);
 
         when(userRepository.findByID(sellerId)).thenReturn(Optional.of(user));
         when(policy.canCreateListing(user)).thenReturn(true);
+        when(publicationRepository.findById(publicationSampleId))
+                .thenReturn(Optional.of(publicationSample));
+        when(publicationSample.getOwnerID()).thenReturn(sellerId);
+        when(listingFactory.create(
+                title,
+                itemsId,
+                saleType,
+                price,
+                description,
+                sellerId,
+                pictures
+        )).thenReturn(createdListing);
+        when(listingRepository.save(createdListing)).thenReturn(savedListing);
 
-        when(listingFactory.create(title, itemsId, saleType, price, description, sellerId, pictures))
-                .thenReturn(createdListing);
+        Listing result = service.createAndSave(
+                title,
+                itemsId,
+                saleType,
+                price,
+                description,
+                sellerId,
+                pictures
+        );
 
-        when(listingRepository.save(createdListing))
-                .thenReturn(savedListing);
-
-        // Act
-        Listing result = service.createAndSave(title, itemsId, saleType, price, description, sellerId, pictures);
-
-        // Assert
-        assertSame(savedListing, result);
+        assertEquals(savedListing, result);
     }
 
     @Test
     void createAndSave_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
-        // Arrange
-        String title = "Lord Of the Rings";
-        List<PublicationSampleId> itemsId = List.of(mock(PublicationSampleId.class));
-        SaleType saleType = mock(SaleType.class);
+
+        String title = "Listing title";
+        SaleType saleType = SaleType.DIRECT_SALE;
         Price price = mock(Price.class);
-        String description = "description";
+        String description = "Short description";
         UserId sellerId = mock(UserId.class);
-        List<Picture> pictures = List.of(mock(Picture.class));
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Picture picture = mock(Picture.class);
 
         when(userRepository.findByID(sellerId)).thenReturn(Optional.empty());
 
-        // Act + Assert
-        assertThrows(EntityNotFoundException.class, () ->
-                service.createAndSave(title, itemsId, saleType, price, description, sellerId, pictures)
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> service.createAndSave(
+                        title,
+                        List.of(publicationSampleId),
+                        saleType,
+                        price,
+                        description,
+                        sellerId,
+                        List.of(picture)
+                )
         );
     }
+
+
 
     @Test
     void createAndSave_shouldThrowAccessDeniedException_whenUserCannotCreateListing() {
@@ -146,6 +198,73 @@ class ListingServiceTest {
         // Act + Assert
         assertThrows(AccessDeniedException.class, () ->
                 service.createAndSave(title, itemsId, saleType, price, description, sellerId, pictures)
+        );
+    }
+
+    @Test
+    void createAndSave_shouldThrowAccessDeniedException_whenPublicationIsNotOwnedByUser() {
+
+        String title = "Listing title";
+        SaleType saleType = SaleType.DIRECT_SALE;
+        Price price = mock(Price.class);
+        String description = "Short description";
+        UserId sellerId = mock(UserId.class);
+        UserId otherUserId = mock(UserId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Picture picture = mock(Picture.class);
+
+        User user = mock(User.class);
+        PublicationSample publicationSample = mock(PublicationSample.class);
+
+        when(userRepository.findByID(sellerId)).thenReturn(Optional.of(user));
+        when(policy.canCreateListing(user)).thenReturn(true);
+        when(publicationRepository.findById(publicationSampleId))
+                .thenReturn(Optional.of(publicationSample));
+        when(publicationSample.getOwnerID()).thenReturn(otherUserId);
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> service.createAndSave(
+                        title,
+                        List.of(publicationSampleId),
+                        saleType,
+                        price,
+                        description,
+                        sellerId,
+                        List.of(picture)
+                )
+        );
+    }
+
+    @Test
+    void createAndSave_shouldThrowEntityNotFoundException_whenPublicationDoesNotExist() {
+
+        String title = "Listing title";
+        SaleType saleType = SaleType.DIRECT_SALE;
+        Price price = mock(Price.class);
+        String description = "Short description";
+        UserId sellerId = mock(UserId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Picture picture = mock(Picture.class);
+
+        User user = mock(User.class);
+
+        when(userRepository.findByID(sellerId)).thenReturn(Optional.of(user));
+        when(policy.canCreateListing(user)).thenReturn(true);
+        when(publicationRepository.findById(publicationSampleId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> service.createAndSave(
+                        title,
+                        List.of(publicationSampleId),
+                        saleType,
+                        price,
+                        description,
+                        sellerId,
+                        List.of(picture)
+                )
         );
     }
 
@@ -313,7 +432,98 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findIdsByPublicationSampleIdIn()
+    //  findByPublicationSampleIdIn()
+    // =========================================================================
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnListings_whenMatchingPublicationSamplesExist() {
+        // Arrange
+        PublicationSampleId sampleId1 = mock(PublicationSampleId.class);
+        PublicationSampleId sampleId2 = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId1, sampleId2);
+
+        Listing listing1 = mock(Listing.class);
+        Listing listing2 = mock(Listing.class);
+        List<Listing> listings = List.of(listing1, listing2);
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(listings);
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertSame(listings, result);
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnEmptyList_whenNoListingsMatch() {
+        // Arrange
+        List<PublicationSampleId> sampleIds = List.of(mock(PublicationSampleId.class));
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(List.of());
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnBothDirectSaleAndAuctionListings() {
+        // Arrange
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId);
+
+        Listing directSaleListing = mock(Listing.class);
+        Listing auctionListing = mock(Listing.class);
+        List<Listing> listings = List.of(directSaleListing, auctionListing);
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(listings);
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertSame(listings, result);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldThrowIllegalArgumentException_whenListIsNull() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findByPublicationSampleIdIn(null));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldThrowIllegalArgumentException_whenListIsEmpty() {
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.findByPublicationSampleIdIn(List.of()));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnSingleListing_whenOnlyOneMatches() {
+        // Arrange
+        PublicationSampleId sampleId = mock(PublicationSampleId.class);
+        List<PublicationSampleId> sampleIds = List.of(sampleId);
+
+        Listing listing = mock(Listing.class);
+        List<Listing> listings = List.of(listing);
+
+        when(listingRepository.findByPublicationSampleIdIn(sampleIds)).thenReturn(listings);
+
+        // Act
+        List<Listing> result = service.findByPublicationSampleIdIn(sampleIds);
+
+        // Assert
+        assertSame(listings, result);
+        assertEquals(1, result.size());
+    }
+
+    // =========================================================================
+    //  findByAuctionAndPublicationSampleIdIn
     // =========================================================================
 
     @Test

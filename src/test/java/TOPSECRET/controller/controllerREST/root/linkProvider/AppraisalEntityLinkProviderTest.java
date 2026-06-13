@@ -5,6 +5,10 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 
 import java.util.List;
@@ -16,55 +20,151 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link AppraisalEntityLinkProvider}.
  *
- * <p>Validates HATEOAS link generation according to user permissions
- * and user existence.</p>
+ * <p>Validates HATEOAS link generation for both admin and public contexts,
+ * according to user permissions and user existence.</p>
  */
+@ExtendWith(MockitoExtension.class)
 class AppraisalEntityLinkProviderTest {
 
+    @Mock
+    private AppraisalEntityAuthorizationPolicy policy;
+    @Mock
+    private IUserRepository repository;
+
+    @InjectMocks
+    private AppraisalEntityLinkProvider sut;
+
+    // -------------------------------------------------------------------------
+    // getAdminLinks
+    // -------------------------------------------------------------------------
+
     @Test
-    void shouldReturnOneLinkWhenUserCanRegisterAppraisalEntity() {
-
+    void getAdminLinks_shouldReturnOneLink_whenUserCanRegisterAppraisalEntity() {
         // ARRANGE
-        AppraisalEntityAuthorizationPolicy policy = mock(AppraisalEntityAuthorizationPolicy.class);
-
-        IUserRepository repository = mock(IUserRepository.class);
-
-        AppraisalEntityLinkProvider sut =
-                new AppraisalEntityLinkProvider(
-                        policy,
-                        repository
-                );
-
         UserId userId = mock(UserId.class);
-
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canRegisterAppraisalEntity(user)).thenReturn(true);
 
         // ACT
-        List<Link> result = sut.getLinks(userId);
+        List<Link> result = sut.getAdminLinks(userId);
 
         // ASSERT
         assertEquals(1, result.size());
     }
 
     @Test
-    void shouldReturnRegisterAppraisalEntityRelationWhenUserCanRegister() {
-
+    void getAdminLinks_shouldReturnRegisterRelation_whenUserCanRegisterAppraisalEntity() {
         // ARRANGE
-        AppraisalEntityAuthorizationPolicy policy = mock(AppraisalEntityAuthorizationPolicy.class);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
 
-        IUserRepository repository = mock(IUserRepository.class);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(true);
 
-        AppraisalEntityLinkProvider sut =
-                new AppraisalEntityLinkProvider(
-                        policy,
-                        repository
-                );
+        // ACT
+        List<Link> result = sut.getAdminLinks(userId);
 
+        // ASSERT
+        assertEquals("register-appraisal-entity", result.get(0).getRel().value());
+    }
+
+    @Test
+    void getAdminLinks_shouldReturnEmptyList_whenUserCannotRegisterAppraisalEntity() {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = sut.getAdminLinks(userId);
+
+        // ASSERT
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getAdminLinks_shouldThrowIllegalArgumentException_whenUserDoesNotExist() {
+        // ARRANGE
         UserId userId = mock(UserId.class);
 
+        when(repository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.getAdminLinks(userId)
+        );
+    }
+
+    @Test
+    void getAdminLinks_shouldIncludeUserIdInExceptionMessage_whenUserDoesNotExist() {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        when(userId.toString()).thenReturn("user-999");
+        when(repository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT
+        IllegalArgumentException result = assertThrows(
+                IllegalArgumentException.class,
+                () -> sut.getAdminLinks(userId)
+        );
+
+        // ASSERT
+        assertTrue(result.getMessage().contains("user-999"));
+    }
+
+    // -------------------------------------------------------------------------
+    // getPublicLinks
+    // -------------------------------------------------------------------------
+
+    @Test
+    void getPublicLinks_shouldReturnTwoLinks() {
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getPublicLinks_shouldContainFindByIdRelation() {
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-by-id")));
+    }
+
+    @Test
+    void getPublicLinks_shouldContainFindAllRelation() {
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+    }
+
+    @Test
+    void getPublicLinks_shouldNeverReturnNull() {
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertNotNull(result);
+    }
+
+    // -------------------------------------------------------------------------
+    // getLinks
+    // -------------------------------------------------------------------------
+
+    @Test
+    void getLinks_shouldReturnPublicAndAdminLinks_whenUserCanRegister() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
@@ -74,52 +174,92 @@ class AppraisalEntityLinkProviderTest {
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertEquals("register-appraisal-entity", result.get(0).getRel().value());
+        assertEquals(3, result.size()); // 2 public + 1 admin
     }
 
     @Test
-    void shouldReturnEmptyListWhenUserCannotRegisterAppraisalEntity() {
-
+    void getLinks_shouldReturnOnlyPublicLinks_whenUserCannotRegister() throws Exception {
         // ARRANGE
-        AppraisalEntityAuthorizationPolicy policy = mock(AppraisalEntityAuthorizationPolicy.class);
-
-        IUserRepository repository = mock(IUserRepository.class);
-
-        AppraisalEntityLinkProvider sut =
-                new AppraisalEntityLinkProvider(
-                        policy,
-                        repository
-                );
-
         UserId userId = mock(UserId.class);
-
         User user = mock(User.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.of(user));
-
         when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
 
         // ACT
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals(2, result.size()); // 2 public + 0 admin
     }
 
     @Test
-    void shouldThrowExceptionWhenUserDoesNotExist() {
-
+    void getLinks_shouldContainFindByIdRelation_whenUserCannotRegister() throws Exception {
         // ARRANGE
-        AppraisalEntityAuthorizationPolicy policy = mock(AppraisalEntityAuthorizationPolicy.class);
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
 
-        IUserRepository repository = mock(IUserRepository.class);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
 
-        AppraisalEntityLinkProvider sut =
-                new AppraisalEntityLinkProvider(
-                        policy,
-                        repository
-                );
+        // ACT
+        List<Link> result = sut.getLinks(userId);
 
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-by-id")));
+    }
+
+    @Test
+    void getLinks_shouldContainFindAllRelation_whenUserCannotRegister() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+    }
+
+    @Test
+    void getLinks_shouldContainRegisterRelation_whenUserCanRegister() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(true);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("register-appraisal-entity")));
+    }
+
+    @Test
+    void getLinks_shouldNeverReturnNull() throws Exception {
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
+
+        // ACT
+        List<Link> result = sut.getLinks(userId);
+
+        // ASSERT
+        assertNotNull(result);
+    }
+
+    @Test
+    void getLinks_shouldThrowIllegalArgumentException_whenUserDoesNotExist() {
+        // ARRANGE
         UserId userId = mock(UserId.class);
 
         when(repository.findByID(userId)).thenReturn(Optional.empty());
@@ -129,34 +269,5 @@ class AppraisalEntityLinkProviderTest {
                 IllegalArgumentException.class,
                 () -> sut.getLinks(userId)
         );
-    }
-
-    @Test
-    void shouldThrowExceptionWithCorrectMessageWhenUserDoesNotExist() {
-
-        // ARRANGE
-        AppraisalEntityAuthorizationPolicy policy = mock(AppraisalEntityAuthorizationPolicy.class);
-
-        IUserRepository repository = mock(IUserRepository.class);
-
-        AppraisalEntityLinkProvider sut =
-                new AppraisalEntityLinkProvider(
-                        policy,
-                        repository
-                );
-
-        UserId userId = mock(UserId.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.empty());
-
-        // ACT
-        IllegalArgumentException result =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> sut.getLinks(userId)
-                );
-
-        // ASSERT
-        assertEquals("User not found", result.getMessage());
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -41,23 +40,11 @@ public class LibraryRepositoryJPAImpl implements ILibraryRepository {
         this._assembler = Objects.requireNonNull(_assembler, "assembler must not be null");
     }
 
-    /** {@inheritDoc} */
 
-    @Override
-    public Library getByUserId(UserId userId) throws InstanceNotFoundException {
-        if (userId == null) {
-            throw new IllegalArgumentException("UserId cannot be null");
-        }
 
-        LibraryDM libraryDM = _jpaRepository.findByUserId(userId)
-                .orElseThrow(() ->
-                        new InstanceNotFoundException("This user does not have a library")
-                );
-
-        return _assembler.toDomain(libraryDM);
-    }
-
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Transactional
     @Override
     public Library save(Library library) throws InstanceAlreadyExistsException {

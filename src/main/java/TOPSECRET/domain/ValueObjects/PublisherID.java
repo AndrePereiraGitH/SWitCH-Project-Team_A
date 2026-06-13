@@ -52,8 +52,4 @@ public class PublisherID implements DomainID {
     public int hashCode() {
         return Objects.hash(_publisherID);
     }
-
-    public String getPublisherId() {
-        return _publisherID;
-    }
 }

@@ -5,6 +5,8 @@ import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
+import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
+import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
@@ -27,6 +29,7 @@ public class ListingService {
     private final IListingRepository listingRepository;
     private final ListingFactory listingFactory;
     private final IUserRepository userRepository;
+    private final IPublicationSampleRepository publicationSampleRepository;
     private final ListingAuthorizationPolicy policy;
 
     /**
@@ -35,13 +38,13 @@ public class ListingService {
      * @param listingRepository the repository used to persist listings; must not be {@code null}
      * @param listingFactory    the factory used to create listing instances; must not be {@code null}
      */
-    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, ListingAuthorizationPolicy policy) {
+    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, IPublicationSampleRepository publicationSampleRepository, ListingAuthorizationPolicy policy) {
         this.listingRepository = Objects.requireNonNull(listingRepository, "listingRepository must not be null");
         this.listingFactory = Objects.requireNonNull(listingFactory, "listingFactory must not be null");
         this.userRepository = Objects.requireNonNull(userRepository, "User repository cannot be null");
+        this.publicationSampleRepository = publicationSampleRepository;
         this.policy = Objects.requireNonNull(policy, "Listing Authorization Policy cannot be null");
     }
-
 
     /**
      * Creates a new {@link Listing} from the supplied parameters and persists it.
@@ -59,19 +62,34 @@ public class ListingService {
                                  SaleType saleType,
                                  Price price,
                                  String shortDescription,
-                                 UserId userId,
+                                 UserId sellerId,
                                  List<Picture> pictures
                                  ) throws AccessDeniedException {
 
-        User user = userRepository.findByID(userId).orElseThrow(() -> new EntityNotFoundException("User not found id = " + userId));
+        User user = userRepository.findByID(sellerId).orElseThrow(() -> new EntityNotFoundException("User not found id = " + sellerId));
 
         if (!policy.canCreateListing(user)) {
             throw new AccessDeniedException("You do not have permissions to create Listing");
         }
 
-        Listing createdListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, userId, pictures);
+        if (!verifyPublicationsOwner(itemsId, sellerId)) {
+            throw new AccessDeniedException("You just have permissions to sell your own Publications");
+        }
+
+        Listing createdListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);
 
         return listingRepository.save(createdListing);
+    }
+
+    private boolean verifyPublicationsOwner(List<PublicationSampleId> itemIds, UserId sellerId) {
+
+        for (PublicationSampleId itemId : itemIds) {
+           PublicationSample pub = publicationSampleRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
+           if (!pub.getOwnerID().equals(sellerId) ){
+               return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -128,6 +146,30 @@ public class ListingService {
             throw new IllegalArgumentException("publicationSamplesIds cannot be null");
         }
         return listingRepository.findIdsByPublicationSampleIdIn(publicationSamplesIds);
+    }
+
+    /**
+     * Retrieves all listings whose item list contains any of the given
+     * publication sample identifiers, regardless of sale type.
+     *
+     * <p>Both direct-sale and auction listings are included in the result.
+     * Use this method when filtering listings by a specific publication
+     * across all sale types.</p>
+     *
+     * @param publicationSamplesIds the list of publication sample identifiers to filter by;
+     *                              must not be {@code null} or empty
+     * @return a list of {@link Listing} instances matching any of the given identifiers;
+     *         never {@code null}, may be empty
+     * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null} or empty
+     */
+    public List<Listing> findByPublicationSampleIdIn(List<PublicationSampleId> publicationSamplesIds) {
+        if (publicationSamplesIds == null || publicationSamplesIds.isEmpty()) {
+            throw new IllegalArgumentException("publicationSamplesIds cannot be null");
+        }
+
+        List<Listing> allListingsWithSpecificPubIds = listingRepository.findByPublicationSampleIdIn(publicationSamplesIds);
+
+        return allListingsWithSpecificPubIds;
     }
 
     /**
