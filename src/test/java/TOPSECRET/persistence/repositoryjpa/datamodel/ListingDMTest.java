@@ -1,5 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +42,7 @@ class ListingDMTest {
     private PublicationSampleId pubId_2;
     private UserId userId;
     private LocalDate date;
+    private ListingStatus listingStatus;
 
     @BeforeEach
     void setup() {
@@ -50,6 +53,7 @@ class ListingDMTest {
         severalItemList = List.of(pubId_1, pubId_2);
         userId = mock(UserId.class);
         date = LocalDate.now();
+        listingStatus = ListingStatus.ACTIVE;
     }
 
     // =========================================================================
@@ -60,9 +64,17 @@ class ListingDMTest {
     void shouldCreateListingWithOneItem() {
 
         // Act
-        ListingDM dm = new ListingDM(listingId, description,
-                oneItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                oneItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Assert
         assertNotNull(dm);
@@ -86,9 +98,16 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(null, description, oneItemList,
-                        userId, SaleType.DIRECT_SALE, title,
-                        pictures, price,date));
+                new ListingDM(null,
+                        description,
+                        oneItemList,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        pictures,
+                        price,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -96,9 +115,17 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, null, oneItemList,
-                        userId, SaleType.DIRECT_SALE, title,
-                        pictures, price,date));
+                new ListingDM(
+                        listingId,
+                        null,
+                        oneItemList,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        pictures,
+                        price,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -106,9 +133,16 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, description, null,
-                        userId, SaleType.DIRECT_SALE, title,
-                        pictures, price,date));
+                new ListingDM(
+                        listingId,
+                        description,
+                        null,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        pictures,
+                        price,date,
+                        listingStatus));
     }
 
     @Test
@@ -116,9 +150,17 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, description, oneItemList,
-                        null, SaleType.DIRECT_SALE, title,
-                        pictures, price,date));
+                new ListingDM(
+                        listingId,
+                        description,
+                        oneItemList,
+                        null,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        pictures,
+                        price,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -126,9 +168,17 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, description, oneItemList,
-                        userId, null, title,
-                        pictures, price,date));
+                new ListingDM(
+                        listingId,
+                        description,
+                        oneItemList,
+                        userId,
+                        null,
+                        title,
+                        pictures,
+                        price,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -136,9 +186,17 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, description, oneItemList,
-                        userId, SaleType.DIRECT_SALE, null,
-                        pictures, price,date));
+                new ListingDM(
+                        listingId,
+                        description,
+                        oneItemList,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        null,
+                        pictures,
+                        price,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -146,9 +204,17 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, description, oneItemList,
-                        userId, SaleType.DIRECT_SALE, title,
-                        null, price,date));
+                new ListingDM(
+                        listingId,
+                        description,
+                        oneItemList,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        null,
+                        price,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -156,9 +222,17 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, description, oneItemList,
-                        userId, SaleType.DIRECT_SALE, title,
-                        pictures, null,date));
+                new ListingDM(
+                        listingId,
+                        description,
+                        oneItemList,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        pictures,
+                        null,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -166,9 +240,35 @@ class ListingDMTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new ListingDM(listingId, description, oneItemList,
-                        userId, SaleType.DIRECT_SALE, title,
-                        pictures, price,null));
+                new ListingDM(
+                        listingId,
+                        description,
+                        oneItemList,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        pictures,
+                        price,
+                        null,
+                        listingStatus));
+    }
+
+    @Test
+    void shouldThrowWhenListingStatusIsNull() {
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () ->
+                new ListingDM(
+                        listingId,
+                        description,
+                        oneItemList,
+                        userId,
+                        SaleType.DIRECT_SALE,
+                        title,
+                        pictures,
+                        price,
+                        date,
+                        null));
     }
 
     // =========================================================================
@@ -178,9 +278,17 @@ class ListingDMTest {
     @Test
     void getListingId_shouldReturnListingId() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         ListingId result = dm.getListingId();
@@ -192,9 +300,17 @@ class ListingDMTest {
     @Test
     void getDescription_shouldReturnDescription() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price,date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         String result = dm.getShortDescription();
@@ -206,9 +322,17 @@ class ListingDMTest {
     @Test
     void getUserId_shouldReturnUserId() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         UserId result = dm.getSellerId();
@@ -220,9 +344,17 @@ class ListingDMTest {
     @Test
     void getSaleType_shouldReturnSaleType() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         SaleType result = dm.getSaleType();
@@ -234,9 +366,17 @@ class ListingDMTest {
     @Test
     void getTitle_shouldReturnTitle() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         String result = dm.getListingTitle();
@@ -248,9 +388,17 @@ class ListingDMTest {
     @Test
     void getPictures_shouldReturnPictures() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         List<String> result = dm.getPictures();
@@ -262,9 +410,17 @@ class ListingDMTest {
     @Test
     void getPrice_shouldReturnPrice() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         String result = dm.getPrice();
@@ -277,9 +433,17 @@ class ListingDMTest {
     @Test
     void getItemsId_shouldReturnItemsId() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         List<PublicationSampleId> result = dm.getItemsId();
@@ -291,14 +455,44 @@ class ListingDMTest {
     @Test
     void getPublicationDate_shouldReturnDate() {
         // Arrange
-        ListingDM dm = new ListingDM(listingId, description,
-                severalItemList, userId, SaleType.DIRECT_SALE, title,
-                pictures, price, date);
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
 
         // Act
         LocalDate result = dm.getPublicationDate();
 
         // Assert
         assertEquals(date, result);
+    }
+
+    @Test
+    void getListingStatus_shouldReturnStatus() {
+        // Arrange
+        ListingDM dm = new ListingDM(
+                listingId,
+                description,
+                severalItemList,
+                userId,
+                SaleType.DIRECT_SALE,
+                title,
+                pictures,
+                price,
+                date,
+                listingStatus);
+
+        // Act
+        ListingStatus result = dm.getListingStatus();
+
+        // Assert
+        assertEquals(listingStatus, result);
     }
 }

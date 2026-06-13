@@ -1,6 +1,7 @@
 package TOPSECRET.domain.Listing;
 
 import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 
@@ -37,6 +38,7 @@ public class Listing implements AggregateRoot<ListingId> {
     private final UserId _sellerId;
     private final List<Picture> _pictures;
     private final LocalDate _publicationDate;
+    private final ListingStatus _listingStatus;
 
     // ============================================================
     // ============== CONSTRUCTOR =================================
@@ -82,6 +84,7 @@ public class Listing implements AggregateRoot<ListingId> {
         _sellerId = validateSellerId(sellerId);
         _pictures = List.copyOf(validatePictures(pictures));
         _publicationDate = LocalDate.now();
+        _listingStatus = ListingStatus.ACTIVE;
 
     }
 
@@ -116,7 +119,8 @@ public class Listing implements AggregateRoot<ListingId> {
                       String shortDescription,
                       UserId sellerId,
                       List<Picture> pictures,
-                      LocalDate publicationDate) {
+                      LocalDate publicationDate,
+                      ListingStatus listingStatus) {
 
         _listingId = Objects.requireNonNull(listingId, "Listing ID cannot be null.");
         _listingTitle = validateTitle(listingTitle);
@@ -127,15 +131,12 @@ public class Listing implements AggregateRoot<ListingId> {
         _sellerId = validateSellerId(sellerId);
         _pictures = List.copyOf(validatePictures(pictures));
         _publicationDate = Objects.requireNonNull(publicationDate, "Publication date cannot be null.");
+        _listingStatus = Objects.requireNonNull(listingStatus, "Listing status cannot be null.");
     }
 
     // ============================================================
     // ================= BUSINESS METHODS =========================
     // ============================================================
-
-    // TODO: validate PublicationSample state in Application Layer
-    // With DDD (and the use of IDs to communicate between aggregates) the following methods don't apply (they should be on
-    // the application layer, but we don't have it yet)
 
 
     /**
@@ -212,6 +213,10 @@ public class Listing implements AggregateRoot<ListingId> {
 
     public LocalDate getPublicationDate() {
         return _publicationDate;
+    }
+
+    public ListingStatus getListingStatus() {
+        return _listingStatus;
     }
 
     @Override

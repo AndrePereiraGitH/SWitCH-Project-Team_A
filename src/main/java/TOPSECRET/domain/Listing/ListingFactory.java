@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Listing;
 
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.springframework.stereotype.Service;
@@ -69,8 +70,9 @@ public class ListingFactory {
             String shortDescription,
             UserId sellerId,
             List<Picture> pictures,
-            LocalDate publicationDate) {
+            LocalDate publicationDate,
+            ListingStatus listingStatus) {
 
-        return new Listing(listingId, listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures, publicationDate);
+        return new Listing(listingId, listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures, publicationDate, listingStatus);
     }
 }

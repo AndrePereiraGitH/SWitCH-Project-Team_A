@@ -60,7 +60,8 @@ public class ListingAssembler {
                 listing.getListingTitle(),
                 convertPicturesToDM(listing.getPictures()),
                 listing.getPrice().getPrice().toPlainString(),
-                listing.getPublicationDate());
+                listing.getPublicationDate(),
+                listing.getListingStatus());
 
         return listingDM;
     }
@@ -89,7 +90,8 @@ public class ListingAssembler {
                 dm.getShortDescription(),
                 dm.getSellerId(),
                 convertPicturesToDomain(dm.getPictures()),
-                dm.getPublicationDate()
+                dm.getPublicationDate(),
+                dm.getListingStatus()
         );
 
         return listing;

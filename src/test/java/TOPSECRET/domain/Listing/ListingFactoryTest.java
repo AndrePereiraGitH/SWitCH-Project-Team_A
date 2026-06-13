@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Listing;
 
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
@@ -62,7 +63,14 @@ class ListingFactoryTest {
             ListingFactory listingFactory = new ListingFactory();
 
             // act
-            Listing listing = listingFactory.create(listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures);
+            Listing listing = listingFactory.create(
+                    listingTitle,
+                    itemsIdList,
+                    saleType,
+                    listingPrice,
+                    shortDescription,
+                    sellerId,
+                    pictures);
 
             // assert
             assertNotNull(listing);
@@ -89,6 +97,7 @@ class ListingFactoryTest {
         UserId sellerId = mock(UserId.class);
         Picture pic = mock(Picture.class);
         List<Picture> pictures = List.of(pic);
+        ListingStatus listingStatus = ListingStatus.ACTIVE;
 
         try (MockedConstruction<Listing> mocked =
                      mockConstruction(Listing.class, (mock, context) -> {
@@ -98,7 +107,16 @@ class ListingFactoryTest {
             ListingFactory listingFactory = new ListingFactory();
 
             // act
-            Listing listing = listingFactory.create(listingId,listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures, LocalDate.now());
+            Listing listing = listingFactory.create(
+                    listingId,listingTitle,
+                    itemsIdList,
+                    saleType,
+                    listingPrice,
+                    shortDescription,
+                    sellerId,
+                    pictures,
+                    LocalDate.now(),
+                    listingStatus);
 
             // assert
             assertNotNull(listing);

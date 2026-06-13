@@ -1,5 +1,6 @@
 package TOPSECRET.persistence.repositoryjpa.datamodel;
 
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.*;
@@ -69,6 +70,9 @@ public class ListingDM {
     @Column(name = "publication_date")
     private LocalDate publicationDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "listing_status", nullable = false)
+    private ListingStatus listingStatus;
 
 
     /**
@@ -92,7 +96,8 @@ public class ListingDM {
                      String listingTitle,
                      List<String> pictures,
                      String price,
-                     LocalDate publicationDate) {
+                     LocalDate publicationDate,
+                     ListingStatus listingStatus) {
 
         this.listingId = Objects.requireNonNull(listingId);
         this.shortDescription = Objects.requireNonNull(shortDescription);
@@ -103,5 +108,6 @@ public class ListingDM {
         this.pictures = Objects.requireNonNull(pictures);
         this.price = Objects.requireNonNull(price);
         this.publicationDate = Objects.requireNonNull(publicationDate);
+        this.listingStatus = Objects.requireNonNull(listingStatus);
     }
 }
