@@ -9,6 +9,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
@@ -146,6 +147,42 @@ class ListingRESTControllerTest {
 
             // Assert
             assertSame(dto, response.getBody());
+        }
+    }
+
+    @Test
+    void createListing_shouldAddAuctionLinks_whenSaleTypeIsAuction() throws Exception {
+        // Arrange
+        String userId = "user-1";
+        ListingRequestDTO request = ValidCreateRequest();
+        UserId userIdVO = mock(UserId.class);
+        PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
+        Price price = mock(Price.class);
+        Picture picture = mock(Picture.class);
+        Listing listing = fullListingGraphDouble();
+
+        when(listing.getSaleType()).thenReturn(SaleType.AUCTION);
+
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+
+        when(listingService.createAndSave(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(listing);
+
+        when(listingLinkProvider.getPublicLinks()).thenReturn(List.of());
+        when(listingLinkProvider.getAuthenticatedUserLinks(userIdVO)).thenReturn(List.of());
+        when(listingLinkProvider.getAuctionLinks(userIdVO)).thenReturn(List.of(Link.of("/auction")));
+        when(dto.add(any(Link.class))).thenReturn(dto);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            createListingMapper(mockedMapper, userId, userIdVO, publicationSampleId, price, picture);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.createListing(request, userId);
+
+            // Assert
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            verify(listingLinkProvider).getAuctionLinks(userIdVO); // Kills the surviving AUCTION conditional
         }
     }
 
@@ -374,8 +411,8 @@ class ListingRESTControllerTest {
                     anyList(),
                     anyList(),
                     anyList(),
-                    argThat(list -> !list.isEmpty()),
-                    any() // ADDED 8TH ARGUMENT
+                    argThat(list -> !list.isEmpty()), // 7th arg is publishers
+                    any()
             )).thenReturn(dto);
 
             // Act
@@ -716,6 +753,9 @@ class ListingRESTControllerTest {
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
+            mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(
+                    eq(listing), anyList(), anyList(), anyList(), anyList(), argThat(genres -> !genres.isEmpty()), anyList(), any()
+            ));
         }
     }
 
@@ -737,6 +777,10 @@ class ListingRESTControllerTest {
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
+            // Fixing arg positions: 5th arg is authors
+            mockedMapper.verify(() -> ListingMapper.toListingDetailsDTO(
+                    eq(listing), anyList(), anyList(), anyList(), argThat(authors -> !authors.isEmpty()), anyList(), anyList(), any()
+            ));
         }
     }
 
@@ -1092,7 +1136,7 @@ class ListingRESTControllerTest {
                     anyList(),
                     anyList(),
                     anyList(),
-                    argThat(genres -> !genres.isEmpty()),
+                    argThat(genres -> !genres.isEmpty()), // 6th arg is genres
                     anyList(),
                     any()
             ));
@@ -1119,8 +1163,8 @@ class ListingRESTControllerTest {
                     eq(listing),
                     anyList(),
                     anyList(),
-                    argThat(authors -> !authors.isEmpty()),
                     anyList(),
+                    argThat(authors -> !authors.isEmpty()), // 5th arg is authors
                     anyList(),
                     anyList(),
                     any()
@@ -1293,6 +1337,10 @@ class ListingRESTControllerTest {
 
         when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
 
+        // Mock to cover the `getBuyer()` conditional logic
+        when(listing.getBuyerId()).thenReturn(buyerIdVO);
+        when(userService.findByID(buyerIdVO)).thenReturn(mock(User.class));
+
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
         when(listingService.markListingAsSold(listingIdVO, buyerIdVO)).thenReturn(listing);
@@ -1322,6 +1370,10 @@ class ListingRESTControllerTest {
         Listing listing = fullListingGraphDouble();
 
         when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        // Mock to cover the `getBuyer()` conditional logic
+        when(listing.getBuyerId()).thenReturn(buyerIdVO);
+        when(userService.findByID(buyerIdVO)).thenReturn(mock(User.class));
 
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
@@ -1658,7 +1710,6 @@ class ListingRESTControllerTest {
             Listing listing,
             ListingDetailsDTO dto
     ) {
-        // ADDED 8TH ARGUMENT (any()) FOR THE BUYER
         mockedMapper.when(() -> ListingMapper.toListingDetailsDTO(
                 eq(listing),
                 anyList(),
