@@ -44,6 +44,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ListingRESTControllerTest {
 
+    // =========================================================================
+    // MOCKS & DEPENDENCIES
+    // =========================================================================
+
     @Mock
     private BibliographicalDataService biblioDataService;
 
@@ -70,6 +74,10 @@ class ListingRESTControllerTest {
 
     @InjectMocks
     private ListingRESTController controller;
+
+    // =========================================================================
+    // TESTS: CREATE LISTING (POST)
+    // =========================================================================
 
     @Test
     void createListing_shouldReturnCreatedStatus_whenListingIsCreated() throws Exception {
@@ -248,6 +256,10 @@ class ListingRESTControllerTest {
         }
     }
 
+    // =========================================================================
+    // TESTS: FIND BY ID (GET)
+    // =========================================================================
+
     @Test
     void findById_shouldReturnOkStatus_whenListingExists() throws Exception {
         // Arrange
@@ -369,6 +381,10 @@ class ListingRESTControllerTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
     }
+
+    // =========================================================================
+    // TESTS: FIND ALL (GET)
+    // =========================================================================
 
     @Test
     void findAll_shouldReturnOkStatus_whenListingsExist() throws Exception {
@@ -497,6 +513,10 @@ class ListingRESTControllerTest {
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
+    // =========================================================================
+    // TESTS: FIND BY PUBLICATION (GET)
+    // =========================================================================
 
     @Test
     void findListingsByPublication_shouldReturnOkStatus_whenListingsExist() throws Exception {
@@ -716,6 +736,10 @@ class ListingRESTControllerTest {
         }
     }
 
+    // =========================================================================
+    // TESTS: FIND DIRECT SALE BY GENRE (GET)
+    // =========================================================================
+
     @Test
     void getAllDirectSaleByGenre_shouldReturnOkStatus_whenListingsExist() throws Exception {
         // Arrange
@@ -862,9 +886,9 @@ class ListingRESTControllerTest {
         }
     }
 
-    // ============================================================================
-    // --------------  findListingsByGenre (US062)  -------------------------------
-    // ============================================================================
+    // =========================================================================
+    // TESTS: FIND ALL BY GENRE (GET)
+    // =========================================================================
 
     @Test
     void findListingsByGenre_shouldReturnOkStatus_whenListingsExist() throws Exception {
@@ -1098,8 +1122,9 @@ class ListingRESTControllerTest {
         }
     }
 
-
-
+    // =========================================================================
+    // TESTS: FIND DIRECT SALE BY PUBLISHER (GET)
+    // =========================================================================
 
     @Test
     void getAllDirectSaleByPublisher_shouldReturnOkStatus_whenListingsExist() throws Exception {
@@ -1247,6 +1272,207 @@ class ListingRESTControllerTest {
         }
     }
 
+    // =========================================================================
+    // TESTS: MARK LISTING AS SOLD (PATCH)
+    // =========================================================================
+
+    @Test
+    void markListingAsSold_shouldReturnOk_whenSuccessful() throws Exception {
+        // Arrange
+        String listingIdStr = "listing-1";
+        String buyerIdStr = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId buyerIdVO = mock(UserId.class);
+        Listing listing = fullListingGraphDouble();
+
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+
+        when(listingService.markListingAsSold(listingIdVO, buyerIdVO)).thenReturn(listing);
+
+        links(dto, buyerIdVO);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(buyerIdStr)).thenReturn(buyerIdVO);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnOkBody_whenSuccessful() throws Exception {
+        // Arrange
+        String listingIdStr = "listing-1";
+        String buyerIdStr = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId buyerIdVO = mock(UserId.class);
+        Listing listing = fullListingGraphDouble();
+
+        when(listing.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
+
+        when(listingService.markListingAsSold(listingIdVO, buyerIdVO)).thenReturn(listing);
+
+        links(dto, buyerIdVO);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(buyerIdStr)).thenReturn(buyerIdVO);
+            toDetailsDTODouble(mockedMapper, listing, dto);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertSame(dto, response.getBody());
+        }
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnBadRequest_whenIdIsInvalid() {
+        // Arrange
+        String listingIdStr = "invalid";
+        String buyerIdStr = "user-2";
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr))
+                    .thenThrow(new IllegalArgumentException("invalid id"));
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnForbidden_whenBuyerIsSeller() {
+        // Arrange
+        String listingIdStr = "listing-1";
+        String buyerIdStr = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId buyerIdVO = mock(UserId.class);
+
+        when(listingService.markListingAsSold(listingIdVO, buyerIdVO))
+                .thenThrow(new AccessDeniedException("You cannot buy your own listing"));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(buyerIdStr)).thenReturn(buyerIdVO);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnForbidden_whenPolicyDenied() {
+        // Arrange
+        String listingIdStr = "listing-1";
+        String buyerIdStr = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId buyerIdVO = mock(UserId.class);
+
+        when(listingService.markListingAsSold(listingIdVO, buyerIdVO))
+                .thenThrow(new AccessDeniedException("You do not have permissions to buy this listing"));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(buyerIdStr)).thenReturn(buyerIdVO);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnNotFound_whenListingDoesNotExist() {
+        // Arrange
+        String listingIdStr = "listing-1";
+        String buyerIdStr = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId buyerIdVO = mock(UserId.class);
+
+        when(listingService.markListingAsSold(listingIdVO, buyerIdVO))
+                .thenThrow(new EntityNotFoundException("Listing not found"));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(buyerIdStr)).thenReturn(buyerIdVO);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnConflict_whenListingAlreadySold() {
+        // Arrange
+        String listingIdStr = "listing-1";
+        String buyerIdStr = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId buyerIdVO = mock(UserId.class);
+
+        when(listingService.markListingAsSold(listingIdVO, buyerIdVO))
+                .thenThrow(new IllegalStateException("Listing is already sold"));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(buyerIdStr)).thenReturn(buyerIdVO);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnInternalServerError_onUnexpectedException() {
+        // Arrange
+        String listingIdStr = "listing-1";
+        String buyerIdStr = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId buyerIdVO = mock(UserId.class);
+
+        when(listingService.markListingAsSold(listingIdVO, buyerIdVO))
+                .thenThrow(new RuntimeException("unexpected"));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingIdStr)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(buyerIdStr)).thenReturn(buyerIdVO);
+
+            // Act
+            ResponseEntity<ListingDetailsDTO> response = controller.markListingAsSold(listingIdStr, buyerIdStr);
+
+            // Assert
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================================
+    // PRIVATE HELPER METHODS - SETUP & MOCKING
+    // =========================================================================
+
     private ListingRequestDTO ValidCreateRequest() {
         ListingRequestDTO request = mock(ListingRequestDTO.class);
 
@@ -1303,7 +1529,7 @@ class ListingRESTControllerTest {
 
     private void links(ListingDetailsDTO dto, UserId userIdVO) throws InstanceNotFoundException {
         when(listingLinkProvider.getPublicLinks()).thenReturn(List.of(Link.of("/listings", "all")));
-        when(listingLinkProvider.getOwnerLinks(userIdVO))
+        when(listingLinkProvider.getAuthenticatedUserLinks(userIdVO))
                 .thenReturn(List.of(Link.of("/users/user-1/listings", "owner-listings")));
         when(dto.add(any(Link.class))).thenReturn(dto);
     }
