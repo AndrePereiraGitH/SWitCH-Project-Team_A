@@ -48,7 +48,13 @@ class TransactionTest {
         );
 
         // Assert
-        assertNotNull(transaction);
+        assertEquals(buyerId, transaction.getBuyerId());
+        assertEquals(price, transaction.getPrice());
+        assertEquals(transactionDate, transaction.getTransactionDate());
+        assertEquals(shippingAddress, transaction.getShippingAddress());
+        assertEquals(paymentDetails, transaction.getPaymentDetails());
+        assertEquals(status, transaction.getStatus());
+        assertEquals(listings, transaction.getListingIds());
     }
 
     @Test
@@ -140,8 +146,14 @@ class TransactionTest {
         );
 
         // Assert
-        assertNotNull(transaction);
         assertEquals(id, transaction.id());
+        assertEquals(buyerId, transaction.getBuyerId());
+        assertEquals(price, transaction.getPrice());
+        assertEquals(transactionDate, transaction.getTransactionDate());
+        assertEquals(shippingAddress, transaction.getShippingAddress());
+        assertEquals(paymentDetails, transaction.getPaymentDetails());
+        assertEquals(status, transaction.getStatus());
+        assertEquals(listings, transaction.getListingIds());
     }
 
     @Test
@@ -251,34 +263,6 @@ class TransactionTest {
     }
 
     @Test
-    void equalsShouldReturnFalseForDifferentTransactions() {
-
-        //Arrange
-        Transaction transaction1 = new Transaction(buyerId, price, transactionDate, shippingAddress,
-                paymentDetails, status, listings
-        );
-
-        Transaction transaction2 = new Transaction(buyerId, price, transactionDate, shippingAddress,
-                paymentDetails, status, listings
-        );
-
-        //Act + assert
-        assertFalse(transaction1.sameAs(transaction2));
-    }
-
-    @Test
-    void equalsShouldReturnFalseForDifferentObjectType() {
-
-        //Arrange
-        Transaction transaction = new Transaction(id, buyerId, price, transactionDate, shippingAddress,
-                paymentDetails, status, listings
-        );
-
-        //Act + assert
-        assertFalse(transaction.equals("this is not a transaction"));
-    }
-
-    @Test
     void sameAsShouldReturnFalseWhenBuyerDiffers() {
 
         //Arrange
@@ -311,4 +295,63 @@ class TransactionTest {
         //Act + assert
         assertFalse(transaction1.sameAs(transaction2));
     }
+
+    @Test
+    void sameAs_shouldReturnFalseWhenComparedWithNull() {
+        //Arrange
+        Transaction transaction = new Transaction(id, buyerId, price, transactionDate, shippingAddress,
+                paymentDetails, status, listings
+        );
+
+        assertFalse(transaction.sameAs(null));
+    }
+
+    // =========================================================
+    // ====================== HASH CODE ========================
+    // =========================================================
+
+    @Test
+    void hashCode_shouldBeBasedOnId() {
+        // Arrange
+        Transaction transaction = new Transaction(id, buyerId, price, transactionDate, shippingAddress,
+                paymentDetails, status, listings
+        );
+
+        // Assert
+        assertEquals(id.hashCode(), transaction.hashCode());
+    }
+
+
+    // =========================================================
+    // ======================= EQUALS ==========================
+    // =========================================================
+
+    @Test
+    void equalsShouldReturnFalseForDifferentTransactions() {
+
+        //Arrange
+        Transaction transaction1 = new Transaction(buyerId, price, transactionDate, shippingAddress,
+                paymentDetails, status, listings
+        );
+
+        Transaction transaction2 = new Transaction(buyerId, price, transactionDate, shippingAddress,
+                paymentDetails, status, listings
+        );
+
+        //Act + assert
+        assertFalse(transaction1.equals(transaction2));
+    }
+
+    @Test
+    void equalsShouldReturnFalseForDifferentObjectType() {
+
+        //Arrange
+        Transaction transaction = new Transaction(id, buyerId, price, transactionDate, shippingAddress,
+                paymentDetails, status, listings
+        );
+
+        //Act + assert
+        assertFalse(transaction.equals("this is not a transaction"));
+    }
+
 }
