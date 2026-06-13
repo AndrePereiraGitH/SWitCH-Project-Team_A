@@ -30,6 +30,7 @@ public class ListingDetailsDTO extends RepresentationModel<ListingDetailsDTO> {
    private Integer year;
    private Integer pages;
    private String language;
+   private List<String> bibliographicalDataId;
 
 
 }
