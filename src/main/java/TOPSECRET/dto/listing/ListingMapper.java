@@ -14,10 +14,11 @@ import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
 import TOPSECRET.dto.listing.response.ListingResponseExploreDTO;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
 
 import java.math.BigDecimal;
 import java.util.List;
+
 
 
 /**
@@ -92,6 +93,7 @@ public class ListingMapper {
     public static ListingDetailsDTO toListingDetailsDTO(
             Listing listing,
             List<PublicationSample> pubSamples,
+            List<BibliographicalData> bds,
             List<Edition> editions,
             List<Author> authors,
             List<Genre> genres,
@@ -117,7 +119,8 @@ public class ListingMapper {
                 getEditionCode(edition),
                 getEditionYear(edition),
                 getNumberOfPages(edition),
-                getEditionLanguage(edition)
+                getEditionLanguage(edition),
+                getBibliographicalDataIds(bds)
         );
     }
 
@@ -205,6 +208,17 @@ public class ListingMapper {
     }
 
     /**
+     * Converts a {@link String} to a {@link BibliographicalDataId}.
+     *
+     * @param id the string representation of the identifier; must not be {@code null}
+     * @return the corresponding {@link BibliographicalDataId}
+     */
+    public static BibliographicalDataId toBibliographicalDataId(String id) {
+        BibliographicalDataId bdId = new BibliographicalDataId(id);
+        return bdId;
+    }
+
+    /**
      * Retrieves the listing identifier.
      *
      * @param listing the listing whose identifier should be extracted
@@ -282,6 +296,14 @@ public class ListingMapper {
     private static List<String> getBibliographicalTitles(List<BibliographicalData> bibliographicalDatas) {
         return bibliographicalDatas.stream()
                 .map(BibliographicalData::getTitle)
+                .toList();
+    }
+
+
+    private static List<String> getBibliographicalDataIds(List<BibliographicalData> bds) {
+        return bds.stream()
+                .map(BibliographicalData::id)
+                .map(Object::toString)
                 .toList();
     }
 

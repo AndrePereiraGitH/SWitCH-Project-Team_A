@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.hateoas.Link;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +25,11 @@ import static org.mockito.Mockito.*;
  *
  * <p>Validates that HATEOAS links are generated according to
  * the authenticated user's permissions.</p>
+ * <ul>
+ *   <li><b>Public links</b> — verify that links always available regardless of permissions.</li>
+ *   <li><b>Conditional links</b> — verify that links are included or omitted based on
+ *       the user's authorization and existence.</li>
+ * </ul>
  */
 @ExtendWith(MockitoExtension.class)
 class CityLinkProviderTest {
@@ -41,7 +47,21 @@ class CityLinkProviderTest {
     private User doubleUser;
 
     @Test
-    void getLinks_shouldReturnCreateCityLink_whenUserIsAdmin() {
+    void getPublicLinks_shouldReturnCitiesLink() {
+
+        // ARRANGE
+        CityLinkProvider sut = new CityLinkProvider(doublePolicy, doubleRepository);
+
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).getRel().value().equals("cities"));
+    }
+
+    @Test
+    void getLinks_shouldReturnCreateCityLink_whenUserIsAdmin() throws InstanceNotFoundException {
 
         // ARRANGE
         CityLinkProvider sut = new CityLinkProvider(doublePolicy, doubleRepository);
@@ -53,12 +73,13 @@ class CityLinkProviderTest {
         List<Link> result = sut.getLinks(doubleUserId);
 
         // ASSERT
-        assertEquals(1, result.size());
-        assertTrue(result.get(0).getRel().value().equals("create-city"));
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("cities")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("create-city")));
     }
 
     @Test
-    void getLinks_shouldReturnEmptyList_whenUserIsNotAdmin() {
+    void getLinks_shouldNotReturnCreateCityLink_whenUserIsNotAdmin() throws InstanceNotFoundException {
 
         // ARRANGE
         CityLinkProvider sut = new CityLinkProvider(doublePolicy, doubleRepository);
@@ -70,7 +91,9 @@ class CityLinkProviderTest {
         List<Link> result = sut.getLinks(doubleUserId);
 
         // ASSERT
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size());
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("cities")));
+        assertFalse(result.stream().anyMatch(l -> l.getRel().value().equals("create-city")));
     }
 
     @Test
@@ -82,7 +105,7 @@ class CityLinkProviderTest {
         when(doubleRepository.findByID(doubleUserId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(InstanceNotFoundException.class,
                 () -> sut.getLinks(doubleUserId));
     }
 }

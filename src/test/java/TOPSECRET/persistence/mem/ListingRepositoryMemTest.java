@@ -769,6 +769,133 @@ class ListingRepositoryMemTest {
         assertThrows(IllegalArgumentException.class, () -> repo.findIdsByPublicationSampleIdIn(null));
     }
 
+
+    // ======================================================
+// ==== Tests for findByPublicationSampleIdIn ===========
+// ======================================================
+
+    @Test
+    void findByPublicationSampleIdIn_shouldThrowException_whenPublicationSampleIdsIsNull() {
+        // Arrange
+        IListingRepository repo = new ListingRepositoryMem();
+
+        // Act + Assert
+        assertThrows(NullPointerException.class, () ->
+                repo.findByPublicationSampleIdIn(null)
+        );
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnEmptyList_whenRepositoryIsEmpty() {
+        // Arrange
+        IListingRepository repo = new ListingRepositoryMem();
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pub1IdDouble));
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnEmptyList_whenNoListingContainsGivenIds() {
+        // Arrange
+        IListingRepository repo = new ListingRepositoryMem();
+
+        PublicationSampleId pub4IdDouble = mock(PublicationSampleId.class);
+
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub2IdDouble));
+
+        repo.save(listing1Double);
+        repo.save(listing2Double);
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pub4IdDouble));
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnListing_whenSingleIdMatches() {
+        // Arrange
+        IListingRepository repo = new ListingRepositoryMem();
+
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub2IdDouble));
+
+        repo.save(listing1Double);
+        repo.save(listing2Double);
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pub1IdDouble));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(listing1Double));
+        assertFalse(result.contains(listing2Double));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnMultipleListings_whenMultipleIdsMatch() {
+        // Arrange
+        IListingRepository repo = new ListingRepositoryMem();
+
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble));
+        when(listing2Double.getItemsId()).thenReturn(List.of(pub2IdDouble));
+        when(listing3Double.getItemsId()).thenReturn(List.of(pub3IdDouble));
+
+        repo.save(listing1Double);
+        repo.save(listing2Double);
+        repo.save(listing3Double);
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pub1IdDouble, pub3IdDouble));
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(result.contains(listing1Double));
+        assertTrue(result.contains(listing3Double));
+        assertFalse(result.contains(listing2Double));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnListingOnce_whenListingContainsMultipleMatchingIds() {
+        // Arrange
+        IListingRepository repo = new ListingRepositoryMem();
+
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble, pub2IdDouble));
+
+        repo.save(listing1Double);
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of(pub1IdDouble, pub2IdDouble));
+
+        // Assert
+        assertEquals(1, result.size());
+        assertTrue(result.contains(listing1Double));
+    }
+
+    @Test
+    void findByPublicationSampleIdIn_shouldReturnEmptyList_whenInputListIsEmpty() {
+        // Arrange
+        IListingRepository repo = new ListingRepositoryMem();
+
+        when(listing1Double.getItemsId()).thenReturn(List.of(pub1IdDouble));
+
+        repo.save(listing1Double);
+
+        // Act
+        List<Listing> result = repo.findByPublicationSampleIdIn(List.of());
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
     // ======================================================
     // ==== Tests to getDirectSaleListingsContaining ===========
     // ======================================================

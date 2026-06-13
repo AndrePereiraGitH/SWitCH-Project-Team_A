@@ -10,6 +10,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.CityId;
 import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
+import jakarta.transaction.Transactional;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -48,12 +49,15 @@ public class CityService {
     /**
      * Creates and persists a new City for the given country and city name.
      *
-     * @param countryName the name of the country; must not be null or blank
-     * @param cityName    the name of the city; must not be null or blank
+     * @param countryName the name of the country; must not be {@code null} or blank
+     * @param cityName    the name of the city; must not be {@code null} or blank
+     * @param userId      the identifier of the user performing the operation; must not be {@code null}
      * @return the persisted {@link City}
      * @throws IllegalArgumentException if the country does not exist
      *                                  or if the city already exists
+     * @throws AccessDeniedException    if the user is not authorized to create a city
      */
+    @Transactional
     public City createAndSave(String countryName, String cityName, UserId userId) throws InstanceAlreadyExistsException, AccessDeniedException {
 
         User user = userRepository.findByID(userId)
