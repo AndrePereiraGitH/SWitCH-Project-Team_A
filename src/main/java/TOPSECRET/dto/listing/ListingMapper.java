@@ -9,6 +9,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.response.ListingDetailsDTO;
 import TOPSECRET.dto.listing.response.ListingResponseDTO;
@@ -72,8 +73,8 @@ public class ListingMapper {
      * Converts a listing and its related domain entities into a {@link ListingDetailsDTO}.
      *
      * <p>This method aggregates information from the listing, publication samples,
-     * bibliographical data, editions, authors, genres, and publishers in order to
-     * build a detailed representation suitable for API responses.</p>
+     * bibliographical data, editions, authors, genres, publishers, and the buyer
+     * (if any) in order to build a detailed representation suitable for API responses.</p>
      *
      * <p>When multiple editions, publication samples, or publishers are provided,
      * only the first available instance is used to populate edition-specific and
@@ -82,12 +83,14 @@ public class ListingMapper {
      * <p>Missing optional information is replaced with sensible default values
      * such as {@code "N/A"} or {@code "Unknown"}.</p>
      *
-     * @param listing the listing to convert
+     * @param listing    the listing to convert
      * @param pubSamples the publication samples associated with the listing
-     * @param editions the editions associated with the publication samples
-     * @param authors the authors associated with the bibliographical data
-     * @param genres the genres associated with the bibliographical data
+     * @param bds        the bibliographical data associated with the publication samples
+     * @param editions   the editions associated with the publication samples
+     * @param authors    the authors associated with the bibliographical data
+     * @param genres     the genres associated with the bibliographical data
      * @param publishers the publishers associated with the editions
+     * @param buyer      the user who purchased the listing, or {@code null} if unsold
      * @return a {@link ListingDetailsDTO} containing the aggregated listing details
      */
     public static ListingDetailsDTO toListingDetailsDTO(
@@ -97,7 +100,8 @@ public class ListingMapper {
             List<Edition> editions,
             List<Author> authors,
             List<Genre> genres,
-            List<Publisher> publishers
+            List<Publisher> publishers,
+            User buyer
     ) {
         Edition edition = getFirstOrNull(editions);
         Publisher publisher = getFirstOrNull(publishers);
@@ -120,7 +124,9 @@ public class ListingMapper {
                 getEditionYear(edition),
                 getNumberOfPages(edition),
                 getEditionLanguage(edition),
-                getBibliographicalDataIds(bds)
+                getBibliographicalDataIds(bds),
+                getBuyerName(buyer),
+                getListingStatus(listing)
         );
     }
 
@@ -455,6 +461,32 @@ public class ListingMapper {
         return list.stream()
                 .findFirst()
                 .orElse(null);
+    }
+
+    /**
+     * Retrieves the status of the listing.
+     *
+     * @param listing the listing whose status should be extracted
+     * @return the listing status as a string
+     */
+    private static String getListingStatus(Listing listing) {
+        return listing.getListingStatus().toString();
+    }
+
+    /**
+     * Retrieves the buyer's username.
+     *
+     * <p>If the listing has not been sold, the value {@code "N/A"} is returned.</p>
+     *
+     * @param buyer the user who purchased the listing, or {@code null} if unsold
+     * @return the buyer's username, or {@code "N/A"} if the listing is unsold
+     */
+    private static String getBuyerName(User buyer) {
+        if (buyer == null) {
+            return NOT_AVAILABLE;
+        }
+
+        return buyer.getUserName();
     }
 
 }

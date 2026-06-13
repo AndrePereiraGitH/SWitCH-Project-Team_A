@@ -72,6 +72,9 @@ class ListingRESTControllerTest {
     @Mock
     private ListingLinkProvider listingLinkProvider;
 
+    @Mock
+    private UserService userService;
+
     @InjectMocks
     private ListingRESTController controller;
 
@@ -371,7 +374,8 @@ class ListingRESTControllerTest {
                     anyList(),
                     anyList(),
                     anyList(),
-                    argThat(list -> !list.isEmpty())
+                    argThat(list -> !list.isEmpty()),
+                    any() // ADDED 8TH ARGUMENT
             )).thenReturn(dto);
 
             // Act
@@ -1089,7 +1093,8 @@ class ListingRESTControllerTest {
                     anyList(),
                     anyList(),
                     argThat(genres -> !genres.isEmpty()),
-                    anyList()
+                    anyList(),
+                    any()
             ));
         }
     }
@@ -1117,7 +1122,8 @@ class ListingRESTControllerTest {
                     argThat(authors -> !authors.isEmpty()),
                     anyList(),
                     anyList(),
-                    anyList()
+                    anyList(),
+                    any()
             ));
         }
     }
@@ -1652,6 +1658,7 @@ class ListingRESTControllerTest {
             Listing listing,
             ListingDetailsDTO dto
     ) {
+        // ADDED 8TH ARGUMENT (any()) FOR THE BUYER
         mockedMapper.when(() -> ListingMapper.toListingDetailsDTO(
                 eq(listing),
                 anyList(),
@@ -1659,7 +1666,8 @@ class ListingRESTControllerTest {
                 anyList(),
                 anyList(),
                 anyList(),
-                anyList()
+                anyList(),
+                any()
         )).thenReturn(dto);
     }
 

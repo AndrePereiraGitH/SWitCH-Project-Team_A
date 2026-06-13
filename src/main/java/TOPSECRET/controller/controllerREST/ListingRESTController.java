@@ -9,6 +9,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
@@ -52,6 +53,7 @@ public class ListingRESTController {
     private final GenreService genreService;
     private final ListingLinkProvider listingLinkProvider;
     private final PublisherService publisherService;
+    private final UserService userService;
 
     private enum LinkContext {
         AUTHENTICATED_USER,
@@ -72,7 +74,7 @@ public class ListingRESTController {
      * @param listingLinkProvider the provider used to generate listing HATEOAS links
      */
     @Autowired
-    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService) {
+    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService, UserService userService) {
         this.biblioDataService = biblioDataService;
         this.publicationService = publicationService;
         this.listingService = listingService;
@@ -81,6 +83,7 @@ public class ListingRESTController {
         this.genreService = genreService;
         this.listingLinkProvider = listingLinkProvider;
         this.publisherService = publisherService;
+        this.userService = userService;
     }
 
     // =========================================================================
@@ -536,6 +539,14 @@ public class ListingRESTController {
                 .toList();
     }
 
+
+    private User getBuyer(UserId id) {
+
+        User user = userService.findByID(id);
+
+        return user;
+    }
+
     // =========================================================================
     // PRIVATE HELPER METHODS - DTO CONVERSION
     // =========================================================================
@@ -544,9 +555,14 @@ public class ListingRESTController {
      * Converts a listing into a detailed response DTO and adds the appropriate
      * HATEOAS links according to the requested link context.
      *
+     * <p>If the listing has been sold, the associated buyer is resolved and
+     * included in the resulting DTO; otherwise the buyer field is left empty.</p>
+     *
      * @param listing the listing to convert
-     * @param context the link context that determines whether owner links are added
-     * @param userId the owner user identifier, required only when using owner links
+     * @param context the link context that determines whether authenticated-user
+     *                 and auction links are added
+     * @param userId  the requesting user's identifier, required only when using
+     *                 {@link LinkContext#AUTHENTICATED_USER}
      * @return the listing details DTO with the corresponding HATEOAS links
      * @throws InstanceNotFoundException if related listing data cannot be found
      */
@@ -559,6 +575,11 @@ public class ListingRESTController {
         List<Edition> editions = getEditions(pubSamples);
         List<Publisher> publishers = getPublishers(editions);
 
+        User buyer = null;
+        if (listing.getBuyerId() != null) {
+            buyer = getBuyer(listing.getBuyerId());
+        }
+
         ListingDetailsDTO dto = ListingMapper.toListingDetailsDTO(
                 listing,
                 pubSamples,
@@ -566,7 +587,8 @@ public class ListingRESTController {
                 editions,
                 authors,
                 genres,
-                publishers
+                publishers,
+                buyer
         );
 
         List<Link> links = new ArrayList<>(listingLinkProvider.getPublicLinks());
@@ -574,7 +596,7 @@ public class ListingRESTController {
         if (context == LinkContext.AUTHENTICATED_USER && userId != null) {
             links.addAll(listingLinkProvider.getAuthenticatedUserLinks(userId));
 
-            if (listing.getSaleType().equals(SaleType.AUCTION)) {
+            if (listing.getSaleType() == SaleType.AUCTION) {
                 links.addAll(listingLinkProvider.getAuctionLinks(userId));
             }
         }
