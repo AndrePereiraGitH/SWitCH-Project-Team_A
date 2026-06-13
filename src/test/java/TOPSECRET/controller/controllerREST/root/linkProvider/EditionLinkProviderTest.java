@@ -27,11 +27,11 @@ class EditionLinkProviderTest {
     private final UserId userId = mock(UserId.class);
 
     // =========================================================
-    // getPublicLinks — always available, no user needed
+    // getPublicLinks
     // =========================================================
 
     @Test
-    void getPublicLinks_shouldReturnTwoLinks_always() {
+    void getPublicLinks_shouldReturnFourLinks_always() {
 
         // ARRANGE
         EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
@@ -40,7 +40,7 @@ class EditionLinkProviderTest {
         List<Link> result = sut.getPublicLinks();
 
         // ASSERT
-        assertEquals(2, result.size());
+        assertEquals(4, result.size());
     }
 
     @Test
@@ -69,6 +69,34 @@ class EditionLinkProviderTest {
         // ASSERT
         assertTrue(result.stream()
                 .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
+    }
+
+    @Test
+    void getPublicLinks_shouldContainFindByPublisherIdRel() {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-by-publisher-id")));
+    }
+
+    @Test
+    void getPublicLinks_shouldContainFindByPublicationTypeIdRel() {
+
+        // ARRANGE
+        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
+
+        // ACT
+        List<Link> result = sut.getPublicLinks();
+
+        // ASSERT
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-by-publication-type-id")));
     }
 
     @Test
@@ -213,6 +241,11 @@ class EditionLinkProviderTest {
                 () -> sut.getCreateLinks(null));
     }
 
+    // =========================================================
+    // getLinks
+    // =========================================================
+
+
     @Test
     void getLinks_shouldReturnPublicAndCreateLinks_whenUserCanCreateEdition()
             throws InstanceNotFoundException {
@@ -231,25 +264,22 @@ class EditionLinkProviderTest {
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertEquals(3, result.size());
+        assertEquals(5, result.size());
 
-        assertTrue(
-                result.stream()
-                        .anyMatch(l -> l.getRel().value()
-                                .equals("find-edition"))
-        );
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-edition")));
 
-        assertTrue(
-                result.stream()
-                        .anyMatch(l -> l.getRel().value()
-                                .equals("find-all-editions"))
-        );
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
 
-        assertTrue(
-                result.stream()
-                        .anyMatch(l -> l.getRel().value()
-                                .equals("create-edition"))
-        );
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-by-publisher-id")));
+
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("find-by-publication-type-id")));
+
+        assertTrue(result.stream()
+                .anyMatch(l -> l.getRel().value().equals("create-edition")));
     }
 
     @Test
@@ -270,74 +300,7 @@ class EditionLinkProviderTest {
         List<Link> result = sut.getLinks(userId);
 
         // ASSERT
-        assertEquals(2, result.size());
-
-        assertTrue(
-                result.stream()
-                        .anyMatch(l -> l.getRel().value()
-                                .equals("find-edition"))
-        );
-
-        assertTrue(
-                result.stream()
-                        .anyMatch(l -> l.getRel().value()
-                                .equals("find-all-editions"))
-        );
-
-        assertFalse(
-                result.stream()
-                        .anyMatch(l -> l.getRel().value()
-                                .equals("create-edition"))
-        );
-    }
-
-    @Test
-    void getLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
-
-        // ARRANGE
-        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-
-        when(repository.findByID(userId))
-                .thenReturn(Optional.empty());
-
-        // ACT + ASSERT
-        assertThrows(
-                InstanceNotFoundException.class,
-                () -> sut.getLinks(userId)
-        );
-    }
-
-    @Test
-    void getLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
-
-        // ARRANGE
-        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-
-        // ACT + ASSERT
-        assertThrows(
-                NullPointerException.class,
-                () -> sut.getLinks(null)
-        );
-    }
-
-    @Test
-    void getLinks_shouldReturnAllLinks_whenUserHasAllPermissions()
-            throws InstanceNotFoundException {
-
-        // ARRANGE
-        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-        User user = mock(User.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreateEdition(user)).thenReturn(true);
-        when(policy.canFindByPublisherId(user)).thenReturn(true);
-        when(policy.canFindByPublicationTypeId(user)).thenReturn(true);
-
-        // ACT
-        List<Link> result = sut.getLinks(userId);
-
-        // ASSERT
-        assertEquals(5, result.size());
+        assertEquals(4, result.size());
 
         assertTrue(result.stream()
                 .anyMatch(l -> l.getRel().value().equals("find-edition")));
@@ -346,47 +309,13 @@ class EditionLinkProviderTest {
                 .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
 
         assertTrue(result.stream()
-                .anyMatch(l -> l.getRel().value().equals("create-edition")));
-
-        assertTrue(result.stream()
                 .anyMatch(l -> l.getRel().value().equals("find-by-publisher-id")));
 
         assertTrue(result.stream()
                 .anyMatch(l -> l.getRel().value().equals("find-by-publication-type-id")));
-    }
-    @Test
-    void getLinks_shouldReturnOnlyPublicLinks_whenUserHasNoPermissions()
-            throws InstanceNotFoundException {
-
-        // ARRANGE
-        EditionLinkProvider sut = new EditionLinkProvider(policy, repository);
-        User user = mock(User.class);
-
-        when(repository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canCreateEdition(user)).thenReturn(false);
-        when(policy.canFindByPublisherId(user)).thenReturn(false);
-        when(policy.canFindByPublicationTypeId(user)).thenReturn(false);
-
-        // ACT
-        List<Link> result = sut.getLinks(userId);
-
-        // ASSERT
-        assertEquals(2, result.size());
-
-        assertTrue(result.stream()
-                .anyMatch(l -> l.getRel().value().equals("find-edition")));
-
-        assertTrue(result.stream()
-                .anyMatch(l -> l.getRel().value().equals("find-all-editions")));
 
         assertFalse(result.stream()
                 .anyMatch(l -> l.getRel().value().equals("create-edition")));
-
-        assertFalse(result.stream()
-                .anyMatch(l -> l.getRel().value().equals("find-by-publisher-id")));
-
-        assertFalse(result.stream()
-                .anyMatch(l -> l.getRel().value().equals("find-by-publication-type-id")));
     }
 
 }

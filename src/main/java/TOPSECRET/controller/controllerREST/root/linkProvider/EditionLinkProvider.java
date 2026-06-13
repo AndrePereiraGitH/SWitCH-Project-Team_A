@@ -70,6 +70,14 @@ public class EditionLinkProvider implements RootLinkProvider {
                 .findAll())
                 .withRel("find-all-editions"));
 
+        links.add(linkTo(methodOn(EditionRESTController.class)
+                .findByPublisherId(null))
+                .withRel("find-by-publisher-id"));
+
+        links.add(linkTo(methodOn(EditionRESTController.class)
+                .findByPublicationTypeId(null))
+                .withRel("find-by-publication-type-id"));
+
         return links;
     }
 
@@ -103,33 +111,6 @@ public class EditionLinkProvider implements RootLinkProvider {
         return links;
     }
 
-    public List<Link> getPublisherLinks(UserId userId) throws InstanceNotFoundException {
-        Objects.requireNonNull(userId, "UserId cannot be null");
-        List<Link> links = new ArrayList<>();
-        User user = resolveUser(userId);
-
-        if(policy.canFindByPublisherId(user)) {
-            links.add(linkTo(methodOn(EditionRESTController.class)
-                    .findByPublisherId(null))
-                    .withRel("find-by-publisher-id"));
-        }
-
-        return links;
-    }
-
-    public List<Link> getPublicationTypeLinks (UserId userId) throws InstanceNotFoundException {
-        Objects.requireNonNull(userId, "UserId cannot be null");
-        List<Link> links = new ArrayList<>();
-        User user = resolveUser(userId);
-
-        if(policy.canFindByPublicationTypeId(user)) {
-            links.add(linkTo(methodOn(EditionRESTController.class)
-                    .findByPublicationTypeId(null))
-                    .withRel("find-by-publication-type-id"));
-        }
-
-        return links;
-    }
 
     /**
      * Resolves a {@link User} from the repository by the given {@link UserId}.
@@ -149,8 +130,6 @@ public class EditionLinkProvider implements RootLinkProvider {
 
         links.addAll(getPublicLinks());
         links.addAll(getCreateLinks(userId));
-        links.addAll(getPublisherLinks(userId));
-        links.addAll(getPublicationTypeLinks(userId));
 
         return links;
     }
