@@ -94,8 +94,7 @@ public class Listing implements AggregateRoot<ListingId> {
      * Reconstructs an existing {@link Listing} from a known state, typically when rehydrating
      * from persistence.
      *
-     * <p>This constructor is protected and intended for use by the domain factory only,
-     * via {@link ListingFactory#create(ListingId, String, List, SaleType, Price, String, UserId, List, LocalDate, ListingStatus)}.
+     * <p>This constructor is protected and intended for use by the domain factory only
      * Unlike the creation constructor, this does not generate a new identifier —
      * it uses the {@link ListingId} provided.
      *
