@@ -110,6 +110,7 @@ public class ListingMapper {
         return new ListingDetailsDTO(
                 getListingId(listing),
                 listing.getListingTitle(),
+                getAuthorIds(authors),
                 getAuthorNames(authors),
                 getGenreTypes(genres),
                 getPrice(listing),
@@ -119,6 +120,7 @@ public class ListingMapper {
                 getFirstPicture(listing),
                 listing.getShortDescription(),
                 getSellerId(listing),
+                getPublisherId(publisher),
                 getPublisherName(publisher),
                 getEditionCode(edition),
                 getEditionYear(edition),
@@ -128,6 +130,18 @@ public class ListingMapper {
                 getBuyerName(buyer),
                 getListingStatus(listing)
         );
+    }
+
+    private static String getPublisherId(Publisher publisher) {
+        if (publisher == null) {
+            return NOT_AVAILABLE;
+        }
+
+        return publisher.id().getId();
+    }
+
+    private static List<String> getAuthorIds(List<Author> authors) {
+        return authors.stream().map(Author::id).map(AuthorId::getId).toList();
     }
 
 
