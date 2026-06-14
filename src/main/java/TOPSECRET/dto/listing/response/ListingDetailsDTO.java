@@ -14,10 +14,14 @@ import java.util.List;
 @ToString
 @Getter
 public class ListingDetailsDTO extends RepresentationModel<ListingDetailsDTO> {
-   private  String id;
+   private String id;
    private String listingTitle;
+
+   private List<String> authorIds;
    private List<String> authors;
+
    private List<String> genre;
+
    private String price;
    private LocalDate publicationDate;
    private String condition;
@@ -25,7 +29,10 @@ public class ListingDetailsDTO extends RepresentationModel<ListingDetailsDTO> {
    private String picture;
    private String shortDescription;
    private String sellerId;
+
+   private String publisherId;
    private String publisher;
+
    private String isbn;
    private Integer year;
    private Integer pages;
