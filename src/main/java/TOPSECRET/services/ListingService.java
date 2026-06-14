@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -93,6 +92,20 @@ public class ListingService {
         return listingRepository.save(createdListing);
     }
 
+    /**
+     * Verifies that all publication samples belong to the given seller.
+     *
+     * <p>Each publication sample identifier is resolved through the publication
+     * sample repository. If any publication sample does not exist, an
+     * {@link jakarta.persistence.EntityNotFoundException} is thrown. If any
+     * publication sample belongs to a different user, an
+     * {@link org.springframework.security.access.AccessDeniedException} is thrown.</p>
+     *
+     * @param itemIds the publication sample identifiers to verify
+     * @param sellerId the identifier of the seller creating the listing
+     * @throws jakarta.persistence.EntityNotFoundException if any publication sample does not exist
+     * @throws org.springframework.security.access.AccessDeniedException if any publication sample is not owned by the seller
+     */
     private boolean verifyPublicationsOwner(List<PublicationSampleId> itemIds, UserId sellerId) {
 
         for (PublicationSampleId itemId : itemIds) {
@@ -124,6 +137,28 @@ public class ListingService {
         return listingRepository.findAll();
     }
 
+    /**
+     * Retrieves listings that match the provided filter criteria.
+     *
+     * <p>All filters are optional and are applied cumulatively. When multiple
+     * filters are provided, only listings satisfying all criteria are returned.</p>
+     *
+     * <p>The filtering process is performed in the following order:</p>
+     * <ol>
+     *     <li>Sale type</li>
+     *     <li>Publisher</li>
+     *     <li>Genre</li>
+     *     <li>Author</li>
+     * </ol>
+     *
+     * <p>If no filters are provided, all listings are returned.</p>
+     *
+     * @param genreId the identifier of the genre to filter by; may be {@code null}
+     * @param authorId the identifier of the author to filter by; may be {@code null}
+     * @param publisherId the identifier of the publisher to filter by; may be {@code null}
+     * @param saleType the sale type to filter by; may be {@code null}
+     * @return a list of listings matching all provided filter criteria; never {@code null}
+     */
     public List<Listing> findAllFiltered(
             GenreId genreId,
             AuthorId authorId,
@@ -138,32 +173,38 @@ public class ListingService {
 
         if (publisherId != null) {
             List<EditionId> editionIds = editionRepository.findIdsByPublisherId(publisherId);
-
             List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByEditionIdIn(editionIds);
 
             listings = filterByPublicationSampleIds(listings, pubIds);
-
         }
 
         if (genreId != null) {
             List<BibliographicalDataId> bdIds = bibliographicalDataRepository.findAllByGenreId(genreId);
-
             List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
-            return filterByPublicationSampleIds(listings, pubIds);
+            listings = filterByPublicationSampleIds(listings, pubIds);
         }
 
         if (authorId != null) {
             List<BibliographicalDataId> bdIds = bibliographicalDataRepository.findIdByAuthorId(authorId);
-
             List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
-            return filterByPublicationSampleIds(listings, pubIds);
+            listings = filterByPublicationSampleIds(listings, pubIds);
         }
 
         return listings;
     }
 
+    /**
+     * Filters the provided listings by the given publication sample identifiers.
+     *
+     * <p>A listing is included in the result when at least one of its publication
+     * sample identifiers matches one of the provided identifiers.</p>
+     *
+     * @param listings the listings to filter
+     * @param pubIds the publication sample identifiers used as filter criteria
+     * @return the listings containing at least one matching publication sample identifier
+     */
     private List<Listing> filterByPublicationSampleIds(List<Listing> listings, List<PublicationSampleId> pubIds) {
         return listings.stream()
                 .filter(listing ->
