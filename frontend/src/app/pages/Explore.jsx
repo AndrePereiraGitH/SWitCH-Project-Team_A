@@ -84,6 +84,7 @@ export function Explore() {
     }
   }, [filterGenre, filterAuthor, filterPublisher, saleType, filterPublication]);
 
+  
   async function fetchByPublication(bdId) {
     setLoadingFilter(true);
     try {
@@ -99,20 +100,6 @@ export function Explore() {
     }
   }
 
-  async function fetchByGenre(genreId) {
-    setLoadingFilter(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/listings/genre/${genreId}`);
-      if (!res.ok) throw new Error(`Failed: ${res.status}`);
-      const data = await res.json();
-      setSales(data.map(mapListingToSale));
-    } catch (error) {
-      console.error("Error fetching listings by genre:", error);
-      setSales([]);
-    } finally {
-      setLoadingFilter(false);
-    }
-  }
 
   async function fetchFilteredListings() {
     setLoadingFilter(true);
@@ -133,7 +120,7 @@ export function Explore() {
       }
 
       if (saleType !== "all") {
-        params.append("saleType", saleType === "direct" ? "DIRECT_SALE" : "AUCTION");
+        params.append("saleType", saleType === "direct" ? "Direct Sale" : "Auction");
       }
 
       const res = await fetch(`${API_BASE_URL}/listings?${params.toString()}`);
@@ -155,6 +142,8 @@ export function Explore() {
   const mapListingToSale = (listing) => ({
     id: listing.id,
     title: listing.listingTile ?? listing.listingTitle,
+    authorIds: listing.authorIds ?? [],
+    authors: listing.authors ?? [],
     author: listing.authors?.join(", ") ?? "Unknown",
     genre: listing.genre ?? [],
     price: Number(listing.price),
@@ -171,9 +160,19 @@ export function Explore() {
   const getSaleGenreNames = (sale) =>
       sale.genre?.map(getGenreName).join(", ") ?? "";
 
-  const authors = [...new Set(
-      allSales.map(s => s.author).filter(a => a && a !== "Unknown")
-  )];
+  const authors = allSales
+    .flatMap(sale =>
+      sale.authorIds.map((id, index) => ({
+        id,
+        name: sale.authors[index],
+      }))
+    )
+    .filter(author => author.id && author.name);
+
+  const uniqueAuthors = authors.filter(
+    (author, index, self) =>
+      index === self.findIndex(a => a.id === author.id)
+  );
 
   const handlePublicationChange = (e) => {
     setFilterPublication(e.target.value);
@@ -200,10 +199,8 @@ export function Explore() {
         (saleType === "direct" && !sale.isAuction) ||
         (saleType === "auction" && sale.isAuction);
 
-    const matchesAuthor =
-        filterAuthor === "all" || sale.author === filterAuthor;
 
-    return matchesSearch && matchesType && matchesSaleType && matchesAuthor;
+    return matchesSearch && matchesType;
   });
 
   const activeFilterLabel =
@@ -232,7 +229,7 @@ export function Explore() {
               Explore Sales
             </h1>
             <p className="text-muted-foreground">
-              Browse items for sale by genre, author or publication
+              Browse items for sale by Genre, Publication, Publication Type, Sale Type, Author or Publisher
             </p>
           </div>
 
@@ -259,7 +256,6 @@ export function Explore() {
                 <select
                     value={filterGenre}
                     onChange={handleGenreChange}
-                    disabled={filterPublication !== "all"}
                     className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="all">All Genres</option>
@@ -274,7 +270,6 @@ export function Explore() {
                 <select
                     value={filterPublication}
                     onChange={handlePublicationChange}
-                    disabled={filterGenre !== "all"}
                     className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="all">All Publications</option>
@@ -315,12 +310,13 @@ export function Explore() {
                 <select
                     value={filterAuthor}
                     onChange={(e) => setFilterAuthor(e.target.value)}
-                    disabled={filterPublication !== "all" || filterGenre !== "all"}
                     className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="all">All Authors</option>
-                  {authors.map(author => (
-                      <option key={author} value={author}>{author}</option>
+                  {uniqueAuthors.map(author => (
+                    <option key={author.id} value={author.id}>
+                      {author.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -331,7 +327,6 @@ export function Explore() {
                 <select
                   value={filterPublisher}
                   onChange={(e) => setFilterPublisher(e.target.value)}
-                  disabled={filterPublication !== "all"}
                   className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <option value="all">All Publishers</option>
