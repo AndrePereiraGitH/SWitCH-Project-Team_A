@@ -17,9 +17,11 @@ export function Explore() {
   const [saleType, setSaleType] = useState("all");
   const [filterAuthor, setFilterAuthor] = useState("all");
   const [filterPublication, setFilterPublication] = useState("all");
+  const [filterPublisher, setFilterPublisher] = useState("all");
 
   const [genres, setGenres] = useState([]);
   const [publications, setPublications] = useState([]);
+  const [publishers, setPublishers] = useState([]);
   const [sales, setSales] = useState([]);
   const [allSales, setAllSales] = useState([]);
   const [loadingFilter, setLoadingFilter] = useState(false);
@@ -35,19 +37,21 @@ export function Explore() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [genresRes, listingsRes, bdRes] = await Promise.all([
+        const [genresRes, listingsRes, bdRes, publishersRes] = await Promise.all([
           fetch(`${API_BASE_URL}/genres`),
           fetch(`${API_BASE_URL}/listings`),
           fetch(`${API_BASE_URL}/bibliographicalDatas`),
+          fetch(`${API_BASE_URL}/publishers`),
         ]);
 
-        if (!genresRes.ok || !listingsRes.ok || !bdRes.ok) {
+        if (!genresRes.ok || !listingsRes.ok || !bdRes.ok || !publishersRes.ok) {
           throw new Error("Failed to fetch explore data");
         }
 
         const genresData = await genresRes.json();
         const listingsData = await listingsRes.json();
         const bdData = await bdRes.json();
+        const publishersData = await publishersRes.json();
 
         const mapped = listingsData.map(mapListingToSale);
         setGenres(genresData);
@@ -55,10 +59,14 @@ export function Explore() {
         setSales(mapped);
 
         const bdItems = bdData._embedded?.responseBibliographicalDataDTOList ?? [];
+      
         setPublications(bdItems.map(bd => ({
           id: bd.bdId,
           title: bd.pubTitle,
         })));
+      
+        setPublishers(publishersData);
+      
       } catch (error) {
         console.error("Error loading explore data:", error);
       }
@@ -71,12 +79,10 @@ export function Explore() {
   useEffect(() => {
     if (filterPublication !== "all") {
       fetchByPublication(filterPublication);
-    } else if (filterGenre !== "all") {
-      fetchByGenre(filterGenre);
     } else {
-      setSales(allSales);
+      fetchFilteredListings();
     }
-  }, [filterGenre, filterPublication, allSales]);
+  }, [filterGenre, filterAuthor, filterPublisher, saleType, filterPublication]);
 
   async function fetchByPublication(bdId) {
     setLoadingFilter(true);
@@ -108,6 +114,44 @@ export function Explore() {
     }
   }
 
+  async function fetchFilteredListings() {
+    setLoadingFilter(true);
+
+    try {
+      const params = new URLSearchParams();
+
+      if (filterGenre !== "all") {
+        params.append("genreId", filterGenre);
+      }
+
+      if (filterAuthor !== "all") {
+        params.append("authorId", filterAuthor);
+      }
+
+      if (filterPublisher !== "all") {
+        params.append("publisherId", filterPublisher);
+      }
+
+      if (saleType !== "all") {
+        params.append("saleType", saleType === "direct" ? "DIRECT_SALE" : "AUCTION");
+      }
+
+      const res = await fetch(`${API_BASE_URL}/listings?${params.toString()}`);
+
+      if (!res.ok) {
+        throw new Error(`Failed: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setSales(data.map(mapListingToSale));
+    } catch (error) {
+      console.error("Error fetching filtered listings: ", error);
+      setSales([]);
+    } finally {
+      setLoadingFilter(false);
+    }
+  }
+
   const mapListingToSale = (listing) => ({
     id: listing.id,
     title: listing.listingTile ?? listing.listingTitle,
@@ -117,6 +161,8 @@ export function Explore() {
     condition: listing.condition,
     isAuction: listing.saleType === "AUCTION",
     type: "book",
+    publisherId: listing.publisherId,
+    publisher: listing.publisher
   });
 
   const getGenreName = (genreId) =>
@@ -275,6 +321,24 @@ export function Explore() {
                   <option value="all">All Authors</option>
                   {authors.map(author => (
                       <option key={author} value={author}>{author}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-foreground">
+                  Publisher
+                </label>
+                <select
+                  value={filterPublisher}
+                  onChange={(e) => setFilterPublisher(e.target.value)}
+                  disabled={filterPublication !== "all"}
+                  className="w-full px-4 py-3 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <option value="all">All Publishers</option>
+                  {publishers.map(publisher => (
+                    <option key={publisher.publisherId} value={publisher.publisherId}>
+                      {publisher.name}
+                    </option>
                   ))}
                 </select>
               </div>

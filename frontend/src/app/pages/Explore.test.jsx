@@ -32,6 +32,11 @@ const mockPublications = {
     }
 };
 
+const mockPublishers = [
+    {publisherId: "publisher-001", name: "Penguin Random House"},
+    {publisherId: "publisher-002", name: "Bloomsbury"}
+];
+
 const mockListings = [
     {
         id: "1",
@@ -117,27 +122,39 @@ const mockFantasyGenreListings = [
 
 function setupFetch({ publicationListings = null, genreListings = null } = {}) {
     global.fetch = vi.fn(async (url) => {
-        if (url.includes("/genres")) {
+        const urlString = String(url);
+
+        if (urlString.includes("/genres")) {
             return { ok: true, json: async () => mockGenres };
         }
-        if (url.includes("/bibliographicalDatas")) {
+
+        if (urlString.includes("/bibliographicalDatas")) {
             return { ok: true, json: async () => mockPublications };
         }
-        if (url.includes("/listings/by-publication/")) {
+
+        if (urlString.includes("/publishers")) {
+            return { ok: true, json: async () => mockPublishers };
+        }
+
+        if (urlString.includes("/listings/by-publication/")) {
             return {
                 ok: true,
                 json: async () => publicationListings ?? mockPublicationListings,
             };
         }
-        if (url.includes("/listings/genre/")) {
+
+        // New Explore flow: genre is filtered through /listings?genreId=...
+        if (urlString.includes("/listings") && urlString.includes("genreId=fantasy")) {
             return {
                 ok: true,
                 json: async () => genreListings ?? mockFantasyGenreListings,
             };
         }
-        if (url.includes("/listings")) {
+
+        if (urlString.includes("/listings")) {
             return { ok: true, json: async () => mockListings };
         }
+
         return { ok: false, status: 404 };
     });
 }
@@ -159,6 +176,7 @@ const getPublicationSelect = () => screen.getAllByRole("combobox")[1];
 const getTypeSelect        = () => screen.getAllByRole("combobox")[2];
 const getSaleTypeSelect    = () => screen.getAllByRole("combobox")[3];
 const getAuthorSelect      = () => screen.getAllByRole("combobox")[4];
+const getPublisherSelect = () => screen.getAllByRole("combobox")[5];
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
@@ -203,6 +221,7 @@ describe("Explore", () => {
                 expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/genres"));
                 expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/listings"));
                 expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/bibliographicalDatas"));
+                expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining("/publishers"));
             });
         });
 
@@ -236,7 +255,7 @@ describe("Explore", () => {
 
             await waitFor(() => {
                 expect(global.fetch).toHaveBeenCalledWith(
-                    expect.stringContaining("/listings/genre/fantasy")
+                    expect.stringContaining("/listings?genreId=fantasy")
                 );
             });
         });
@@ -450,16 +469,26 @@ describe("Explore", () => {
     describe("Sale type filter", () => {
         test("filters by direct sale", async () => {
             await renderLoadedExplore();
+
             fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
-            expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
-            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+
+            await waitFor(() => {
+                expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
+                expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            });
+
             expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
         });
 
         test("filters by auction", async () => {
             await renderLoadedExplore();
+
             fireEvent.change(getSaleTypeSelect(), { target: { value: "auction" } });
-            expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
+
+            await waitFor(() => {
+                expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
+            });
+
             expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
             expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
         });
@@ -468,29 +497,67 @@ describe("Explore", () => {
     // ── Author filter ──
     describe("Author filter", () => {
         test("renders author options from listings", async () => {
-            await renderLoadedExplore();
-            expect(screen.getByRole("option", { name: "All Authors" })).toBeInTheDocument();
-            expect(screen.getByRole("option", { name: "Dan Brown" })).toBeInTheDocument();
-            expect(screen.getByRole("option", { name: "J.K. Rowling" })).toBeInTheDocument();
-            expect(screen.getByRole("option", { name: "George R.R. Martin" })).toBeInTheDocument();
+        await renderLoadedExplore();
+
+        expect(screen.getByRole("option", { name: "All Authors" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Dan Brown" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "J.K. Rowling" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "George R.R. Martin" })).toBeInTheDocument();
         });
 
         test("filters by author", async () => {
-            await renderLoadedExplore();
-            fireEvent.change(getAuthorSelect(), { target: { value: "J.K. Rowling" } });
+        await renderLoadedExplore();
+
+        fireEvent.change(getAuthorSelect(), {
+            target: { value: "J.K. Rowling" },
+        });
+
+        await waitFor(() => {
             expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
-            expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
-            expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
+        });
+
+        expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
+        expect(screen.queryByText("Game of Thrones")).not.toBeInTheDocument();
         });
     });
+
+    // --- Publisher tests ----
+    describe("Publisher filter", () => {
+        test("renders publisher options from API", async () => {
+        await renderLoadedExplore();
+
+        expect(screen.getByRole("option", { name: "All Publishers" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Penguin Random House" })).toBeInTheDocument();
+        expect(screen.getByRole("option", { name: "Bloomsbury" })).toBeInTheDocument();
+        });
+
+        test("calls listings endpoint with publisherId when publisher selected", async () => {
+        await renderLoadedExplore();
+
+        fireEvent.change(getPublisherSelect(), {
+            target: { value: "publisher-001" },
+        });
+
+        await waitFor(() => {
+            expect(global.fetch).toHaveBeenCalledWith(
+            expect.stringContaining("/listings?publisherId=publisher-001")
+            );
+        });
+        });        
+    })
 
     // ── Combined filters ──
     describe("Combined filters", () => {
         test("sale type and author work together", async () => {
             await renderLoadedExplore();
+
             fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
             fireEvent.change(getAuthorSelect(), { target: { value: "George R.R. Martin" } });
-            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+
+            await waitFor(() => {
+                expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            });
+
             expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
             expect(screen.queryByText("The Da Vinci Code")).not.toBeInTheDocument();
         });
@@ -505,15 +572,22 @@ describe("Explore", () => {
 
             fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
 
-            expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            await waitFor(() => {
+                expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+            });
+
             expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
         });
 
         test("no results when filters produce empty set", async () => {
             await renderLoadedExplore();
+
             const search = screen.getByPlaceholderText("Search by title or author...");
             fireEvent.change(search, { target: { value: "xyznotfound" } });
-            expect(screen.getByText(/No items found/i)).toBeInTheDocument();
+
+            await waitFor(() => {
+                expect(screen.getByText(/No items found/i)).toBeInTheDocument();
+            });
         });
     });
 
@@ -553,9 +627,16 @@ describe("Explore", () => {
     describe("Cart actions", () => {
         test("calls addToCart when Add to Cart clicked on direct sale", async () => {
             await renderLoadedExplore();
+
             fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+
+            await waitFor(() => {
+                expect(screen.getAllByText("Add to Cart").length).toBeGreaterThan(0);
+            });
+
             const buttons = screen.getAllByText("Add to Cart");
             fireEvent.click(buttons[0]);
+
             expect(mockAddToCart).toHaveBeenCalledTimes(1);
         });
     });
