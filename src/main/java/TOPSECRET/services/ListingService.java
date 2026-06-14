@@ -1,6 +1,8 @@
 package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.ListingAuthorizationPolicy;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.SaleType;
@@ -36,6 +38,8 @@ public class ListingService {
     private final ListingFactory listingFactory;
     private final IUserRepository userRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
+    private final IEditionRepository editionRepository;
+    private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final ListingAuthorizationPolicy policy;
 
     /**
@@ -44,11 +48,13 @@ public class ListingService {
      * @param listingRepository the repository used to persist listings; must not be {@code null}
      * @param listingFactory    the factory used to create listing instances; must not be {@code null}
      */
-    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, IPublicationSampleRepository publicationSampleRepository, ListingAuthorizationPolicy policy) {
+    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, IPublicationSampleRepository publicationSampleRepository, IEditionRepository editionRepository, IBibliographicalDataRepository bibliographicalDataRepository, ListingAuthorizationPolicy policy) {
         this.listingRepository = Objects.requireNonNull(listingRepository, "listingRepository must not be null");
         this.listingFactory = Objects.requireNonNull(listingFactory, "listingFactory must not be null");
         this.userRepository = Objects.requireNonNull(userRepository, "User repository cannot be null");
         this.publicationSampleRepository = publicationSampleRepository;
+        this.editionRepository = editionRepository;
+        this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.policy = Objects.requireNonNull(policy, "Listing Authorization Policy cannot be null");
     }
 
@@ -116,6 +122,55 @@ public class ListingService {
      */
     public List<Listing> findAll() {
         return listingRepository.findAll();
+    }
+
+    public List<Listing> findAllFiltered(
+            GenreId genreId,
+            AuthorId authorId,
+            PublisherID publisherId,
+            SaleType saleType) {
+
+        List<Listing> listings = listingRepository.findAll();
+
+        if (saleType != null) {
+            listings = listings.stream().filter(listing -> listing.getSaleType().equals(saleType)).toList();
+        }
+
+        if (publisherId != null) {
+            List<EditionId> editionIds = editionRepository.findIdsByPublisherId(publisherId);
+
+            List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByEditionIdIn(editionIds);
+
+            listings = filterByPublicationSampleIds(listings, pubIds);
+
+        }
+
+        if (genreId != null) {
+            List<BibliographicalDataId> bdIds = bibliographicalDataRepository.findAllByGenreId(genreId);
+
+            List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+
+            return filterByPublicationSampleIds(listings, pubIds);
+        }
+
+        if (authorId != null) {
+            List<BibliographicalDataId> bdIds = bibliographicalDataRepository.findIdByAuthorId(authorId);
+
+            List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+
+            return filterByPublicationSampleIds(listings, pubIds);
+        }
+
+        return listings;
+    }
+
+    private List<Listing> filterByPublicationSampleIds(List<Listing> listings, List<PublicationSampleId> pubIds) {
+        return listings.stream()
+                .filter(listing ->
+                        listing.getItemsId().stream()
+                                .anyMatch(pubIds::contains)
+                )
+                .toList();
     }
 
     /**
