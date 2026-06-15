@@ -327,7 +327,7 @@ jobs:
         with:
           image-ref: mite-lovers-backend:scan
           format: template
-          template: '@/contrib/html.tpl'
+          template: '@/usr/local/share/trivy/templates/html.tpl'
           exit-code: '0'
           severity: CRITICAL,HIGH
           output: trivy-backend.html
@@ -348,7 +348,7 @@ jobs:
         with:
           image-ref: mite-lovers-frontend:scan
           format: template
-          template: '@/contrib/html.tpl'
+          template: '@/usr/local/share/trivy/templates/html.tpl'
           exit-code: '0'
           severity: CRITICAL,HIGH
           output: trivy-frontend.html
