@@ -1,11 +1,15 @@
 package TOPSECRET.services;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.TransactionAuthorizationPolicy;
 import TOPSECRET.domain.Enum.TransactionStatus;
 import TOPSECRET.domain.Transaction.ITransactionRepository;
 import TOPSECRET.domain.Transaction.Transaction;
 import TOPSECRET.domain.Transaction.TransactionFactory;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,17 +28,25 @@ public class TransactionService {
 
     private final ITransactionRepository transactionRepository;
     private final TransactionFactory transactionFactory;
+    private final IUserRepository userRepository;
+    private final TransactionAuthorizationPolicy policy;
 
     /**
      * Constructs a {@code TransactionService} with the required collaborators.
      *
      * @param transactionRepository the repository used to persist transactions; must not be {@code null}
      * @param transactionFactory    the factory used to create transaction instances; must not be {@code null}
+     * @param userRepository        the repository used to retrieve users; must not be {@code null}
+     * @param policy                the authorization policy for transaction operations; must not be {@code null}
      */
     public TransactionService(ITransactionRepository transactionRepository,
-                              TransactionFactory transactionFactory) {
+                              TransactionFactory transactionFactory,
+                              IUserRepository userRepository,
+                              TransactionAuthorizationPolicy policy) {
         this.transactionRepository = Objects.requireNonNull(transactionRepository, "transactionRepository must not be null");
         this.transactionFactory    = Objects.requireNonNull(transactionFactory,    "transactionFactory must not be null");
+        this.userRepository        = Objects.requireNonNull(userRepository,        "userRepository must not be null");
+        this.policy                = Objects.requireNonNull(policy,                "policy must not be null");
     }
 
     /**
@@ -47,6 +59,8 @@ public class TransactionService {
      * @param paymentDetails  the payment details; must not be {@code null}
      * @param listingIds      the identifiers of the purchased listings; must not be {@code null}
      * @return the persisted {@link Transaction}
+     * @throws EntityNotFoundException if no user exists with the given buyer identifier
+     * @throws AccessDeniedException   if the user does not have permission to create a transaction
      */
     public Transaction createAndSave(UserId buyerId,
                                      Price price,
@@ -54,6 +68,13 @@ public class TransactionService {
                                      Address shippingAddress,
                                      PaymentDetails paymentDetails,
                                      List<ListingId> listingIds) {
+
+        User user = userRepository.findByID(buyerId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + buyerId));
+
+        if (!policy.canCreateTransaction(user)) {
+            throw new AccessDeniedException("You do not have permission to create a transaction");
+        }
 
         Transaction transaction = transactionFactory.create(
                 buyerId,
@@ -69,15 +90,34 @@ public class TransactionService {
     }
 
     /**
-     * Finds a transaction by its identifier.
+     * Finds a transaction by its identifier, ensuring the requester has permission
+     * to view it and is the transaction owner.
      *
      * @param transactionId the identifier of the transaction to find; must not be {@code null}
+     * @param requesterId   the identifier of the user requesting access; must not be {@code null}
      * @return the transaction associated with the given identifier
-     * @throws EntityNotFoundException if no transaction exists with the given identifier
+     * @throws EntityNotFoundException if no user exists with the given requester identifier
+     *                                 or no transaction exists with the given transaction identifier
+     * @throws AccessDeniedException   if the requester does not have permission to view transactions,
+     *                                 or is not the owner of the transaction
      */
-    public Transaction findById(TransactionID transactionId) {
-        return transactionRepository.findById(transactionId)
+    public Transaction findById(TransactionID transactionId, UserId requesterId) {
+
+        User requester = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + requesterId));
+
+        if (!policy.canViewTransaction(requester)) {
+            throw new AccessDeniedException("You do not have permission to view transactions");
+        }
+
+        Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction not found: " + transactionId.getId()));
+
+        if (!transaction.getBuyerId().equals(requesterId)) {
+            throw new AccessDeniedException("You do not have permission to access this transaction");
+        }
+
+        return transaction;
     }
 
     /**
@@ -90,13 +130,32 @@ public class TransactionService {
     }
 
     /**
-     * Retrieves all transactions associated with the given buyer.
+     * Retrieves all transactions associated with the given buyer,
+     * ensuring the requester has permission and matches the buyer identifier.
      *
-     * @param buyerId the identifier of the buyer; must not be {@code null}
+     * @param buyerId     the identifier of the buyer; must not be {@code null}
+     * @param requesterId the identifier of the user requesting access; must not be {@code null}
      * @return a list of transactions owned by the given buyer; may be empty if none exist
+     * @throws EntityNotFoundException if no user exists with the given requester identifier
+     * @throws AccessDeniedException   if the requester does not have permission to view transactions,
+     *                                 or is not the same as the buyer
      */
-    public List<Transaction> findAllByBuyerId(UserId buyerId) {
-        Objects.requireNonNull(buyerId, "buyerId must not be null");
+    public List<Transaction> findAllByBuyerId(UserId buyerId, UserId requesterId) {
+
+        Objects.requireNonNull(buyerId,     "buyerId must not be null");
+        Objects.requireNonNull(requesterId, "requesterId must not be null");
+
+        User requester = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + requesterId));
+
+        if (!policy.canViewBuyerTransactions(requester)) {
+            throw new AccessDeniedException("You do not have permission to view transactions");
+        }
+
+        if (!buyerId.equals(requesterId)) {
+            throw new AccessDeniedException("You do not have permission to access these transactions");
+        }
+
         return transactionRepository.findAllByBuyerId(buyerId);
     }
 }

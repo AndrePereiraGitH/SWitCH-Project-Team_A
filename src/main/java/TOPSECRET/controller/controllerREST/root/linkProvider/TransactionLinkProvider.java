@@ -40,7 +40,7 @@ public class TransactionLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(TransactionRESTController.class)
-                .findAllByBuyerId(userId.getUserId()))
+                .findAllByBuyerId(userId.getUserId(), null))
                 .withRel("my-transactions"));
 
         return links;
@@ -62,7 +62,7 @@ public class TransactionLinkProvider implements RootLinkProvider {
                 .withRel("create-transaction"));
 
         links.add(linkTo(methodOn(TransactionRESTController.class)
-                .findById(null))
+                .findById(null, null))
                 .withRel("find-transaction-by-id"));
 
         return links;

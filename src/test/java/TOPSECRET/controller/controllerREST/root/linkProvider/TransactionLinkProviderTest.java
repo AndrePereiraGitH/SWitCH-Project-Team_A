@@ -36,7 +36,6 @@ class TransactionLinkProviderTest {
         List<Link> links = sut.getPublicLinks();
 
         // Assert
-        assertNotNull(links);
         assertFalse(links.isEmpty());
     }
 
@@ -77,7 +76,6 @@ class TransactionLinkProviderTest {
         List<Link> links = sut.getBuyerLinks(userId);
 
         // Assert
-        assertNotNull(links);
         assertFalse(links.isEmpty());
     }
 
@@ -109,7 +107,7 @@ class TransactionLinkProviderTest {
     // =========================================================================
 
     @Test
-    void getLinks_shouldReturnCombinedPublicAndBuyerLinks() throws Exception {
+    void getLinks_shouldReturnNonEmptyList() throws Exception {
 
         // Arrange
         UserId userId = mock(UserId.class);
@@ -119,15 +117,36 @@ class TransactionLinkProviderTest {
         List<Link> links = sut.getLinks(userId);
 
         // Assert
-        assertNotNull(links);
         assertFalse(links.isEmpty());
+    }
 
-        boolean hasPublicLink = links.stream()
-                .anyMatch(link -> link.getRel().value().equals("create-transaction"));
-        boolean hasBuyerLink = links.stream()
-                .anyMatch(link -> link.getRel().value().equals("my-transactions"));
+    @Test
+    void getLinks_shouldContainCreateTransactionLink() throws Exception {
 
-        assertTrue(hasPublicLink);
-        assertTrue(hasBuyerLink);
+        // Arrange
+        UserId userId = mock(UserId.class);
+        when(userId.getUserId()).thenReturn("buyer-1");
+
+        // Act
+        List<Link> links = sut.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("create-transaction")));
+    }
+
+    @Test
+    void getLinks_shouldContainMyTransactionsLink() throws Exception {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        when(userId.getUserId()).thenReturn("buyer-1");
+
+        // Act
+        List<Link> links = sut.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("my-transactions")));
     }
 }
