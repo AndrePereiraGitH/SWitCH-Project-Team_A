@@ -360,7 +360,7 @@ class ListingServiceTest {
 
         when(listingRepository.findAll()).thenReturn(List.of(listing1, listing2));
 
-        List<Listing> result = service.findAllFiltered(null, null, null, null);
+        List<Listing> result = service.findAllFiltered(null, null, null, null, null);
 
         assertEquals(List.of(listing1, listing2), result);
     }
@@ -375,7 +375,7 @@ class ListingServiceTest {
         when(listingRepository.findAll()).thenReturn(List.of(directSale, auction));
 
         List<Listing> result =
-                service.findAllFiltered(null, null, null, SaleType.DIRECT_SALE);
+                service.findAllFiltered(null, null, null, SaleType.DIRECT_SALE, null);
 
         assertEquals(List.of(directSale), result);
     }
@@ -402,7 +402,7 @@ class ListingServiceTest {
         when(nonMatchingListing.getItemsId()).thenReturn(List.of(nonMatchingPubId));
 
         List<Listing> result =
-                service.findAllFiltered(null, null, publisherId, null);
+                service.findAllFiltered(null, null, publisherId, null, null);
 
         assertEquals(List.of(matchingListing), result);
     }
@@ -429,7 +429,7 @@ class ListingServiceTest {
         when(nonMatchingListing.getItemsId()).thenReturn(List.of(nonMatchingPubId));
 
         List<Listing> result =
-                service.findAllFiltered(genreId, null, null, null);
+                service.findAllFiltered(genreId, null, null, null, null);
 
         assertEquals(List.of(matchingListing), result);
     }
@@ -456,7 +456,7 @@ class ListingServiceTest {
         when(nonMatchingListing.getItemsId()).thenReturn(List.of(nonMatchingPubId));
 
         List<Listing> result =
-                service.findAllFiltered(null, authorId, null, null);
+                service.findAllFiltered(null, authorId, null, null, null);
 
         assertEquals(List.of(matchingListing), result);
     }
@@ -485,7 +485,7 @@ class ListingServiceTest {
         when(matchingDirectSale.getItemsId()).thenReturn(List.of(matchingPubId));
 
         List<Listing> result =
-                service.findAllFiltered(null, null, publisherId, SaleType.DIRECT_SALE);
+                service.findAllFiltered(null, null, publisherId, SaleType.DIRECT_SALE, null);
 
         assertEquals(List.of(matchingDirectSale), result);
     }

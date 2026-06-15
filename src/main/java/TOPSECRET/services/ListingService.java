@@ -163,7 +163,9 @@ public class ListingService {
             GenreId genreId,
             AuthorId authorId,
             PublisherID publisherId,
-            SaleType saleType) {
+            SaleType saleType,
+            BibliographicalDataId bibliographicalDataId
+            ) {
 
         List<Listing> listings = listingRepository.findAll();
 
@@ -190,6 +192,14 @@ public class ListingService {
             List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
             listings = filterByPublicationSampleIds(listings, pubIds);
+        }
+
+        if (bibliographicalDataId != null) {
+            List <PublicationSampleId> allPublicationIdsWithSpecificBdId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId));
+
+            List<Listing> allListingsWithSpecificBdId = listingRepository.findByPublicationSampleIdIn(allPublicationIdsWithSpecificBdId);
+
+            listings = filterByPublicationSampleIds(allListingsWithSpecificBdId, allPublicationIdsWithSpecificBdId);
         }
 
         return listings;
