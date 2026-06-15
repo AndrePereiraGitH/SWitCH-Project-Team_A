@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Tag, Package, Star, Calendar, User, BookOpen, Info } from "lucide-react";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
+import { usePurchases } from "../components/PurchasesContext";
 import { API_BASE_URL, CURRENT_USER_ID } from "../../api/constants";
 
 
@@ -11,6 +12,7 @@ export function ProductDetail() {
     const { productId } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useCart();
+    const { soldItemIds } = usePurchases();
 
 
     const [bidModalOpen, setBidModalOpen] = useState(false);
@@ -63,6 +65,7 @@ export function ProductDetail() {
     fetchProduct();
     }, [productId]);
 
+    const isSold = product ? soldItemIds.has(product.id) : false;
 
     if (loading) {
     return (
@@ -266,7 +269,12 @@ export function ProductDetail() {
 
                             {/* Action Buttons */}
                             <div className="flex gap-4">
-                                {product.isAuction ? (
+                                {isSold ? (
+                                        <div className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-gray-200 text-gray-500 rounded-xl font-semibold text-lg cursor-not-allowed select-none border-2 border-gray-300">
+                                            <span className="w-3 h-3 rounded-full bg-red-500 inline-block" />
+                                            Sold — No Longer Available
+                                        </div>
+                                    ) : product.isAuction ? (
                                     <button
                                         onClick={() => setBidModalOpen(true)}
                                         className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold text-lg shadow-lg"

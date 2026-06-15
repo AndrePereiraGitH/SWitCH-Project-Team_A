@@ -229,6 +229,10 @@ export function LandingPage() {
                     {sale.isAuction ? "Auction" : "Direct Sale"}
                   </span>
                 </div>
+                <div
+                  onClick={() => navigate(`/product/${sale.id}`)}
+                  className="cursor-pointer"
+                  >
                 <BookCard
                   title={sale.title}
                   author={sale.author}
@@ -239,6 +243,7 @@ export function LandingPage() {
                   auctionEndDate={sale.auctionEndDate}
                   imageUrl={sale.image}
                 />
+                </div>
                 <div className="mt-3">
                   {sale.isAuction ? (
                     <button

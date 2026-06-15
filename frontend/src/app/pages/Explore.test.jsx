@@ -15,6 +15,10 @@ vi.mock("../../api/constants", () => ({
     CURRENT_USER_ID: "user-123"
 }));
 
+vi.mock("../components/PurchasesContext", () => ({
+    usePurchases: () => ({ soldItemIds: new Set() })
+}));
+
 // ── Fixtures ──────────────────────────────────────────────────────────────────
 
 const mockGenres = [
@@ -303,6 +307,44 @@ describe("Explore", () => {
             await renderLoadedExplore();
             expect(screen.getAllByText("Direct Sale").length).toBeGreaterThan(0);
             expect(screen.getAllByText("Auction").length).toBeGreaterThan(0);
+        });
+    });
+
+    // ── Sold State ──
+    describe("Sold State", () => {
+        test("shows Sold button for purchased items", async () => {
+            vi.mock("../components/PurchasesContext", () => ({
+                usePurchases: () => ({ soldItemIds: new Set(["1"]) })
+            }));
+
+            await renderLoadedExplore();
+
+            const soldButtons = screen.getAllByText("Sold");
+            expect(soldButtons.length).toBeGreaterThan(0);
+        });
+
+        test("shows Add to Cart button for non-purchased direct sale items", async () => {
+            await renderLoadedExplore();
+
+            const addToCartButtons = screen.getAllByText("Add to Cart");
+            expect(addToCartButtons.length).toBeGreaterThan(0);
+        });
+
+        test("shows Make Offer button for non-purchased auction items", async () => {
+            await renderLoadedExplore();
+
+            expect(screen.getByText("Make Offer")).toBeInTheDocument();
+        });
+
+        test("Sold button is disabled", async () => {
+            vi.mock("../components/PurchasesContext", () => ({
+                usePurchases: () => ({ soldItemIds: new Set(["1"]) })
+            }));
+
+            await renderLoadedExplore();
+
+            const soldButtons = screen.getAllByRole("button", { name: /sold/i });
+            soldButtons.forEach(btn => expect(btn).toBeDisabled());
         });
     });
 
