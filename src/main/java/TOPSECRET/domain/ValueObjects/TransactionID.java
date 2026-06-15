@@ -1,6 +1,7 @@
 package TOPSECRET.domain.ValueObjects;
 
 import TOPSECRET.ddd.DomainID;
+import jakarta.persistence.Embeddable;
 
 /**
  * Represents a unique identifier for a Transaction.
@@ -12,7 +13,7 @@ import TOPSECRET.ddd.DomainID;
  * Two {@code TransactionID} instances are considered equal if their
  * underlying ID values are equal.
  */
-
+@Embeddable
 public class TransactionID implements DomainID {
 
     private final String transaction_id;

@@ -1,38 +1,55 @@
 package TOPSECRET.domain.ValueObjects;
 
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 /**
  * Represents payment details captured during a direct sale transaction.
  * <p>
  * No payment validation (e.g. Luhn check, expiry logic) is performed.
  * Only structural presence of each field is enforced.
  */
-public record PaymentDetails(String _cardHolderName, String _maskedCardNumber, String _expiryMonth,
-                             String _expiryYear) {
+@Embeddable
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class PaymentDetails {
+
+    private String _cardHolderName;
+    private String _maskedCardNumber;
+    private String _expiryMonth;
+    private String _expiryYear;
 
     /**
      * Constructs a {@code PaymentDetails} instance.
      *
-     * @param _cardHolderName   the name on the card; must not be null or blank
-     * @param _maskedCardNumber the masked card number (e.g. "**** **** **** 1234"); must not be null or blank
-     * @param _expiryMonth      the two-digit expiry month (e.g. "09"); must not be null or blank
-     * @param _expiryYear       the four-digit expiry year (e.g. "2027"); must not be null or blank
+     * @param cardHolderName   the name on the card; must not be null or blank
+     * @param maskedCardNumber the masked card number (e.g. "**** **** **** 1234"); must not be null or blank
+     * @param expiryMonth      the two-digit expiry month (e.g. "09"); must not be null or blank
+     * @param expiryYear       the four-digit expiry year (e.g. "2027"); must not be null or blank
      * @throws IllegalArgumentException if any field is null or blank
      */
-    public PaymentDetails {
+    public PaymentDetails(String cardHolderName, String maskedCardNumber,
+                          String expiryMonth, String expiryYear) {
 
-        if (_cardHolderName == null || _cardHolderName.isBlank()) {
+        if (cardHolderName == null || cardHolderName.isBlank()) {
             throw new IllegalArgumentException("Card holder name must not be null or blank");
         }
-        if (_maskedCardNumber == null || _maskedCardNumber.isBlank()) {
+        if (maskedCardNumber == null || maskedCardNumber.isBlank()) {
             throw new IllegalArgumentException("Masked card number must not be null or blank");
         }
-        if (_expiryMonth == null || _expiryMonth.isBlank()) {
+        if (expiryMonth == null || expiryMonth.isBlank()) {
             throw new IllegalArgumentException("Expiry month must not be null or blank");
         }
-        if (_expiryYear == null || _expiryYear.isBlank()) {
+        if (expiryYear == null || expiryYear.isBlank()) {
             throw new IllegalArgumentException("Expiry year must not be null or blank");
         }
 
+        this._cardHolderName = cardHolderName;
+        this._maskedCardNumber = maskedCardNumber;
+        this._expiryMonth = expiryMonth;
+        this._expiryYear = expiryYear;
     }
 
     public String cardHolderName() { return _cardHolderName; }
