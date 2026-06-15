@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Tag, Package, Star, Calendar, User, BookOpen, Info } from "lucide-react";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
+import { usePurchases } from "../components/PurchasesContext";
 import { API_BASE_URL, CURRENT_USER_ID } from "../../api/constants";
 
 
@@ -11,6 +12,7 @@ export function ProductDetail() {
     const { productId } = useParams();
     const navigate = useNavigate();
     const { addToCart } = useCart();
+    const { soldItemIds } = usePurchases();
 
 
     const [bidModalOpen, setBidModalOpen] = useState(false);
@@ -95,6 +97,7 @@ export function ProductDetail() {
     fetchProduct();
     }, [productId]);
 
+    const isSold = product ? soldItemIds.has(product.id) : false;
 
     if (loading) {
     return (
@@ -317,23 +320,23 @@ export function ProductDetail() {
                             {/* Action Buttons */}
                             <div className="flex gap-4">
                                 {product.isAuction ? (
-                                        product.auctionStatus === "ACTIVE" ? (
-                                            <button
-                                                onClick={() => setBidModalOpen(true)}
-                                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold text-lg shadow-lg"
-                                            >
-                                                <Tag className="w-6 h-6" />
-                                                Make Offer
-                                            </button>
-                                        ) : (
-                                            <button
-                                                disabled
-                                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-muted text-muted-foreground rounded-xl font-semibold text-lg cursor-not-allowed"
-                                            >
-                                                <Tag className="w-6 h-6" />
-                                                {product.auctionStatus === "SCHEDULED" ? "Starts Soon" : "Auction Ended"}
-                                            </button>
-                                        )
+                                    product.auctionStatus === "ACTIVE" ? (
+                                        <button
+                                            onClick={() => setBidModalOpen(true)}
+                                            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold text-lg shadow-lg"
+                                        >
+                                            <Tag className="w-6 h-6" />
+                                            Make Offer
+                                        </button>
+                                    ) : (
+                                        <button
+                                            disabled
+                                            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-muted text-muted-foreground rounded-xl font-semibold text-lg cursor-not-allowed"
+                                        >
+                                            <Tag className="w-6 h-6" />
+                                            {product.auctionStatus === "SCHEDULED" ? "Starts Soon" : "Auction Ended"}
+                                        </button>
+                                    )
                                 ) : (
                                     <button
                                         onClick={() => {

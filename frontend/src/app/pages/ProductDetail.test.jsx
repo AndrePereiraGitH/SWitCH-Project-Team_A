@@ -31,6 +31,10 @@ vi.mock("../components/CartContext", () => ({
     }),
 }));
 
+vi.mock("../components/PurchasesContext", () => ({
+    usePurchases: () => ({ soldItemIds: new Set() })
+}));
+
 vi.mock("../../api/constants", () => ({
     API_BASE_URL: "http://localhost:8081",
     CURRENT_USER_ID: "user-001",
@@ -283,6 +287,24 @@ describe("ProductDetail", () => {
             expect(screen.getByText("Book")).toBeInTheDocument();
         });
     });
+    describe("Sold State", () => {
+
+        test("shows Add to Cart button when item is not sold", async () => {
+            await renderLoadedProduct("1");
+            expect(screen.getByRole("button", { name: /Add to Cart/i })).toBeInTheDocument();
+        });
+
+        test("shows Make Offer button for auction when item is not sold", async () => {
+            await renderLoadedProduct("2");
+            expect(screen.getByRole("button", { name: /Make Offer/i })).toBeInTheDocument();
+        });
+
+        test("does not show Sold banner when item has not been purchased", async () => {
+            await renderLoadedProduct("1");
+            expect(screen.queryByText(/Sold — No Longer Available/i)).not.toBeInTheDocument();
+        });
+    });
+
 
     test("renders disabled button when auction is not active", async () => {
         global.fetch = vi.fn(async (url) => {
