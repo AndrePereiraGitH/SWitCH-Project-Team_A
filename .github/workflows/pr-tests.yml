@@ -292,11 +292,99 @@ jobs:
               issue_number: context.issue.number,
               body
             });
+            
+
+  # ── US073 ── Container image vulnerability scan ─────────────────────────────
+  container-image-scan:
+    runs-on: ubuntu-latest
+    needs: []
+    permissions:
+      contents: read
+      actions: write
+      pull-requests: write
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -t mite-lovers-backend:scan .
+
+      - name: Build frontend image
+        run: docker build -t mite-lovers-frontend:scan ./frontend
+
+      - name: Trivy scan — backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: mite-lovers-backend:scan
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+          output: trivy-backend.txt
+
+      - name: Trivy scan — frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: mite-lovers-frontend:scan
+          format: table
+          exit-code: '1'
+          severity: CRITICAL,HIGH
+          output: trivy-frontend.txt
+
+      - name: Upload Trivy backend report
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-backend-report
+          path: trivy-backend.txt
+
+      - name: Upload Trivy frontend report
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-frontend-report
+          path: trivy-frontend.txt
+
+      - name: Publish Trivy findings to PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            const backend = fs.existsSync('trivy-backend.txt')
+              ? fs.readFileSync('trivy-backend.txt', 'utf8')
+              : 'No report generated.';
+            const frontend = fs.existsSync('trivy-frontend.txt')
+              ? fs.readFileSync('trivy-frontend.txt', 'utf8')
+              : 'No report generated.';
+
+            const body = [
+              '## Trivy Container Scan Results',
+              '',
+              '### Backend',
+              '```',
+              backend.slice(0, 3000),
+              '```',
+              '',
+              '### Frontend',
+              '```',
+              frontend.slice(0, 3000),
+              '```',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
+
 
   # ── US051 + US057 ── Aggregated gate + explicit integration criteria ─────────
   pr-validation:
     runs-on: ubuntu-latest
-    needs: [build-and-test, static-analysis-and-security, secret-detection, dependency-scan]
+    needs: [build-and-test, static-analysis-and-security, secret-detection, dependency-scan, container-image-scan]
     if: success()
     permissions:
       contents: read
