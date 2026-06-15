@@ -105,6 +105,6 @@ public class TransactionDM {
         this.shippingAddress = Objects.requireNonNull(shippingAddress, "ShippingAddress cannot be null");
         this.paymentDetails  = Objects.requireNonNull(paymentDetails,  "PaymentDetails cannot be null");
         this.status          = Objects.requireNonNull(status,          "TransactionStatus cannot be null");
-        this.listingIds      = Objects.requireNonNull(listingIds,      "ListingIds cannot be null");
+        this.listingIds      = List.copyOf(Objects.requireNonNull(listingIds, "ListingIds cannot be null"));
     }
 }

@@ -66,14 +66,29 @@ class TransactionAssemblerTest {
 
     @BeforeEach
     void setup() {
-        transactionIdDouble    = mock(TransactionID.class);
-        buyerIdDouble          = mock(UserId.class);
-        priceDouble            = mock(Price.class);
-        transactionDate        = LocalDateTime.now().minusMinutes(1);
-        shippingAddressDouble  = mock(Address.class);
-        paymentDetailsDouble   = mock(PaymentDetails.class);
-        status                 = TransactionStatus.COMPLETED;
-        listingIds             = List.of(mock(ListingId.class));
+        transactionIdDouble   = mock(TransactionID.class);
+        buyerIdDouble         = mock(UserId.class);
+        priceDouble           = mock(Price.class);
+        transactionDate       = LocalDateTime.now().minusMinutes(1);
+        shippingAddressDouble = mock(Address.class);
+        paymentDetailsDouble  = mock(PaymentDetails.class);
+        status                = TransactionStatus.COMPLETED;
+        listingIds            = List.of(mock(ListingId.class));
+    }
+
+    private Transaction mockTransaction() {
+        Transaction transactionDouble = mock(Transaction.class);
+
+        when(transactionDouble.id()).thenReturn(transactionIdDouble);
+        when(transactionDouble.getBuyerId()).thenReturn(buyerIdDouble);
+        when(transactionDouble.getPrice()).thenReturn(priceDouble);
+        when(transactionDouble.getTransactionDate()).thenReturn(transactionDate);
+        when(transactionDouble.getShippingAddress()).thenReturn(shippingAddressDouble);
+        when(transactionDouble.getPaymentDetails()).thenReturn(paymentDetailsDouble);
+        when(transactionDouble.getStatus()).thenReturn(status);
+        when(transactionDouble.getListingIds()).thenReturn(listingIds);
+
+        return transactionDouble;
     }
 
     // =========================================================================
@@ -93,33 +108,120 @@ class TransactionAssemblerTest {
     // =========================================================================
 
     @Test
-    void toDM_shouldReturnAValidDataModel() {
+    void toDM_shouldReturnNotNullDataModel() {
 
         // Arrange
-        Transaction transactionDouble = mock(Transaction.class);
-
-        when(transactionDouble.id()).thenReturn(transactionIdDouble);
-        when(transactionDouble.getBuyerId()).thenReturn(buyerIdDouble);
-        when(transactionDouble.getPrice()).thenReturn(priceDouble);
-        when(transactionDouble.getTransactionDate()).thenReturn(transactionDate);
-        when(transactionDouble.getShippingAddress()).thenReturn(shippingAddressDouble);
-        when(transactionDouble.getPaymentDetails()).thenReturn(paymentDetailsDouble);
-        when(transactionDouble.getStatus()).thenReturn(status);
-        when(transactionDouble.getListingIds()).thenReturn(listingIds);
+        Transaction transactionDouble = mockTransaction();
 
         // Act
         TransactionDM result = assembler.toDM(transactionDouble);
 
         // Assert
         assertNotNull(result);
-        assertEquals(transactionIdDouble,   result.getTransactionId());
-        assertEquals(buyerIdDouble,         result.getBuyerId());
-        assertEquals(priceDouble,           result.getPrice());
-        assertEquals(transactionDate,       result.getTransactionDate());
+    }
+
+    @Test
+    void toDM_shouldMapTransactionId() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
+        assertEquals(transactionIdDouble, result.getTransactionId());
+    }
+
+    @Test
+    void toDM_shouldMapBuyerId() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
+        assertEquals(buyerIdDouble, result.getBuyerId());
+    }
+
+    @Test
+    void toDM_shouldMapPrice() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
+        assertEquals(priceDouble, result.getPrice());
+    }
+
+    @Test
+    void toDM_shouldMapTransactionDate() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
+        assertEquals(transactionDate, result.getTransactionDate());
+    }
+
+    @Test
+    void toDM_shouldMapShippingAddress() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
         assertEquals(shippingAddressDouble, result.getShippingAddress());
-        assertEquals(paymentDetailsDouble,  result.getPaymentDetails());
-        assertEquals(status,                result.getStatus());
-        assertEquals(listingIds,            result.getListingIds());
+    }
+
+    @Test
+    void toDM_shouldMapPaymentDetails() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
+        assertEquals(paymentDetailsDouble, result.getPaymentDetails());
+    }
+
+    @Test
+    void toDM_shouldMapStatus() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
+        assertEquals(status, result.getStatus());
+    }
+
+    @Test
+    void toDM_shouldMapListingIds() {
+
+        // Arrange
+        Transaction transactionDouble = mockTransaction();
+
+        // Act
+        TransactionDM result = assembler.toDM(transactionDouble);
+
+        // Assert
+        assertEquals(listingIds, result.getListingIds());
     }
 
     @Test
