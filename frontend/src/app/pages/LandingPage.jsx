@@ -1,9 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { BookOpen, ShoppingBag, List, Users, ArrowRight, Star, Shield, Heart, Search, ShoppingCart, Tag } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookCard } from "../components/BookCard";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
+import { API_BASE_URL } from "../../api/constants";
 
 export function LandingPage() {
   const { addToCart } = useCart();
@@ -12,6 +13,8 @@ export function LandingPage() {
   const [bidModalOpen, setBidModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const [featuredSales, setFeaturedSales] = useState([]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -19,46 +22,39 @@ export function LandingPage() {
     }
   };
 
-  const mockSales = [
-    {
-      id: "1",
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      genre: "Fiction",
-      price: 12.5,
-      condition: "Very Good",
-      isAuction: false
-    },
-    {
-      id: "2",
-      title: "1984",
-      author: "George Orwell",
-      genre: "Fiction",
-      price: 15,
-      condition: "Good",
-      isAuction: true,
-      auctionEndDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: "3",
-      title: "To Kill a Mockingbird",
-      author: "Harper Lee",
-      genre: "Fiction",
-      price: 18,
-      condition: "Like New",
-      isAuction: false
-    },
-    {
-      id: "4",
-      title: "Pride and Prejudice",
-      author: "Jane Austen",
-      genre: "Romance",
-      price: 10,
-      condition: "Good",
-      isAuction: true,
-      auctionEndDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+  useEffect(() => {
+    async function fetchFeaturedListings() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/listings`);
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch listings");
+        }
+
+        const data = await res.json();
+
+        const mapped = data.map(listing => ({
+          id: listing.id,
+          title: listing.listingTitle,
+          author: listing.authors?.join(", ") ?? "Unknown",
+          genre: listing.genre?.join(", ") ?? "",
+          price: Number(listing.price),
+          condition: listing.condition,
+          isAuction: listing.saleType === "AUCTION",
+        }));
+
+        const shuffled = [...mapped].sort(() => Math.random() - 0.5);
+
+        setFeaturedSales(shuffled.slice(0, 4));
+
+      } catch (error) {
+        console.error("Error loading featured listings:", error);
+      }
     }
-  ];
+
+    fetchFeaturedListings();
+  }, []);
+ 
 
   return (
     <div className="min-h-screen">
@@ -222,7 +218,7 @@ export function LandingPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {mockSales.map(sale => (
+            {featuredSales.map(sale => (
               <div key={sale.id} className="relative group flex flex-col">
                 <div className="absolute top-3 right-3 z-10">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
