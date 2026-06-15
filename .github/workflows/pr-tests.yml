@@ -92,7 +92,6 @@ jobs:
         if: always()
         run: mvn pmd:check --no-transfer-progress || true
 
-
       - name: Semgrep SAST scan (gate)
         run: |
           python3 -m pip install semgrep --quiet
@@ -292,7 +291,6 @@ jobs:
               issue_number: context.issue.number,
               body
             });
-            
 
   # ── US073 ── Container image vulnerability scan ─────────────────────────────
   container-image-scan:
@@ -313,7 +311,8 @@ jobs:
       - name: Build frontend image
         run: docker build -t mite-lovers-frontend:scan ./frontend
 
-      - name: Trivy scan — backend
+      # Backend — table (for PR comment)
+      - name: Trivy scan — backend (table)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: mite-lovers-backend:scan
@@ -322,7 +321,19 @@ jobs:
           severity: CRITICAL,HIGH
           output: trivy-backend.txt
 
-      - name: Trivy scan — frontend
+      # Backend — HTML (for artifact)
+      - name: Trivy scan — backend (HTML)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: mite-lovers-backend:scan
+          format: template
+          template: '@/contrib/html.tpl'
+          exit-code: '0'
+          severity: CRITICAL,HIGH
+          output: trivy-backend.html
+
+      # Frontend — table (for PR comment)
+      - name: Trivy scan — frontend (table)
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: mite-lovers-frontend:scan
@@ -331,19 +342,34 @@ jobs:
           severity: CRITICAL,HIGH
           output: trivy-frontend.txt
 
+      # Frontend — HTML (for artifact)
+      - name: Trivy scan — frontend (HTML)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: mite-lovers-frontend:scan
+          format: template
+          template: '@/contrib/html.tpl'
+          exit-code: '0'
+          severity: CRITICAL,HIGH
+          output: trivy-frontend.html
+
       - name: Upload Trivy backend report
         if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: trivy-backend-report
-          path: trivy-backend.txt
+          path: |
+            trivy-backend.txt
+            trivy-backend.html
 
       - name: Upload Trivy frontend report
         if: always() && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: trivy-frontend-report
-          path: trivy-frontend.txt
+          path: |
+            trivy-frontend.txt
+            trivy-frontend.html
 
       - name: Publish Trivy findings to PR
         if: always() && github.event_name == 'pull_request'
@@ -371,6 +397,8 @@ jobs:
               '```',
               frontend.slice(0, 3000),
               '```',
+              '',
+              '> HTML reports available under **Actions → this run → Artifacts** (`trivy-backend-report`, `trivy-frontend-report`)',
             ].join('\n');
 
             await github.rest.issues.createComment({
@@ -379,7 +407,6 @@ jobs:
               issue_number: context.issue.number,
               body
             });
-
 
   # ── US051 + US057 ── Aggregated gate + explicit integration criteria ─────────
   pr-validation:
@@ -413,11 +440,15 @@ jobs:
           echo "Dependency scan passed"
           echo "     - OWASP Dependency-Check (CVSS threshold: 7)"
           echo ""
+          echo "Container scan passed"
+          echo "     - Trivy backend  (CRITICAL,HIGH — HTML report uploaded)"
+          echo "     - Trivy frontend (CRITICAL,HIGH — HTML report uploaded)"
+          echo ""
           echo "════════════════════════════════════════"
           echo "   PR cleared for merge review          "
           echo "════════════════════════════════════════"
 
-  # ── US052 ── Publish consolidated quality summary to PR ─────────────────
+      # ── US052 ── Publish consolidated quality summary to PR ─────────────────
       - name: Publish quality summary to PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
@@ -435,17 +466,18 @@ jobs:
               '| static-analysis-and-security |  Reported | PMD |',
               '| secret-detection |  Passed | Gitleaks |',
               '| dependency-scan |  Passed | OWASP |',
+              '| container-image-scan |  Reported | Trivy (backend) |',
+              '| container-image-scan |  Reported | Trivy (frontend) |',
               '',
               '>  All reports available under **Actions → this run → Artifacts**',
             ].join('\n');
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
               body
             });
-        
 
   # ── US050 ── Versioned artifact generation ──────────────────────────────────
   publish-artifact:
