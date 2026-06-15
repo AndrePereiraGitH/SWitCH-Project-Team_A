@@ -234,12 +234,6 @@ describe("Explore", () => {
             expect(addToCartButtons.length).toBeGreaterThan(0);
         });
 
-        test("shows Make Offer button for non-purchased auction items", async () => {
-            await renderLoadedExplore();
-
-            expect(screen.getByText("Make Offer")).toBeInTheDocument();
-        });
-
         test("Sold button is disabled", async () => {
             vi.mock("../components/PurchasesContext", () => ({
                 usePurchases: () => ({ soldItemIds: new Set(["1"]) })
@@ -617,5 +611,74 @@ describe("Explore", () => {
             fireEvent.click(buttons[0]);
             expect(mockAddToCart).toHaveBeenCalledTimes(1);
         });
+    });
+
+    // ── Auctions and Bids ──
+    describe("Auction Ended state", () => {
+        test("shows Auction Ended button for auctions with terminal status", async () => {
+            setupFetch();
+            global.fetch = vi.fn(async (url) => {
+                if (url.includes("/genres")) return { ok: true, json: async () => mockGenres };
+                if (url.includes("/bibliographicalDatas")) return { ok: true, json: async () => mockPublications };
+                if (url.includes("/auctions")) {
+                    return {
+                        ok: true,
+                        json: async () => [{
+                            ...mockAuctions[0],
+                            auctionStatus: "BOUGHT_OUT"
+                        }]
+                    };
+                }
+                if (url.includes("/listings")) return { ok: true, json: async () => mockListings };
+                return { ok: false, status: 404 };
+            });
+
+            await renderLoadedExplore();
+
+            expect(screen.getByText("Auction Ended")).toBeInTheDocument();
+            expect(screen.queryByText("Make Offer")).not.toBeInTheDocument();
+        });
+
+        test("Auction Ended button is disabled", async () => {
+            global.fetch = vi.fn(async (url) => {
+                if (url.includes("/genres")) return { ok: true, json: async () => mockGenres };
+                if (url.includes("/bibliographicalDatas")) return { ok: true, json: async () => mockPublications };
+                if (url.includes("/auctions")) {
+                    return {
+                        ok: true,
+                        json: async () => [{
+                            ...mockAuctions[0],
+                            auctionStatus: "ENDED_WITHOUT_BIDS"
+                        }]
+                    };
+                }
+                if (url.includes("/listings")) return { ok: true, json: async () => mockListings };
+                return { ok: false, status: 404 };
+            });
+
+            await renderLoadedExplore();
+
+            const button = screen.getByRole("button", { name: /Auction Ended/i });
+            expect(button).toBeDisabled();
+        });
+    });
+
+    test("auction listing remains visible even when ended", async () => {
+        global.fetch = vi.fn(async (url) => {
+            if (url.includes("/genres")) return { ok: true, json: async () => mockGenres };
+            if (url.includes("/bibliographicalDatas")) return { ok: true, json: async () => mockPublications };
+            if (url.includes("/auctions")) {
+                return {
+                    ok: true,
+                    json: async () => [{ ...mockAuctions[0], auctionStatus: "CANCELLED" }]
+                };
+            }
+            if (url.includes("/listings")) return { ok: true, json: async () => mockListings };
+            return { ok: false, status: 404 };
+        });
+
+        await renderLoadedExplore();
+
+        expect(screen.getByText(/Harry Potter/i)).toBeInTheDocument();
     });
 });

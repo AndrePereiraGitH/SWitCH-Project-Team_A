@@ -7,6 +7,8 @@ import {useCart} from "../components/CartContext";
 import {usePurchases} from "../components/PurchasesContext";
 import {API_BASE_URL, CURRENT_USER_ID} from "../../api/constants";
 
+const terminalStatuses = ["ENDED_WITH_WINNER", "ENDED_WITHOUT_BIDS", "BOUGHT_OUT", "CANCELLED"];
+
 export function Explore() {
     const navigate = useNavigate();
     const {addToCart} = useCart();
@@ -53,21 +55,9 @@ export function Explore() {
                 const genresData = await genresRes.json();
                 const listingsData = await listingsRes.json();
                 const bdData = await bdRes.json();
-
                 const auctionsData = await auctionRes.json();
-                const terminalStatuses = ["ENDED_WITH_WINNER", "ENDED_WITHOUT_BIDS", "BOUGHT_OUT", "CANCELLED"];
-                const auctionsByListingId = Object.fromEntries(
-                    auctionsData
-                        .filter(a => ["ACTIVE", "DRAFT", "SCHEDULED"].includes(a.auctionStatus))
-                        .map(a => [a.listingId, a])
-                );
-
-                const mapped = listingsData
-                    .filter(listing => {
-                        if (listing.saleType !== "AUCTION") return true;
-                        return auctionsByListingId[listing.id] != null;
-                    })
-                    .map(listing => mapListingToSale(listing, auctionsByListingId));
+                const auctionsByListingId = Object.fromEntries(auctionsData.map(a => [a.listingId, a]));
+                const mapped = listingsData.map(listing => mapListingToSale(listing, auctionsByListingId));
 
                 setGenres(genresData);
                 setAllSales(mapped);
@@ -439,6 +429,13 @@ export function Explore() {
                                                 <Tag className="w-5 h-5" />
                                                 Make Offer
                                             </button>
+                                        ) : terminalStatuses.includes(sale.auctionStatus) ? (
+                                            <button
+                                                disabled
+                                                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
+                                            >
+                                                Auction Ended
+                                            </button>
                                         ) : (
                                             <button
                                                 disabled
@@ -516,7 +513,7 @@ export function Explore() {
                   setBidModalOpen(false);
                   setSales(prev => prev.map(s =>
                       s.id === selectedItem.id
-                          ? {...s, price: selectedItem.buyoutPrice}
+                          ? {...s, price: selectedItem.buyoutPrice, auctionStatus: "BOUGHT_OUT"}
                           : s
                   ));
                   addToCart({
