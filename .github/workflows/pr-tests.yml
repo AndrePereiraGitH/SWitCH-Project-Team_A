@@ -311,6 +311,13 @@ jobs:
       - name: Build frontend image
         run: docker build -t mite-lovers-frontend:scan ./frontend
 
+      # Download Trivy HTML template from upstream
+      - name: Download Trivy HTML template
+        run: |
+          mkdir -p .trivy-templates
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl \
+            -o .trivy-templates/html.tpl
+
       # Backend — table (for PR comment)
       - name: Trivy scan — backend (table)
         uses: aquasecurity/trivy-action@master
@@ -327,7 +334,7 @@ jobs:
         with:
           image-ref: mite-lovers-backend:scan
           format: template
-          template: '@/usr/local/share/trivy/templates/html.tpl'
+          template: '@.trivy-templates/html.tpl'
           exit-code: '0'
           severity: CRITICAL,HIGH
           output: trivy-backend.html
@@ -348,7 +355,7 @@ jobs:
         with:
           image-ref: mite-lovers-frontend:scan
           format: template
-          template: '@/usr/local/share/trivy/templates/html.tpl'
+          template: '@.trivy-templates/html.tpl'
           exit-code: '0'
           severity: CRITICAL,HIGH
           output: trivy-frontend.html
