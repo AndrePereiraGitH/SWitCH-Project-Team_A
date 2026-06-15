@@ -2,6 +2,7 @@ package TOPSECRET.domain.Transaction;
 
 import TOPSECRET.domain.Enum.TransactionStatus;
 import TOPSECRET.domain.ValueObjects.*;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
  * Factory responsible for creating and reconstructing {@link Transaction}
  * aggregate instances.
  */
+@Component
 public final class TransactionFactory {
 
 

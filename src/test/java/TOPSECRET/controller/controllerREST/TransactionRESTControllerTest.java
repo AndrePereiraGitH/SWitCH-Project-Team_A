@@ -392,7 +392,6 @@ class TransactionRESTControllerTest {
         when(transaction.id()).thenReturn(id);
         when(id.getId()).thenReturn("tx-1");
         when(transaction.getBuyerId()).thenReturn(buyerId);
-        when(buyerId.getUserId()).thenReturn("buyer-1");
 
         return transaction;
     }
