@@ -9,7 +9,7 @@ RUN mvn package -DskipTests -B
 
 
 # Stage 2: Runtime
-FROM eclipse-temurin:17.0.11_9-jre-alpine AS runtime
+FROM eclipse-temurin:17.0.14_7-jre-alpine AS runtime
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 COPY --from=build /app/target/TOPSECRET-1.0-SNAPSHOT.jar app.jar
