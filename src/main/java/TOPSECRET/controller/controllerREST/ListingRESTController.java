@@ -202,7 +202,8 @@ public class ListingRESTController {
             @RequestParam(required = false) String genreId,
             @RequestParam(required = false) String authorId,
             @RequestParam(required = false) String publisherId,
-            @RequestParam(required = false) String saleType
+            @RequestParam(required = false) String saleType,
+            @RequestParam(required = false) String bibliographicalDataId
     ) {
 
         try {
@@ -210,7 +211,8 @@ public class ListingRESTController {
                     genreId != null ? ListingMapper.toGenreId(genreId) : null,
                     authorId != null ? AuthorMapper.toAuthorId(authorId) : null,
                     publisherId != null ? ListingMapper.toPublisherId(publisherId) : null,
-                    saleType != null ? ListingMapper.toSaleType(saleType) : null
+                    saleType != null ? ListingMapper.toSaleType(saleType) : null,
+                    bibliographicalDataId != null ? ListingMapper.toBibliographicalDataId(bibliographicalDataId) : null
             );
 
             List<ListingDetailsDTO> allDTO = new ArrayList<>();

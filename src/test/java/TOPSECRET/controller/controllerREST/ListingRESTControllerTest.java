@@ -433,14 +433,14 @@ class ListingRESTControllerTest {
         Listing listing = fullListingGraphDouble();
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
-        when(listingService.findAllFiltered(null, null, null, null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of(listing));
         publicLinks(dto);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
             toDetailsDTODouble(mockedMapper, listing, dto);
 
             // Act
-            ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null);
+            ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -453,14 +453,14 @@ class ListingRESTControllerTest {
         Listing listing = fullListingGraphDouble();
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
-        when(listingService.findAllFiltered(null, null, null, null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of(listing));
         publicLinks(dto);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
             toDetailsDTODouble(mockedMapper, listing, dto);
 
             // Act
-            ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null);
+            ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
 
             // Assert
             assertEquals(1, response.getBody().size());
@@ -473,14 +473,14 @@ class ListingRESTControllerTest {
         Listing listing = fullListingGraphDouble();
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
-        when(listingService.findAllFiltered(null, null,null,null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of(listing));
         publicLinks(dto);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
             toDetailsDTODouble(mockedMapper, listing, dto);
 
             // Act
-            ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null);
+            ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
 
             // Assert
             assertSame(dto, response.getBody().get(0));
@@ -490,10 +490,10 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnOkStatus_whenNoListingsExist() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null)).thenReturn(List.of());
+        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of());
 
         // Act
-        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null);
+        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -502,10 +502,10 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnEmptyBody_whenNoListingsExist() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null)).thenReturn(List.of());
+        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of());
 
         // Act
-        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null);
+        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
 
         // Assert
         assertTrue(response.getBody().isEmpty());
@@ -517,13 +517,13 @@ class ListingRESTControllerTest {
         Listing listing = mock(Listing.class);
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
 
-        when(listingService.findAllFiltered(null, null,null,null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of(listing));
         when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
         when(publicationService.findById(publicationSampleId))
                 .thenThrow(new EntityNotFoundException());
 
         // Act
-        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null);
+        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -532,10 +532,10 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null)).thenThrow(new RuntimeException());
+        when(listingService.findAllFiltered(null, null,null,null, null)).thenThrow(new RuntimeException());
 
         // Act
-        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null);
+        ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
 
         // Assert
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -544,12 +544,12 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnBadRequest_whenIllegalArgumentExceptionOccurs() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null))
+        when(listingService.findAllFiltered(null, null,null,null, null))
                 .thenThrow(new IllegalArgumentException());
 
         // Act
         ResponseEntity<List<ListingDetailsDTO>> response =
-                controller.findAll(null, null, null, null);
+                controller.findAll(null, null, null, null, null);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
