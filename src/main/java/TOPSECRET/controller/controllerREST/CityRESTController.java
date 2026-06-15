@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,18 +71,9 @@ public class CityRESTController {
     public ResponseEntity<ResponseCityDTO> createCity(
             @RequestBody RequestCityDTO dto,
             @RequestParam UserId userId) {
-
         try {
             City city = service.createAndSave(dto.countryName(), dto.cityName(), userId);
-
-            ResponseCityDTO result = CityMapper.toDTO(city, city.getCityName());
-
-            List<Link> links = new ArrayList<>(provider.getLinks(userId));
-            links.add(linkTo(methodOn(CityRESTController.class)
-                    .getCityById(city.id().toString())).withSelfRel());
-            links.forEach(result::add);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(result);
+            return ResponseEntity.status(HttpStatus.CREATED).body(toCityDTO(city, userId));
 
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -109,16 +101,12 @@ public class CityRESTController {
 
             List<ResponseCityDTO> result = new ArrayList<>();
             for (City city : cities) {
-                ResponseCityDTO dto = CityMapper.toDTO(city, city.getCityName());
-                dto.add(linkTo(methodOn(CityRESTController.class)
-                        .getCityById(city.id().toString()))
-                        .withSelfRel());
-                result.add(dto);
+                result.add(toCityDTO(city));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -139,20 +127,50 @@ public class CityRESTController {
 
         try {
             City city = service.findById(new CityId(id));
-
-            ResponseCityDTO result = CityMapper.toDTO(city, city.getCityName());
-
-            result.add(linkTo(methodOn(CityRESTController.class)
-                    .getCityById(id)).withSelfRel());
-            result.add(linkTo(methodOn(CityRESTController.class)
-                    .getCities()).withRel("cities"));
-
-            return ResponseEntity.status(HttpStatus.OK).body(result);
+            return ResponseEntity.ok(toCityDTO(city));
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Builds a {@link ResponseCityDTO} from a {@link City} for public endpoints,
+     * enriching it with a self-link and a navigational link to the full city collection.
+     *
+     * <p>No user identity is required. Only public links are attached.</p>
+     *
+     * @param city the city to convert; must not be {@code null}
+     * @return the populated {@link ResponseCityDTO} with public links attached
+     */
+    private ResponseCityDTO toCityDTO(City city) {
+        ResponseCityDTO dto = CityMapper.toDTO(city, city.getCityName());
+        dto.add(linkTo(methodOn(CityRESTController.class)
+                .getCityById(city.id().toString())).withSelfRel());
+        dto.add(linkTo(methodOn(CityRESTController.class)
+                .getCities()).withRel("cities"));
+        return dto;
+    }
+
+    /**
+     * Builds a {@link ResponseCityDTO} from a {@link City} for authenticated endpoints,
+     * enriching it with a self-link and contextual HATEOAS links based on the requesting user.
+     *
+     * <p>Always attaches a self-link. Additional navigational links are resolved
+     * from the {@link CityLinkProvider} based on the user's identity and permissions.</p>
+     *
+     * @param city   the city to convert; must not be {@code null}
+     * @param userId the ID of the requesting user used to generate contextual links
+     * @return the populated {@link ResponseCityDTO} with contextual links attached
+     */
+    private ResponseCityDTO toCityDTO(City city, UserId userId) throws InstanceNotFoundException {
+        ResponseCityDTO dto = CityMapper.toDTO(city, city.getCityName());
+        List<Link> links = new ArrayList<>(provider.getLinks(userId));
+        links.add(linkTo(methodOn(CityRESTController.class)
+                .getCityById(city.id().toString())).withSelfRel());
+        links.forEach(dto::add);
+        return dto;
     }
 }

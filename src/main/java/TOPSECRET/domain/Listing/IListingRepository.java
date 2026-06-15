@@ -83,6 +83,14 @@ public interface IListingRepository {
      */
     List<ListingId> findIdsByPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds);
 
+    /**
+     * Retrieves all listings that contain at least one of the given publication sample IDs.
+     *
+     * @param publicationSampleIds the list of publication sample identifiers; must not be {@code null}
+     * @return a list of matching {@link Listing}s; never {@code null}, may be empty
+     */
+    List<Listing> findByPublicationSampleIdIn(List<PublicationSampleId> publicationSampleIds);
+
 
     // =========================================================================
     // Domain Operations

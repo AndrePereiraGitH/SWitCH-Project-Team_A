@@ -5,19 +5,22 @@ import { PublicationsProvider } from "./app/components/PublicationsContext";
 import { LibraryProvider } from "./app/components/LibraryContext";
 import { CartProvider } from "./app/components/CartContext";
 import { ListsProvider } from "./app/components/ListsContext";
+import { PurchasesProvider } from "./app/components/PurchasesContext";
 
 function AllProviders({ children }) {
     return (
         <AuthProvider>
             <PublicationsProvider>
                 <LibraryProvider>
-                    <CartProvider>
-                        <ListsProvider>
-                            <BrowserRouter>
-                                {children}
-                            </BrowserRouter>
-                        </ListsProvider>
-                    </CartProvider>
+                    <PurchasesProvider>
+                        <CartProvider>
+                            <ListsProvider>
+                                <BrowserRouter>
+                                    {children}
+                                </BrowserRouter>
+                            </ListsProvider>
+                        </CartProvider>
+                    </PurchasesProvider>
                 </LibraryProvider>
             </PublicationsProvider>
         </AuthProvider>

@@ -11,7 +11,6 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;import java.util.List;
@@ -147,6 +146,30 @@ public class ListingService {
             throw new IllegalArgumentException("publicationSamplesIds cannot be null");
         }
         return listingRepository.findIdsByPublicationSampleIdIn(publicationSamplesIds);
+    }
+
+    /**
+     * Retrieves all listings whose item list contains any of the given
+     * publication sample identifiers, regardless of sale type.
+     *
+     * <p>Both direct-sale and auction listings are included in the result.
+     * Use this method when filtering listings by a specific publication
+     * across all sale types.</p>
+     *
+     * @param publicationSamplesIds the list of publication sample identifiers to filter by;
+     *                              must not be {@code null} or empty
+     * @return a list of {@link Listing} instances matching any of the given identifiers;
+     *         never {@code null}, may be empty
+     * @throws IllegalArgumentException if {@code publicationSamplesIds} is {@code null} or empty
+     */
+    public List<Listing> findByPublicationSampleIdIn(List<PublicationSampleId> publicationSamplesIds) {
+        if (publicationSamplesIds == null || publicationSamplesIds.isEmpty()) {
+            throw new IllegalArgumentException("publicationSamplesIds cannot be null");
+        }
+
+        List<Listing> allListingsWithSpecificPubIds = listingRepository.findByPublicationSampleIdIn(publicationSamplesIds);
+
+        return allListingsWithSpecificPubIds;
     }
 
     /**
