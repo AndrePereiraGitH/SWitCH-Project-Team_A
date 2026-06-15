@@ -68,7 +68,7 @@ class TransactionRESTControllerTest {
 
             // Act
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request);
+                    controller.createTransaction(request, "buyer-1");
 
             // Assert
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -94,7 +94,7 @@ class TransactionRESTControllerTest {
 
             // Act
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request);
+                    controller.createTransaction(request, "buyer-1");
 
             // Assert
             assertSame(dto, response.getBody());
@@ -108,7 +108,7 @@ class TransactionRESTControllerTest {
         TransactionRequestDTO request = mock(TransactionRequestDTO.class);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId(any()))
+            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
                     .thenReturn(mock(UserId.class));
             mapper.when(() -> TransactionMapper.toPrice(any()))
                     .thenReturn(mock(Price.class));
@@ -126,7 +126,7 @@ class TransactionRESTControllerTest {
 
             // Act
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request);
+                    controller.createTransaction(request, "buyer-1");
 
             // Assert
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
@@ -140,7 +140,7 @@ class TransactionRESTControllerTest {
         TransactionRequestDTO request = mock(TransactionRequestDTO.class);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId(any()))
+            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
                     .thenReturn(mock(UserId.class));
             mapper.when(() -> TransactionMapper.toPrice(any()))
                     .thenReturn(mock(Price.class));
@@ -158,7 +158,7 @@ class TransactionRESTControllerTest {
 
             // Act
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request);
+                    controller.createTransaction(request, "buyer-1");
 
             // Assert
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -177,7 +177,7 @@ class TransactionRESTControllerTest {
 
             // Act
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request);
+                    controller.createTransaction(request, "buyer-1");
 
             // Assert
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -196,7 +196,7 @@ class TransactionRESTControllerTest {
 
             // Act
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request);
+                    controller.createTransaction(request, "buyer-1");
 
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -544,7 +544,6 @@ class TransactionRESTControllerTest {
     private TransactionRequestDTO validRequest() {
         TransactionRequestDTO request = mock(TransactionRequestDTO.class);
 
-        when(request.getBuyerId()).thenReturn("buyer-1");
         when(request.getPrice()).thenReturn("10.00");
         when(request.getTransactionDate()).thenReturn(LocalDateTime.now().minusMinutes(1).toString());
         when(request.getStreet()).thenReturn("Rua das Flores");
@@ -566,7 +565,7 @@ class TransactionRESTControllerTest {
             Transaction transaction,
             TransactionResponseDTO dto) {
 
-        mapper.when(() -> TransactionMapper.toUserId(request.getBuyerId()))
+        mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
                 .thenReturn(mock(UserId.class));
         mapper.when(() -> TransactionMapper.toPrice(request.getPrice()))
                 .thenReturn(mock(Price.class));

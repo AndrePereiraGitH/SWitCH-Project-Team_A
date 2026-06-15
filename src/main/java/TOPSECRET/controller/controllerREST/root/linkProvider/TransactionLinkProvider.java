@@ -18,8 +18,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * Provides HATEOAS links related to transaction operations.
  *
  * <p>This component is responsible for building the links that should be
- * exposed in transaction-related API responses. Since all authenticated
- * users can create and view transactions, no authorization policy is required.</p>
+ * exposed in transaction-related API responses. Links are divided into
+ * public links (available to all users) and buyer-specific links
+ * (scoped to a particular buyer's transactions).</p>
  */
 @Component
 public class TransactionLinkProvider implements RootLinkProvider {
@@ -58,7 +59,7 @@ public class TransactionLinkProvider implements RootLinkProvider {
         List<Link> links = new ArrayList<>();
 
         links.add(linkTo(methodOn(TransactionRESTController.class)
-                .createTransaction(null))
+                .createTransaction(null, null))
                 .withRel("create-transaction"));
 
         links.add(linkTo(methodOn(TransactionRESTController.class)

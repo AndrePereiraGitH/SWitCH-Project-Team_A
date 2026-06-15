@@ -65,11 +65,12 @@ public class TransactionRESTController {
      */
     @PostMapping("")
     public ResponseEntity<TransactionResponseDTO> createTransaction(
-            @RequestBody TransactionRequestDTO dto) {
+            @RequestBody TransactionRequestDTO dto,
+            @RequestParam String requesterId) {
 
         try {
             Transaction transaction = transactionService.createAndSave(
-                    TransactionMapper.toUserId(dto.getBuyerId()),
+                    TransactionMapper.toUserId(requesterId),
                     TransactionMapper.toPrice(dto.getPrice()),
                     TransactionMapper.toTransactionDate(dto.getTransactionDate()),
                     TransactionMapper.toAddress(dto.getStreet(), dto.getNumber(), dto.getZipCode(), dto.getCityId()),
