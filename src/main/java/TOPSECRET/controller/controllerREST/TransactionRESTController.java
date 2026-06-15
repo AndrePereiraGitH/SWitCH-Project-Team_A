@@ -12,9 +12,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +58,8 @@ public class TransactionRESTController {
      *
      * @param dto the request body containing all transaction information
      * @return {@code 201 CREATED} with the created transaction DTO,
+     *         {@code 403 FORBIDDEN} if the user does not have permission,
+     *         {@code 404 NOT FOUND} if the buyer does not exist,
      *         {@code 400 BAD REQUEST} if the request contains invalid data,
      *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
@@ -66,20 +68,23 @@ public class TransactionRESTController {
             @RequestBody TransactionRequestDTO dto) {
 
         try {
-            UserId buyerId           = TransactionMapper.toUserId(dto.getBuyerId());
-            Price price              = TransactionMapper.toPrice(dto.getPrice());
-            LocalDateTime date       = TransactionMapper.toTransactionDate(dto.getTransactionDate());
-            Address shippingAddress  = TransactionMapper.toAddress(dto.getStreet(), dto.getNumber(), dto.getZipCode(), dto.getCityId());
-            PaymentDetails payment   = TransactionMapper.toPaymentDetails(dto.getCardHolderName(), dto.getMaskedCardNumber(), dto.getExpiryMonth(), dto.getExpiryYear());
-            List<ListingId> listings = TransactionMapper.toListingIds(dto.getListingIds());
-
             Transaction transaction = transactionService.createAndSave(
-                    buyerId, price, date, shippingAddress, payment, listings);
+                    TransactionMapper.toUserId(dto.getBuyerId()),
+                    TransactionMapper.toPrice(dto.getPrice()),
+                    TransactionMapper.toTransactionDate(dto.getTransactionDate()),
+                    TransactionMapper.toAddress(dto.getStreet(), dto.getNumber(), dto.getZipCode(), dto.getCityId()),
+                    TransactionMapper.toPaymentDetails(dto.getCardHolderName(), dto.getMaskedCardNumber(), dto.getExpiryMonth(), dto.getExpiryYear()),
+                    TransactionMapper.toListingIds(dto.getListingIds())
+            );
 
             TransactionResponseDTO responseDTO = buildResponseDTO(transaction);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
 
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -90,24 +95,34 @@ public class TransactionRESTController {
     /**
      * Retrieves a transaction by its identifier.
      *
-     * @param id the unique identifier of the transaction
+     * <p>Only the buyer who created the transaction can retrieve it.
+     * The requester identifier must be provided as a query parameter.</p>
+     *
+     * @param id          the unique identifier of the transaction
+     * @param requesterId the identifier of the user requesting access
      * @return {@code 200 OK} with the transaction DTO and HATEOAS links,
+     *         {@code 403 FORBIDDEN} if the requester is not the transaction owner,
      *         {@code 404 NOT FOUND} if no transaction exists with the given identifier,
-     *         {@code 400 BAD REQUEST} if the identifier is invalid,
+     *         {@code 400 BAD REQUEST} if any identifier is invalid,
      *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionResponseDTO> findById(@PathVariable String id) {
+    public ResponseEntity<TransactionResponseDTO> findById(
+            @PathVariable String id,
+            @RequestParam String requesterId) {
 
         try {
             TransactionID transactionId = TransactionMapper.toTransactionId(id);
+            UserId requesterIdVO        = TransactionMapper.toUserId(requesterId);
 
-            Transaction transaction = transactionService.findById(transactionId);
+            Transaction transaction = transactionService.findById(transactionId, requesterIdVO);
 
             TransactionResponseDTO responseDTO = buildResponseDTO(transaction);
 
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
 
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e) {
@@ -120,22 +135,26 @@ public class TransactionRESTController {
     /**
      * Retrieves all transactions associated with a given buyer.
      *
-     * <p>Returns the full list of transactions for the buyer, each with
-     * HATEOAS links including a self link and a buyer-transactions link.</p>
+     * <p>Only the buyer themselves can retrieve their own transactions.
+     * The requester identifier must be provided as a query parameter.</p>
      *
-     * @param buyerId the identifier of the buyer whose transactions should be retrieved
+     * @param buyerId     the identifier of the buyer whose transactions should be retrieved
+     * @param requesterId the identifier of the user requesting access
      * @return {@code 200 OK} with the list of transaction DTOs,
-     *         {@code 400 BAD REQUEST} if the buyer identifier is invalid,
+     *         {@code 403 FORBIDDEN} if the requester is not the buyer,
+     *         {@code 400 BAD REQUEST} if any identifier is invalid,
      *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/buyer/{buyerId}")
     public ResponseEntity<List<TransactionResponseDTO>> findAllByBuyerId(
-            @PathVariable String buyerId) {
+            @PathVariable String buyerId,
+            @RequestParam String requesterId) {
 
         try {
-            UserId buyerIdVO = TransactionMapper.toUserId(buyerId);
+            UserId buyerIdVO      = TransactionMapper.toUserId(buyerId);
+            UserId requesterIdVO  = TransactionMapper.toUserId(requesterId);
 
-            List<Transaction> transactions = transactionService.findAllByBuyerId(buyerIdVO);
+            List<Transaction> transactions = transactionService.findAllByBuyerId(buyerIdVO, requesterIdVO);
 
             List<TransactionResponseDTO> responseDTOs = transactions.stream()
                     .map(this::buildResponseDTO)
@@ -143,6 +162,8 @@ public class TransactionRESTController {
 
             return ResponseEntity.status(HttpStatus.OK).body(responseDTOs);
 
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -165,7 +186,7 @@ public class TransactionRESTController {
         links.addAll(transactionLinkProvider.getBuyerLinks(transaction.getBuyerId()));
 
         links.add(linkTo(methodOn(TransactionRESTController.class)
-                .findById(transaction.id().getId()))
+                .findById(transaction.id().getId(), null))
                 .withSelfRel());
 
         links.forEach(responseDTO::add);
