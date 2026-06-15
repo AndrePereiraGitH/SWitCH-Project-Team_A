@@ -1,8 +1,6 @@
 package TOPSECRET.domain.Transaction;
 
 import TOPSECRET.ddd.AggregateRoot;
-import TOPSECRET.domain.Auction.Auction;
-import TOPSECRET.domain.DirectSale.DirectSale;
 import TOPSECRET.domain.Enum.TransactionStatus;
 import TOPSECRET.domain.ValueObjects.*;
 
@@ -11,150 +9,156 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Represents a commercial transaction within the system.
+ * Represents a transaction aggregate in the domain.
  * <p>
- * A {@code Transaction} models the financial and ownership exchange
- * resulting either from an {@link Auction} or a {@link DirectSale}.
- * </ul>
+ * A transaction records the purchase of one or more listings by a buyer,
+ * including payment information, shipping address, transaction date,
+ * total price, and current transaction status.
+ * </p>
+ *
  * <p>
- * A transaction can be created through:
- * <ul>
- *     <li>An auction-based purchase</li>
- *     <li>A direct sale purchase</li>
- * </ul>
- * <p>
- * The transaction status is initialized as {@link TransactionStatus#PENDING}.
+ * This class is an Aggregate Root identified by a unique
+ * {@link TransactionID}.
+ * </p>
  */
 public class Transaction implements AggregateRoot<TransactionID> {
 
     private final TransactionID _id;
 
     private UserId _buyerId;
-    private AuctionId _auctionId;
-    private DirectSaleID _directSaleId;
     private Price _price;
     private LocalDateTime _transactionDate;
-    private LocalDateTime _paymentDate;
-    private List<UserId> _sellersId;
+    private Address _shippingAddress;
+    private PaymentDetails _paymentDetails;
     private TransactionStatus _status;
+    private List<ListingId> _listingIds;
 
     /**
-     * Default constructor.
-     * <p>
-     * Intended for framework usage or future extensions.
-     */
-    public Transaction() {
-
-        this._id = new TransactionID(UUID.randomUUID().toString());
-    }
-
-    /**
-     * Constructs a transaction resulting from an auction.
+     * Creates a new transaction.
      *
-     * @param buyerId         the user who won the auction and initiated the purchase
-     * @param auctionId       the auction associated with this transaction
-     * @param price           the final agreed price
+     * @param buyerId the identifier of the buyer performing the transaction
+     * @param price the total price of the transaction
      * @param transactionDate the date and time when the transaction occurred
-     * @param paymentDate     the date and time when payment was completed
-     * @param sellersId       the list of sellersId involved in the transaction
-     * @param status          the initial transaction status
-     * @throws IllegalArgumentException if:
-     *                                  <ul>
-     *                                      <li>{@code auction} is null</li>
-     *                                      <li>{@code buyerId} is null</li>
-     *                                      <li>{@code price} is null</li>
-     *                                      <li>{@code transactionDate} is null or in the future</li>
-     *                                      <li>{@code paymentDate} is null or in the future</li>
-     *                                      <li>{@code sellersId} is null</li>
-     *                                  </ul>
-     */
-    protected Transaction(UserId buyerId, AuctionId auctionId, Price price, LocalDateTime transactionDate,
-                          LocalDateTime paymentDate, List<UserId> sellersId, TransactionStatus status) {
-
-        this(buyerId, price, transactionDate, paymentDate, sellersId, status);
-
-        if (auctionId == null) {
-            throw new IllegalArgumentException("Auction cannot be null");
-        }
-
-        this._auctionId = auctionId;
-    }
-
-    /**
-     * Constructs a transaction resulting from a direct sale.
+     * @param shippingAddress the address where purchased items will be delivered
+     * @param paymentDetails the payment information associated with the transaction
+     * @param status the current status of the transaction
+     * @param listingIds the identifiers of the purchased listings
      *
-     * @param buyer           the purchasing user
-     * @param price           the agreed price of the sale
-     * @param directSaleId    the direct sale instance associated with the transaction
-     * @param transactionDate the date and time when the transaction occurred
-     * @param paymentDate     the date and time when payment was completed
-     * @param sellersId       the list of sellersId involved in the transaction
-     * @throws IllegalArgumentException if:
-     *                                  <ul>
-     *                                      <li>{@code directSaleId} is null</li>
-     *                                      <li>{@code buyer} is null</li>
-     *                                      <li>{@code price} is null</li>
-     *                                      <li>{@code transactionDate} is null or in the future</li>
-     *                                      <li>{@code paymentDate} is null or in the future</li>
-     *                                      <li>{@code sellersId} is null</li>
-     *                                  </ul>
+     * @throws IllegalArgumentException if buyerId, price, transactionDate,
+     *                                  shippingAddress, paymentDetails,
+     *                                  or listingIds are null
      */
-    protected Transaction(UserId buyer, Price price, DirectSaleID directSaleId, LocalDateTime transactionDate,
-                          LocalDateTime paymentDate, List<UserId> sellersId, TransactionStatus status) {
-
-
-        this(buyer, price, transactionDate, paymentDate, sellersId, status);
-        if (directSaleId == null) {
-            throw new IllegalArgumentException("Cart cannot be null");
-        }
-        this._directSaleId = directSaleId;
-    }
-
-    /**
-     * Private constructor with common logic
-     * <p>
-     * This way code will not be repeated
-     *
-     * @param buyerId         the identifier of the buyer involved in the transaction
-     * @param price           the agreed price of the transaction
-     * @param transactionDate the date and time when the transaction occurred
-     * @param paymentDate     the date and time when the payment was completed
-     * @param sellersId       the list of seller identifiers involved in the transaction
-     * @param status          the initial status of the transaction
-     */
-
-    private Transaction(UserId buyerId, Price price, LocalDateTime transactionDate, LocalDateTime paymentDate,
-                        List<UserId> sellersId, TransactionStatus status) {
+    protected Transaction(UserId buyerId,
+                          Price price,
+                          LocalDateTime transactionDate,
+                          Address shippingAddress,
+                          PaymentDetails paymentDetails,
+                          TransactionStatus status,
+                          List<ListingId> listingIds) {
 
         if (buyerId == null) {
-            throw new IllegalArgumentException("Buyer cannot be null");
+            throw new IllegalArgumentException("buyerId cannot be null");
         }
         if (price == null) {
-            throw new IllegalArgumentException("Price cannot be null");
+            throw new IllegalArgumentException("price cannot be null");
         }
         if (transactionDate == null || transactionDate.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Transaction date cannot be null");
+            throw new IllegalArgumentException("transactionDate cannot be null");
         }
-        if (paymentDate == null || paymentDate.isAfter(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Future Payment date cannot be null");
+        if (shippingAddress == null) {
+            throw new IllegalArgumentException("shippingAddress cannot be null");
         }
-        if (sellersId == null) {
-            throw new IllegalArgumentException("Seller list cannot be null");
+        if (paymentDetails == null) {
+            throw new IllegalArgumentException("paymentDetails cannot be null");
         }
-
-        if (status == null) {
-            throw new IllegalArgumentException("TransactionStatus cannot be null");
+        if (listingIds == null) {
+            throw new IllegalArgumentException("listingIds cannot be null");
         }
 
         this._id = new TransactionID(UUID.randomUUID().toString());
-
         this._buyerId = buyerId;
         this._price = price;
         this._transactionDate = transactionDate;
-        this._paymentDate = paymentDate;
-        this._sellersId = sellersId;
+        this._shippingAddress = shippingAddress;
+        this._paymentDetails = paymentDetails;
         this._status = status;
+        this._listingIds = listingIds;
     }
+
+    /**
+     * Reconstructs a transaction from persistence storage.
+     * <p>
+     * Intended to be used by JPA or repository implementations when
+     * loading an existing transaction.
+     * </p>
+     *
+     * @param id the unique transaction identifier
+     * @param buyerId the identifier of the buyer
+     * @param price the total transaction price
+     * @param transactionDate the date and time of the transaction
+     * @param shippingAddress the shipping address associated with the transaction
+     * @param paymentDetails the payment information used in the transaction
+     * @param status the current transaction status
+     * @param listingIds the identifiers of the purchased listings
+     *
+     * @throws IllegalArgumentException if id, buyerId, price,
+     *                                  transactionDate, shippingAddress,
+     *                                  paymentDetails, or listingIds are null
+     */
+    protected Transaction(TransactionID id,
+                          UserId buyerId,
+                          Price price,
+                          LocalDateTime transactionDate,
+                          Address shippingAddress,
+                          PaymentDetails paymentDetails,
+                          TransactionStatus status,
+                          List<ListingId> listingIds) {
+
+        if (id == null) {
+            throw new IllegalArgumentException("transaction id cannot be null");
+        }
+        if (buyerId == null) {
+            throw new IllegalArgumentException("buyerId cannot be null");
+        }
+        if (price == null) {
+            throw new IllegalArgumentException("price cannot be null");
+        }
+        if (transactionDate == null || transactionDate.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("transactionDate cannot be null");
+        }
+        if (shippingAddress == null) {
+            throw new IllegalArgumentException("shippingAddress cannot be null");
+        }
+        if (paymentDetails == null) {
+            throw new IllegalArgumentException("paymentDetails cannot be null");
+        }
+        if (listingIds == null) {
+            throw new IllegalArgumentException("listingIds cannot be null");
+        }
+
+        this._id = id;
+        this._buyerId = buyerId;
+        this._price = price;
+        this._transactionDate = transactionDate;
+        this._shippingAddress = shippingAddress;
+        this._paymentDetails = paymentDetails;
+        this._status = status;
+        this._listingIds = listingIds;
+    }
+
+    public UserId getBuyerId() { return _buyerId; }
+
+    public Price getPrice() { return _price; }
+
+    public LocalDateTime getTransactionDate() { return _transactionDate; }
+
+    public Address getShippingAddress() { return _shippingAddress; }
+
+    public PaymentDetails getPaymentDetails() { return _paymentDetails; }
+
+    public TransactionStatus getStatus() { return _status; }
+
+    public List<ListingId> getListingIds() { return _listingIds; }
 
     @Override
     public TransactionID id() {
@@ -163,17 +167,16 @@ public class Transaction implements AggregateRoot<TransactionID> {
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Transaction)) return false;
 
-        if (this == obj)
-            return true;
+        Transaction other = (Transaction) obj;
+        return _id.equals(other._id);
+    }
 
-        if (obj instanceof Transaction) {
-            Transaction newObj = (Transaction) obj;
-
-            if (this._id.equals(newObj._id))
-                return true;
-        }
-        return false;
+    @Override
+    public int hashCode() {
+        return _id.hashCode();
     }
 
     @Override
@@ -184,11 +187,13 @@ public class Transaction implements AggregateRoot<TransactionID> {
 
         Transaction newObj = (Transaction) obj;
 
-        return this._buyerId.equals(newObj._buyerId) &&
+        return this._id.equals(newObj._id) &&
+                this._shippingAddress.equals(newObj._shippingAddress) &&
+                this._buyerId.equals(newObj._buyerId) &&
                 this._price.equals(newObj._price) &&
                 this._transactionDate.equals(newObj._transactionDate) &&
-                this._paymentDate.equals(newObj._paymentDate) &&
-                this._sellersId.equals(newObj._sellersId) &&
-                this._status.equals(newObj._status);
+                this._status.equals(newObj._status) &&
+                this._paymentDetails.equals(newObj._paymentDetails) &&
+                this._listingIds.equals(newObj._listingIds);
     }
 }

@@ -6,15 +6,17 @@ export function CartProvider({ children }) {
   const [items, setItems] = useState([]);
 
   const addToCart = (item) => {
-    setItems((prev) => [...prev, item]);
+    setItems(prev => prev.some(i => i.id === item.id) ? prev : [...prev, item]);
   };
 
   const removeFromCart = (id) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    setItems(prev => prev.filter(item => item.id !== id));
   };
 
+  const clearCart = () => setItems([]);
+
   return (
-    <CartContext.Provider value={{ items, addToCart, removeFromCart, itemCount: items.length }}>
+    <CartContext.Provider value={{ items, addToCart, removeFromCart, clearCart, itemCount: items.length }}>
       {children}
     </CartContext.Provider>
   );
