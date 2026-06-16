@@ -63,10 +63,9 @@ public class PublicationSampleRESTController {
      * attached to a {@link PublicationDTO} response.
      *
      * <ul>
-     *   <li>{@code GENERAL} — public and owner links only.</li>
      *   <li>{@code OWNER} — public and owner links.</li>
-     *   <li>{@code LIBRARY} — public, owner, and library links.</li>
-     *   <li>{@code COLLECTION} — public, owner, and collection links.</li>
+     *   <li>{@code LIBRARY} — public and library links.</li>
+     *   <li>{@code COLLECTION} — public and collection links.</li>
      * </ul>
      */
     private enum LinkContext {
@@ -421,7 +420,6 @@ public class PublicationSampleRESTController {
      * Each item in the returned list is enriched with a self-link and owner
      * navigational links based on the requester's permissions.</p>
      *
-     *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a list of {@link PublicationDTO}, HTTP 403 if unauthorized,
      *         HTTP 404 if the user is not found, or HTTP 500 on error
@@ -514,7 +512,7 @@ public class PublicationSampleRESTController {
      * Retrieves all publication samples owned by the given user that are not assigned to any library.
      *
      * <p>Requires the requesting user to be authorized for this operation.
-     * Each item in the returned list is enriched with a self-link and library
+     * Each item in the returned list is enriched with a self-link and owner
      * navigational links based on the requester's permissions.</p>
      *
      * @param userId the ID of the user performing the request
@@ -533,7 +531,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.LIBRARY));
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.OWNER));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
