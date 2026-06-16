@@ -8,9 +8,9 @@ import TOPSECRET.dto.transaction.request.TransactionRequestDTO;
 import TOPSECRET.dto.transaction.response.TransactionResponseDTO;
 import TOPSECRET.services.TransactionService;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,61 +43,81 @@ class TransactionRESTControllerTest {
     @Mock
     private TransactionLinkProvider transactionLinkProvider;
 
-    @InjectMocks
-    private TransactionRESTController controller;
+    private TransactionRESTController sut;
+
+    @BeforeEach
+    void setUp() {
+        sut = new TransactionRESTController(transactionService, transactionLinkProvider);
+    }
 
     // =========================================================================
     // createTransaction
     // =========================================================================
 
     @Test
-    void createTransaction_shouldReturnCreatedStatus_whenTransactionIsCreated() {
+    void createTransaction_shouldReturnCreatedStatus_whenTransactionIsCreated() throws InstanceNotFoundException {
 
-        // Arrange
-        TransactionRequestDTO request = validRequest();
-        Transaction transaction       = transactionDouble();
+        // ARRANGE
+        TransactionRequestDTO request = mock(TransactionRequestDTO.class);
+        Transaction transaction       = mock(Transaction.class);
+        TransactionID id              = mock(TransactionID.class);
         TransactionResponseDTO dto    = mock(TransactionResponseDTO.class);
 
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
         when(transactionService.createAndSave(any(), any(), any(), any(), any(), any()))
                 .thenReturn(transaction);
-
-        publicLinks();
-        buyerLinks(transaction, dto);
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            stubMapper(mapper, request, transaction, dto);
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toPrice(any())).thenReturn(mock(Price.class));
+            mapper.when(() -> TransactionMapper.toTransactionDate(any())).thenReturn(LocalDateTime.now());
+            mapper.when(() -> TransactionMapper.toAddress(any(), any(), any(), any())).thenReturn(mock(Address.class));
+            mapper.when(() -> TransactionMapper.toPaymentDetails(any(), any(), any(), any())).thenReturn(mock(PaymentDetails.class));
+            mapper.when(() -> TransactionMapper.toListingIds(any())).thenReturn(List.of());
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request, "buyer-1");
+                    sut.createTransaction(request, "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
         }
     }
 
     @Test
-    void createTransaction_shouldReturnCreatedBody_whenTransactionIsCreated() {
+    void createTransaction_shouldReturnCreatedBody_whenTransactionIsCreated() throws InstanceNotFoundException {
 
-        // Arrange
-        TransactionRequestDTO request = validRequest();
-        Transaction transaction       = transactionDouble();
+        // ARRANGE
+        TransactionRequestDTO request = mock(TransactionRequestDTO.class);
+        Transaction transaction       = mock(Transaction.class);
+        TransactionID id              = mock(TransactionID.class);
         TransactionResponseDTO dto    = mock(TransactionResponseDTO.class);
 
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
         when(transactionService.createAndSave(any(), any(), any(), any(), any(), any()))
                 .thenReturn(transaction);
-
-        publicLinks();
-        buyerLinks(transaction, dto);
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            stubMapper(mapper, request, transaction, dto);
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toPrice(any())).thenReturn(mock(Price.class));
+            mapper.when(() -> TransactionMapper.toTransactionDate(any())).thenReturn(LocalDateTime.now());
+            mapper.when(() -> TransactionMapper.toAddress(any(), any(), any(), any())).thenReturn(mock(Address.class));
+            mapper.when(() -> TransactionMapper.toPaymentDetails(any(), any(), any(), any())).thenReturn(mock(PaymentDetails.class));
+            mapper.when(() -> TransactionMapper.toListingIds(any())).thenReturn(List.of());
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request, "buyer-1");
+                    sut.createTransaction(request, "buyer-1");
 
-            // Assert
+            // ASSERT
             assertSame(dto, response.getBody());
         }
     }
@@ -104,31 +125,24 @@ class TransactionRESTControllerTest {
     @Test
     void createTransaction_shouldReturnForbidden_whenAccessIsDenied() {
 
-        // Arrange
+        // ARRANGE
         TransactionRequestDTO request = mock(TransactionRequestDTO.class);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-            mapper.when(() -> TransactionMapper.toPrice(any()))
-                    .thenReturn(mock(Price.class));
-            mapper.when(() -> TransactionMapper.toTransactionDate(any()))
-                    .thenReturn(LocalDateTime.now().minusMinutes(1));
-            mapper.when(() -> TransactionMapper.toAddress(any(), any(), any(), any()))
-                    .thenReturn(mock(Address.class));
-            mapper.when(() -> TransactionMapper.toPaymentDetails(any(), any(), any(), any()))
-                    .thenReturn(mock(PaymentDetails.class));
-            mapper.when(() -> TransactionMapper.toListingIds(any()))
-                    .thenReturn(List.of());
-
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toPrice(any())).thenReturn(mock(Price.class));
+            mapper.when(() -> TransactionMapper.toTransactionDate(any())).thenReturn(LocalDateTime.now());
+            mapper.when(() -> TransactionMapper.toAddress(any(), any(), any(), any())).thenReturn(mock(Address.class));
+            mapper.when(() -> TransactionMapper.toPaymentDetails(any(), any(), any(), any())).thenReturn(mock(PaymentDetails.class));
+            mapper.when(() -> TransactionMapper.toListingIds(any())).thenReturn(List.of());
             when(transactionService.createAndSave(any(), any(), any(), any(), any(), any()))
                     .thenThrow(new AccessDeniedException("forbidden"));
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request, "buyer-1");
+                    sut.createTransaction(request, "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
     }
@@ -136,31 +150,24 @@ class TransactionRESTControllerTest {
     @Test
     void createTransaction_shouldReturnNotFound_whenUserDoesNotExist() {
 
-        // Arrange
+        // ARRANGE
         TransactionRequestDTO request = mock(TransactionRequestDTO.class);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-            mapper.when(() -> TransactionMapper.toPrice(any()))
-                    .thenReturn(mock(Price.class));
-            mapper.when(() -> TransactionMapper.toTransactionDate(any()))
-                    .thenReturn(LocalDateTime.now().minusMinutes(1));
-            mapper.when(() -> TransactionMapper.toAddress(any(), any(), any(), any()))
-                    .thenReturn(mock(Address.class));
-            mapper.when(() -> TransactionMapper.toPaymentDetails(any(), any(), any(), any()))
-                    .thenReturn(mock(PaymentDetails.class));
-            mapper.when(() -> TransactionMapper.toListingIds(any()))
-                    .thenReturn(List.of());
-
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toPrice(any())).thenReturn(mock(Price.class));
+            mapper.when(() -> TransactionMapper.toTransactionDate(any())).thenReturn(LocalDateTime.now());
+            mapper.when(() -> TransactionMapper.toAddress(any(), any(), any(), any())).thenReturn(mock(Address.class));
+            mapper.when(() -> TransactionMapper.toPaymentDetails(any(), any(), any(), any())).thenReturn(mock(PaymentDetails.class));
+            mapper.when(() -> TransactionMapper.toListingIds(any())).thenReturn(List.of());
             when(transactionService.createAndSave(any(), any(), any(), any(), any(), any()))
                     .thenThrow(new EntityNotFoundException("not found"));
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request, "buyer-1");
+                    sut.createTransaction(request, "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         }
     }
@@ -168,18 +175,18 @@ class TransactionRESTControllerTest {
     @Test
     void createTransaction_shouldReturnBadRequest_whenMapperThrowsIllegalArgumentException() {
 
-        // Arrange
+        // ARRANGE
         TransactionRequestDTO request = mock(TransactionRequestDTO.class);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any()))
                     .thenThrow(new IllegalArgumentException());
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request, "buyer-1");
+                    sut.createTransaction(request, "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
@@ -187,18 +194,18 @@ class TransactionRESTControllerTest {
     @Test
     void createTransaction_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
 
-        // Arrange
+        // ARRANGE
         TransactionRequestDTO request = mock(TransactionRequestDTO.class);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any()))
                     .thenThrow(new RuntimeException());
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.createTransaction(request, "buyer-1");
+                    sut.createTransaction(request, "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         }
     }
@@ -208,81 +215,76 @@ class TransactionRESTControllerTest {
     // =========================================================================
 
     @Test
-    void findById_shouldReturnOkStatus_whenRequesterIsOwner() {
+    void findById_shouldReturnOkStatus_whenRequesterIsOwner() throws InstanceNotFoundException {
 
-        // Arrange
-        Transaction transaction    = transactionDouble();
+        // ARRANGE
+        Transaction transaction    = mock(Transaction.class);
+        TransactionID id           = mock(TransactionID.class);
         TransactionResponseDTO dto = mock(TransactionResponseDTO.class);
 
-        publicLinks();
-        buyerLinks(transaction, dto);
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
+        when(transactionService.findById(any(), any())).thenReturn(transaction);
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toTransactionId("tx-1"))
-                    .thenReturn(mock(TransactionID.class));
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-            mapper.when(() -> TransactionMapper.toResponseDTO(transaction))
-                    .thenReturn(dto);
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
 
-            when(transactionService.findById(any(), any())).thenReturn(transaction);
-
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.findById("tx-1", "buyer-1");
+                    sut.findById("tx-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
     }
 
     @Test
-    void findById_shouldReturnDtoBody_whenRequesterIsOwner() {
+    void findById_shouldReturnDtoBody_whenRequesterIsOwner() throws InstanceNotFoundException {
 
-        // Arrange
-        Transaction transaction    = transactionDouble();
+        // ARRANGE
+        Transaction transaction    = mock(Transaction.class);
+        TransactionID id           = mock(TransactionID.class);
         TransactionResponseDTO dto = mock(TransactionResponseDTO.class);
 
-        publicLinks();
-        buyerLinks(transaction, dto);
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
+        when(transactionService.findById(any(), any())).thenReturn(transaction);
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toTransactionId("tx-1"))
-                    .thenReturn(mock(TransactionID.class));
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-            mapper.when(() -> TransactionMapper.toResponseDTO(transaction))
-                    .thenReturn(dto);
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
 
-            when(transactionService.findById(any(), any())).thenReturn(transaction);
-
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.findById("tx-1", "buyer-1");
+                    sut.findById("tx-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertSame(dto, response.getBody());
         }
     }
 
     @Test
-    void findById_shouldReturnForbidden_whenRequesterIsNotOwner() {
+    void findById_shouldReturnForbidden_whenRequesterIsNotOwnerNorAdmin() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toTransactionId("tx-1"))
-                    .thenReturn(mock(TransactionID.class));
-            mapper.when(() -> TransactionMapper.toUserId("other-user"))
-                    .thenReturn(mock(UserId.class));
-
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
             when(transactionService.findById(any(), any()))
                     .thenThrow(new AccessDeniedException("forbidden"));
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.findById("tx-1", "other-user");
+                    sut.findById("tx-1", "other-user");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
     }
@@ -290,21 +292,18 @@ class TransactionRESTControllerTest {
     @Test
     void findById_shouldReturnNotFound_whenTransactionDoesNotExist() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toTransactionId("tx-1"))
-                    .thenReturn(mock(TransactionID.class));
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
             when(transactionService.findById(any(), any()))
                     .thenThrow(new EntityNotFoundException());
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.findById("tx-1", "buyer-1");
+                    sut.findById("tx-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         }
     }
@@ -312,16 +311,16 @@ class TransactionRESTControllerTest {
     @Test
     void findById_shouldReturnBadRequest_whenIdIsInvalid() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toTransactionId(""))
+            mapper.when(() -> TransactionMapper.toTransactionId(any()))
                     .thenThrow(new IllegalArgumentException());
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.findById("", "buyer-1");
+                    sut.findById("", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
@@ -329,16 +328,161 @@ class TransactionRESTControllerTest {
     @Test
     void findById_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toTransactionId("tx-1"))
+            mapper.when(() -> TransactionMapper.toTransactionId(any()))
                     .thenThrow(new RuntimeException());
 
-            // Act
+            // ACT
             ResponseEntity<TransactionResponseDTO> response =
-                    controller.findById("tx-1", "buyer-1");
+                    sut.findById("tx-1", "buyer-1");
 
-            // Assert
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================================
+    // findAll
+    // =========================================================================
+
+    @Test
+    void findAll_shouldReturnOkStatus_whenRequesterIsAdmin() throws InstanceNotFoundException {
+
+        // ARRANGE
+        Transaction transaction    = mock(Transaction.class);
+        TransactionID id           = mock(TransactionID.class);
+        TransactionResponseDTO dto = mock(TransactionResponseDTO.class);
+
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
+        when(transactionService.findAll(any())).thenReturn(List.of(transaction));
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
+
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAll("admin-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findAll_shouldReturnDtoList_whenRequesterIsAdmin() throws InstanceNotFoundException {
+
+        // ARRANGE
+        Transaction transaction    = mock(Transaction.class);
+        TransactionID id           = mock(TransactionID.class);
+        TransactionResponseDTO dto = mock(TransactionResponseDTO.class);
+
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
+        when(transactionService.findAll(any())).thenReturn(List.of(transaction));
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
+
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAll("admin-1");
+
+            // ASSERT
+            assertSame(dto, response.getBody().get(0));
+        }
+    }
+
+    @Test
+    void findAll_shouldReturnEmptyList_whenNoTransactionsExist() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.findAll(any())).thenReturn(List.of());
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAll("admin-1");
+
+            // ASSERT
+            assertTrue(response.getBody().isEmpty());
+        }
+    }
+
+    @Test
+    void findAll_shouldReturnForbidden_whenRequesterIsNotAdmin() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.findAll(any()))
+                    .thenThrow(new AccessDeniedException("forbidden"));
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAll("user-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findAll_shouldReturnNotFound_whenRequesterDoesNotExist() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.findAll(any()))
+                    .thenThrow(new EntityNotFoundException());
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAll("unknown");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findAll_shouldReturnBadRequest_whenRequesterIdIsInvalid() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException());
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAll("");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findAll_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any()))
+                    .thenThrow(new RuntimeException());
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAll("admin-1");
+
+            // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         }
     }
@@ -348,85 +492,82 @@ class TransactionRESTControllerTest {
     // =========================================================================
 
     @Test
-    void findAllByBuyerId_shouldReturnOkStatus_whenBuyerHasTransactions() {
+    void findAllByBuyerId_shouldReturnOkStatus_whenBuyerHasTransactions() throws InstanceNotFoundException {
 
-        // Arrange
-        Transaction transaction    = transactionDouble();
+        // ARRANGE
+        Transaction transaction    = mock(Transaction.class);
+        TransactionID id           = mock(TransactionID.class);
         TransactionResponseDTO dto = mock(TransactionResponseDTO.class);
 
-        publicLinks();
-        buyerLinks(transaction, dto);
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
+        when(transactionService.findAllByBuyerId(any(), any())).thenReturn(List.of(transaction));
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-            mapper.when(() -> TransactionMapper.toResponseDTO(transaction))
-                    .thenReturn(dto);
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
 
-            when(transactionService.findAllByBuyerId(any(), any()))
-                    .thenReturn(List.of(transaction));
-
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("buyer-1", "buyer-1");
+                    sut.findAllByBuyerId("buyer-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
     }
 
     @Test
-    void findAllByBuyerId_shouldReturnOneDtoInBody_whenBuyerHasOneTransaction() {
+    void findAllByBuyerId_shouldReturnOneDtoInBody_whenBuyerHasOneTransaction() throws InstanceNotFoundException {
 
-        // Arrange
-        Transaction transaction    = transactionDouble();
+        // ARRANGE
+        Transaction transaction    = mock(Transaction.class);
+        TransactionID id           = mock(TransactionID.class);
         TransactionResponseDTO dto = mock(TransactionResponseDTO.class);
 
-        publicLinks();
-        buyerLinks(transaction, dto);
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
+        when(transactionService.findAllByBuyerId(any(), any())).thenReturn(List.of(transaction));
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-            mapper.when(() -> TransactionMapper.toResponseDTO(transaction))
-                    .thenReturn(dto);
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
 
-            when(transactionService.findAllByBuyerId(any(), any()))
-                    .thenReturn(List.of(transaction));
-
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("buyer-1", "buyer-1");
+                    sut.findAllByBuyerId("buyer-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(1, response.getBody().size());
         }
     }
 
     @Test
-    void findAllByBuyerId_shouldReturnExpectedDto_whenBuyerHasOneTransaction() {
+    void findAllByBuyerId_shouldReturnExpectedDto_whenBuyerHasOneTransaction() throws InstanceNotFoundException {
 
-        // Arrange
-        Transaction transaction    = transactionDouble();
+        // ARRANGE
+        Transaction transaction    = mock(Transaction.class);
+        TransactionID id           = mock(TransactionID.class);
         TransactionResponseDTO dto = mock(TransactionResponseDTO.class);
 
-        publicLinks();
-        buyerLinks(transaction, dto);
+        when(transaction.id()).thenReturn(id);
+        when(id.getId()).thenReturn("tx-1");
+        when(transactionService.findAllByBuyerId(any(), any())).thenReturn(List.of(transaction));
+        when(transactionLinkProvider.getLinks(any())).thenReturn(List.of());
+        when(dto.add(any(Link.class))).thenReturn(dto);
 
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
-            mapper.when(() -> TransactionMapper.toResponseDTO(transaction))
-                    .thenReturn(dto);
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toResponseDTO(transaction)).thenReturn(dto);
 
-            when(transactionService.findAllByBuyerId(any(), any()))
-                    .thenReturn(List.of(transaction));
-
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("buyer-1", "buyer-1");
+                    sut.findAllByBuyerId("buyer-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertSame(dto, response.getBody().get(0));
         }
     }
@@ -434,19 +575,16 @@ class TransactionRESTControllerTest {
     @Test
     void findAllByBuyerId_shouldReturnOkStatus_whenBuyerHasNoTransactions() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.findAllByBuyerId(any(), any())).thenReturn(List.of());
 
-            when(transactionService.findAllByBuyerId(any(), any()))
-                    .thenReturn(List.of());
-
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("buyer-1", "buyer-1");
+                    sut.findAllByBuyerId("buyer-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
         }
     }
@@ -454,56 +592,69 @@ class TransactionRESTControllerTest {
     @Test
     void findAllByBuyerId_shouldReturnEmptyBody_whenBuyerHasNoTransactions() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                    .thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.findAllByBuyerId(any(), any())).thenReturn(List.of());
 
-            when(transactionService.findAllByBuyerId(any(), any()))
-                    .thenReturn(List.of());
-
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("buyer-1", "buyer-1");
+                    sut.findAllByBuyerId("buyer-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertTrue(response.getBody().isEmpty());
         }
     }
 
     @Test
-    void findAllByBuyerId_shouldReturnForbidden_whenRequesterDoesNotMatchBuyer() {
+    void findAllByBuyerId_shouldReturnForbidden_whenRequesterIsNotOwnerNorAdmin() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId(any()))
-                    .thenReturn(mock(UserId.class));
-
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
             when(transactionService.findAllByBuyerId(any(), any()))
                     .thenThrow(new AccessDeniedException("forbidden"));
 
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("buyer-1", "other-user");
+                    sut.findAllByBuyerId("buyer-1", "other-user");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void findAllByBuyerId_shouldReturnNotFound_whenRequesterDoesNotExist() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.findAllByBuyerId(any(), any()))
+                    .thenThrow(new EntityNotFoundException());
+
+            // ACT
+            ResponseEntity<List<TransactionResponseDTO>> response =
+                    sut.findAllByBuyerId("buyer-1", "buyer-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         }
     }
 
     @Test
     void findAllByBuyerId_shouldReturnBadRequest_whenBuyerIdIsInvalid() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId(""))
+            mapper.when(() -> TransactionMapper.toUserId(any()))
                     .thenThrow(new IllegalArgumentException());
 
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("", "buyer-1");
+                    sut.findAllByBuyerId("", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
@@ -511,84 +662,17 @@ class TransactionRESTControllerTest {
     @Test
     void findAllByBuyerId_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
 
-        // Arrange
+        // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
-            mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
+            mapper.when(() -> TransactionMapper.toUserId(any()))
                     .thenThrow(new RuntimeException());
 
-            // Act
+            // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
-                    controller.findAllByBuyerId("buyer-1", "buyer-1");
+                    sut.findAllByBuyerId("buyer-1", "buyer-1");
 
-            // Assert
+            // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         }
-    }
-
-    // =========================================================================
-    // Helpers
-    // =========================================================================
-
-    private Transaction transactionDouble() {
-        Transaction transaction = mock(Transaction.class);
-        TransactionID id        = mock(TransactionID.class);
-        UserId buyerId          = mock(UserId.class);
-
-        when(transaction.id()).thenReturn(id);
-        when(id.getId()).thenReturn("tx-1");
-        when(transaction.getBuyerId()).thenReturn(buyerId);
-
-        return transaction;
-    }
-
-    private TransactionRequestDTO validRequest() {
-        TransactionRequestDTO request = mock(TransactionRequestDTO.class);
-
-        when(request.getPrice()).thenReturn("10.00");
-        when(request.getTransactionDate()).thenReturn(LocalDateTime.now().minusMinutes(1).toString());
-        when(request.getStreet()).thenReturn("Rua das Flores");
-        when(request.getNumber()).thenReturn("10");
-        when(request.getZipCode()).thenReturn("4000-001");
-        when(request.getCityId()).thenReturn("porto");
-        when(request.getCardHolderName()).thenReturn("John Doe");
-        when(request.getMaskedCardNumber()).thenReturn("**** **** **** 1234");
-        when(request.getExpiryMonth()).thenReturn("09");
-        when(request.getExpiryYear()).thenReturn("2027");
-        when(request.getListingIds()).thenReturn(List.of("listing-1"));
-
-        return request;
-    }
-
-    private void stubMapper(
-            MockedStatic<TransactionMapper> mapper,
-            TransactionRequestDTO request,
-            Transaction transaction,
-            TransactionResponseDTO dto) {
-
-        mapper.when(() -> TransactionMapper.toUserId("buyer-1"))
-                .thenReturn(mock(UserId.class));
-        mapper.when(() -> TransactionMapper.toPrice(request.getPrice()))
-                .thenReturn(mock(Price.class));
-        mapper.when(() -> TransactionMapper.toTransactionDate(request.getTransactionDate()))
-                .thenReturn(LocalDateTime.now().minusMinutes(1));
-        mapper.when(() -> TransactionMapper.toAddress(any(), any(), any(), any()))
-                .thenReturn(mock(Address.class));
-        mapper.when(() -> TransactionMapper.toPaymentDetails(any(), any(), any(), any()))
-                .thenReturn(mock(PaymentDetails.class));
-        mapper.when(() -> TransactionMapper.toListingIds(any()))
-                .thenReturn(List.of(mock(ListingId.class)));
-        mapper.when(() -> TransactionMapper.toResponseDTO(transaction))
-                .thenReturn(dto);
-    }
-
-    private void publicLinks() {
-        when(transactionLinkProvider.getPublicLinks())
-                .thenReturn(List.of(Link.of("/transactions", "create-transaction")));
-    }
-
-    private void buyerLinks(Transaction transaction, TransactionResponseDTO dto) {
-        when(transactionLinkProvider.getBuyerLinks(transaction.getBuyerId()))
-                .thenReturn(List.of(Link.of("/transactions/buyer/buyer-1", "my-transactions")));
-        when(dto.add(any(Link.class))).thenReturn(dto);
     }
 }
