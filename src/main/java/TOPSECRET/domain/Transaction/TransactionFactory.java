@@ -1,66 +1,76 @@
 package TOPSECRET.domain.Transaction;
 
 import TOPSECRET.domain.Enum.TransactionStatus;
-import TOPSECRET.domain.ValueObjects.AuctionId;
-import TOPSECRET.domain.ValueObjects.DirectSaleID;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Factory responsible for creating {@link Transaction} instances.
- * <p>
- * This class centralizes the creation logic for transactions originating
- * from different business contexts, such as auctions and direct sales.
- * <p>
- * It ensures that transaction objects are instantiated with the appropriate
- * parameters and construction paths, improving consistency and maintainability.
+ * Factory responsible for creating and reconstructing {@link Transaction}
+ * aggregate instances.
  */
+@Component
+public final class TransactionFactory {
 
-public class TransactionFactory {
 
     /**
-     * Creates a {@link Transaction} resulting from an auction.
+     * Creates a new {@link Transaction} with status {@link TransactionStatus#PENDING}.
      *
-     * @param buyerId           the identifier of the user who won the auction
-     * @param auctionId         the identifier of the auction associated with the transaction
-     * @param price           the final agreed price
-     * @param transactionDate the date and time when the transaction occurred
-     * @param paymentDate     the date and time when the payment was completed
-     * @param sellersId         the list of seller identifiers involved in the transaction
-     * @param status          the initial status of the transaction
-     * @return a new {@link Transaction} instance representing the auction-based transaction
-     * @throws IllegalArgumentException if any of the provided arguments violate
-     *                                  the constraints defined in {@link Transaction}
+     * <p>Note: this project is demonstrative and does not implement payment
+     * confirmation logic. Transactions are created with {@code PENDING} status
+     * and no status transition is performed.</p>
      */
+    public Transaction create(UserId buyerId,
+                              Price price,
+                              LocalDateTime transactionDate,
+                              Address shippingAddress,
+                              PaymentDetails paymentDetails,
+                              List<ListingId> listingIds) {
 
-    public Transaction createFromAuction(UserId buyerId, AuctionId auctionId, Price price, LocalDateTime transactionDate,
-                                         LocalDateTime paymentDate, List<UserId> sellersId, TransactionStatus status) {
-
-        return new Transaction(buyerId, auctionId, price, transactionDate,
-                paymentDate, sellersId, status);
+        return new Transaction(
+                buyerId,
+                price,
+                transactionDate,
+                shippingAddress,
+                paymentDetails,
+                TransactionStatus.PENDING,
+                listingIds
+        );
     }
 
     /**
-     * Creates a {@link Transaction} resulting from a direct sale.
+     * Reconstructs an existing {@link Transaction} from persisted data.
      *
-     * @param buyerId           the identifier of the purchasing user
-     * @param price           the agreed price of the sale
-     * @param directSaleId      the identifier of the direct sale instance
-     * @param transactionDate the date and time when the transaction occurred
-     * @param paymentDate     the date and time when the payment was completed
-     * @param sellersId         the list of seller identifiers involved in the transaction
-     * @param status          the initial status of the transaction
-     * @return a new {@link Transaction} instance representing the direct sale transaction
-     * @throws IllegalArgumentException if any of the provided arguments violate
-     *                                  the constraints defined in {@link Transaction}
+     * @param id the existing transaction identifier
+     * @param buyerId the buyer identifier
+     * @param price the transaction price
+     * @param transactionDate the transaction date and time
+     * @param shippingAddress the shipping address
+     * @param paymentDetails the payment details
+     * @param status the transaction status
+     * @param listingIds the purchased listing identifiers
+     * @return a reconstructed transaction instance
      */
+    public Transaction create (TransactionID id,
+                               UserId buyerId,
+                               Price price,
+                               LocalDateTime transactionDate,
+                               Address shippingAddress,
+                               PaymentDetails paymentDetails,
+                               TransactionStatus status,
+                               List<ListingId> listingIds) {
 
-    public Transaction createFromDirectSale(UserId buyerId, Price price, DirectSaleID directSaleId, LocalDateTime
-            transactionDate, LocalDateTime paymentDate, List<UserId> sellersId, TransactionStatus status) {
-
-        return new Transaction(buyerId, price, directSaleId, transactionDate, paymentDate, sellersId, status);
+        return new Transaction(
+                id,
+                buyerId,
+                price,
+                transactionDate,
+                shippingAddress,
+                paymentDetails,
+                status,
+                listingIds
+        );
     }
 }

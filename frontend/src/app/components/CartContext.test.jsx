@@ -1,10 +1,10 @@
-import { describe, test, expect } from "vitest";
-import { render, screen, fireEvent, renderWithProviders } from "../../test-utils";
-import { CartProvider, useCart } from "./CartContext";
+import {describe, test, expect} from "vitest";
+import {render, screen, fireEvent, renderWithProviders} from "../../test-utils";
+import {useCart} from "./CartContext";
 
 // Helper component that exposes cart context state to the screen
 function TestCart() {
-    const { items, itemCount, addToCart, removeFromCart } = useCart();
+    const {items, itemCount, addToCart, removeFromCart} = useCart();
     return (
         <div>
             <p data-testid="count">{itemCount}</p>
@@ -13,10 +13,10 @@ function TestCart() {
                     <li key={item.id} data-testid={`item-${item.id}`}>{item.title}</li>
                 ))}
             </ul>
-            <button onClick={() => addToCart({ id: "1", title: "Book A", price: 10 })}>
+            <button onClick={() => addToCart({id: "1", title: "Book A", price: 10})}>
                 Add Book A
             </button>
-            <button onClick={() => addToCart({ id: "2", title: "Book B", price: 20 })}>
+            <button onClick={() => addToCart({id: "2", title: "Book B", price: 20})}>
                 Add Book B
             </button>
             <button onClick={() => removeFromCart("1")}>
@@ -28,7 +28,7 @@ function TestCart() {
 
 // renderWithProviders already includes CartProvider
 function renderCart() {
-    return renderWithProviders(<TestCart />);
+    return renderWithProviders(<TestCart/>);
 }
 
 // ── Initial state ──────────────────────────────────────────────────────────────
@@ -107,7 +107,8 @@ describe("CartContext — Remove Items", () => {
 describe("CartContext — Error Handling", () => {
 
     test("useCart throws when used outside CartProvider", () => {
-        const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+        const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {
+        });
 
         function ComponentWithoutProvider() {
             useCart();
@@ -115,11 +116,61 @@ describe("CartContext — Error Handling", () => {
         }
 
         // render directly (no providers) to test the missing context error
-        expect(() => render(<ComponentWithoutProvider />)).toThrow(
+        expect(() => render(<ComponentWithoutProvider/>)).toThrow(
             "useCart must be used within CartProvider"
         );
 
         consoleSpy.mockRestore();
+    });
+});
+
+// ── Clear Cart ─────────────────────────────────────────────────────────────────
+
+describe("CartContext — Clear Cart", () => {
+
+    test("clearCart empties all items", () => {
+        function TestWithClear() {
+            const {items, itemCount, addToCart, clearCart} = useCart();
+            return (
+                <div>
+                    <p data-testid="count">{itemCount}</p>
+                    <button onClick={() => addToCart({id: "1", title: "Book A", price: 10})}>Add Book A</button>
+                    <button onClick={() => addToCart({id: "2", title: "Book B", price: 20})}>Add Book B</button>
+                    <button onClick={clearCart}>Clear Cart</button>
+                    <ul>{items.map(i => <li key={i.id} data-testid={`item-${i.id}`}>{i.title}</li>)}</ul>
+                </div>
+            );
+        }
+
+        renderWithProviders(<TestWithClear/>);
+
+        fireEvent.click(screen.getByText("Add Book A"));
+        fireEvent.click(screen.getByText("Add Book B"));
+        expect(screen.getByTestId("count").textContent).toBe("2");
+
+        fireEvent.click(screen.getByText("Clear Cart"));
+        expect(screen.getByTestId("count").textContent).toBe("0");
+    });
+
+    test("clearCart removes all items from the list", () => {
+        function TestWithClear() {
+            const {items, addToCart, clearCart} = useCart();
+            return (
+                <div>
+                    <button onClick={() => addToCart({id: "1", title: "Book A", price: 10})}>Add Book A</button>
+                    <button onClick={clearCart}>Clear Cart</button>
+                    <ul>{items.map(i => <li key={i.id} data-testid={`item-${i.id}`}>{i.title}</li>)}</ul>
+                </div>
+            );
+        }
+
+        renderWithProviders(<TestWithClear/>);
+
+        fireEvent.click(screen.getByText("Add Book A"));
+        expect(screen.getByTestId("item-1")).toBeInTheDocument();
+
+        fireEvent.click(screen.getByText("Clear Cart"));
+        expect(screen.queryByTestId("item-1")).not.toBeInTheDocument();
     });
 
 });
