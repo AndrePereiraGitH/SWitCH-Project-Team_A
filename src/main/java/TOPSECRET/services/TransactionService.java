@@ -2,6 +2,7 @@ package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.TransactionAuthorizationPolicy;
 import TOPSECRET.domain.Enum.TransactionStatus;
+import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.Transaction.ITransactionRepository;
 import TOPSECRET.domain.Transaction.Transaction;
 import TOPSECRET.domain.Transaction.TransactionFactory;
@@ -69,6 +70,13 @@ public class TransactionService {
                                      PaymentDetails paymentDetails,
                                      List<ListingId> listingIds) {
 
+        Objects.requireNonNull(buyerId,          "buyerId must not be null");
+        Objects.requireNonNull(price,            "price must not be null");
+        Objects.requireNonNull(transactionDate,  "transactionDate must not be null");
+        Objects.requireNonNull(shippingAddress,  "shippingAddress must not be null");
+        Objects.requireNonNull(paymentDetails,   "paymentDetails must not be null");
+        Objects.requireNonNull(listingIds,       "listingIds must not be null");
+
         User user = userRepository.findByID(buyerId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + buyerId));
 
@@ -91,15 +99,15 @@ public class TransactionService {
 
     /**
      * Finds a transaction by its identifier, ensuring the requester has permission
-     * to view it and is the transaction owner.
+     * to view it and is either the transaction buyer or an admin.
      *
      * @param transactionId the identifier of the transaction to find; must not be {@code null}
      * @param requesterId   the identifier of the user requesting access; must not be {@code null}
      * @return the transaction associated with the given identifier
-     * @throws EntityNotFoundException if no user exists with the given requester identifier
+     * @throws EntityNotFoundException if no user exists with the given requester identifier,
      *                                 or no transaction exists with the given transaction identifier
      * @throws AccessDeniedException   if the requester does not have permission to view transactions,
-     *                                 or is not the owner of the transaction
+     *                                 or is neither the buyer nor an admin
      */
     public Transaction findById(TransactionID transactionId, UserId requesterId) {
 
@@ -113,7 +121,10 @@ public class TransactionService {
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new EntityNotFoundException("Transaction not found: " + transactionId.getId()));
 
-        if (!transaction.getBuyerId().equals(requesterId)) {
+        boolean isAdmin = requester.getUserRoles().contains(UserRole.ADMIN);
+        boolean isBuyer = transaction.getBuyerId().equals(requesterId);
+
+        if (!isAdmin && !isBuyer) {
             throw new AccessDeniedException("You do not have permission to access this transaction");
         }
 
@@ -121,24 +132,40 @@ public class TransactionService {
     }
 
     /**
-     * Retrieves all transactions.
+     * Retrieves all transactions in the system.
      *
+     * <p>Only users with the {@link UserRole#ADMIN} role are permitted
+     * to retrieve the full list of transactions.</p>
+     *
+     * @param requesterId the identifier of the user requesting access; must not be {@code null}
      * @return a list containing all existing transactions; may be empty if none exist
+     * @throws EntityNotFoundException if no user exists with the given requester identifier
+     * @throws AccessDeniedException   if the requester does not have the admin role
      */
-    public List<Transaction> findAll() {
+    public List<Transaction> findAll(UserId requesterId) {
+
+        Objects.requireNonNull(requesterId, "requesterId must not be null");
+
+        User requester = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + requesterId));
+
+        if (!policy.canViewAllTransactions(requester)) {
+            throw new AccessDeniedException("Only admins can view all transactions");
+        }
+
         return transactionRepository.findAll();
     }
 
     /**
      * Retrieves all transactions associated with the given buyer,
-     * ensuring the requester has permission and matches the buyer identifier.
+     * ensuring the requester has permission and is either the buyer or an admin.
      *
      * @param buyerId     the identifier of the buyer; must not be {@code null}
      * @param requesterId the identifier of the user requesting access; must not be {@code null}
      * @return a list of transactions owned by the given buyer; may be empty if none exist
      * @throws EntityNotFoundException if no user exists with the given requester identifier
      * @throws AccessDeniedException   if the requester does not have permission to view transactions,
-     *                                 or is not the same as the buyer
+     *                                 or is neither the buyer nor an admin
      */
     public List<Transaction> findAllByBuyerId(UserId buyerId, UserId requesterId) {
 
@@ -148,11 +175,14 @@ public class TransactionService {
         User requester = userRepository.findByID(requesterId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + requesterId));
 
-        if (!policy.canViewBuyerTransactions(requester)) {
+        if (!policy.canViewTransaction(requester)) {
             throw new AccessDeniedException("You do not have permission to view transactions");
         }
 
-        if (!buyerId.equals(requesterId)) {
+        boolean isAdmin = requester.getUserRoles().contains(UserRole.ADMIN);
+        boolean isBuyer = buyerId.equals(requesterId);
+
+        if (!isAdmin && !isBuyer) {
             throw new AccessDeniedException("You do not have permission to access these transactions");
         }
 

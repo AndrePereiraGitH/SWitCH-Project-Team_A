@@ -2,6 +2,7 @@ package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.TransactionAuthorizationPolicy;
 import TOPSECRET.domain.Enum.TransactionStatus;
+import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.Transaction.ITransactionRepository;
 import TOPSECRET.domain.Transaction.Transaction;
 import TOPSECRET.domain.Transaction.TransactionFactory;
@@ -20,6 +21,7 @@ import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -84,7 +86,7 @@ class TransactionServiceTest {
     @Test
     void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> new TransactionService(null, transactionFactory, userRepository, policy));
     }
@@ -92,7 +94,7 @@ class TransactionServiceTest {
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> new TransactionService(transactionRepository, null, userRepository, policy));
     }
@@ -100,7 +102,7 @@ class TransactionServiceTest {
     @Test
     void constructor_shouldThrowNullPointerException_whenUserRepositoryIsNull() {
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> new TransactionService(transactionRepository, transactionFactory, null, policy));
     }
@@ -108,7 +110,7 @@ class TransactionServiceTest {
     @Test
     void constructor_shouldThrowNullPointerException_whenPolicyIsNull() {
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> new TransactionService(transactionRepository, transactionFactory, userRepository, null));
     }
@@ -120,7 +122,7 @@ class TransactionServiceTest {
     @Test
     void createAndSave_shouldReturnSavedTransaction_whenUserIsAuthorized() {
 
-        // Arrange
+        // ARRANGE
         Transaction createdTransaction = mock(Transaction.class);
         Transaction savedTransaction   = mock(Transaction.class);
 
@@ -133,22 +135,22 @@ class TransactionServiceTest {
         )).thenReturn(createdTransaction);
         when(transactionRepository.save(createdTransaction)).thenReturn(savedTransaction);
 
-        // Act
+        // ACT
         Transaction result = sut.createAndSave(
                 buyerIdDouble, priceDouble, transactionDate,
                 shippingAddressDouble, paymentDetailsDouble, listingIds);
 
-        // Assert
+        // ASSERT
         assertSame(savedTransaction, result);
     }
 
     @Test
     void createAndSave_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.empty());
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(EntityNotFoundException.class,
                 () -> sut.createAndSave(
                         buyerIdDouble, priceDouble, transactionDate,
@@ -158,15 +160,69 @@ class TransactionServiceTest {
     @Test
     void createAndSave_shouldThrowAccessDeniedException_whenUserIsNotAuthorized() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
         when(policy.canCreateTransaction(userDouble)).thenReturn(false);
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
                 () -> sut.createAndSave(
                         buyerIdDouble, priceDouble, transactionDate,
                         shippingAddressDouble, paymentDetailsDouble, listingIds));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenBuyerIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.createAndSave(null, priceDouble, transactionDate,
+                        shippingAddressDouble, paymentDetailsDouble, listingIds));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenPriceIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.createAndSave(buyerIdDouble, null, transactionDate,
+                        shippingAddressDouble, paymentDetailsDouble, listingIds));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenTransactionDateIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.createAndSave(buyerIdDouble, priceDouble, null,
+                        shippingAddressDouble, paymentDetailsDouble, listingIds));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenShippingAddressIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.createAndSave(buyerIdDouble, priceDouble, transactionDate,
+                        null, paymentDetailsDouble, listingIds));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenPaymentDetailsIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.createAndSave(buyerIdDouble, priceDouble, transactionDate,
+                        shippingAddressDouble, null, listingIds));
+    }
+
+    @Test
+    void createAndSave_shouldThrowNullPointerException_whenListingIdsIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.createAndSave(buyerIdDouble, priceDouble, transactionDate,
+                        shippingAddressDouble, paymentDetailsDouble, null));
     }
 
     // =========================================================================
@@ -176,29 +232,48 @@ class TransactionServiceTest {
     @Test
     void findById_shouldReturnTransaction_whenRequesterIsOwner() {
 
-        // Arrange
+        // ARRANGE
         Transaction transaction = mock(Transaction.class);
 
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.of(userDouble));
         when(policy.canViewTransaction(userDouble)).thenReturn(true);
-        when(transactionRepository.findById(transactionIdDouble))
-                .thenReturn(Optional.of(transaction));
+        when(transactionRepository.findById(transactionIdDouble)).thenReturn(Optional.of(transaction));
         when(transaction.getBuyerId()).thenReturn(buyerIdDouble);
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
-        // Act
+        // ACT
         Transaction result = sut.findById(transactionIdDouble, requesterIdSameAsBuyer);
 
-        // Assert
+        // ASSERT
+        assertSame(transaction, result);
+    }
+
+    @Test
+    void findById_shouldReturnTransaction_whenRequesterIsAdmin() {
+
+        // ARRANGE
+        Transaction transaction = mock(Transaction.class);
+
+        when(userRepository.findByID(requesterIdDifferentFromBuyer)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewTransaction(userDouble)).thenReturn(true);
+        when(transactionRepository.findById(transactionIdDouble)).thenReturn(Optional.of(transaction));
+        when(transaction.getBuyerId()).thenReturn(buyerIdDouble);
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        // ACT
+        Transaction result = sut.findById(transactionIdDouble, requesterIdDifferentFromBuyer);
+
+        // ASSERT
         assertSame(transaction, result);
     }
 
     @Test
     void findById_shouldThrowEntityNotFoundException_whenRequesterDoesNotExist() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.empty());
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(EntityNotFoundException.class,
                 () -> sut.findById(transactionIdDouble, requesterIdSameAsBuyer));
     }
@@ -206,11 +281,11 @@ class TransactionServiceTest {
     @Test
     void findById_shouldThrowAccessDeniedException_whenRequesterHasNoPermission() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.of(userDouble));
         when(policy.canViewTransaction(userDouble)).thenReturn(false);
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
                 () -> sut.findById(transactionIdDouble, requesterIdSameAsBuyer));
     }
@@ -218,29 +293,29 @@ class TransactionServiceTest {
     @Test
     void findById_shouldThrowEntityNotFoundException_whenTransactionDoesNotExist() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.of(userDouble));
         when(policy.canViewTransaction(userDouble)).thenReturn(true);
         when(transactionRepository.findById(transactionIdDouble)).thenReturn(Optional.empty());
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(EntityNotFoundException.class,
                 () -> sut.findById(transactionIdDouble, requesterIdSameAsBuyer));
     }
 
     @Test
-    void findById_shouldThrowAccessDeniedException_whenRequesterIsNotOwner() {
+    void findById_shouldThrowAccessDeniedException_whenRequesterIsNotOwnerNorAdmin() {
 
-        // Arrange
+        // ARRANGE
         Transaction transaction = mock(Transaction.class);
 
         when(userRepository.findByID(requesterIdDifferentFromBuyer)).thenReturn(Optional.of(userDouble));
         when(policy.canViewTransaction(userDouble)).thenReturn(true);
-        when(transactionRepository.findById(transactionIdDouble))
-                .thenReturn(Optional.of(transaction));
+        when(transactionRepository.findById(transactionIdDouble)).thenReturn(Optional.of(transaction));
         when(transaction.getBuyerId()).thenReturn(buyerIdDouble);
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
                 () -> sut.findById(transactionIdDouble, requesterIdDifferentFromBuyer));
     }
@@ -250,33 +325,72 @@ class TransactionServiceTest {
     // =========================================================================
 
     @Test
-    void findAll_shouldReturnAllTransactions() {
+    void findAll_shouldReturnAllTransactions_whenRequesterIsAdmin() {
 
-        // Arrange
+        // ARRANGE
         Transaction tx1 = mock(Transaction.class);
         Transaction tx2 = mock(Transaction.class);
         List<Transaction> transactions = List.of(tx1, tx2);
 
+        UserId adminId = new UserId("admin-1");
+        when(userRepository.findByID(adminId)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewAllTransactions(userDouble)).thenReturn(true);
         when(transactionRepository.findAll()).thenReturn(transactions);
 
-        // Act
-        List<Transaction> result = sut.findAll();
+        // ACT
+        List<Transaction> result = sut.findAll(adminId);
 
-        // Assert
+        // ASSERT
         assertSame(transactions, result);
     }
 
     @Test
     void findAll_shouldReturnEmptyList_whenNoTransactionsExist() {
 
-        // Arrange
+        // ARRANGE
+        UserId adminId = new UserId("admin-1");
+        when(userRepository.findByID(adminId)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewAllTransactions(userDouble)).thenReturn(true);
         when(transactionRepository.findAll()).thenReturn(List.of());
 
-        // Act
-        List<Transaction> result = sut.findAll();
+        // ACT
+        List<Transaction> result = sut.findAll(adminId);
 
-        // Assert
+        // ASSERT
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findAll_shouldThrowAccessDeniedException_whenRequesterIsNotAdmin() {
+
+        // ARRANGE
+        UserId normalUserId = new UserId("user-1");
+        when(userRepository.findByID(normalUserId)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewAllTransactions(userDouble)).thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(AccessDeniedException.class,
+                () -> sut.findAll(normalUserId));
+    }
+
+    @Test
+    void findAll_shouldThrowEntityNotFoundException_whenRequesterDoesNotExist() {
+
+        // ARRANGE
+        UserId unknownId = new UserId("unknown");
+        when(userRepository.findByID(unknownId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(EntityNotFoundException.class,
+                () -> sut.findAll(unknownId));
+    }
+
+    @Test
+    void findAll_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.findAll(null));
     }
 
     // =========================================================================
@@ -286,44 +400,65 @@ class TransactionServiceTest {
     @Test
     void findAllByBuyerId_shouldReturnTransactions_whenRequesterMatchesBuyer() {
 
-        // Arrange
+        // ARRANGE
         Transaction tx1 = mock(Transaction.class);
         Transaction tx2 = mock(Transaction.class);
         List<Transaction> transactions = List.of(tx1, tx2);
 
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.of(userDouble));
-        when(policy.canViewBuyerTransactions(userDouble)).thenReturn(true);
+        when(policy.canViewTransaction(userDouble)).thenReturn(true);
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
         when(transactionRepository.findAllByBuyerId(buyerIdDouble)).thenReturn(transactions);
 
-        // Act
+        // ACT
         List<Transaction> result = sut.findAllByBuyerId(buyerIdDouble, requesterIdSameAsBuyer);
 
-        // Assert
+        // ASSERT
+        assertSame(transactions, result);
+    }
+
+    @Test
+    void findAllByBuyerId_shouldReturnTransactions_whenRequesterIsAdmin() {
+
+        // ARRANGE
+        Transaction tx1 = mock(Transaction.class);
+        List<Transaction> transactions = List.of(tx1);
+
+        when(userRepository.findByID(requesterIdDifferentFromBuyer)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewTransaction(userDouble)).thenReturn(true);
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+        when(transactionRepository.findAllByBuyerId(buyerIdDouble)).thenReturn(transactions);
+
+        // ACT
+        List<Transaction> result = sut.findAllByBuyerId(buyerIdDouble, requesterIdDifferentFromBuyer);
+
+        // ASSERT
         assertSame(transactions, result);
     }
 
     @Test
     void findAllByBuyerId_shouldReturnEmptyList_whenBuyerHasNoTransactions() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.of(userDouble));
-        when(policy.canViewBuyerTransactions(userDouble)).thenReturn(true);
+        when(policy.canViewTransaction(userDouble)).thenReturn(true);
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
         when(transactionRepository.findAllByBuyerId(buyerIdDouble)).thenReturn(List.of());
 
-        // Act
+        // ACT
         List<Transaction> result = sut.findAllByBuyerId(buyerIdDouble, requesterIdSameAsBuyer);
 
-        // Assert
+        // ASSERT
         assertTrue(result.isEmpty());
     }
 
     @Test
     void findAllByBuyerId_shouldThrowEntityNotFoundException_whenRequesterDoesNotExist() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.empty());
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(EntityNotFoundException.class,
                 () -> sut.findAllByBuyerId(buyerIdDouble, requesterIdSameAsBuyer));
     }
@@ -331,23 +466,24 @@ class TransactionServiceTest {
     @Test
     void findAllByBuyerId_shouldThrowAccessDeniedException_whenRequesterHasNoPermission() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(requesterIdSameAsBuyer)).thenReturn(Optional.of(userDouble));
-        when(policy.canViewBuyerTransactions(userDouble)).thenReturn(false);
+        when(policy.canViewTransaction(userDouble)).thenReturn(false);
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
                 () -> sut.findAllByBuyerId(buyerIdDouble, requesterIdSameAsBuyer));
     }
 
     @Test
-    void findAllByBuyerId_shouldThrowAccessDeniedException_whenRequesterDoesNotMatchBuyer() {
+    void findAllByBuyerId_shouldThrowAccessDeniedException_whenRequesterIsNotOwnerNorAdmin() {
 
-        // Arrange
+        // ARRANGE
         when(userRepository.findByID(requesterIdDifferentFromBuyer)).thenReturn(Optional.of(userDouble));
-        when(policy.canViewBuyerTransactions(userDouble)).thenReturn(true);
+        when(policy.canViewTransaction(userDouble)).thenReturn(true);
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(AccessDeniedException.class,
                 () -> sut.findAllByBuyerId(buyerIdDouble, requesterIdDifferentFromBuyer));
     }
@@ -355,7 +491,7 @@ class TransactionServiceTest {
     @Test
     void findAllByBuyerId_shouldThrowNullPointerException_whenBuyerIdIsNull() {
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> sut.findAllByBuyerId(null, requesterIdSameAsBuyer));
     }
@@ -363,7 +499,7 @@ class TransactionServiceTest {
     @Test
     void findAllByBuyerId_shouldThrowNullPointerException_whenRequesterIdIsNull() {
 
-        // Act + Assert
+        // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> sut.findAllByBuyerId(buyerIdDouble, null));
     }
