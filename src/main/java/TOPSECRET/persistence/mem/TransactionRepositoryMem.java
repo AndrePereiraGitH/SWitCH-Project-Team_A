@@ -3,6 +3,7 @@ package TOPSECRET.persistence.mem;
 import TOPSECRET.domain.Transaction.ITransactionRepository;
 import TOPSECRET.domain.Transaction.Transaction;
 import TOPSECRET.domain.ValueObjects.TransactionID;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,5 +74,19 @@ public class TransactionRepositoryMem implements ITransactionRepository {
     @Override
     public List<Transaction> findAll() {
         return List.copyOf(transactions);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Transaction> findAllByBuyerId(UserId buyerId) {
+        if (buyerId == null) {
+            throw new IllegalArgumentException("buyerId cannot be null");
+        }
+
+        return transactions.stream()
+                .filter(transaction -> transaction.getBuyerId().equals(buyerId))
+                .toList();
     }
 }
