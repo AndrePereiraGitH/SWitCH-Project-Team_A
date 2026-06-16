@@ -7,6 +7,7 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.User.UserFactory;
 import TOPSECRET.domain.ValueObjects.Profile;
 import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.dto.user.UserMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

@@ -1,5 +1,6 @@
 package TOPSECRET.controller.controllerREST;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.UserAuthorizationPolicy;
 import TOPSECRET.controller.controllerREST.root.linkProvider.UserLinkProvider;
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.User;
@@ -39,6 +40,7 @@ public class UserRESTController {
 
     private final UserLinkProvider userLinkProvider;
     private final UserService userService;
+    private final UserAuthorizationPolicy userAuthorizationPolicy;
 
     /**
      * Creates a new {@code UserRESTController}.
@@ -47,9 +49,10 @@ public class UserRESTController {
      * @param userService      the service responsible for user operations
      */
     @Autowired
-    public UserRESTController(UserLinkProvider userLinkProvider, UserService userService) {
+    public UserRESTController(UserLinkProvider userLinkProvider, UserService userService, UserAuthorizationPolicy userAuthorizationPolicy) {
         this.userLinkProvider = userLinkProvider;
         this.userService = userService;
+        this.userAuthorizationPolicy = userAuthorizationPolicy;
     }
 
     /**
@@ -60,7 +63,7 @@ public class UserRESTController {
      * created user resource.</p>
      *
      * @param requestUserDTO the DTO containing the new user's data
-     * @param userId         the ID of the user performing the registration
+     * @param requesterId         the ID of the user performing the registration
      * @return HTTP 201 with the created user DTO and HATEOAS links,
      *         HTTP 400 if the request contains invalid data,
      *         HTTP 403 if the requester lacks permission,
@@ -70,26 +73,25 @@ public class UserRESTController {
     @PostMapping
     public ResponseEntity<ResponseUserDTO> registerUser(
             @RequestBody RequestUserDTO requestUserDTO,
-            @RequestParam String userId) {
+            @RequestParam String requesterId) {
 
         try {
-            UserId userIdVO = UserMapper.toUserId(userId);
+            User requester = getRequester(requesterId);
+
+            if (!userAuthorizationPolicy.canRegisterUser(requester)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             Profile profile = UserMapper.toProfile(requestUserDTO);
             Set<UserRole> roles = Set.of(UserMapper.toRole(requestUserDTO.role()));
 
-            User user = userService.createAndSave(
-                    requestUserDTO.username(),
-                    profile,
-                    roles,
-                    userIdVO
-            );
+            User user = userService.createAndSave(requestUserDTO.username(), profile, roles, requester.id());
 
             ResponseUserDTO result = UserMapper.toDTO(user);
 
-            List<Link> links = userLinkProvider.getLinksForUsers(userIdVO);
-            links.forEach(result::add);
             result.add(linkTo(methodOn(UserRESTController.class)
-                    .getUser(user.id().getUserId())).withSelfRel());
+                    .getUser(user.id().getUserId(), requesterId))
+                    .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
 
@@ -114,22 +116,33 @@ public class UserRESTController {
      *         or HTTP 500 on unexpected error
      */
     @GetMapping
-    public ResponseEntity<List<ResponseUserDTO>> getAllUsers() {
+    public ResponseEntity<List<ResponseUserDTO>> getAllUsers(@RequestParam String requesterId) {
 
         try {
-            List<User> users = userService.findAll();
-            List<ResponseUserDTO> result = new ArrayList<>();
+            User requester = getRequester(requesterId);
 
-            for (User user : users) {
+            if (!userAuthorizationPolicy.canFindAllUsers(requester)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            List<ResponseUserDTO> result = new ArrayList<>();
+            List<User> allUsers = userService.findAll();
+
+            for (User user : allUsers) {
+
                 ResponseUserDTO dto = UserMapper.toDTO(user);
+
                 dto.add(linkTo(methodOn(UserRESTController.class)
-                        .getUser(user.id().getUserId())).withSelfRel());
+                        .getUser(user.id().getUserId(), requesterId))
+                        .withSelfRel());
+
+                userLinkProvider
+                        .getLinksForUserResource(requester.id(), user.id())
+                        .forEach(dto::add);
+
                 result.add(dto);
             }
-            List<Link> publicLinks = new ArrayList<>(userLinkProvider.getPublicLinks());
-            result.forEach(dto -> publicLinks.forEach(dto::add));
-
-            return ResponseEntity.ok(result);
+            return ResponseEntity.status(HttpStatus.OK).body(result);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -148,20 +161,27 @@ public class UserRESTController {
      */
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseUserDTO> getUser(@PathVariable String id) {
+    public ResponseEntity<ResponseUserDTO> getUser(@PathVariable String id, @RequestParam String requesterId) {
 
         try {
-            UserId userId = UserMapper.toUserId(id);
-            User user = userService.findByID(userId);
 
-            ResponseUserDTO result = UserMapper.toDTO(user);
+            UserId targetUserId = UserMapper.toUserId(id);
+            User requester = getRequester(requesterId);
 
+            if (!userAuthorizationPolicy.canFindUserById(requester, targetUserId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            User targetUser = userService.findByID(targetUserId);
+
+            ResponseUserDTO result = UserMapper.toDTO(targetUser);
             result.add(linkTo(methodOn(UserRESTController.class)
-                    .getUser(id))
+                    .getUser(id, requesterId))
                     .withSelfRel());
 
-            List<Link> links = userLinkProvider.getLinksForUsers(userId);
-            links.forEach(result::add);
+            userLinkProvider
+                    .getLinksForUserResource(requester.id(), targetUserId)
+                    .forEach(result::add);
 
             return ResponseEntity.ok(result);
 
@@ -172,5 +192,10 @@ public class UserRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    private User getRequester(String requesterId) {
+        UserId requesterUserId = UserMapper.toUserId(requesterId);
+        return userService.findByID(requesterUserId);
     }
 }
