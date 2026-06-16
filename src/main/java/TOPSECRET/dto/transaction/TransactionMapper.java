@@ -15,7 +15,6 @@ import java.util.List;
  * {@link TransactionResponseDTO} objects, and for converting raw request
  * values into domain value objects.
  */
-@Component
 public class TransactionMapper {
 
     /**
