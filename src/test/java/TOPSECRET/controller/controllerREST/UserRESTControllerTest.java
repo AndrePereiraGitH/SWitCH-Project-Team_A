@@ -29,11 +29,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/**
- * Unit tests for {@link UserRESTController}.
- *
- * <p>Validates HTTP responses, exception handling and DTO mapping.</p>
- */
 @ExtendWith(MockitoExtension.class)
 class UserRESTControllerTest {
 
@@ -49,10 +44,6 @@ class UserRESTControllerTest {
     @InjectMocks
     private UserRESTController controller;
 
-    // ================================================================
-    // POST /users ? 201 CREATED
-    // ================================================================
-
     @Test
     void registerUser_shouldReturnCreated_whenValidRequest() throws Exception {
 
@@ -60,28 +51,26 @@ class UserRESTControllerTest {
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId requesterIdDouble = mock(UserId.class);
         UserId createdUserIdDouble = mock(UserId.class);
-        User requesterDouble = mock(User.class);
         User createdUserDouble = mock(User.class);
         ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canRegisterUser(requesterDouble)).thenReturn(true);
-
-        when(requesterDouble.id()).thenReturn(requesterIdDouble);
         when(createdUserDouble.id()).thenReturn(createdUserIdDouble);
         when(createdUserIdDouble.getUserId()).thenReturn("user-001");
 
         when(userService.createAndSave(any(), any(), any(), any()))
                 .thenReturn(createdUserDouble);
 
+        when(userLinkProvider.getLinksForUserResource(any(UserId.class), any(UserId.class)))
+                .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
+
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId("user-001")).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(requestDouble)).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole("NORMAL_USER")).thenReturn(UserRole.NORMAL_USER);
             mapperMock.when(() -> UserMapper.toDTO(createdUserDouble)).thenReturn(responseDTO);
-            mapperMock.when(() -> UserMapper.toUserId("user-001")).thenReturn(requesterIdDouble);
 
             // Act
             ResponseEntity<ResponseUserDTO> response =
@@ -91,12 +80,9 @@ class UserRESTControllerTest {
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
             assertNotNull(response.getBody());
             assertTrue(response.getBody().hasLink("self"));
+            assertTrue(response.getBody().hasLink("get-user"));
         }
     }
-
-    // ================================================================
-    // POST /users ? 400 BAD REQUEST
-    // ================================================================
 
     @Test
     void registerUser_shouldReturnBadRequest_whenIllegalArgumentException() throws Exception {
@@ -104,19 +90,15 @@ class UserRESTControllerTest {
         // Arrange
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId requesterIdDouble = mock(UserId.class);
-        User requesterDouble = mock(User.class);
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canRegisterUser(requesterDouble)).thenReturn(true);
-        when(requesterDouble.id()).thenReturn(requesterIdDouble);
-
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
+
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new IllegalArgumentException());
 
@@ -130,29 +112,21 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // POST /users ? 409 CONFLICT
-    // ================================================================
-
     @Test
     void registerUser_shouldReturnConflict_whenInstanceAlreadyExistsException() throws Exception {
 
         // Arrange
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId requesterIdDouble = mock(UserId.class);
-        User requesterDouble = mock(User.class);
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canRegisterUser(requesterDouble)).thenReturn(true);
-        when(requesterDouble.id()).thenReturn(requesterIdDouble);
-
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
+
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new InstanceAlreadyExistsException());
 
@@ -166,29 +140,21 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // POST /users ? 403 FORBIDDEN
-    // ================================================================
-
     @Test
     void registerUser_shouldReturnForbidden_whenAccessDeniedException() throws Exception {
 
         // Arrange
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId requesterIdDouble = mock(UserId.class);
-        User requesterDouble = mock(User.class);
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canRegisterUser(requesterDouble)).thenReturn(true);
-        when(requesterDouble.id()).thenReturn(requesterIdDouble);
-
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
+
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new AccessDeniedException("denied"));
 
@@ -202,58 +168,21 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // POST /users ? 403 FORBIDDEN
-    // ================================================================
-
-    @Test
-    void registerUser_shouldReturnForbidden_whenRequesterIsNotAdmin() throws InstanceAlreadyExistsException {
-
-        // Arrange
-        RequestUserDTO requestDouble = mock(RequestUserDTO.class);
-        UserId requesterIdDouble = mock(UserId.class);
-        User requesterDouble = mock(User.class);
-
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canRegisterUser(requesterDouble)).thenReturn(false);
-
-        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
-            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
-
-            // Act
-            ResponseEntity<ResponseUserDTO> response =
-                    controller.registerUser(requestDouble, "user-001");
-
-            // Assert
-            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-            assertNull(response.getBody());
-            verify(userService, never()).createAndSave(any(), any(), any(), any());
-        }
-    }
-
-    // ================================================================
-    // POST /users ? 500 INTERNAL SERVER ERROR
-    // ================================================================
-
     @Test
     void registerUser_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
 
         // Arrange
         RequestUserDTO requestDouble = mock(RequestUserDTO.class);
         UserId requesterIdDouble = mock(UserId.class);
-        User requesterDouble = mock(User.class);
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canRegisterUser(requesterDouble)).thenReturn(true);
-        when(requesterDouble.id()).thenReturn(requesterIdDouble);
-
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
+
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new RuntimeException());
 
@@ -267,26 +196,17 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // GET /users ? 200 OK (with results)
-    // ================================================================
-
     @Test
     void getAllUsers_shouldReturnOk_whenUsersExist() throws Exception {
 
         // Arrange
-        User requesterDouble = mock(User.class);
         User userDouble = mock(User.class);
         UserId requesterIdDouble = mock(UserId.class);
         UserId userIdDouble = mock(UserId.class);
         ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canFindAllUsers(requesterDouble)).thenReturn(true);
+        when(userService.findAll(requesterIdDouble)).thenReturn(List.of(userDouble));
 
-        when(userService.findAll()).thenReturn(List.of(userDouble));
-
-        when(requesterDouble.id()).thenReturn(requesterIdDouble);
         when(userDouble.id()).thenReturn(userIdDouble);
         when(userIdDouble.getUserId()).thenReturn("user-001");
 
@@ -308,20 +228,13 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // GET /users ? 200 OK (empty list)
-    // ================================================================
-
     @Test
     void getAllUsers_shouldReturnOk_whenNoUsersExist() {
 
         // Arrange
-        User requesterDouble = mock(User.class);
         UserId requesterIdDouble = mock(UserId.class);
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canFindAllUsers(requesterDouble)).thenReturn(true);
-        when(userService.findAll()).thenReturn(List.of());
+        when(userService.findAll(requesterIdDouble)).thenReturn(List.of());
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
@@ -337,48 +250,13 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // GET /users ? 403 FORBIDDEN
-    // ================================================================
-
-    @Test
-    void getAllUsers_shouldReturnForbidden_whenRequesterIsNotAdmin() {
-
-        // Arrange
-        User requesterDouble = mock(User.class);
-        UserId requesterIdDouble = mock(UserId.class);
-
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canFindAllUsers(requesterDouble)).thenReturn(false);
-
-        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
-            mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
-
-            // Act
-            ResponseEntity<List<ResponseUserDTO>> response =
-                    controller.getAllUsers("user-001");
-
-            // Assert
-            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-            assertNull(response.getBody());
-            verify(userService, never()).findAll();
-        }
-    }
-
-    // ================================================================
-    // GET /users ? 500 INTERNAL SERVER ERROR
-    // ================================================================
-
     @Test
     void getAllUsers_shouldReturnInternalServerError_whenUnexpectedException() {
 
         // Arrange
-        User requesterDouble = mock(User.class);
         UserId requesterIdDouble = mock(UserId.class);
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canFindAllUsers(requesterDouble)).thenReturn(true);
-        when(userService.findAll()).thenThrow(new RuntimeException());
+        when(userService.findAll(requesterIdDouble)).thenThrow(new RuntimeException());
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
@@ -393,27 +271,17 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // GET /users/{id} ? 200 OK
-    // ================================================================
-
     @Test
     void getUser_shouldReturnOk_whenUserExists() throws Exception {
 
         // Arrange
-        User requesterDouble = mock(User.class);
         User userDouble = mock(User.class);
         UserId requesterIdDouble = mock(UserId.class);
         UserId targetUserIdDouble = mock(UserId.class);
         ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userService.findByID(targetUserIdDouble)).thenReturn(userDouble);
-
-        when(userAuthorizationPolicy.canFindUserById(requesterDouble, targetUserIdDouble))
-                .thenReturn(true);
-
-        when(requesterDouble.id()).thenReturn(requesterIdDouble);
+        when(userService.findByIDNew(targetUserIdDouble, requesterIdDouble))
+                .thenReturn(userDouble);
 
         when(userLinkProvider.getLinksForUserResource(requesterIdDouble, targetUserIdDouble))
                 .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
@@ -429,44 +297,11 @@ class UserRESTControllerTest {
 
             // Assert
             assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
             assertTrue(response.getBody().hasLink("get-user"));
             assertEquals(responseDTO, response.getBody());
         }
     }
-
-    // ================================================================
-    // GET /users/{id} ? 403 FORBIDDEN
-    // ================================================================
-
-    @Test
-    void getUser_shouldReturnForbidden_whenRequesterCannotAccessUser() {
-
-        // Arrange
-        User requesterDouble = mock(User.class);
-        UserId requesterIdDouble = mock(UserId.class);
-        UserId targetUserIdDouble = mock(UserId.class);
-
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canFindUserById(requesterDouble, targetUserIdDouble))
-                .thenReturn(false);
-
-        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
-            mapperMock.when(() -> UserMapper.toUserId("user-001")).thenReturn(targetUserIdDouble);
-            mapperMock.when(() -> UserMapper.toUserId("requester-001")).thenReturn(requesterIdDouble);
-
-            // Act
-            ResponseEntity<ResponseUserDTO> response =
-                    controller.getUser("user-001", "requester-001");
-
-            // Assert
-            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-            assertNull(response.getBody());
-        }
-    }
-
-    // ================================================================
-    // GET /users/{id} ? 400 BAD REQUEST
-    // ================================================================
 
     @Test
     void getUser_shouldReturnBadRequest_whenMalformedId() {
@@ -486,22 +321,15 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // GET /users/{id} ? 404 NOT FOUND
-    // ================================================================
-
     @Test
     void getUser_shouldReturnNotFound_whenUserDoesNotExist() {
 
         // Arrange
-        User requesterDouble = mock(User.class);
         UserId requesterIdDouble = mock(UserId.class);
         UserId targetUserIdDouble = mock(UserId.class);
 
-        when(userService.findByID(requesterIdDouble)).thenReturn(requesterDouble);
-        when(userAuthorizationPolicy.canFindUserById(requesterDouble, targetUserIdDouble))
-                .thenReturn(true);
-        when(userService.findByID(targetUserIdDouble)).thenThrow(new NoSuchElementException());
+        when(userService.findByIDNew(targetUserIdDouble, requesterIdDouble))
+                .thenThrow(new NoSuchElementException());
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toUserId("user-001")).thenReturn(targetUserIdDouble);
@@ -517,10 +345,6 @@ class UserRESTControllerTest {
         }
     }
 
-    // ================================================================
-    // GET /users/{id} ? 500 INTERNAL SERVER ERROR
-    // ================================================================
-
     @Test
     void getUser_shouldReturnInternalServerError_whenUnexpectedException() {
 
@@ -528,7 +352,8 @@ class UserRESTControllerTest {
         UserId requesterIdDouble = mock(UserId.class);
         UserId targetUserIdDouble = mock(UserId.class);
 
-        when(userService.findByID(requesterIdDouble)).thenThrow(new RuntimeException());
+        when(userService.findByIDNew(targetUserIdDouble, requesterIdDouble))
+                .thenThrow(new RuntimeException());
 
         try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
             mapperMock.when(() -> UserMapper.toUserId("user-001")).thenReturn(targetUserIdDouble);
