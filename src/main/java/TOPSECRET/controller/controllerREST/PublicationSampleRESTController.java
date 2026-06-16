@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -147,6 +148,21 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET}, {@code POST},
+     *         and {@code OPTIONS}
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
     // =========================================================================
     // GET — by identity
     // =========================================================================
@@ -180,6 +196,19 @@ public class PublicationSampleRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/{publicationSampleId}} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/{publicationSampleId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     // =========================================================================
@@ -252,6 +281,20 @@ public class PublicationSampleRESTController {
     }
 
     /**
+     * Reports the HTTP methods supported by the
+     * {@code /publicationSamples/by-bibliographical-data/{bibliographicalDataId}} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/by-bibliographical-data/{bibliographicalDataId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsByBibliographicalDataId() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Retrieves all publication samples whose bibliographical data ID is in the given list.
      *
      * <p>Each item in the returned list is enriched with a self-link and public
@@ -287,6 +330,19 @@ public class PublicationSampleRESTController {
     }
 
     /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/by-bibliographical-data} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/by-bibliographical-data", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsByBibliographicalDataIdIn() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Retrieves all publication samples associated with any of the given edition IDs.
      *
      * <p>Each item in the returned list is enriched with a self-link and public
@@ -319,6 +375,19 @@ public class PublicationSampleRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/by-edition} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/by-edition", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsByEditionIdIn() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
@@ -365,6 +434,20 @@ public class PublicationSampleRESTController {
     }
 
     /**
+     * Reports the HTTP methods supported by the
+     * {@code /publicationSamples/{collectionId}/publications} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/{collectionId}/publications", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsByCollectionOfPublicationsId() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Retrieves all publication samples owned by the given user.
      *
      * <p>Requires the requesting user to be authorized for this operation.
@@ -403,6 +486,19 @@ public class PublicationSampleRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/my-publications} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/my-publications", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsMyPublications() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
@@ -445,6 +541,19 @@ public class PublicationSampleRESTController {
     }
 
     /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/in-library} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/in-library", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsInLibrary() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Retrieves all publication samples owned by the given user that are not assigned to any library.
      *
      * <p>Requires the requesting user to be authorized for this operation.
@@ -481,6 +590,19 @@ public class PublicationSampleRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/not-in-library} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/not-in-library", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsNotInLibrary() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
@@ -522,6 +644,19 @@ public class PublicationSampleRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/available-in-library} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/available-in-library", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsAvailableInLibrary() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
@@ -570,6 +705,19 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Reports the HTTP methods supported by the {@code /publicationSamples/{collectionId}/available} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/{collectionId}/available", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsAvailableForCollection() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
     // =========================================================================
     // PATCH — domain operations
     // =========================================================================
@@ -615,6 +763,20 @@ public class PublicationSampleRESTController {
     }
 
     /**
+     * Reports the HTTP methods supported by the
+     * {@code /publicationSamples/{publicationSampleId}/library} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code PATCH} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/{publicationSampleId}/library", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsLibrary() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.PATCH,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Assigns a publication sample to the specified collection.
      *
      * <p>Requires the requesting user to be authorized for this operation and to
@@ -655,6 +817,20 @@ public class PublicationSampleRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Reports the HTTP methods supported by the
+     * {@code /publicationSamples/{publicationSampleId}/collection} resource.
+     *
+     * @return HTTP 200 with an {@code Allow} header listing {@code PATCH} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/{publicationSampleId}/collection", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsCollection() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.PATCH,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     // =========================================================================

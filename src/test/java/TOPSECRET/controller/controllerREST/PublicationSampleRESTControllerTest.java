@@ -24,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -33,6 +34,7 @@ import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,6 +61,7 @@ import static org.mockito.Mockito.*;
  *   <li><b>findAvailableForCollection</b> — domain filtering for collection eligibility.</li>
  *   <li><b>addPublicationToLibrary</b> — domain operation with authorization.</li>
  *   <li><b>assignPublicationToCollection</b> — domain operation with authorization.</li>
+ *   <li><b>OPTIONS endpoints</b> — explicit Allow header per resource URI.</li>
  * </ul>
  */
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -2598,5 +2601,226 @@ class PublicationSampleRESTControllerTest {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
             assertNull(result.getBody());
         }
+    }
+
+    // =========================================================================
+    // OPTIONS — root ("")
+    // =========================================================================
+
+    @Test
+    void optionsRoot_shouldReturnOk_withGetPostOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsRoot();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /{publicationSampleId}
+    // =========================================================================
+
+    @Test
+    void optionsById_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsById();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /by-bibliographical-data/{bibliographicalDataId}
+    // =========================================================================
+
+    @Test
+    void optionsByBibliographicalDataId_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsByBibliographicalDataId();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /by-bibliographical-data
+    // =========================================================================
+
+    @Test
+    void optionsByBibliographicalDataIdIn_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsByBibliographicalDataIdIn();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /by-edition
+    // =========================================================================
+
+    @Test
+    void optionsByEditionIdIn_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsByEditionIdIn();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /{collectionId}/publications
+    // =========================================================================
+
+    @Test
+    void optionsByCollectionOfPublicationsId_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /my-publications
+    // =========================================================================
+
+    @Test
+    void optionsMyPublications_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsMyPublications();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /in-library
+    // =========================================================================
+
+    @Test
+    void optionsInLibrary_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsInLibrary();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /not-in-library
+    // =========================================================================
+
+    @Test
+    void optionsNotInLibrary_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsNotInLibrary();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /available-in-library
+    // =========================================================================
+
+    @Test
+    void optionsAvailableInLibrary_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsAvailableInLibrary();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /{collectionId}/available
+    // =========================================================================
+
+    @Test
+    void optionsAvailableForCollection_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsAvailableForCollection();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /{publicationSampleId}/library
+    // =========================================================================
+
+    @Test
+    void optionsLibrary_shouldReturnOk_withPatchOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsLibrary();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /{publicationSampleId}/collection
+    // =========================================================================
+
+    @Test
+    void optionsCollection_shouldReturnOk_withPatchOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsCollection();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
     }
 }
