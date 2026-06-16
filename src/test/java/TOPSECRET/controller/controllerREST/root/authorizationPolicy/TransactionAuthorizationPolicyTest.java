@@ -116,50 +116,49 @@ class TransactionAuthorizationPolicyTest {
         // Assert
         assertFalse(result);
     }
-
-    // =========================================================================
-    // canViewBuyerTransactions
-    // =========================================================================
-
-    @Test
-    void canViewBuyerTransactions_shouldReturnTrue_whenUserIsNormalUser() {
-
-        // Arrange
-        User user = mock(User.class);
-        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
-
-        // Act
-        boolean result = sut.canViewBuyerTransactions(user);
-
-        // Assert
-        assertTrue(result);
-    }
+// =========================================================================
+// canViewAllTransactions
+// =========================================================================
 
     @Test
-    void canViewBuyerTransactions_shouldReturnTrue_whenUserIsAdmin() {
+    void canViewAllTransactions_shouldReturnTrue_whenUserIsAdmin() {
 
-        // Arrange
+        // ARRANGE
         User user = mock(User.class);
         when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
 
-        // Act
-        boolean result = sut.canViewBuyerTransactions(user);
+        // ACT
+        boolean result = sut.canViewAllTransactions(user);
 
-        // Assert
+        // ASSERT
         assertTrue(result);
     }
 
     @Test
-    void canViewBuyerTransactions_shouldReturnFalse_whenUserHasNoRoles() {
+    void canViewAllTransactions_shouldReturnFalse_whenUserIsNormalUser() {
 
-        // Arrange
+        // ARRANGE
+        User user = mock(User.class);
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // ACT
+        boolean result = sut.canViewAllTransactions(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canViewAllTransactions_shouldReturnFalse_whenUserHasNoRoles() {
+
+        // ARRANGE
         User user = mock(User.class);
         when(user.getUserRoles()).thenReturn(Set.of());
 
-        // Act
-        boolean result = sut.canViewBuyerTransactions(user);
+        // ACT
+        boolean result = sut.canViewAllTransactions(user);
 
-        // Assert
+        // ASSERT
         assertFalse(result);
     }
 }
