@@ -130,8 +130,7 @@ class TransactionServiceTest {
         when(policy.canCreateTransaction(userDouble)).thenReturn(true);
         when(transactionFactory.create(
                 buyerIdDouble, priceDouble, transactionDate,
-                shippingAddressDouble, paymentDetailsDouble,
-                TransactionStatus.COMPLETED, listingIds
+                shippingAddressDouble, paymentDetailsDouble, listingIds
         )).thenReturn(createdTransaction);
         when(transactionRepository.save(createdTransaction)).thenReturn(savedTransaction);
 

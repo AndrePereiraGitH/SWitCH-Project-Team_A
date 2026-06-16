@@ -90,7 +90,6 @@ public class TransactionService {
                 transactionDate,
                 shippingAddress,
                 paymentDetails,
-                TransactionStatus.COMPLETED,
                 listingIds
         );
 
