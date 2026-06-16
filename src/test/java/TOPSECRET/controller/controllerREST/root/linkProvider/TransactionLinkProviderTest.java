@@ -1,152 +1,156 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
+import TOPSECRET.controller.controllerREST.root.authorizationPolicy.TransactionAuthorizationPolicy;
+import TOPSECRET.domain.User.IUserRepository;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link TransactionLinkProvider}.
  *
- * <p>Verifies that the correct HATEOAS links are returned for each context:
- * public links, buyer-specific links, and the combined result of {@code getLinks}.</p>
+ * <p>Verifies that the correct HATEOAS links are returned based on
+ * the user's role and authorization policy.</p>
  */
 @ExtendWith(MockitoExtension.class)
 class TransactionLinkProviderTest {
 
+    @Mock
+    private IUserRepository repository;
+
+    @Mock
+    private TransactionAuthorizationPolicy policy;
+
     @InjectMocks
     private TransactionLinkProvider sut;
-
-    // =========================================================================
-    // getPublicLinks
-    // =========================================================================
-
-    @Test
-    void getPublicLinks_shouldReturnNonEmptyList() {
-
-        // Act
-        List<Link> links = sut.getPublicLinks();
-
-        // Assert
-        assertFalse(links.isEmpty());
-    }
-
-    @Test
-    void getPublicLinks_shouldContainCreateTransactionLink() {
-
-        // Act
-        List<Link> links = sut.getPublicLinks();
-
-        // Assert
-        assertTrue(links.stream()
-                .anyMatch(link -> link.getRel().value().equals("create-transaction")));
-    }
-
-    @Test
-    void getPublicLinks_shouldContainFindTransactionByIdLink() {
-
-        // Act
-        List<Link> links = sut.getPublicLinks();
-
-        // Assert
-        assertTrue(links.stream()
-                .anyMatch(link -> link.getRel().value().equals("find-transaction-by-id")));
-    }
-
-    // =========================================================================
-    // getBuyerLinks
-    // =========================================================================
-
-    @Test
-    void getBuyerLinks_shouldReturnNonEmptyList() {
-
-        // Arrange
-        UserId userId = mock(UserId.class);
-        when(userId.getUserId()).thenReturn("buyer-1");
-
-        // Act
-        List<Link> links = sut.getBuyerLinks(userId);
-
-        // Assert
-        assertFalse(links.isEmpty());
-    }
-
-    @Test
-    void getBuyerLinks_shouldContainMyTransactionsLink() {
-
-        // Arrange
-        UserId userId = mock(UserId.class);
-        when(userId.getUserId()).thenReturn("buyer-1");
-
-        // Act
-        List<Link> links = sut.getBuyerLinks(userId);
-
-        // Assert
-        assertTrue(links.stream()
-                .anyMatch(link -> link.getRel().value().equals("my-transactions")));
-    }
-
-    @Test
-    void getBuyerLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
-
-        // Act + Assert
-        assertThrows(NullPointerException.class,
-                () -> sut.getBuyerLinks(null));
-    }
 
     // =========================================================================
     // getLinks
     // =========================================================================
 
     @Test
-    void getLinks_shouldReturnNonEmptyList() throws Exception {
+    void getLinks_shouldContainCreateTransactionLink_whenUserCanCreateTransaction() throws InstanceNotFoundException {
 
-        // Arrange
+        // ARRANGE
         UserId userId = mock(UserId.class);
-        when(userId.getUserId()).thenReturn("buyer-1");
+        User user = mock(User.class);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateTransaction(user)).thenReturn(true);
+        when(policy.canViewTransaction(user)).thenReturn(false);
 
-        // Act
+        // ACT
         List<Link> links = sut.getLinks(userId);
 
-        // Assert
-        assertFalse(links.isEmpty());
-    }
-
-    @Test
-    void getLinks_shouldContainCreateTransactionLink() throws Exception {
-
-        // Arrange
-        UserId userId = mock(UserId.class);
-        when(userId.getUserId()).thenReturn("buyer-1");
-
-        // Act
-        List<Link> links = sut.getLinks(userId);
-
-        // Assert
+        // ASSERT
         assertTrue(links.stream()
                 .anyMatch(link -> link.getRel().value().equals("create-transaction")));
     }
 
     @Test
-    void getLinks_shouldContainMyTransactionsLink() throws Exception {
+    void getLinks_shouldNotContainCreateTransactionLink_whenUserCannotCreateTransaction() throws InstanceNotFoundException {
 
-        // Arrange
+        // ARRANGE
         UserId userId = mock(UserId.class);
-        when(userId.getUserId()).thenReturn("buyer-1");
+        User user = mock(User.class);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateTransaction(user)).thenReturn(false);
+        when(policy.canViewTransaction(user)).thenReturn(false);
 
-        // Act
+        // ACT
         List<Link> links = sut.getLinks(userId);
 
-        // Assert
+        // ASSERT
+        assertTrue(links.stream()
+                .noneMatch(link -> link.getRel().value().equals("create-transaction")));
+    }
+
+    @Test
+    void getLinks_shouldContainFindTransactionByIdLink_whenUserCanViewTransaction() throws InstanceNotFoundException {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateTransaction(user)).thenReturn(false);
+        when(policy.canViewTransaction(user)).thenReturn(true);
+        when(userId.getUserId()).thenReturn("user-1");
+
+        // ACT
+        List<Link> links = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("find-transaction-by-id")));
+    }
+
+    @Test
+    void getLinks_shouldContainMyTransactionsLink_whenUserCanViewTransaction() throws InstanceNotFoundException {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateTransaction(user)).thenReturn(false);
+        when(policy.canViewTransaction(user)).thenReturn(true);
+        when(userId.getUserId()).thenReturn("user-1");
+
+        // ACT
+        List<Link> links = sut.getLinks(userId);
+
+        // ASSERT
         assertTrue(links.stream()
                 .anyMatch(link -> link.getRel().value().equals("my-transactions")));
+    }
+
+    @Test
+    void getLinks_shouldNotContainViewLinks_whenUserCannotViewTransaction() throws InstanceNotFoundException {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+        when(repository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateTransaction(user)).thenReturn(false);
+        when(policy.canViewTransaction(user)).thenReturn(false);
+
+        // ACT
+        List<Link> links = sut.getLinks(userId);
+
+        // ASSERT
+        assertTrue(links.stream()
+                .noneMatch(link -> link.getRel().value().equals("find-transaction-by-id")));
+        assertTrue(links.stream()
+                .noneMatch(link -> link.getRel().value().equals("my-transactions")));
+    }
+
+    @Test
+    void getLinks_shouldThrowInstanceNotFoundException_whenUserNotFound() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        when(repository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(InstanceNotFoundException.class,
+                () -> sut.getLinks(userId));
+    }
+
+    @Test
+    void getLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.getLinks(null));
     }
 }
