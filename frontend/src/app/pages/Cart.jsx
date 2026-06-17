@@ -23,6 +23,7 @@ export function Cart() {
     const [payment, setPayment] = useState(emptyPayment);
     const [shippingErrors, setShippingErrors] = useState({});
     const [paymentErrors, setPaymentErrors] = useState({});
+    const [purchaseTotal, setPurchaseTotal] = useState(0);
 
     const total = items.reduce((sum, item) => sum + item.price, 0);
 
@@ -55,7 +56,10 @@ export function Cart() {
     function handlePaymentConfirm() {
         if (validatePayment()) {
             const confirmedTotal = total;
-            addPurchase(items, shipping, maskCardNumber(payment.cardNumber));
+            
+            setPurchaseTotal(confirmedTotal);
+            
+            addPurchase(items, shipping, maskCardNumber(payment.cardNumber), confirmedTotal);
             clearCart();
             setStep("success");
         }
@@ -387,7 +391,7 @@ export function Cart() {
                                         </div>
                                         <div className="flex justify-between font-bold text-foreground border-t-2 border-border pt-2 mt-2">
                                             <span>Total charged</span>
-                                            <span className="text-primary">€{total.toFixed(2)}</span>
+                                            <span className="text-primary">€{purchaseTotal.toFixed(2)}</span>
                                         </div>
                                     </div>
 
