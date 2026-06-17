@@ -2121,6 +2121,110 @@ class PublicationSampleRESTControllerTest {
     }
 
     // =========================================================================
+    // findPublicationSampleInSharedCollection — exception
+    // =========================================================================
+
+    @Test
+    void shouldReturnForbiddenWhenAccessDeniedExceptionOccurs() throws InstanceNotFoundException {
+
+        when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                .thenThrow(new AccessDeniedException("forbidden"));
+
+        ResponseEntity<List<PublicationDTO>> result =
+                sut.findPublicationSampleInSharedCollection("collectionId", "userId");
+
+        assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenIllegalArgumentExceptionOccurs() throws InstanceNotFoundException {
+
+        when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                .thenThrow(new IllegalArgumentException());
+
+        ResponseEntity<List<PublicationDTO>> result =
+                sut.findPublicationSampleInSharedCollection("collectionId", "userId");
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenEntityNotFoundExceptionOccurs() throws InstanceNotFoundException {
+
+        when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                .thenThrow(new EntityNotFoundException());
+
+        ResponseEntity<List<PublicationDTO>> result =
+                sut.findPublicationSampleInSharedCollection("collectionId", "userId");
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenInstanceNotFoundExceptionOccurs() throws Exception {
+
+        when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                .thenThrow(new InstanceNotFoundException("not found"));
+
+        ResponseEntity<List<PublicationDTO>> result =
+                sut.findPublicationSampleInSharedCollection("collectionId", "userId");
+
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnInternalServerErrorWhenUnexpectedExceptionOccurs() throws InstanceNotFoundException {
+
+        when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                .thenThrow(new RuntimeException());
+
+        ResponseEntity<List<PublicationDTO>> result =
+                sut.findPublicationSampleInSharedCollection("collectionId", "userId");
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+    }
+
+    // =========================================================================
+    // findPublicationSampleInSharedCollection — success
+    // =========================================================================
+
+
+    @Test
+    void shouldReturnOkWhenNoPublicationSamplesExist() throws InstanceNotFoundException {
+
+        when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                .thenReturn(List.of());
+
+        ResponseEntity<List<PublicationDTO>> result =
+                sut.findPublicationSampleInSharedCollection(
+                        "collection-id",
+                        "user-id");
+
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnOkWithEmptyListWhenNoPublicationSamplesExist()
+            throws Exception {
+
+        // ARRANGE
+        when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                .thenReturn(List.of());
+
+        // ACT
+        ResponseEntity<List<PublicationDTO>> result =
+                sut.findPublicationSampleInSharedCollection(
+                        "collection-id",
+                        "user-id");
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNotNull(result.getBody());
+        assertTrue(result.getBody().isEmpty());
+    }
+
+
+    // =========================================================================
     // addPublicationToLibrary — success
     // =========================================================================
 
