@@ -153,23 +153,21 @@ function setupFetch({ publicationListings = null, genreListings = null } = {}) {
       return { ok: true, json: async () => mockAuctions };
     }
 
-    if (urlString.includes("/listings/by-publication/")) {
-      return {
-        ok: true,
-        json: async () => publicationListings ?? mockPublicationListings,
-      };
-    }
-
     if (urlString.includes("/listings")) {
       const isFantasy = urlString.includes("genreId=fantasy");
       const isDirectSale =
-        urlString.includes("saleType=Direct+Sale") ||
-        urlString.includes("saleType=Direct%20Sale");
+          urlString.includes("saleType=Direct+Sale") ||
+          urlString.includes("saleType=Direct%20Sale");
       const isAuction = urlString.includes("saleType=Auction");
       const author002 = urlString.includes("authorId=author-002");
       const author003 = urlString.includes("authorId=author-003");
       const publisher001 = urlString.includes("publisherId=publisher-001");
       const publisher002 = urlString.includes("publisherId=publisher-002");
+      const bd001 = urlString.includes("bibliographicalDataId=bd-001");
+
+      if (bd001) {
+        return { ok: true, json: async () => publicationListings ?? mockPublicationListings };
+      }
 
       if (isFantasy && isDirectSale) {
         return { ok: true, json: async () => [mockFantasyGenreListings[1]] };
@@ -219,9 +217,9 @@ function setupFetch({ publicationListings = null, genreListings = null } = {}) {
 
 async function renderLoadedExplore() {
   render(
-    <MemoryRouter>
-      <Explore />
-    </MemoryRouter>
+      <MemoryRouter>
+        <Explore />
+      </MemoryRouter>
   );
 
   await waitFor(() => {
@@ -319,9 +317,9 @@ describe("Explore", () => {
       global.fetch = vi.fn(async () => ({ ok: false, status: 500 }));
 
       render(
-        <MemoryRouter>
-          <Explore />
-        </MemoryRouter>
+          <MemoryRouter>
+            <Explore />
+          </MemoryRouter>
       );
 
       await waitFor(() => {
@@ -337,7 +335,7 @@ describe("Explore", () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/listings?genreId=fantasy")
+            expect.stringContaining("/listings?genreId=fantasy")
         );
       });
     });
@@ -400,18 +398,18 @@ describe("Explore", () => {
   });
 
   describe("Publication filter", () => {
-    test("calls by-publication endpoint when publication selected", async () => {
+    test("calls listings endpoint with bibliographicalDataId when publication selected", async () => {
       await renderLoadedExplore();
       fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledWith(
-          expect.stringContaining("/listings/by-publication/bd-001")
+            expect.stringContaining("/listings?bibliographicalDataId=bd-001")
         );
       });
     });
 
-    test("shows listings returned by by-publication endpoint", async () => {
+    test("shows listings returned by bibliographicalDataId filter", async () => {
       await renderLoadedExplore();
       fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
 
@@ -455,7 +453,7 @@ describe("Explore", () => {
       });
     });
 
-    test("shows empty state when by-publication returns no listings", async () => {
+    test("shows empty state when bibliographicalDataId filter returns no listings", async () => {
       setupFetch({ publicationListings: [] });
       await renderLoadedExplore();
 

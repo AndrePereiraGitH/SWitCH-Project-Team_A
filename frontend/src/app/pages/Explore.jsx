@@ -84,27 +84,8 @@ export function Explore() {
   }, []);
 
   useEffect(() => {
-    if (filterPublication !== "all") {
-      fetchByPublication(filterPublication);
-    } else {
-      fetchFilteredListings();
-    }
+    fetchFilteredListings();
   }, [filterGenre, filterAuthor, filterPublisher, saleType, filterPublication]);
-
-    async function fetchByPublication(bdId) {
-        setLoadingFilter(true);
-        try {
-            const res = await fetch(`${API_BASE_URL}/listings/by-publication/${bdId}`);
-            if (!res.ok) throw new Error(`Failed: ${res.status}`);
-            const data = await res.json();
-            setSales(data.map(listing => mapListingToSale(listing, auctionsByListingIdRef.current)));
-        } catch (error) {
-            console.error("Error fetching listings by publication:", error);
-            setSales([]);
-        } finally {
-            setLoadingFilter(false);
-        }
-    }
 
   async function fetchFilteredListings() {
     setLoadingFilter(true);
@@ -128,6 +109,10 @@ export function Explore() {
         params.append("saleType", saleType === "direct" ? "Direct Sale" : "Auction");
       }
 
+      if (filterPublication !== "all") {
+        params.append("bibliographicalDataId", filterPublication);
+      }
+
       const res = await fetch(`${API_BASE_URL}/listings?${params.toString()}`);
 
       if (!res.ok) {
@@ -135,7 +120,7 @@ export function Explore() {
       }
 
       const data = await res.json();
-        setSales(data.map(listing => mapListingToSale(listing, auctionsByListingIdRef.current)));
+      setSales(data.map(listing => mapListingToSale(listing, auctionsByListingIdRef.current)));
     } catch (error) {
       console.error("Error fetching filtered listings:", error);
       setSales([]);
@@ -143,6 +128,7 @@ export function Explore() {
       setLoadingFilter(false);
     }
   }
+
 
   const mapListingToSale = (listing, auctionsByListingId = {}) => {
       const auction = auctionsByListingId[listing.id];
