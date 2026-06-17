@@ -100,6 +100,22 @@ public class UserLinkProvider implements RootLinkProvider {
                 .orElseThrow(() -> new InstanceNotFoundException("User not found: " + userId));
     }
 
+    /**
+     * Builds the list of HATEOAS links available to the requesting user based on
+     * their permissions.
+     *
+     * <p>The returned links depend on the authorization policies associated with
+     * the requester. For example, users with permission to view all users will
+     * receive a link to the endpoint that retrieves all users, while users with
+     * permission to register new users will receive a link to the registration
+     * endpoint.</p>
+     *
+     * @param requesterId the identifier of the user requesting the available links;
+     *                    must not be {@code null}
+     * @return a list of links that the requester is authorized to access
+     * @throws InstanceNotFoundException if no user exists for the provided
+     *                                   {@code requesterId}
+     */
     @Override
     public List<Link> getLinks(UserId requesterId) throws InstanceNotFoundException {
 

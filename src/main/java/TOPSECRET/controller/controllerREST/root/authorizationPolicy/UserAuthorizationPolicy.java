@@ -21,7 +21,7 @@ public class UserAuthorizationPolicy {
      * @return {@code true} if the user has the {@link UserRole#ADMIN} role;
      *         {@code false} otherwise
      */
-    public boolean isAdmin(User user) {
+    private boolean isAdmin(User user) {
         return user.getUserRoles().contains(UserRole.ADMIN);
     }
 
