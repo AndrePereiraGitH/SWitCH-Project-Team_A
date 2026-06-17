@@ -22,6 +22,21 @@
 - [ ] All tests pass
 - [ ] Updated documentation (if needed)
 
+## Security Review Checklist
+
+### Input Validation
+- [ ] User input is validated appropriately
+- [ ] Invalid input is handled safely
+
+### Authentication (Not applicable)
+
+### Secrets
+- [ ] No credentials, passwords, or API keys were committed
+
+### Logging
+- [ ] Logs do not contain sensitive information
+- [ ] Error messages do not expose implementation details
+
 ## Notes / Known Issues
 <!-- Anything reviewers should know -->
 - 
