@@ -420,6 +420,10 @@ jobs:
   push-to-registry:
     runs-on: ubuntu-latest
     needs: [ container-image-scan ]
+    # Only publish images for the main branch — not for PRs/pushes targeting
+    # teamA_1, teamA_2, or frontend. github.ref covers push events; github.base_ref
+    # covers pull_request events (where github.ref is the merge ref, not the branch).
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     permissions:
       contents: read
 
@@ -457,7 +461,18 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build-and-test, static-analysis-and-security, secret-detection, dependency-scan, container-image-scan,
              push-to-registry ]
-    if: success()
+    # push-to-registry is intentionally skipped outside main (see its own `if`).
+    # The default success() treats a skipped dependency as a failure, which would
+    # wrongly skip this gate on every teamA_1/teamA_2/frontend run. Accept success
+    # OR skipped specifically for push-to-registry; every other job must succeed.
+    if: >
+      always() &&
+      needs.build-and-test.result == 'success' &&
+      needs.static-analysis-and-security.result == 'success' &&
+      needs.secret-detection.result == 'success' &&
+      needs.dependency-scan.result == 'success' &&
+      needs.container-image-scan.result == 'success' &&
+      (needs.push-to-registry.result == 'success' || needs.push-to-registry.result == 'skipped')
     permissions:
       contents: read
       issues: write
