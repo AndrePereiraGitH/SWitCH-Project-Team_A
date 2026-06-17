@@ -1,95 +1,93 @@
 package TOPSECRET.domain.Transaction;
 
 import TOPSECRET.domain.Enum.TransactionStatus;
-import TOPSECRET.domain.ValueObjects.AuctionId;
-import TOPSECRET.domain.ValueObjects.DirectSaleID;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 
+/**
+ * Unit tests for {@link TransactionFactory}.
+ *
+ * <p>Verifies that the factory correctly creates new {@link Transaction} instances
+ * with generated identifiers and the expected initial status, and that it correctly
+ * reconstructs existing transactions from persisted data.</p>
+ */
+@ExtendWith(MockitoExtension.class)
 class TransactionFactoryTest {
 
-    //Doubles and attributes
-    UserId buyer = mock(UserId.class);
-    AuctionId auction = mock(AuctionId.class);
-    DirectSaleID directSale = mock(DirectSaleID.class);
-    Price price = mock(Price.class);
-    UserId seller = mock(UserId.class);
-    List<UserId> sellers = List.of(seller);
-    LocalDateTime transactionDate = LocalDateTime.now();
-    LocalDateTime future = LocalDateTime.now().plusDays(1);
-    TransactionStatus status = TransactionStatus.PENDING;
-
     @Test
-    void createFromAuctionShouldReturnCorrectTransaction() {
+    void createShouldCreateValidTransaction() {
 
-        //Arrange
-        try (MockedConstruction<Transaction> mocked =
-                     mockConstruction(Transaction.class,
-                             (mock, context) -> {
-                             })) {
+        // ARRANGE
+        TransactionFactory factory    = new TransactionFactory();
+        UserId buyer                  = mock(UserId.class);
+        Price price                   = mock(Price.class);
+        Address shippingAddress       = mock(Address.class);
+        PaymentDetails paymentDetails = mock(PaymentDetails.class);
+        List<ListingId> listings      = List.of(mock(ListingId.class));
+        LocalDateTime transactionDate = LocalDateTime.now();
 
-            TransactionFactory factory = new TransactionFactory();
+        // ACT
+        Transaction result = factory.create(
+                buyer, price, transactionDate,
+                shippingAddress, paymentDetails, listings
+        );
 
-            // Act
-            Transaction transactionResult = factory.createFromAuction(
-                    buyer,
-                    auction,
-                    price,
-                    transactionDate,
-                    future,
-                    sellers,
-                    status
-            );
-
-            // assert
-            assertNotNull(transactionResult);
-            assertEquals(1, mocked.constructed().size());
-
-            Transaction constructedTransaction = mocked.constructed().get(0);
-            assertSame(transactionResult, constructedTransaction);
-
-        }
+        // ASSERT
+        assertNotNull(result);
+        assertNotNull(result.id());
     }
 
     @Test
-    void createFromDirectSaleShouldReturnCorrectTransaction() {
+    void createShouldCreateTransactionWithPendingStatus() {
 
+        // ARRANGE
+        TransactionFactory factory    = new TransactionFactory();
+        UserId buyer                  = mock(UserId.class);
+        Price price                   = mock(Price.class);
+        Address shippingAddress       = mock(Address.class);
+        PaymentDetails paymentDetails = mock(PaymentDetails.class);
+        List<ListingId> listings      = List.of(mock(ListingId.class));
+        LocalDateTime transactionDate = LocalDateTime.now();
 
-        //Arrange
-        try (MockedConstruction<Transaction> mocked =
-                     mockConstruction(Transaction.class,
-                             (mock, context) -> {
-                             })) {
+        // ACT
+        Transaction result = factory.create(
+                buyer, price, transactionDate,
+                shippingAddress, paymentDetails, listings
+        );
 
-            TransactionFactory factory = new TransactionFactory();
+        // ASSERT
+        assertEquals(TransactionStatus.PENDING, result.getStatus());
+    }
 
-            // Act
-            Transaction transactionResult = factory.createFromDirectSale(
-                    buyer,
-                    price,
-                    directSale,
-                    transactionDate,
-                    future,
-                    sellers,
-                    status
-            );
+    @Test
+    void createShouldRecreateCorrectTransactionWithId() {
 
-            // assert
-            assertNotNull(transactionResult);
-            assertEquals(1, mocked.constructed().size());
+        // ARRANGE
+        TransactionFactory factory    = new TransactionFactory();
+        TransactionID transactionId   = mock(TransactionID.class);
+        UserId buyer                  = mock(UserId.class);
+        Price price                   = mock(Price.class);
+        Address shippingAddress       = mock(Address.class);
+        PaymentDetails paymentDetails = mock(PaymentDetails.class);
+        List<ListingId> listings      = List.of(mock(ListingId.class));
+        LocalDateTime transactionDate = LocalDateTime.now();
 
-            Transaction constructedTransaction = mocked.constructed().get(0);
-            assertSame(transactionResult, constructedTransaction);
+        // ACT
+        Transaction result = factory.create(
+                transactionId, buyer, price, transactionDate,
+                shippingAddress, paymentDetails,
+                TransactionStatus.PENDING, listings
+        );
 
-        }
+        // ASSERT
+        assertSame(transactionId, result.id());
     }
 }

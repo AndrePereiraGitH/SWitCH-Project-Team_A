@@ -8,6 +8,7 @@ import TOPSECRET.domain.ValueObjects.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -139,6 +140,31 @@ public class ListingRepositoryMem implements IListingRepository {
             }
         }
         return listingIds;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Listing> findByPublicationSampleIdIn(List<PublicationSampleId> itemsId) {
+
+        Objects.requireNonNull(itemsId, "publicationSampleIds cannot be null");
+
+        List<Listing> allListingsWithSpecificItemsId = new ArrayList<>();
+
+        for (Listing listing : listings) {
+
+            List<PublicationSampleId> listingItems = listing.getItemsId();
+
+            for(PublicationSampleId itemId : itemsId){
+                if(listingItems.contains(itemId)){
+                    allListingsWithSpecificItemsId.add(listing);
+                    break;
+                }
+            }
+        }
+        return allListingsWithSpecificItemsId;
+
     }
 
 

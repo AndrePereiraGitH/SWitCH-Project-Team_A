@@ -331,7 +331,7 @@ public class PublicationSampleRESTController {
      * @param collectionId the unique identifier of the collection to filter by
      * @param userId       the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if not found, or HTTP 500 on error
+     * HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/{collectionId}/publications")
     public ResponseEntity<List<PublicationDTO>> findByCollectionOfPublicationsId(
@@ -371,16 +371,15 @@ public class PublicationSampleRESTController {
      * Each item in the returned list is enriched with a self-link and owner
      * navigational links based on the requester's permissions.</p>
      *
-     *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a list of {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if the user is not found, or HTTP 500 on error
+     * HTTP 404 if the user is not found, or HTTP 500 on error
      */
     @GetMapping("/my-publications")
     public ResponseEntity<List<PublicationDTO>> findAllPublicationsOwnedByUser(
             @RequestParam String userId) {
 
-        try{
+        try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
             List<PublicationSample> allPublicationsOwnedByUser =
@@ -389,7 +388,7 @@ public class PublicationSampleRESTController {
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
 
             for (PublicationSample pbSample : allPublicationsOwnedByUser) {
-                publicationDTOS.add(toPublicationDTO(pbSample,id,LinkContext.OWNER));
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.OWNER));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -414,7 +413,7 @@ public class PublicationSampleRESTController {
      *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if not found, or HTTP 500 on error
+     * HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/in-library")
     public ResponseEntity<List<PublicationDTO>> findPublicationsInLibrary(
@@ -453,7 +452,7 @@ public class PublicationSampleRESTController {
      *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if not found, or HTTP 500 on error
+     * HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/not-in-library")
     public ResponseEntity<List<PublicationDTO>> findPublicationsNotInLibrary(
@@ -494,7 +493,7 @@ public class PublicationSampleRESTController {
      *
      * @param userId the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if the user or library is not found, or HTTP 500 on error
+     * HTTP 404 if the user or library is not found, or HTTP 500 on error
      */
     @GetMapping("/available-in-library")
     public ResponseEntity<List<PublicationDTO>> findByLibraryIdAndPublicationStatusNotIn(
@@ -537,7 +536,7 @@ public class PublicationSampleRESTController {
      * @param collectionId the unique identifier of the target collection
      * @param userId       the ID of the user performing the request
      * @return HTTP 200 with a filtered list of {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if not found, or HTTP 500 on error
+     * HTTP 404 if not found, or HTTP 500 on error
      */
     @GetMapping("/{collectionId}/available")
     public ResponseEntity<List<PublicationDTO>> findAvailableForCollection(
@@ -570,6 +569,55 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Retrieves all publication samples belonging to the specified public collection.
+     *
+     * <p>Unlike the owner-scoped collection endpoint, this method does not require the
+     * requesting user to own the collection. The collection must be currently public;
+     * if it is private, access is denied.</p>
+     *
+     * @param collectionId the unique identifier of the public collection to retrieve
+     *                     publications from; must not be {@code null}
+     * @param userId       the identifier of the requesting user; must not be {@code null}
+     * @return a {@link ResponseEntity} containing a list of {@link PublicationDTO} and:
+     * <ul>
+     *     <li>{@code 200 OK} if the operation succeeds</li>
+     *     <li>{@code 400 BAD REQUEST} if any identifier is invalid</li>
+     *     <li>{@code 403 FORBIDDEN} if the collection is not public or the user lacks permission</li>
+     *     <li>{@code 404 NOT FOUND} if the collection or user does not exist</li>
+     *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
+     * </ul>
+     */
+    @GetMapping("{collectionId}/publication-sample")
+    public ResponseEntity<List<PublicationDTO>> findPublicationSampleInSharedCollection(
+            @PathVariable("collectionId") String collectionId,
+            @RequestParam String userId) {
+
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
+
+            List<PublicationSample> pbSampleList = publicationSampleService.findPublicationsInPublicCollection(cpId, id);
+
+            List<PublicationDTO> publicationDTOS = new ArrayList<>();
+            for (PublicationSample pbSample : pbSampleList) {
+                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.OWNER));
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
+
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     // =========================================================================
     // PATCH — domain operations
     // =========================================================================
@@ -584,7 +632,7 @@ public class PublicationSampleRESTController {
      * @param publicationSampleId the unique identifier of the publication sample to assign
      * @param userId              the ID of the user performing the request
      * @return HTTP 200 with the updated {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if the sample, user, or library is not found, or HTTP 500 on error
+     * HTTP 404 if the sample, user, or library is not found, or HTTP 500 on error
      */
     @PatchMapping("/{publicationSampleId}/library")
     public ResponseEntity<PublicationDTO> addPublicationToLibrary(
@@ -624,7 +672,7 @@ public class PublicationSampleRESTController {
      * @param collectionId        the unique identifier of the target collection
      * @param userId              the ID of the user performing the request
      * @return HTTP 200 with the updated {@link PublicationDTO}, HTTP 403 if unauthorized,
-     *         HTTP 404 if the sample, user, or collection is not found, or HTTP 500 on error
+     * HTTP 404 if the sample, user, or collection is not found, or HTTP 500 on error
      */
     @PatchMapping("/{publicationSampleId}/collection")
     public ResponseEntity<PublicationDTO> assignPublicationToCollection(
@@ -691,10 +739,11 @@ public class PublicationSampleRESTController {
         List<Link> links = new ArrayList<>(publicationSampleLinkProvider.getPublicLinks());
 
         switch (context) {
-            case OWNER      -> links.addAll(publicationSampleLinkProvider.getOwnerLinks(userId));
-            case LIBRARY    -> links.addAll(publicationSampleLinkProvider.getLibraryLinks(userId));
+            case OWNER -> links.addAll(publicationSampleLinkProvider.getOwnerLinks(userId));
+            case LIBRARY -> links.addAll(publicationSampleLinkProvider.getLibraryLinks(userId));
             case COLLECTION -> links.addAll(publicationSampleLinkProvider.getCollectionLinks(userId));
-            default         -> {}
+            default -> {
+            }
         }
 
         links.add(linkTo(methodOn(PublicationSampleRESTController.class)

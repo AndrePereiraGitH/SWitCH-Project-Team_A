@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, Search, ShoppingCart, LogOut, BookOpen, Library, List } from "lucide-react";
+import { User, Search, ShoppingCart, LogOut, BookOpen, Library, List, ShoppingBag } from "lucide-react";
 import { useCart } from "./CartContext";
 import { useAuth } from "./AuthContext";
 import logoImg from "../../assets/teste.png";
@@ -86,7 +86,7 @@ export function Navbar() {
             <Link to="/explore" className={getLinkClass("/explore")}>
               Marketplace
             </Link>
-            <Link to="/community" className={getLinkClass("/community")}>
+            <Link to="/shared-lists" className={getLinkClass("/shared-lists")}>
               Community
             </Link>
           </div>
@@ -147,6 +147,14 @@ export function Navbar() {
                       >
                         <List className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium">My Lists</span>
+                      </Link>
+                      <Link
+                          to="/my-purchases"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                          onClick={() => setShowUserDropdown(false)}
+                      >
+                        <ShoppingBag className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium">My Purchases</span>
                       </Link>
                       <div className="border-t border-border my-2"></div>
                       <button

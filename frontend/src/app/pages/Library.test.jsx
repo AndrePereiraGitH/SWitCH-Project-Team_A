@@ -3,7 +3,6 @@ import { screen, fireEvent } from "@testing-library/react";
 import { renderWithProviders } from "../../test-utils";
 import { Library } from "./Library";
 
-// Mock React Router
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async (importOriginal) => {
     const actual = await importOriginal();
@@ -13,8 +12,6 @@ vi.mock("react-router-dom", async (importOriginal) => {
     };
 });
 
-// Mock Contexts directly to avoid async fetching issues during tests
-// Added dummy Providers so renderWithProviders doesn't crash!
 const mockUsePublications = vi.fn();
 vi.mock("../components/PublicationsContext", () => ({
     usePublications: () => mockUsePublications(),
@@ -27,7 +24,12 @@ vi.mock("../components/LibraryContext", () => ({
     LibraryProvider: ({ children }) => children,
 }));
 
-// Mock BookCard to avoid deep rendering complexity
+const mockUseLists = vi.fn();
+vi.mock("../components/ListsContext", () => ({
+    useLists: () => mockUseLists(),
+    ListsProvider: ({ children }) => children,
+}));
+
 vi.mock("../components/BookCard", () => ({
     BookCard: ({ title, author, genre }) => (
         <div data-testid="book-card">
@@ -42,8 +44,6 @@ function renderLibrary() {
     return renderWithProviders(<Library />);
 }
 
-// ── Mock Data ──────────────────────────────────────────────────────────────────
-
 const mockPublications = [
     { id: "1", title: "In Lib Book", author: "Auth 1", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "111" },
     { id: "2", title: "Not In Lib Book", author: "Auth 2", genre: "Science", libraryId: null, type: "book", isbn: "222" }
@@ -51,14 +51,12 @@ const mockPublications = [
 
 const mockLibraryObj = { libraryName: "My Awesome Library", id: "lib-1" };
 
-// ── Tests ──────────────────────────────────────────────────────────────────────
-
 describe("Library Component", () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        mockUseLists.mockReturnValue({ lists: [], loading: false, error: null });
     });
 
-    // ── Loading State ──
     describe("Loading State", () => {
         test("shows loading indicator", () => {
             mockUseLibrary.mockReturnValue({ library: null, loading: true, error: null });
@@ -69,7 +67,6 @@ describe("Library Component", () => {
         });
     });
 
-    // ── No Library State ──
     describe("No Library Found", () => {
         beforeEach(() => {
             mockUseLibrary.mockReturnValue({ library: null, loading: false, error: null });
@@ -100,7 +97,6 @@ describe("Library Component", () => {
         });
     });
 
-    // ── Library Exists State ──
     describe("Library Exists", () => {
         const mockAddToLibrary = vi.fn();
 
@@ -112,7 +108,7 @@ describe("Library Component", () => {
         test("shows library name and publication count", () => {
             renderLibrary();
             expect(screen.getByText("My Awesome Library")).toBeInTheDocument();
-            expect(screen.getByText("1 publication")).toBeInTheDocument(); // Only 1 has libraryId set in mock
+            expect(screen.getByText("1 publication")).toBeInTheDocument();
         });
 
         test("shows publications that are in the library", () => {
@@ -130,7 +126,6 @@ describe("Library Component", () => {
         test("modal shows publications not in the library", () => {
             renderLibrary();
             fireEvent.click(screen.getByRole("button", { name: /Add Publications/i }));
-            // The modal lists publications not in the library
             expect(screen.getByText("Not In Lib Book")).toBeInTheDocument();
         });
 
@@ -156,13 +151,175 @@ describe("Library Component", () => {
             renderLibrary();
             const genreSelect = screen.getByDisplayValue("All Genres");
 
-            // "Science" shouldn't match "In Lib Book" which is "Fiction"
             fireEvent.change(genreSelect, { target: { value: "Science" } });
             expect(screen.queryByText("In Lib Book")).not.toBeInTheDocument();
 
-            // Change back to Fiction
             fireEvent.change(genreSelect, { target: { value: "Fiction" } });
             expect(screen.getByText("In Lib Book")).toBeInTheDocument();
+        });
+
+        test("Sell button navigates to /sell/:id in grid view", () => {
+            renderLibrary();
+            const sellButtons = screen.getAllByRole("button", { name: /Sell/i });
+            fireEvent.click(sellButtons[0]);
+            expect(mockNavigate).toHaveBeenCalledWith("/sell/1");
+        });
+
+        test("filters publications by type", () => {
+            renderLibrary();
+            const typeSelect = screen.getByDisplayValue("All Types");
+
+            fireEvent.change(typeSelect, { target: { value: "magazine" } });
+            expect(screen.queryByText("In Lib Book")).not.toBeInTheDocument();
+
+            fireEvent.change(typeSelect, { target: { value: "book" } });
+            expect(screen.getByText("In Lib Book")).toBeInTheDocument();
+        });
+    });
+
+    describe("Library Exists - List View", () => {
+        const mockAddToLibrary = vi.fn();
+
+        beforeEach(() => {
+            mockUseLibrary.mockReturnValue({ library: mockLibraryObj, loading: false, error: null });
+            mockUsePublications.mockReturnValue({ publications: mockPublications, addToLibrary: mockAddToLibrary });
+        });
+
+        test("Sell button navigates to /sell/:id in list view", () => {
+            renderLibrary();
+            const allButtons = screen.getAllByRole("button");
+            const viewToggles = allButtons.filter(
+                btn => btn.querySelector("svg") && btn.className.includes("rounded-lg")
+            );
+            fireEvent.click(viewToggles[1]);
+
+            const sellButtons = screen.getAllByRole("button", { name: /Sell/i });
+            fireEvent.click(sellButtons[0]);
+            expect(mockNavigate).toHaveBeenCalledWith("/sell/1");
+        });
+    });
+
+    describe("Library Exists - Detail Modal", () => {
+        const mockAddToLibrary = vi.fn();
+
+        beforeEach(() => {
+            mockUseLibrary.mockReturnValue({ library: mockLibraryObj, loading: false, error: null });
+            mockUsePublications.mockReturnValue({ publications: mockPublications, addToLibrary: mockAddToLibrary });
+        });
+
+        test("clicking a book card opens the detail modal", () => {
+            renderLibrary();
+            const bookCards = screen.getAllByTestId("book-card");
+            fireEvent.click(bookCards[0]);
+            // Modal should show a "Close" and "Sell" button (there will now be multiple "Sell" buttons)
+            expect(screen.getAllByRole("button", { name: /Sell/i }).length).toBeGreaterThanOrEqual(2);
+            expect(screen.getByRole("button", { name: /Close/i })).toBeInTheDocument();
+        });
+
+        test("Sell button in detail modal navigates to /sell/:id", () => {
+            renderLibrary();
+            const bookCards = screen.getAllByTestId("book-card");
+            fireEvent.click(bookCards[0]);
+
+            const sellButtons = screen.getAllByRole("button", { name: /Sell/i });
+            fireEvent.click(sellButtons[sellButtons.length - 1]);
+            expect(mockNavigate).toHaveBeenCalledWith("/sell/1");
+        });
+
+        test("Close button closes the detail modal without navigating", () => {
+            renderLibrary();
+            const bookCards = screen.getAllByTestId("book-card");
+            fireEvent.click(bookCards[0]);
+
+            expect(screen.getByRole("button", { name: /Close/i })).toBeInTheDocument();
+
+            fireEvent.click(screen.getByRole("button", { name: /Close/i }));
+            expect(screen.queryByRole("button", { name: /Close/i })).not.toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalled();
+        });
+
+        test("detail modal displays book information", () => {
+            renderLibrary();
+            const bookCards = screen.getAllByTestId("book-card");
+            fireEvent.click(bookCards[0]);
+
+            expect(screen.getAllByText("In Lib Book").length).toBeGreaterThanOrEqual(2);
+            expect(screen.getAllByText("Auth 1").length).toBeGreaterThanOrEqual(2);
+            expect(screen.getAllByText("Fiction").length).toBeGreaterThanOrEqual(2);
+        });
+    });
+
+    // ── Sorting ──
+    describe("Sorting", () => {
+        beforeEach(() => {
+            mockUseLibrary.mockReturnValue({ library: mockLibraryObj, loading: false, error: null });
+            mockUsePublications.mockReturnValue({
+                publications: [
+                    { id: "1", title: "Zen and the Art", author: "Pirsig", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "111" },
+                    { id: "2", title: "Anna Karenina", author: "Tolstoy", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "222" },
+                    { id: "3", title: "Middlemarch", author: "Eliot", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "333" },
+                ],
+                addToLibrary: vi.fn(),
+            });
+        });
+
+        test("renders sort select with Default option", () => {
+            renderLibrary();
+            expect(screen.getByDisplayValue("Default")).toBeInTheDocument();
+        });
+
+        test("sorts by title ascending", () => {
+            renderLibrary();
+            fireEvent.change(screen.getByDisplayValue("Default"), { target: { value: "title" } });
+            const cards = screen.getAllByTestId("book-card");
+            expect(cards[0]).toHaveTextContent("Anna Karenina");
+            expect(cards[1]).toHaveTextContent("Middlemarch");
+            expect(cards[2]).toHaveTextContent("Zen and the Art");
+        });
+
+        test("sorts by author ascending", () => {
+            renderLibrary();
+            fireEvent.change(screen.getByDisplayValue("Default"), { target: { value: "author" } });
+            const cards = screen.getAllByTestId("book-card");
+            expect(cards[0]).toHaveTextContent("Eliot");
+            expect(cards[1]).toHaveTextContent("Pirsig");
+            expect(cards[2]).toHaveTextContent("Tolstoy");
+        });
+
+        test("sorts by type ascending", () => {
+            mockUsePublications.mockReturnValue({
+                publications: [
+                    { id: "1", title: "Zen and the Art", author: "Pirsig", genre: "Fiction", libraryId: "lib-1", type: "magazine", isbn: "111" },
+                    { id: "2", title: "Anna Karenina", author: "Tolstoy", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "222" },
+                    { id: "3", title: "Middlemarch", author: "Eliot", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "333" },
+                ],
+                addToLibrary: vi.fn(),
+            });
+
+            renderLibrary();
+            fireEvent.change(screen.getByDisplayValue("Default"), { target: { value: "type" } });
+            const cards = screen.getAllByTestId("book-card");
+            expect(cards[0]).toHaveTextContent("Anna Karenina");
+            expect(cards[1]).toHaveTextContent("Middlemarch");
+            expect(cards[2]).toHaveTextContent("Zen and the Art");
+        });
+
+        test("sorts by isbn ascending", () => {
+            mockUsePublications.mockReturnValue({
+                publications: [
+                    { id: "1", title: "Zen and the Art", author: "Pirsig", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "333" },
+                    { id: "2", title: "Anna Karenina", author: "Tolstoy", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "111" },
+                    { id: "3", title: "Middlemarch", author: "Eliot", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "222" },
+                ],
+                addToLibrary: vi.fn(),
+            });
+
+            renderLibrary();
+            fireEvent.change(screen.getByDisplayValue("Default"), { target: { value: "isbn" } });
+            const cards = screen.getAllByTestId("book-card");
+            expect(cards[0]).toHaveTextContent("Anna Karenina");
+            expect(cards[1]).toHaveTextContent("Middlemarch");
+            expect(cards[2]).toHaveTextContent("Zen and the Art");
         });
     });
 });

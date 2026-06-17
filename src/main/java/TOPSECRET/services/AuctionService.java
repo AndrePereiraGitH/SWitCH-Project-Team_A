@@ -243,7 +243,7 @@ public class AuctionService {
 
     /**
      * Retrieves a list of auctions optionally filtered by genre, author, publisher,
-     * or bibliographical data, and optionally sorted by auction deadline.
+     * bibliographical data or listingId and optionally sorted by auction deadline.
      *
      * <p>The filtering chain varies by criterion:</p>
      * <ul>
@@ -251,6 +251,7 @@ public class AuctionService {
      *   <li><b>author</b> — author → bibliographical data → publication samples → listings → auctions</li>
      *   <li><b>publisher</b> — publisher → editions → publication samples → listings → auctions</li>
      *   <li><b>bibliographicalData</b> — bibliographical data → publication samples → listings → auctions</li>
+     *   <li><b>listing</b> — listings → auctions</li>
      *   <li><b>none</b> — returns all auctions</li>
      * </ul>
      *
@@ -260,44 +261,77 @@ public class AuctionService {
      * @param authorId              the author identifier to filter by; optional
      * @param publisherId           the publisher identifier to filter by; optional
      * @param bibliographicalDataId the bibliographical data identifier to filter by; optional
+     * @param listingId             the listing identifier to filter by; optional
      * @param sortByDeadline        whether to sort results by auction deadline ascending;
      *                              only applicable when filtering by genre
      * @return a list of auctions matching the given criteria; empty if none found
      */
     public List<Auction> findAuctions(GenreId genreId, AuthorId authorId, PublisherID publisherId,
-                                      BibliographicalDataId bibliographicalDataId, boolean sortByDeadline) {
+                                      BibliographicalDataId bibliographicalDataId, ListingId listingId, boolean sortByDeadline) {
 
         if (genreId != null) {
             List<BibliographicalDataId> bdIds = bdRepo.findAllByGenreId(genreId);
+            if (bdIds.isEmpty()) return List.of();
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByBibliographicalDataIdIn(bdIds);
-            List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
-            List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-            return sortByDeadline
-                    ? auctionRepo.findByListingIdInOrderByAuctionDeadlineAsc(listingIds)
-                    : auctionRepo.findByListingIdIn(listingIds);
+            return findAuctionsByPublicationSamples(pubSampleIds, sortByDeadline);
 
         } else if (authorId != null) {
             List<BibliographicalDataId> bdIds = bdRepo.findIdByAuthorId(authorId);
+            if (bdIds.isEmpty()) return List.of();
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByBibliographicalDataIdIn(bdIds);
-            List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
-            List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-            return auctionRepo.findByListingIdIn(listingIds);
+            return findAuctionsByPublicationSamples(pubSampleIds, false);
 
         } else if (publisherId != null) {
             List<EditionId> editionIds = editionRepo.findIdsByPublisherId(publisherId);
+            if (editionIds.isEmpty()) return List.of();
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByEditionIdIn(editionIds);
-            List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
-            List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-            return auctionRepo.findByListingIdIn(listingIds);
+            return findAuctionsByPublicationSamples(pubSampleIds, false);
 
         } else if (bibliographicalDataId != null) {
             List<PublicationSampleId> pubSampleIds = pubSampleRepo.findIdsByBibliographicalDataId(bibliographicalDataId);
-            List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
-            List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
-            return auctionRepo.findByListingIdIn(listingIds);
+            return findAuctionsByPublicationSamples(pubSampleIds, false);
+
+        } else if (listingId != null) {
+            return auctionRepo.findByListingIdIn(List.of(listingId));
 
         } else {
             return auctionRepo.findAll();
         }
+    }
+
+    // =================================================================================================================
+    // ========== PRIVATE HELPER =======================================================================================
+    // =================================================================================================================
+
+    /**
+     * Resolves auctions from a list of {@link PublicationSampleId}s, traversing
+     * the chain: publication samples → listings → auctions.
+     *
+     * <p>Returns an empty list at any point in the chain if no results are found,
+     * avoiding unnecessary repository queries.</p>
+     *
+     * <p>This method is intended as a shared resolution step for the different
+     * filtering branches in {@link #findAuctions}, where the upstream filtering
+     * (by genre, author, publisher, or bibliographical data) has already resolved
+     * the relevant {@link PublicationSampleId}s.</p>
+     *
+     * @param pubSampleIds   the list of publication sample identifiers to resolve auctions from;
+     *                       must not be {@code null}
+     * @param sortByDeadline whether to sort results by auction deadline ascending;
+     *                       only applicable when filtering by genre
+     * @return a list of auctions associated with the given publication samples;
+     *         empty if none found at any step of the chain
+     */
+    private List<Auction> findAuctionsByPublicationSamples(List<PublicationSampleId> pubSampleIds, boolean sortByDeadline) {
+        if (pubSampleIds.isEmpty()) return List.of();
+
+        List<Listing> listings = listingRepo.findAllByAuctionAndPublicationSampleIdIn(pubSampleIds);
+        if (listings.isEmpty()) return List.of();
+
+        List<ListingId> listingIds = listings.stream().map(Listing::id).toList();
+
+        return sortByDeadline
+                ? auctionRepo.findByListingIdInOrderByAuctionDeadlineAsc(listingIds)
+                : auctionRepo.findByListingIdIn(listingIds);
     }
 }

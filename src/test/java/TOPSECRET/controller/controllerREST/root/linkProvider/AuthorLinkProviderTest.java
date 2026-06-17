@@ -7,18 +7,14 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.Link;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for {@link AuthorLinkProvider}.
- *
- * <p>The provider always returns find-author and find-all links.
- * It conditionally adds create-author based on user permissions.</p>
- */
 class AuthorLinkProviderTest {
 
     private final AuthorAuthorizationPolicy policy = mock(AuthorAuthorizationPolicy.class);
@@ -29,7 +25,7 @@ class AuthorLinkProviderTest {
     // =========================================================================
 
     @Test
-    void getLinks_shouldReturnThreeLinks_whenUserCanCreateAuthor() {
+    void getLinks_shouldReturnThreeLinks_whenUserCanCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -47,7 +43,7 @@ class AuthorLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldIncludeCreateAuthorLink_whenUserCanCreateAuthor() {
+    void getLinks_shouldIncludeCreateAuthorLink_whenUserCanCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -65,7 +61,7 @@ class AuthorLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldIncludeFindAuthorLink_whenUserCanCreateAuthor() {
+    void getLinks_shouldIncludeFindAuthorLink_whenUserCanCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -83,7 +79,7 @@ class AuthorLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldIncludeFindAllLink_whenUserCanCreateAuthor() {
+    void getLinks_shouldIncludeFindAllLink_whenUserCanCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -101,7 +97,7 @@ class AuthorLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldReturnNonNullHrefs_whenUserCanCreateAuthor() {
+    void getLinks_shouldReturnNonNullHrefs_whenUserCanCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -123,7 +119,7 @@ class AuthorLinkProviderTest {
     // =========================================================================
 
     @Test
-    void getLinks_shouldReturnTwoLinks_whenUserCannotCreateAuthor() {
+    void getLinks_shouldReturnTwoLinks_whenUserCannotCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -141,7 +137,7 @@ class AuthorLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldNotIncludeCreateAuthorLink_whenUserCannotCreateAuthor() {
+    void getLinks_shouldNotIncludeCreateAuthorLink_whenUserCannotCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -159,7 +155,7 @@ class AuthorLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldIncludeFindAuthorLink_whenUserCannotCreateAuthor() {
+    void getLinks_shouldIncludeFindAuthorLink_whenUserCannotCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -177,7 +173,7 @@ class AuthorLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldIncludeFindAllLink_whenUserCannotCreateAuthor() {
+    void getLinks_shouldIncludeFindAllLink_whenUserCannotCreateAuthor() throws InstanceNotFoundException {
 
         // ARRANGE
         AuthorLinkProvider sut = new AuthorLinkProvider(policy, repository);
@@ -208,12 +204,9 @@ class AuthorLinkProviderTest {
         when(repository.findByID(userId)).thenReturn(Optional.empty());
 
         // ACT + ASSERT
-        IllegalArgumentException ex =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> sut.getLinks(userId)
-                );
-
-        assertEquals("User not found", ex.getMessage());
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> sut.getLinks(userId)
+        );
     }
 }

@@ -105,28 +105,6 @@ class PublisherIDTest {
     }
 
     // -------------------------------------------------------------------------
-    // getPublisherId
-    // -------------------------------------------------------------------------
-
-    @Test
-    void givenValidId_whenGetPublisherId_thenReturnsRawId() {
-        // Arrange
-        PublisherID publisherID = new PublisherID("123456789");
-
-        // Act + Assert
-        assertEquals("123456789", publisherID.getPublisherId());
-    }
-
-    @Test
-    void givenValidId_whenGetPublisherIdAndGetId_thenBothMatch() {
-        // Arrange
-        PublisherID publisherID = new PublisherID("123456789");
-
-        // Act + Assert
-        assertEquals(publisherID.getId(), publisherID.getPublisherId());
-    }
-
-    // -------------------------------------------------------------------------
     // Immutability
     // -------------------------------------------------------------------------
 

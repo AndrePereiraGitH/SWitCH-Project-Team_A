@@ -9,6 +9,7 @@ import TOPSECRET.dto.PublicationType.request.CreatePublicationTypeDTO;
 import TOPSECRET.dto.PublicationType.response.PublicationTypeResponseDTO;
 import TOPSECRET.services.PublicationTypeService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,13 +132,11 @@ public class PublicationTypeRestController {
                 dtoList.add(toPublicationTypeDTO(publicationType));
             }
 
-            if(dtoList.isEmpty()){
-                return ResponseEntity.noContent().build();
-            }
-
             return ResponseEntity.status(HttpStatus.OK).body(dtoList);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -175,6 +175,8 @@ public class PublicationTypeRestController {
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
         } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -195,11 +197,11 @@ public class PublicationTypeRestController {
      * @return the populated DTO with public links attached
      */
     private PublicationTypeResponseDTO toPublicationTypeDTO(
-            PublicationType publicationType) {
+            PublicationType publicationType) throws InstanceNotFoundException {
 
         PublicationTypeResponseDTO result = PublicationTypeMapper.toDTO(publicationType);
 
-        List<Link> links = publicationTypeLinkProvider.getPublicLinks();
+        List<Link> links = new ArrayList<>(publicationTypeLinkProvider.getPublicLinks());
 
         links.add(linkTo(methodOn(PublicationTypeRestController.class)
                         .findById(publicationType.id().toString()))

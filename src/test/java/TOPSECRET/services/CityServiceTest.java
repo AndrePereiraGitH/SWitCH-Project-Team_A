@@ -25,13 +25,16 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for {@link CityService}.
  *
- * <p>This test suite verifies the behavior of the service responsible for
- * coordinating city creation and persistence. The service depends on
- * {@link CityFactory} and {@link ICityRepository}, both of which are mocked
- * in order to isolate the service logic.</p>
+ * <p>Validates the coordination logic for city creation and retrieval,
+ * including authorization, duplicate detection, and error propagation.</p>
  *
- * <p>The {@link City} domain object is mocked because its constructor is protected
- * and the service only needs to forward the object between the factory and the repository.</p>
+ * <p>Tests are grouped into three categories:</p>
+ * <ul>
+ *   <li><b>createAndSave</b> — creation and persistence of a new city, including
+ *       authorization, country lookup, and duplicate scenarios.</li>
+ *   <li><b>findAll</b> — retrieval of all cities, including the empty collection scenario.</li>
+ *   <li><b>findById</b> — retrieval of a single city by identifier, including null and not-found scenarios.</li>
+ * </ul>
  */
 @ExtendWith(MockitoExtension.class)
 class CityServiceTest {

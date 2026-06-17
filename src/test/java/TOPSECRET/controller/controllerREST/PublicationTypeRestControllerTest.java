@@ -9,6 +9,7 @@ import TOPSECRET.dto.PublicationType.request.CreatePublicationTypeDTO;
 import TOPSECRET.dto.PublicationType.response.PublicationTypeResponseDTO;
 import TOPSECRET.services.PublicationTypeService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -382,7 +383,7 @@ class PublicationTypeRestControllerTest {
                 controller.findAll();
 
         // ASSERT
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     // =========================================================
@@ -530,7 +531,7 @@ class PublicationTypeRestControllerTest {
                     controller.findById(idStr);
 
             // ASSERT
-            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
 
@@ -688,6 +689,36 @@ class PublicationTypeRestControllerTest {
                                             .equals("create-publication-type"))
             );
         }
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenServiceThrowsEntityNotFoundException() {
+
+        // ARRANGE
+        when(service.findById(any()))
+                .thenThrow(new EntityNotFoundException());
+
+        // ACT
+        ResponseEntity<PublicationTypeResponseDTO> result =
+                controller.findById("123");
+
+        // ASSERT
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenGetAllThrowsEntityNotFoundException() {
+
+        // ARRANGE
+        when(service.findAll())
+                .thenThrow(new EntityNotFoundException());
+
+        // ACT
+        ResponseEntity<List<PublicationTypeResponseDTO>> result =
+                controller.findAll();
+
+        // ASSERT
+        assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 
 
