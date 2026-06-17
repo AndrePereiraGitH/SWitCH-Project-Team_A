@@ -41,93 +41,151 @@ class ListingLinkProviderTest {
         user = mock(User.class);
     }
 
+    // =========================================================================
+    // getAuthenticatedUserLinks — create-listing
+    // =========================================================================
+
     @Test
-    void getOwnerLinks_shouldReturnOneLink_whenUserCanCreateListing()
+    void getAuthenticatedUserLinks_shouldReturnOneLink_whenUserCanCreateListingOnly()
             throws InstanceNotFoundException {
 
         // Arrange
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(true);
+        when(authPolicy.canBuyListing(user)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getOwnerLinks(userId);
+        List<Link> links = provider.getAuthenticatedUserLinks(userId);
 
         // Assert
         assertEquals(1, links.size());
     }
 
     @Test
-    void getOwnerLinks_shouldReturnCreateListingRel_whenUserCanCreateListing()
+    void getAuthenticatedUserLinks_shouldReturnCreateListingRel_whenUserCanCreateListing()
             throws InstanceNotFoundException {
 
         // Arrange
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(true);
+        when(authPolicy.canBuyListing(user)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getOwnerLinks(userId);
+        List<Link> links = provider.getAuthenticatedUserLinks(userId);
 
         // Assert
-        assertEquals("create-listing", links.get(0).getRel().value());
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("create-listing")));
     }
 
     @Test
-    void getOwnerLinks_shouldReturnEmptyList_whenUserCannotCreateListing()
+    void getAuthenticatedUserLinks_shouldReturnEmptyList_whenUserHasNoPermissions()
             throws InstanceNotFoundException {
 
         // Arrange
-        UserId userId = mock(UserId.class);
-        User user = mock(User.class);
-
         when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
         when(authPolicy.canCreateListing(user)).thenReturn(false);
+        when(authPolicy.canBuyListing(user)).thenReturn(false);
 
         // Act
-        List<Link> links = provider.getOwnerLinks(userId);
+        List<Link> links = provider.getAuthenticatedUserLinks(userId);
 
         // Assert
         assertTrue(links.isEmpty());
     }
 
+    // =========================================================================
+    // getAuthenticatedUserLinks — buy-listing
+    // =========================================================================
+
     @Test
-    void getOwnerLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+    void getAuthenticatedUserLinks_shouldReturnOneLink_whenUserCanBuyListingOnly()
+            throws InstanceNotFoundException {
 
         // Arrange
-        UserId userId = mock(UserId.class);
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(false);
+        when(authPolicy.canBuyListing(user)).thenReturn(true);
 
+        // Act
+        List<Link> links = provider.getAuthenticatedUserLinks(userId);
+
+        // Assert
+        assertEquals(1, links.size());
+    }
+
+    @Test
+    void getAuthenticatedUserLinks_shouldReturnBuyListingRel_whenUserCanBuyListing()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(false);
+        when(authPolicy.canBuyListing(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getAuthenticatedUserLinks(userId);
+
+        // Assert
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("buy-listing")));
+    }
+
+    @Test
+    void getAuthenticatedUserLinks_shouldReturnTwoLinks_whenUserCanCreateAndBuyListing()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(true);
+        when(authPolicy.canBuyListing(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getAuthenticatedUserLinks(userId);
+
+        // Assert
+        assertEquals(2, links.size());
+    }
+
+    // =========================================================================
+    // getAuthenticatedUserLinks — errors
+    // =========================================================================
+
+    @Test
+    void getAuthenticatedUserLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+
+        // Arrange
         when(userRepo.findByID(userId)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThrows(
                 InstanceNotFoundException.class,
-                () -> provider.getOwnerLinks(userId)
+                () -> provider.getAuthenticatedUserLinks(userId)
         );
     }
 
     @Test
-    void getOwnerLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
+    void getAuthenticatedUserLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
 
         // Act & Assert
         assertThrows(
                 NullPointerException.class,
-                () -> provider.getOwnerLinks(null)
+                () -> provider.getAuthenticatedUserLinks(null)
         );
     }
 
+    // =========================================================================
+    // getPublicLinks
+    // =========================================================================
+
     @Test
-    void getPublicLinks_shouldReturnFourLinks() {
+    void getPublicLinks_shouldReturnFiveLinks() {
 
         // Act
         List<Link> links = provider.getPublicLinks();
 
         // Assert
-        assertEquals(4, links.size());
+        assertEquals(5, links.size());
     }
 
     @Test
@@ -175,7 +233,22 @@ class ListingLinkProviderTest {
     }
 
     @Test
-    void getLinks_shouldReturnSixLinks_whenUserCanCreateListing()
+    void getPublicLinks_shouldContainGetListingsByPublicationLink() {
+
+        // Act
+        List<Link> links = provider.getPublicLinks();
+
+        // Assert
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("get-listings-by-publication")));
+    }
+
+    // =========================================================================
+    // getAuctionLinks
+    // =========================================================================
+
+    @Test
+    void getAuctionLinks_shouldReturnOneLink_whenUserCanCreateListing()
             throws InstanceNotFoundException {
 
         // Arrange
@@ -183,14 +256,30 @@ class ListingLinkProviderTest {
         when(authPolicy.canCreateListing(user)).thenReturn(true);
 
         // Act
-        List<Link> links = provider.getLinks(userId);
+        List<Link> links = provider.getAuctionLinks(userId);
 
         // Assert
-        assertEquals(6, links.size());
+        assertEquals(1, links.size());
     }
 
     @Test
-    void getLinks_shouldReturnFourLinks_whenUserCannotCreateListing()
+    void getAuctionLinks_shouldReturnCreateAuctionRel_whenUserCanCreateListing()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getAuctionLinks(userId);
+
+        // Assert
+        assertTrue(links.stream()
+                .anyMatch(link -> link.getRel().value().equals("create-auction")));
+    }
+
+    @Test
+    void getAuctionLinks_shouldReturnEmptyList_whenUserCannotCreateListing()
             throws InstanceNotFoundException {
 
         // Arrange
@@ -198,9 +287,84 @@ class ListingLinkProviderTest {
         when(authPolicy.canCreateListing(user)).thenReturn(false);
 
         // Act
+        List<Link> links = provider.getAuctionLinks(userId);
+
+        // Assert
+        assertTrue(links.isEmpty());
+    }
+
+    @Test
+    void getAuctionLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> provider.getAuctionLinks(userId)
+        );
+    }
+
+    @Test
+    void getAuctionLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // Act & Assert
+        assertThrows(
+                NullPointerException.class,
+                () -> provider.getAuctionLinks(null)
+        );
+    }
+
+    // =========================================================================
+    // getLinks
+    // =========================================================================
+
+    @Test
+    void getLinks_shouldReturnEightLinks_whenUserCanCreateAndBuyListing()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(true);
+        when(authPolicy.canBuyListing(user)).thenReturn(true);
+
+        // Act
         List<Link> links = provider.getLinks(userId);
 
         // Assert
-        assertEquals(4, links.size());
+        assertEquals(8, links.size());
+    }
+
+    @Test
+    void getLinks_shouldReturnFiveLinks_whenUserHasNoPermissions()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(false);
+        when(authPolicy.canBuyListing(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertEquals(5, links.size());
+    }
+
+    @Test
+    void getLinks_shouldReturnSixLinks_whenUserCanOnlyBuyListing()
+            throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateListing(user)).thenReturn(false);
+        when(authPolicy.canBuyListing(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertEquals(6, links.size());
     }
 }
