@@ -28,9 +28,7 @@
 - [ ] User input is validated appropriately
 - [ ] Invalid input is handled safely
 
-### Authentication (if applicable)
-- [ ] Not applicable
-- [ ] Authentication-related changes were reviewed
+### Authentication (Not applicable)
 
 ### Secrets
 - [ ] No credentials, passwords, or API keys were committed
