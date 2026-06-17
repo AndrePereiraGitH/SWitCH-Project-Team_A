@@ -1,57 +1,44 @@
 package TOPSECRET.domain.Transaction;
 
-import TOPSECRET.domain.Enum.TransactionStatus;
-import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.domain.ValueObjects.TransactionID;
 
-import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+/**
+ * Repository interface for managing {@link Transaction} aggregate roots.
+ */
 public interface ITransactionRepository {
 
     /**
-     * Creates and stores a transaction resulting from an auction.
+     * Stores a transaction.
      *
-     * @param buyerId         the buyer involved in the transaction
-     * @param auctionId       the associated auction
-     * @param price           the agreed price
-     * @param transactionDate the transaction date
-     * @param paymentDate     the payment date
-     * @param sellersId       the list of sellers
-     * @param status          the transaction status
-     * @return the created transaction
-     * @throws InstanceAlreadyExistsException if an equivalent transaction already exists
+     * @param transaction the transaction to store
+     * @return the stored transaction
+     * @throws IllegalArgumentException if the transaction is null
      */
-
-    Transaction createAndAddFromAuction(UserId buyerId, AuctionId auctionId, Price price, LocalDateTime transactionDate,
-                                        LocalDateTime paymentDate, List<UserId> sellersId, TransactionStatus status
-
-    ) throws InstanceAlreadyExistsException;
+    Transaction save(Transaction transaction);
 
     /**
-     * Creates and stores a transaction resulting from a direct sale.
+     * Finds a transaction by its unique identifier.
      *
-     * @param buyerId         the buyer involved in the transaction
-     * @param price           the agreed price
-     * @param directSaleId    the associated direct sale
-     * @param transactionDate the transaction date
-     * @param paymentDate     the payment date
-     * @param sellersId       the list of sellers
-     * @param status          the transaction status
-     * @return the created transaction
-     * @throws InstanceAlreadyExistsException if an equivalent transaction already exists
+     * @param id the transaction identifier
+     * @return an optional containing the transaction if found, otherwise empty
      */
-
-    Transaction createAndAddFromDirectSale(UserId buyerId, Price price, DirectSaleID directSaleId, LocalDateTime transactionDate,
-                                           LocalDateTime paymentDate, List<UserId> sellersId, TransactionStatus status
-
-    ) throws InstanceAlreadyExistsException;
+    Optional<Transaction> findById(TransactionID id);
 
     /**
-     * Returns an immutable copy of all stored transactions.
+     * Checks whether a transaction with the given identifier exists.
      *
-     * @return an unmodifiable list containing all transactions
+     * @param id the transaction identifier
+     * @return {@code true} if the transaction exists, otherwise {@code false}
      */
+    boolean existsById(TransactionID id);
 
-    List<Transaction> getAllTransactions();
+    /**
+     * Returns all stored transactions.
+     *
+     * @return a list containing all transactions
+     */
+    List<Transaction> findAll();
 }

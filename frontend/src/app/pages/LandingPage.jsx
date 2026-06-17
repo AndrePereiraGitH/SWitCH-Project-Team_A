@@ -1,16 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 import { BookOpen, ShoppingBag, List, Users, ArrowRight, Star, Shield, Heart, Search, ShoppingCart, Tag } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookCard } from "../components/BookCard";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
+import { usePurchases } from "../components/PurchasesContext";
+import { API_BASE_URL, CURRENT_USER_ID } from "@/api/constants.js";
 
 export function LandingPage() {
   const { addToCart } = useCart();
+  const { soldItemIds } = usePurchases();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [bidModalOpen, setBidModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [sales, setSales] = useState([]);
+  const [genres, setGenres] = useState([]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -19,46 +24,49 @@ export function LandingPage() {
     }
   };
 
-  const mockSales = [
-    {
-      id: "1",
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      genre: "Fiction",
-      price: 12.5,
-      condition: "Very Good",
-      isAuction: false
-    },
-    {
-      id: "2",
-      title: "1984",
-      author: "George Orwell",
-      genre: "Fiction",
-      price: 15,
-      condition: "Good",
-      isAuction: true,
-      auctionEndDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: "3",
-      title: "To Kill a Mockingbird",
-      author: "Harper Lee",
-      genre: "Fiction",
-      price: 18,
-      condition: "Like New",
-      isAuction: false
-    },
-    {
-      id: "4",
-      title: "Pride and Prejudice",
-      author: "Jane Austen",
-      genre: "Romance",
-      price: 10,
-      condition: "Good",
-      isAuction: true,
-      auctionEndDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+  const mapListingToSale = (listing) => ({
+    id: listing.id,
+    title: listing.listingTile ?? listing.listingTitle,
+    author: listing.authors?.join(", ") ?? "Unknown",
+    genre: listing.genre ?? [],
+    price: Number(listing.price),
+    condition: listing.condition,
+    isAuction: listing.saleType === "AUCTION",
+    type: "book",
+  });
+
+  const getGenreName = (genreId) => {
+    return genres.find(g => g.id === genreId)?.genreName ?? genreId;
+  };
+
+  const getSaleGenreNames = (sale) => {
+    return sale.genre?.map(getGenreName).join(", ") ?? "";
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [genresRes, listingsRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/genres`),
+          fetch(`${API_BASE_URL}/listings?userId=${CURRENT_USER_ID}`),
+        ]);
+
+        if (!genresRes.ok || !listingsRes.ok) {
+          throw new Error("Failed to fetch landing data");
+        }
+
+        const genresData = await genresRes.json();
+        const listingsData = await listingsRes.json();
+
+        setGenres(genresData);
+        setSales(listingsData.map(mapListingToSale));
+      } catch (error) {
+        console.error("Error loading listings:", error);
+      }
     }
-  ];
+
+    fetchData();
+  }, []);
 
   return (
     <div className="min-h-screen">
@@ -222,7 +230,7 @@ export function LandingPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {mockSales.map(sale => (
+            {sales.map(sale => (
               <div key={sale.id} className="relative group flex flex-col">
                 <div className="absolute top-3 right-3 z-10">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -236,15 +244,23 @@ export function LandingPage() {
                 <BookCard
                   title={sale.title}
                   author={sale.author}
-                  genre={sale.genre}
+                  genre={getSaleGenreNames(sale)}
                   price={sale.price}
                   condition={sale.condition}
                   isAuction={sale.isAuction}
                   auctionEndDate={sale.auctionEndDate}
                   imageUrl={sale.image}
+                  isSold={soldItemIds.has(sale.id)}
                 />
                 <div className="mt-3">
-                  {sale.isAuction ? (
+                  {soldItemIds.has(sale.id) ? (
+                      <button
+                          disabled
+                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
+                      >
+                        Sold
+                      </button>
+                  ) : sale.isAuction ? (
                     <button
                       onClick={() => {
                         setSelectedItem(sale);
