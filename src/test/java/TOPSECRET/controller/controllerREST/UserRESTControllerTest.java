@@ -29,6 +29,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link UserRESTController}.
+ *
+ * <p>Validates HTTP responses, exception handling and DTO mapping.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class UserRESTControllerTest {
 

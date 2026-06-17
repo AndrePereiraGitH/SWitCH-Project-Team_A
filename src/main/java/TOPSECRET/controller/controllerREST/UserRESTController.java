@@ -39,7 +39,6 @@ public class UserRESTController {
 
     private final UserLinkProvider userLinkProvider;
     private final UserService userService;
-    private final UserAuthorizationPolicy userAuthorizationPolicy;
 
     /**
      * Creates a new {@code UserRESTController}.
@@ -48,10 +47,9 @@ public class UserRESTController {
      * @param userService      the service responsible for user operations
      */
     @Autowired
-    public UserRESTController(UserLinkProvider userLinkProvider, UserService userService, UserAuthorizationPolicy userAuthorizationPolicy) {
+    public UserRESTController(UserLinkProvider userLinkProvider, UserService userService) {
         this.userLinkProvider = userLinkProvider;
         this.userService = userService;
-        this.userAuthorizationPolicy = userAuthorizationPolicy;
     }
 
     /**
