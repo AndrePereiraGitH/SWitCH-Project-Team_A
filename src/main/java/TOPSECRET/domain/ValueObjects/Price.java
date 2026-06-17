@@ -1,5 +1,9 @@
 package TOPSECRET.domain.ValueObjects;
 
+import jakarta.persistence.Embeddable;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -10,6 +14,8 @@ import java.util.Objects;
  * with at most 2 decimal places.
  * </p>
  */
+@Embeddable
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Price {
 
     private BigDecimal _price;

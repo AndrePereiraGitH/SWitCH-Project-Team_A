@@ -32,8 +32,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  *
  * <p>Endpoints are grouped into two categories:</p>
  * <ul>
- *   <li><b>Public</b> — retrieval endpoints; no authentication required.</li>
- *   <li><b>Private</b> — creation endpoints; require a valid authenticated user.</li>
+ * <li><b>Private</b> — creation endpoints; require a valid authenticated user.</li>
+ * <li><b>Public</b> — retrieval endpoints; no authentication required.</li>
  * </ul>
  */
 @RestController
@@ -69,7 +69,11 @@ public class EditionRESTController {
      *
      * @param dto    the request body containing the data required to create the edition
      * @param userId the ID of the user performing the operation
-     * @return HTTP 201 with the created {@link EditionDTO}, or an error status
+     * @return {@code HTTP 201 CREATED} with the created {@link EditionDTO},
+     * {@code HTTP 400 BAD REQUEST} if the input parameters are invalid,
+     * {@code HTTP 403 FORBIDDEN} if the user lacks the necessary permissions,
+     * {@code HTTP 404 NOT FOUND} if an associated entity cannot be found,
+     * or {@code HTTP 500 INTERNAL SERVER ERROR} on unexpected errors
      */
     @PostMapping("")
     public ResponseEntity<EditionDTO> createEdition(
@@ -98,6 +102,8 @@ public class EditionRESTController {
 
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -115,8 +121,8 @@ public class EditionRESTController {
      * <p>Each entry in the response list is enriched with a self-link and public
      * navigational links. No authentication required.</p>
      *
-     * @return HTTP 200 with a list of {@link EditionDTO}, HTTP 204 if none exist,
-     *         or HTTP 500 on error
+     * @return {@code HTTP 200 OK} with a list of {@link EditionDTO},
+     * or {@code HTTP 500 INTERNAL SERVER ERROR} on unexpected errors
      */
     @GetMapping("")
     public ResponseEntity<List<EditionDTO>> findAll() {
@@ -124,9 +130,6 @@ public class EditionRESTController {
         try {
             List<Edition> allEditions = service.findAll();
 
-            if (allEditions.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
 
             List<EditionDTO> result = new ArrayList<>();
             for (Edition edition : allEditions) {
@@ -147,8 +150,9 @@ public class EditionRESTController {
      * No authentication required.</p>
      *
      * @param editionId the unique identifier of the edition to retrieve
-     * @return HTTP 200 with the {@link EditionDTO}, HTTP 404 if not found,
-     *         or HTTP 500 on error
+     * @return {@code HTTP 200 OK} with the {@link EditionDTO},
+     * {@code HTTP 404 NOT FOUND} if the edition does not exist or the ID format is invalid,
+     * or {@code HTTP 500 INTERNAL SERVER ERROR} on unexpected errors
      */
     @GetMapping("/{editionId}")
     public ResponseEntity<EditionDTO> findById(
@@ -177,8 +181,9 @@ public class EditionRESTController {
      * navigational links. No authentication required.</p>
      *
      * @param publisherId the unique identifier of the publisher to filter by
-     * @return HTTP 200 with a list of {@link EditionDTO}, HTTP 204 if none exist,
-     *         HTTP 400 if the publisher ID is invalid, or HTTP 500 on error
+     * @return {@code HTTP 200 OK} with a list of {@link EditionDTO},
+     * {@code HTTP 400 BAD REQUEST} if the publisher ID is invalid,
+     * or {@code HTTP 500 INTERNAL SERVER ERROR} on unexpected errors
      */
     @GetMapping("/publisher/{publisherId}")
     public ResponseEntity<List<EditionDTO>> findByPublisherId(
@@ -192,10 +197,6 @@ public class EditionRESTController {
             List<EditionDTO> result = new ArrayList<>();
             for (Edition edition : editions) {
                 result.add(toEditionDTO(edition));
-            }
-
-            if (result.isEmpty()) {
-                return ResponseEntity.noContent().build();
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -215,8 +216,9 @@ public class EditionRESTController {
      * No authentication required.</p>
      *
      * @param publisherId the unique identifier of the publisher to filter by
-     * @return HTTP 200 with a list of {@link EditionIdResponseDTO}, HTTP 204 if none exist,
-     *         HTTP 400 if the publisher ID is invalid, or HTTP 500 on error
+     * @return {@code HTTP 200 OK} with a list of {@link EditionIdResponseDTO},
+     * {@code HTTP 400 BAD REQUEST} if the publisher ID is invalid,
+     * or {@code HTTP 500 INTERNAL SERVER ERROR} on unexpected errors
      */
     @GetMapping("/publisher/{publisherId}/ids")
     public ResponseEntity<List<EditionIdResponseDTO>> findEditionIdsByPublisherId(
@@ -232,10 +234,6 @@ public class EditionRESTController {
                         .findById(editionId.getID()))
                         .withSelfRel());
                 result.add(dto);
-            }
-
-            if (result.isEmpty()) {
-                return ResponseEntity.noContent().build();
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
@@ -254,8 +252,9 @@ public class EditionRESTController {
      * navigational links. No authentication required.</p>
      *
      * @param publicationTypeId the unique identifier of the publication type to filter by
-     * @return HTTP 200 with a list of {@link EditionDTO}, HTTP 204 if none exist,
-     *         HTTP 400 if the publication type ID is invalid, or HTTP 500 on error
+     * @return {@code HTTP 200 OK} with a list of {@link EditionDTO},
+     * {@code HTTP 400 BAD REQUEST} if the publication type ID is invalid,
+     * or {@code HTTP 500 INTERNAL SERVER ERROR} on unexpected errors
      */
     @GetMapping("/publication-type/{publicationTypeId}")
     public ResponseEntity<List<EditionDTO>> findByPublicationTypeId(
@@ -271,9 +270,6 @@ public class EditionRESTController {
                 result.add(toEditionDTO(edition));
             }
 
-            if (result.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
 
             return ResponseEntity.status(HttpStatus.OK).body(result);
 
@@ -296,9 +292,8 @@ public class EditionRESTController {
      *
      * @param edition the edition to convert; must not be {@code null}
      * @return the populated {@link EditionDTO} with public links attached
-     * @throws InstanceNotFoundException if any dependent lookup fails
      */
-    private EditionDTO toEditionDTO(Edition edition) throws InstanceNotFoundException {
+    private EditionDTO toEditionDTO(Edition edition)  {
         EditionDTO result = EditionMapper.toDTO(edition);
 
         List<Link> links = new ArrayList<>(provider.getPublicLinks());

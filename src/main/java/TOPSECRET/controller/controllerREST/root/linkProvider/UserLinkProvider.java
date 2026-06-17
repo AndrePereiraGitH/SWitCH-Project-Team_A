@@ -49,69 +49,6 @@ public class UserLinkProvider implements RootLinkProvider {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Generates public HATEOAS links available to any caller,
-     * regardless of the requesting user's identity or permissions.
-     *
-     * <p>No public links are exposed for the User resource.
-     * All user-related links require authorization.</p>
-     *
-     * @return an empty list; never {@code null}
-     */
-
-    public List<Link> getPublicLinks() {
-        return new ArrayList<>();
-    }
-
-    /**
-     * Generates admin-scoped HATEOAS links based on the requesting user's permissions.
-     *
-     * <p>The following links are conditionally included:</p>
-     * <ul>
-     *   <li>{@code get-user} — retrieve a user by their ID (ADMIN only).</li>
-     *   <li>{@code get-all-users} — retrieve all users (ADMIN only).</li>
-     *   <li>{@code register-user} — register a new user (ADMIN only).</li>
-     * </ul>
-     *
-     * @param userId the identifier of the requesting user; must not be {@code null}
-     * @return a list of admin {@link Link} instances; never {@code null}, may be empty
-     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
-     */
-    public List<Link> getAdminLinks(UserId userId) throws InstanceNotFoundException {
-        Objects.requireNonNull(userId, "UserId cannot be null");
-
-        List<Link> links = new ArrayList<>();
-        User user = resolveUser(userId);
-
-        if (authPolicy.canRegisterUser(user)) {
-            links.add(linkTo(methodOn(UserRESTController.class)
-                    .getUser(null))
-                    .withRel("get-user"));
-            links.add(linkTo(methodOn(UserRESTController.class)
-                    .getAllUsers())
-                    .withRel("get-all-users"));
-            links.add(linkTo(methodOn(UserRESTController.class)
-                    .registerUser(null, null))
-                    .withRel("register-user"));
-        }
-
-        return links;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Aggregates links from public and admin groups.</p>
-     */
-    @Override
-    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
-        List<Link> links = new ArrayList<>();
-
-        links.addAll(getPublicLinks());
-        links.addAll(getAdminLinks(userId));
-
-        return links;
-    }
 
     /**
      * Returns HATEOAS links scoped to a specific user resource.
@@ -119,23 +56,32 @@ public class UserLinkProvider implements RootLinkProvider {
      * <p>Always includes a link to retrieve the user by ID.
      * If the user has the ADMIN role, a registration link is also included.</p>
      *
-     * @param userId the identifier of the user whose permissions are evaluated
-     * @return list of {@link Link} available for the user
      */
-    public List<Link> getLinksForUsers(UserId userId) {
+    public List<Link> getLinksForUserResource(UserId requesterId, UserId targetUserId) throws InstanceNotFoundException {
+        Objects.requireNonNull(requesterId, "Requester UserId cannot be null.");
+        Objects.requireNonNull(targetUserId, "User target UserId cannot be null.");
+
         List<Link> links = new ArrayList<>();
 
-        links.add(linkTo(methodOn(UserRESTController.class)
-                .getUser(userId.getUserId()))
-                .withRel("get-user"));
+        User requester = resolveUser(requesterId);
 
-        userRepository.findByID(userId).ifPresent(user -> {
-            if (authPolicy.canRegisterUser(user)) {
-                links.add(linkTo(methodOn(UserRESTController.class)
-                        .registerUser(null, null))
-                        .withRel("register-user"));
-            }
-        });
+        if (authPolicy.canFindUserById(requester, targetUserId)) {
+            links.add(linkTo(methodOn(UserRESTController.class)
+                    .getUser(targetUserId.getUserId(), requesterId.getUserId()))
+                    .withRel("get-user"));
+        }
+
+        if (authPolicy.canFindAllUsers(requester)) {
+            links.add(linkTo(methodOn(UserRESTController.class)
+                    .getAllUsers(requesterId.getUserId()))
+                    .withRel("get-all-users"));
+        }
+
+        if (authPolicy.canRegisterUser(requester)) {
+            links.add(linkTo(methodOn(UserRESTController.class)
+                    .registerUser(null, requesterId.getUserId()))
+                    .withRel("register-user"));
+        }
 
         return links;
     }
@@ -154,5 +100,43 @@ public class UserLinkProvider implements RootLinkProvider {
     private User resolveUser(UserId userId) throws InstanceNotFoundException {
         return userRepository.findByID(userId)
                 .orElseThrow(() -> new InstanceNotFoundException("User not found: " + userId));
+    }
+
+    /**
+     * Builds the list of HATEOAS links available to the requesting user based on
+     * their permissions.
+     *
+     * <p>The returned links depend on the authorization policies associated with
+     * the requester. For example, users with permission to view all users will
+     * receive a link to the endpoint that retrieves all users, while users with
+     * permission to register new users will receive a link to the registration
+     * endpoint.</p>
+     *
+     * @param requesterId the identifier of the user requesting the available links;
+     *                    must not be {@code null}
+     * @return a list of links that the requester is authorized to access
+     * @throws InstanceNotFoundException if no user exists for the provided
+     *                                   {@code requesterId}
+     */
+    @Override
+    public List<Link> getLinks(UserId requesterId) throws InstanceNotFoundException {
+
+        Objects.requireNonNull(requesterId, "RequesterId cannot be null");
+
+        List<Link> links = new ArrayList<>();
+
+        User requester = resolveUser(requesterId);
+
+        if (authPolicy.canFindAllUsers(requester)) {
+            links.add(linkTo(methodOn(UserRESTController.class)
+                    .getAllUsers(requesterId.getUserId()))
+                    .withRel("get-all-users"));
+        }
+
+        if (authPolicy.canRegisterUser(requester)) {
+            links.add(linkTo(methodOn(UserRESTController.class)
+                    .registerUser(null, requesterId.getUserId()))
+                    .withRel("register-user"));
+        }return links;
     }
 }

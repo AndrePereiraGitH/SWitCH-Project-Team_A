@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -1061,5 +1062,82 @@ class PublicationSampleServiceTest {
     void assignPublicationToCollection_shouldThrowNullPointerException_whenPublicationSampleIdIsNull() {
         assertThrows(NullPointerException.class, () ->
                 service.assignPublicationToCollection(collectionId, null, userId));
+    }
+
+// =========================================================================
+// findPublicationsInPublicCollection
+// =========================================================================
+
+    @Test
+    void findPublicationsInPublicCollection_shouldReturnSamples_whenCollectionIsPublic() throws Exception {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        List<PublicationSample> samples = List.of(sample);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(collection.isCurrentlyPublic()).thenReturn(true);
+        when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId)).thenReturn(samples);
+
+        // Act
+        List<PublicationSample> result = service.findPublicationsInPublicCollection(collectionId, userId);
+
+        // Assert
+        assertEquals(samples, result);
+    }
+
+    @Test
+    void findPublicationsInPublicCollection_shouldThrowAccessDeniedException_whenCollectionIsPrivate() {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(collection.isCurrentlyPublic()).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.findPublicationsInPublicCollection(collectionId, userId));
+    }
+
+    @Test
+    void findPublicationsInPublicCollection_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.findPublicationsInPublicCollection(collectionId, userId));
+    }
+
+    @Test
+    void findPublicationsInPublicCollection_shouldThrowAccessDeniedException_whenPolicyDenied() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.findPublicationsInPublicCollection(collectionId, userId));
+    }
+
+    @Test
+    void findPublicationsInPublicCollection_shouldThrowInstanceNotFoundException_whenCollectionNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () ->
+                service.findPublicationsInPublicCollection(collectionId, userId));
+    }
+
+    @Test
+    void findPublicationsInPublicCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.findPublicationsInPublicCollection(null, userId));
     }
 }

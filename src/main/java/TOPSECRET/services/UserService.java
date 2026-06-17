@@ -67,7 +67,7 @@ public class UserService {
             throws InstanceAlreadyExistsException {
 
         User requester = userRepository.findByID(requesterId)
-                .orElseThrow(() -> new IllegalArgumentException("Requester not found: " + requesterId));
+                .orElseThrow(() -> new NoSuchElementException("Requester not found: " + requesterId));
 
         if (!policy.canRegisterUser(requester)) {
             throw new AccessDeniedException("You do not have permission to register users.");
@@ -77,23 +77,46 @@ public class UserService {
         return userRepository.save(user);
     }
 
+
+
     // =========================================================================
     // Lookup
     // =========================================================================
 
     /**
+     *
+     * ======= TO BE REMOVED ========================
+     *
+     */
+    public User findByID(UserId targetUserId) {
+        Objects.requireNonNull(targetUserId, "UserId cannot be null.");
+
+        return userRepository.findByID(targetUserId)
+                .orElseThrow(() -> new NoSuchElementException("User not found: " + targetUserId));
+    }
+
+
+    /**
      * Finds a user by their unique identifier.
      *
-     * @param userId the identifier to search for; must not be {@code null}
+     * @param targetUserId the identifier to search for; must not be {@code null}
      * @return the {@link User} with the given identifier
      * @throws NullPointerException     if {@code userId} is {@code null}
      * @throws NoSuchElementException if no user exists with the given identifier
      */
-    public User findByID(UserId userId) {
-        Objects.requireNonNull(userId, "UserId cannot be null.");
-        User user = userRepository.findByID(userId)
-                .orElseThrow(() -> new NoSuchElementException("User not found: " + userId));
-        return user;
+    public User findByIDNew(UserId targetUserId, UserId requesterId) {
+        Objects.requireNonNull(targetUserId, "UserId cannot be null.");
+        Objects.requireNonNull(requesterId, "RequesterId cannot be null");
+
+        User requester = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new NoSuchElementException("Requester not found: " + requesterId));
+
+        if (!policy.canFindUserById(requester, targetUserId)) {
+            throw new AccessDeniedException("You do not have permission to find this user.");
+        }
+
+        return userRepository.findByID(targetUserId)
+                .orElseThrow(() -> new NoSuchElementException("User not found: " + targetUserId));
     }
 
     /**
@@ -101,7 +124,16 @@ public class UserService {
      *
      * @return a list of all {@link User} instances; never {@code null}, may be empty
      */
-    public List<User> findAll() {
+    public List<User> findAll(UserId requesterId) {
+        Objects.requireNonNull(requesterId, "Requester UserId cannot be null.");
+
+        User requester = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new NoSuchElementException("Requester not found: " + requesterId));
+
+        if (!policy.canFindAllUsers(requester)) {
+            throw new AccessDeniedException("You do not have permission to list all users.");
+        }
+
         return userRepository.findAll();
     }
 
