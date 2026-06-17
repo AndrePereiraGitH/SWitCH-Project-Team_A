@@ -7,6 +7,8 @@ import {Dashboard} from "./pages/Dashboard";
 import {Library} from "./pages/Library";
 import {ManageLists} from "./pages/ManageLists";
 import {ListDetail} from "./pages/ListDetail";
+import { SharedLists } from "./pages/SharedLists";
+import { SharedListDetail } from "./pages/SharedListDetail";
 import {SellPublication} from "./pages/SellPublication";
 import {Explore} from "./pages/Explore";
 import {ProductDetail} from "./pages/ProductDetail";
@@ -39,6 +41,8 @@ export default function App() {
                                             <Route path="/library" element={<Library/>}/>
                                             <Route path="/lists" element={<ManageLists/>}/>
                                             <Route path="/lists/:listId" element={<ListDetail/>}/>
+                                            <Route path="/shared-lists" element={<SharedLists />} />
+                                            <Route path="/shared-lists/:listId" element={<SharedListDetail />} />
                                             <Route path="/sell/:bookId" element={<SellPublication/>}/>
                                             <Route path="/explore" element={<Explore/>}/>
                                             <Route path="/product/:productId" element={<ProductDetail/>}/>

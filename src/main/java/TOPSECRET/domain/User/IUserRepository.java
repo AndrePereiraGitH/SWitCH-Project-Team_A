@@ -3,6 +3,7 @@ package TOPSECRET.domain.User;
 
 import TOPSECRET.domain.ValueObjects.UserId;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,4 +50,10 @@ public interface IUserRepository {
      */
     Optional<UserId> findIdByUsername(String username);
 
+    /**
+     * Returns all users in the repository.
+     *
+     * @return a list of all {@link User} instances; never {@code null}, may be empty
+     */
+    List<User> findAll();
 }
