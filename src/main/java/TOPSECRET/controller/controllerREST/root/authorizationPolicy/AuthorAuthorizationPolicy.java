@@ -5,27 +5,34 @@ import TOPSECRET.domain.User.User;
 import org.springframework.stereotype.Component;
 
 /**
- * Authorization policy responsible for validating permissions related to
- * Author operations.
+ * Authorization policy component responsible for validating access rights
+ * for operations related to {@link TOPSECRET.domain.Author.Author}.
  *
- * <p>This class defines the authorization rules used to determine whether
- * a user is allowed to perform specific actions over Author objects.</p>
+ * <p>Ensures that only users with the appropriate roles are permitted to perform
+ * specific actions such as creating or retrieving authors.</p>
+ *
+ * <p>Policies are grouped into two categories:</p>
+ * <ul>
+ *   <li><b>Persistence</b> — creation of authors.</li>
+ *   <li><b>Lookup</b> — retrieval of authors (public; no policy required).</li>
+ * </ul>
  */
 @Component
 public class AuthorAuthorizationPolicy {
 
+    // =========================================================================
+    // Persistence
+    // =========================================================================
+
     /**
-     * Verifies whether a user has permission to register an Author.
+     * Checks if the user is authorized to register a new author.
      *
-     * <p>Only users with the {@link UserRole#ADMIN} role are allowed to
-     * add Authors.</p>
-     *
-     * @param user the user whose permissions are being validated
-     * @return {@code true} if the user has the ADMIN role;
+     * @param user the user attempting the operation; must not be {@code null}
+     * @return {@code true} if the user has the {@code ADMIN} or {@code NORMAL_USER} role,
      *         {@code false} otherwise
      */
     public boolean canCreateAuthor(User user) {
-
-        return user.getUserRoles().contains(UserRole.ADMIN) || user.getUserRoles().contains(UserRole.NORMAL_USER);
+        return user.getUserRoles().contains(UserRole.ADMIN)
+                || user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
 }
