@@ -55,4 +55,32 @@ class ListingAuthorizationPolicyTest {
         assertFalse(result);
     }
 
+    // =========================================================================
+    // canBuyListing
+    // =========================================================================
+
+    @Test
+    void canBuyListing_shouldReturnTrue_whenUserHasNormalUserRole() {
+        // Arrange
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // Act
+        boolean result = policy.canBuyListing(user);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canBuyListing_shouldReturnFalse_whenUserDoesNotHaveNormalUserRole() {
+        // Arrange
+        when(user.getUserRoles()).thenReturn(Set.of());
+
+        // Act
+        boolean result = policy.canBuyListing(user);
+
+        // Assert
+        assertFalse(result);
+    }
+
 }

@@ -9,6 +9,7 @@ import TOPSECRET.domain.Genre.Genre;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.Publisher.Publisher;
+import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
@@ -52,11 +53,16 @@ public class ListingRESTController {
     private final GenreService genreService;
     private final ListingLinkProvider listingLinkProvider;
     private final PublisherService publisherService;
+    private final UserService userService;
 
     private enum LinkContext {
-        OWNER,
+        AUTHENTICATED_USER,
         PUBLIC
     }
+
+    // =========================================================================
+    // CONSTRUCTOR
+    // =========================================================================
 
     /**
      * Creates a new {@code ListingRESTController}.
@@ -68,7 +74,7 @@ public class ListingRESTController {
      * @param listingLinkProvider the provider used to generate listing HATEOAS links
      */
     @Autowired
-    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService) {
+    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService, UserService userService) {
         this.biblioDataService = biblioDataService;
         this.publicationService = publicationService;
         this.listingService = listingService;
@@ -77,7 +83,12 @@ public class ListingRESTController {
         this.genreService = genreService;
         this.listingLinkProvider = listingLinkProvider;
         this.publisherService = publisherService;
+        this.userService = userService;
     }
+
+    // =========================================================================
+    // CREATE / POST ENDPOINTS
+    // =========================================================================
 
     /**
      * Creates a new listing for a given user.
@@ -89,9 +100,9 @@ public class ListingRESTController {
      * @param listingRequestDTO the request body containing the listing information
      * @param userId the identifier of the user creating the listing
      * @return {@code 201 CREATED} with the created listing,
-     *         {@code 403 FORBIDDEN} if the user is not allowed to create it,
-     *         {@code 400 BAD REQUEST} if the request contains invalid data,
-     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     * {@code 403 FORBIDDEN} if the user is not allowed to create it,
+     * {@code 400 BAD REQUEST} if the request contains invalid data,
+     * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @PostMapping("")
     public ResponseEntity<ListingDetailsDTO> createListing(@RequestBody ListingRequestDTO listingRequestDTO, @RequestParam String userId) {
@@ -118,7 +129,7 @@ public class ListingRESTController {
                     pictures
             );
 
-            ListingDetailsDTO dto = convertIntoListingDetailsDTO(listing, LinkContext.OWNER, userIdVO);
+            ListingDetailsDTO dto = convertIntoListingDetailsDTO(listing, LinkContext.AUTHENTICATED_USER, userIdVO);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (AccessDeniedException e) {
@@ -132,6 +143,10 @@ public class ListingRESTController {
         }
     }
 
+    // =========================================================================
+    // READ / GET ENDPOINTS
+    // =========================================================================
+
     /**
      * Finds a listing by its identifier.
      *
@@ -141,9 +156,9 @@ public class ListingRESTController {
      *
      * @param id the identifier of the listing to retrieve
      * @return {@code 200 OK} with the listing DTO,
-     *         {@code 404 NOT_FOUND} if the listing, user, or related data is not found,
-     *         {@code 400 BAD_REQUEST} if the identifier is invalid,
-     *         or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
+     * {@code 404 NOT_FOUND} if the listing, user, or related data is not found,
+     * {@code 400 BAD_REQUEST} if the identifier is invalid,
+     * or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("/{id}")
     public ResponseEntity<ListingDetailsDTO> findById(
@@ -177,9 +192,9 @@ public class ListingRESTController {
      * available HATEOAS links for the requesting user.</p>
      *
      * @return {@code 200 OK} with the list of listing DTOs,
-     *         {@code 404_NOT_FOUND} if the user or related data is not found,
-     *         {@code 400_BAD_REQUEST} if the user identifier is invalid,
-     *         or {@code 500_INTERNAL_SERVER_ERROR} for unexpected errors
+     * {@code 404_NOT_FOUND} if the user or related data is not found,
+     * {@code 400_BAD_REQUEST} if the user identifier is invalid,
+     * or {@code 500_INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("")
     public ResponseEntity<List<ListingDetailsDTO>> findAll() {
@@ -214,12 +229,12 @@ public class ListingRESTController {
      * <p>No authentication is required — this endpoint is publicly accessible.</p>
      *
      * @param bibliographicalDataId the unique identifier of the bibliographical data
-     *                              (publication) used to filter listings; must not be
-     *                              {@code null} or blank
+     * (publication) used to filter listings; must not be
+     * {@code null} or blank
      * @return {@code 200 OK} with the list of matching {@link ListingDetailsDTO} objects,
-     *         {@code 400 BAD REQUEST} if the identifier is invalid,
-     *         {@code 404 NOT FOUND} if no related data is found,
-     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     * {@code 400 BAD REQUEST} if the identifier is invalid,
+     * {@code 404 NOT FOUND} if no related data is found,
+     * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/by-publication/{bibliographicalDataId}")
     public ResponseEntity<List<ListingDetailsDTO>> findListingsByPublication
@@ -258,8 +273,8 @@ public class ListingRESTController {
      *
      * @param genreId the identifier of the genre used to filter direct-sale listings
      * @return {@code 200 OK} with the list of matching listing DTOs,
-     *         {@code 404_NOT_FOUND} if related data or the user is not found,
-     *         or {@code 400_BAD_REQUEST} if one of the identifiers is invalid
+     * {@code 404_NOT_FOUND} if related data or the user is not found,
+     * or {@code 400_BAD_REQUEST} if one of the identifiers is invalid
      */
     @GetMapping("/direct-sale/genre/{genreId}")
     public ResponseEntity<List<ListingDetailsDTO>> getAllDirectSaleByGenre(@PathVariable String genreId) {
@@ -297,11 +312,11 @@ public class ListingRESTController {
      * <p>No authentication is required — this endpoint is publicly accessible.</p>
      *
      * @param genreId the identifier of the genre used to filter listings; must not be
-     *                {@code null} or blank
+     * {@code null} or blank
      * @return {@code 200 OK} with the list of matching {@link ListingDetailsDTO} objects,
-     *         {@code 400 BAD REQUEST} if the identifier is invalid,
-     *         {@code 404 NOT FOUND} if no related data is found,
-     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     * {@code 400 BAD REQUEST} if the identifier is invalid,
+     * {@code 404 NOT FOUND} if no related data is found,
+     * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/genre/{genreId}")
     public ResponseEntity<List<ListingDetailsDTO>> findListingsByGenre(@PathVariable String genreId) {
@@ -334,6 +349,7 @@ public class ListingRESTController {
         }
     }
 
+
     /**
      * Retrieves all direct-sale listings associated with a given publisher.
      *
@@ -344,9 +360,9 @@ public class ListingRESTController {
      *
      * @param publisherId the identifier of the publisher used to filter listings
      * @return {@code 200 OK} with the list of matching listing DTOs,
-     *         {@code 404 NOT_FOUND} if related data is not found,
-     *         {@code 400 BAD_REQUEST} if the publisher identifier is invalid,
-     *         or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
+     * {@code 404 NOT_FOUND} if related data is not found,
+     * {@code 400 BAD_REQUEST} if the publisher identifier is invalid,
+     * or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("/direct-sale/publisher/{publisherId}")
     public ResponseEntity<List<ListingDetailsDTO>> getAllDirectSaleByPublisher(@PathVariable String publisherId) {
@@ -374,6 +390,62 @@ public class ListingRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    // =========================================================================
+    // UPDATE / PATCH ENDPOINTS
+    // =========================================================================
+
+    /**
+     * Marks the given listing as sold by the requesting buyer.
+     *
+     * <p>Updates the listing's status to {@code SOLD} and propagates the status
+     * change to all associated publication samples.</p>
+     *
+     * authentication is integrated, rather than supplied as a request parameter.</p>
+     *
+     * @param listingId the identifier of the listing to mark as sold
+     * @param buyerId   the identifier of the user purchasing the listing
+     * @return a {@link ResponseEntity} containing:
+     * <ul>
+     * <li>{@code 200 OK} with the updated {@link ListingDetailsDTO} on success</li>
+     * <li>{@code 400 Bad Request} if the provided identifiers are invalid</li>
+     * <li>{@code 403 Forbidden} if the buyer is the seller or is not
+     * authorized to buy</li>
+     * <li>{@code 404 Not Found} if the listing, user, or an associated
+     * publication sample does not exist</li>
+     * <li>{@code 409 Conflict} if the listing is already sold</li>
+     * <li>{@code 500 Internal Server Error} for any unexpected failure</li>
+     * </ul>
+     */
+    @PatchMapping("/{listingId}/sold")
+    public ResponseEntity<ListingDetailsDTO> markListingAsSold(@PathVariable String listingId, @RequestParam String buyerId) {
+
+        try {
+            ListingId id = ListingMapper.toListingId(listingId);
+            UserId userId = ListingMapper.toUserId(buyerId);
+
+            Listing listing = listingService.markListingAsSold(id, userId);
+
+            ListingDetailsDTO dto = convertIntoListingDetailsDTO(listing, LinkContext.AUTHENTICATED_USER, userId);
+
+            return ResponseEntity.status(HttpStatus.OK).body(dto);
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // =========================================================================
+    // PRIVATE HELPER METHODS - DATA EXTRACTION
+    // =========================================================================
 
     /**
      * Retrieves the bibliographical data associated with the given publication samples.
@@ -467,13 +539,30 @@ public class ListingRESTController {
                 .toList();
     }
 
+
+    private User getBuyer(UserId id) {
+
+        User user = userService.findByID(id);
+
+        return user;
+    }
+
+    // =========================================================================
+    // PRIVATE HELPER METHODS - DTO CONVERSION
+    // =========================================================================
+
     /**
      * Converts a listing into a detailed response DTO and adds the appropriate
      * HATEOAS links according to the requested link context.
      *
+     * <p>If the listing has been sold, the associated buyer is resolved and
+     * included in the resulting DTO; otherwise the buyer field is left empty.</p>
+     *
      * @param listing the listing to convert
-     * @param context the link context that determines whether owner links are added
-     * @param userId the owner user identifier, required only when using owner links
+     * @param context the link context that determines whether authenticated-user
+     *                 and auction links are added
+     * @param userId  the requesting user's identifier, required only when using
+     *                 {@link LinkContext#AUTHENTICATED_USER}
      * @return the listing details DTO with the corresponding HATEOAS links
      * @throws InstanceNotFoundException if related listing data cannot be found
      */
@@ -486,6 +575,11 @@ public class ListingRESTController {
         List<Edition> editions = getEditions(pubSamples);
         List<Publisher> publishers = getPublishers(editions);
 
+        User buyer = null;
+        if (listing.getBuyerId() != null) {
+            buyer = getBuyer(listing.getBuyerId());
+        }
+
         ListingDetailsDTO dto = ListingMapper.toListingDetailsDTO(
                 listing,
                 pubSamples,
@@ -493,15 +587,16 @@ public class ListingRESTController {
                 editions,
                 authors,
                 genres,
-                publishers
+                publishers,
+                buyer
         );
 
         List<Link> links = new ArrayList<>(listingLinkProvider.getPublicLinks());
 
-        if (context == LinkContext.OWNER && userId != null) {
-            links.addAll(listingLinkProvider.getOwnerLinks(userId));
+        if (context == LinkContext.AUTHENTICATED_USER && userId != null) {
+            links.addAll(listingLinkProvider.getAuthenticatedUserLinks(userId));
 
-            if (listing.getSaleType().equals(SaleType.AUCTION)) {
+            if (listing.getSaleType() == SaleType.AUCTION) {
                 links.addAll(listingLinkProvider.getAuctionLinks(userId));
             }
         }

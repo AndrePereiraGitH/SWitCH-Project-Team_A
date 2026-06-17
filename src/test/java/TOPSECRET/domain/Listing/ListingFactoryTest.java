@@ -1,5 +1,6 @@
 package TOPSECRET.domain.Listing;
 
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 import org.junit.jupiter.api.Test;
@@ -14,21 +15,22 @@ import static org.mockito.Mockito.*;
 
 /**
  * Test suite for the {@link ListingFactory}, ensuring that new {@link Listing}
- * instances are correctly constructed through the factory method.
+ * instances are correctly constructed through the factory methods.
  *
  * <p>This suite verifies that the factory delegates object creation to the
- * {@link Listing} constructor, rather than performing alternative instantiation
+ * {@link Listing} constructors, rather than performing alternative instantiation
  * logic.
  * <ul>
  *     <li>a new Listing instance is created exactly once;</li>
  *     <li>the returned instance is the same object produced by the constructor;</li>
  *     <li>all required parameters (title, items, sale type, price, description,
- *         seller ID, pictures) are passed correctly to the constructor.</li>
+ *         seller ID, buyer ID, pictures, publication date, listing status)
+ *         are passed correctly to the constructor.</li>
  * </ul>
  *
- * <p>By validating the factory’s behaviour in isolation, this test class ensures
+ * <p>By validating the factory's behaviour in isolation, this test class ensures
  * that the Listing creation process remains consistent, predictable, and aligned
- * with the domain model’s construction rules.
+ * with the domain model's construction rules.
  */
 class ListingFactoryTest {
 
@@ -55,14 +57,21 @@ class ListingFactoryTest {
         List<Picture> pictures = List.of(pic);
 
         try (MockedConstruction<Listing> mocked =
-                mockConstruction(Listing.class, (mock, context) -> {
+                     mockConstruction(Listing.class, (mock, context) -> {
 
-        })) {
+                     })) {
 
             ListingFactory listingFactory = new ListingFactory();
 
             // act
-            Listing listing = listingFactory.create(listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures);
+            Listing listing = listingFactory.create(
+                    listingTitle,
+                    itemsIdList,
+                    saleType,
+                    listingPrice,
+                    shortDescription,
+                    sellerId,
+                    pictures);
 
             // assert
             assertNotNull(listing);
@@ -80,15 +89,17 @@ class ListingFactoryTest {
 
         ListingId listingId = mock(ListingId.class);
         String listingTitle = "listing title";
-        PublicationSampleId pubSample1ID = mock (PublicationSampleId.class);
-        PublicationSampleId pubSample2ID = mock (PublicationSampleId.class);
+        PublicationSampleId pubSample1ID = mock(PublicationSampleId.class);
+        PublicationSampleId pubSample2ID = mock(PublicationSampleId.class);
         List<PublicationSampleId> itemsIdList = List.of(pubSample1ID, pubSample2ID);
         SaleType saleType = SaleType.AUCTION;
         Price listingPrice = mock(Price.class);
         String shortDescription = "this is a description";
         UserId sellerId = mock(UserId.class);
+        UserId buyerId = mock(UserId.class);
         Picture pic = mock(Picture.class);
         List<Picture> pictures = List.of(pic);
+        ListingStatus listingStatus = ListingStatus.ACTIVE;
 
         try (MockedConstruction<Listing> mocked =
                      mockConstruction(Listing.class, (mock, context) -> {
@@ -98,7 +109,18 @@ class ListingFactoryTest {
             ListingFactory listingFactory = new ListingFactory();
 
             // act
-            Listing listing = listingFactory.create(listingId,listingTitle, itemsIdList, saleType, listingPrice, shortDescription, sellerId, pictures, LocalDate.now());
+            Listing listing = listingFactory.create(
+                    listingId,
+                    listingTitle,
+                    itemsIdList,
+                    saleType,
+                    listingPrice,
+                    shortDescription,
+                    sellerId,
+                    buyerId,
+                    pictures,
+                    LocalDate.now(),
+                    listingStatus);
 
             // assert
             assertNotNull(listing);
@@ -107,6 +129,49 @@ class ListingFactoryTest {
             Listing constructedListing = mocked.constructed().get(0);
             assertSame(listing, constructedListing);
 
+        }
+
+    }
+
+    @Test
+    void createWithListingId_supportsNullBuyerId() {
+
+        ListingId listingId = mock(ListingId.class);
+        String listingTitle = "listing title";
+        PublicationSampleId pubSample1ID = mock(PublicationSampleId.class);
+        List<PublicationSampleId> itemsIdList = List.of(pubSample1ID);
+        SaleType saleType = SaleType.DIRECT_SALE;
+        Price listingPrice = mock(Price.class);
+        String shortDescription = "this is a description";
+        UserId sellerId = mock(UserId.class);
+        Picture pic = mock(Picture.class);
+        List<Picture> pictures = List.of(pic);
+        ListingStatus listingStatus = ListingStatus.ACTIVE;
+
+        try (MockedConstruction<Listing> mocked =
+                     mockConstruction(Listing.class, (mock, context) -> {
+
+                     })) {
+
+            ListingFactory listingFactory = new ListingFactory();
+
+            // act
+            Listing listing = listingFactory.create(
+                    listingId,
+                    listingTitle,
+                    itemsIdList,
+                    saleType,
+                    listingPrice,
+                    shortDescription,
+                    sellerId,
+                    null,
+                    pictures,
+                    LocalDate.now(),
+                    listingStatus);
+
+            // assert
+            assertNotNull(listing);
+            assertEquals(1, mocked.constructed().size());
         }
 
     }

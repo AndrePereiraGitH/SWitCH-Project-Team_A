@@ -1,6 +1,8 @@
 package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.ListingAuthorizationPolicy;
+import TOPSECRET.domain.Enum.ListingStatus;
+import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
 import TOPSECRET.domain.Listing.Listing;
@@ -11,9 +13,13 @@ import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import org.springframework.security.access.AccessDeniedException;import java.util.List;
+import org.springframework.security.access.AccessDeniedException;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -200,6 +206,61 @@ public class ListingService {
             throw new IllegalArgumentException("publicationSamplesIds cannot be nul or empty");
         }
         return listingRepository.findAllByDirectSaleAndPublicationSampleIdIn(publicationSampleIds);
+    }
+
+    // =========================================================================
+    // Business methods
+    // =========================================================================
+
+    /**
+     * Marks the given {@link Listing} as sold and updates the status of all
+     * associated {@link PublicationSample} instances to {@link PublicationStatus#SOLD}.
+     *
+     * <p>Triggered by a buyer purchasing the listing. The requesting user must not
+     * be the seller of the listing and must be authorized to buy.</p>
+     *
+     * @param listingId the identifier of the listing to mark as sold; must not be {@code null}
+     * @param buyerId   the identifier of the requesting user (the buyer); must not be {@code null}
+     * @return the updated, persisted {@link Listing}
+     * @throws EntityNotFoundException if no listing, user, or publication sample is found
+     * @throws IllegalStateException   if the listing is already marked as sold
+     * @throws AccessDeniedException   if the requesting user is the seller, or is not authorized to buy
+     * @throws NullPointerException    if {@code listingId} or {@code buyerId} is {@code null}
+     */
+    @Transactional
+    public Listing markListingAsSold(ListingId listingId, UserId buyerId) {
+
+        Objects.requireNonNull(listingId, "listingId cannot be null");
+        Objects.requireNonNull(buyerId, "buyerId cannot be null");
+
+        Listing listing = listingRepository.findById(listingId).orElseThrow(EntityNotFoundException::new);
+
+        if (listing.getListingStatus() == ListingStatus.SOLD) {
+            throw new IllegalStateException("Listing is already sold");
+        }
+
+        if (listing.getSellerId().equals(buyerId)) {
+            throw new AccessDeniedException("You cannot buy your own listing");
+        }
+
+        User user = userRepository.findByID(buyerId).orElseThrow(EntityNotFoundException::new);
+
+        if (!policy.canBuyListing(user)) {
+            throw new AccessDeniedException("You do not have permissions to buy this listing");
+        }
+
+        listing.markListingAsSold(buyerId);
+
+        List<PublicationSampleId> itemIds = listing.getItemsId();
+
+        for (PublicationSampleId itemId : itemIds) {
+            PublicationSample item = publicationSampleRepository.findById(itemId)
+                    .orElseThrow(EntityNotFoundException::new);
+            item.changePublicationStatus(PublicationStatus.SOLD);
+            publicationSampleRepository.save(item);
+        }
+
+        return listingRepository.save(listing);
     }
 
 

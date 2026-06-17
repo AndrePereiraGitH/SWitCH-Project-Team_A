@@ -31,6 +31,7 @@ public class ListingDetailsDTO extends RepresentationModel<ListingDetailsDTO> {
    private Integer pages;
    private String language;
    private List<String> bibliographicalDataId;
-
+   private String buyer;
+   private String publicationStatus;
 
 }
