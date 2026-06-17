@@ -1,5 +1,6 @@
 package TOPSECRET.persistence.mem;
 
+import TOPSECRET.domain.Transaction.ITransactionRepository;
 import TOPSECRET.domain.Transaction.Transaction;
 import TOPSECRET.domain.ValueObjects.TransactionID;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +29,7 @@ class TransactionRepositoryMemTest {
     @Test
     void save_shouldStoreTransaction_whenNotExisting() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act
         Transaction result = repository.save(transaction);
@@ -41,7 +42,7 @@ class TransactionRepositoryMemTest {
     @Test
     void save_shouldThrowException_whenTransactionIsNull() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -52,7 +53,7 @@ class TransactionRepositoryMemTest {
     @Test
     void save_shouldThrowException_whenTransactionAlreadyExists() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act
         repository.save(transaction);
@@ -66,7 +67,7 @@ class TransactionRepositoryMemTest {
     @Test
     void findById_shouldReturnTransaction_whenExisting() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act
         repository.save(transaction);
@@ -81,7 +82,7 @@ class TransactionRepositoryMemTest {
     @Test
     void findById_shouldReturnEmpty_whenNotExisting() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         TransactionID otherId = mock(TransactionID.class);
 
@@ -95,7 +96,7 @@ class TransactionRepositoryMemTest {
     @Test
     void findById_shouldThrowException_whenIdIsNull() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -106,7 +107,7 @@ class TransactionRepositoryMemTest {
     @Test
     void existsById_shouldReturnTrue_whenExisting() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act
         repository.save(transaction);
@@ -118,7 +119,7 @@ class TransactionRepositoryMemTest {
     @Test
     void existsById_shouldReturnFalse_whenNotExisting() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         TransactionID otherId = mock(TransactionID.class);
 
@@ -129,7 +130,7 @@ class TransactionRepositoryMemTest {
     @Test
     void existsById_shouldThrowException_whenIdIsNull() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
@@ -140,7 +141,7 @@ class TransactionRepositoryMemTest {
     @Test
     void findAll_shouldReturnImmutableCopy() {
         // Arrange
-        TransactionRepositoryMem repository = new TransactionRepositoryMem();
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act
         repository.save(transaction);
