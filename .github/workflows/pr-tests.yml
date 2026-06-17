@@ -64,7 +64,7 @@ jobs:
   # ── US048 ── SAST with Semgrep + style analysis ─────────────────────────────
   static-analysis-and-security:
     runs-on: ubuntu-latest
-    needs: []
+    needs: [ ]
     permissions:
       contents: read
       actions: write
@@ -167,7 +167,7 @@ jobs:
   # ── US049 ── Secret & insecure-configuration detection ──────────────────────
   secret-detection:
     runs-on: ubuntu-latest
-    needs: []
+    needs: [ ]
     permissions:
       contents: read
 
@@ -187,7 +187,7 @@ jobs:
   # ── US053 ── Dependency inventory + vulnerability scan ──────────────────────
   dependency-scan:
     runs-on: ubuntu-latest
-    needs: []
+    needs: [ ]
     permissions:
       contents: read
       actions: write
@@ -295,7 +295,7 @@ jobs:
   # ── US073 ── Container image vulnerability scan ─────────────────────────────
   container-image-scan:
     runs-on: ubuntu-latest
-    needs: []
+    needs: [ ]
     permissions:
       contents: read
       actions: write
@@ -415,10 +415,48 @@ jobs:
               body
             });
 
+
+  # ── US073 ── Push images to Docker Hub ──────────────────────────────────────
+  push-to-registry:
+    runs-on: ubuntu-latest
+    needs: [ container-image-scan ]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN_MITELOVERS }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/mite-lovers-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/mite-lovers-backend:${{ github.sha }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/mite-lovers-frontend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/mite-lovers-frontend:${{ github.sha }}
+  
+
   # ── US051 + US057 ── Aggregated gate + explicit integration criteria ─────────
   pr-validation:
     runs-on: ubuntu-latest
-    needs: [build-and-test, static-analysis-and-security, secret-detection, dependency-scan, container-image-scan]
+    needs: [ build-and-test, static-analysis-and-security, secret-detection, dependency-scan, container-image-scan,
+             push-to-registry ]
     if: success()
     permissions:
       contents: read
@@ -489,7 +527,7 @@ jobs:
   # ── US050 ── Versioned artifact generation ──────────────────────────────────
   publish-artifact:
     runs-on: ubuntu-latest
-    needs: [pr-validation]
+    needs: [ pr-validation ]
     permissions:
       contents: read
       actions: write
