@@ -58,6 +58,8 @@ public class UserLinkProvider implements RootLinkProvider {
      *
      */
     public List<Link> getLinksForUserResource(UserId requesterId, UserId targetUserId) throws InstanceNotFoundException {
+        Objects.requireNonNull(requesterId, "Requester UserId cannot be null.");
+        Objects.requireNonNull(targetUserId, "User target UserId cannot be null.");
 
         List<Link> links = new ArrayList<>();
 
