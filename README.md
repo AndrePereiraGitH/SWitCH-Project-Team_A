@@ -167,15 +167,20 @@ Artifact upload steps are guarded with `github.event.pull_request.head.repo.full
                                      │
                                      ↓ (container-image-scan only)
                               push-to-registry
+                          (main branch / PRs into main only —
+                           skipped on teamA_1, teamA_2, frontend)
                                      │
-                                     ↓ (all 6 jobs above must succeed)
+                                     ↓ (5 jobs must succeed; push-to-registry
+                                        may be 'success' OR 'skipped')
                                pr-validation
                                      │
-                                     ↓ (no event filter — runs on PR and push alike)
+                                     ↓ (no event/branch filter — runs on PR and push alike)
                              publish-artifact
 ```
 
-> **Note:** Neither `push-to-registry` nor `publish-artifact` is restricted with `if: github.event_name == 'push'`. In practice this means `push-to-registry` pushes `:latest` to Docker Hub on every PR run (not just merges), and `publish-artifact` builds and uploads a versioned JAR on every PR run too. If the intent is to only publish/push on merge to a protected branch, an explicit event-type guard should be added to these jobs.
+> **Note:** `push-to-registry` is now restricted with `if: github.ref == 'refs/heads/main' || github.base_ref == 'main'`, so it only publishes images for `main` (direct pushes, or PRs whose base branch is `main`); it's skipped on `teamA_1`, `teamA_2`, and `frontend`. Because `pr-validation` depends on it, its `if` was changed from the default `success()` to an explicit check that requires every other job to succeed while accepting `push-to-registry` being `success` **or** `skipped` — otherwise the entire validation gate would have been skipped on every non-`main` run, since GitHub Actions treats a skipped dependency the same as a failed one under the default `success()`.
+
+> **Note:** `publish-artifact` still has no event-type or branch filter — it builds and uploads a versioned JAR on every successful pipeline run, including PRs to `teamA_1`/`teamA_2`/`frontend`, not only on merges to `main`. If that should also be restricted to `main`, apply the same kind of guard used on `push-to-registry`.
 
 ---
 
@@ -268,9 +273,11 @@ Builds both Docker images and scans them for known vulnerabilities before they a
 
 ### Job: `push-to-registry` — Publish Images to Docker Hub (US073)
 
-Logs in to Docker Hub and pushes both images, tagged for traceability back to the source commit (US076).
+Logs in to Docker Hub and pushes both images, tagged for traceability back to the source commit (US076) — **only for the `main` branch**.
 
 **Needs:** `container-image-scan`
+
+**Runs only if:** `github.ref == 'refs/heads/main' || github.base_ref == 'main'` — i.e. a direct push to `main`, or a pull request whose base branch is `main`. On every other branch (`teamA_1`, `teamA_2`, `frontend`) the job is skipped, and no images are pushed to Docker Hub.
 
 **Steps:**
 1. Checkout code
@@ -278,19 +285,32 @@ Logs in to Docker Hub and pushes both images, tagged for traceability back to th
 3. **Build & push backend image** — tagged `:latest` and `:${{ github.sha }}`
 4. **Build & push frontend image** — tagged `:latest` and `:${{ github.sha }}`
 
-> See the Pipeline Overview note above: because this job only depends on `container-image-scan` (not on an event-type filter), it currently runs — and pushes `:latest` — on every PR run where the scan step completes, not only on merges to `main`.
+> Because `push-to-registry` is now conditionally skipped, `pr-validation`'s gate condition had to be adjusted accordingly — see the note below.
 
 ---
 
 ### Job: `pr-validation` — Aggregated Gate (US051, US052, US057)
 
-Runs only after **all six** upstream jobs succeed (`build-and-test`, `static-analysis-and-security`, `secret-detection`, `dependency-scan`, `container-image-scan`, `push-to-registry`) — gated with `if: success()`. Acts as the final integration gate.
+Acts as the final integration gate, depending on all six upstream jobs (`build-and-test`, `static-analysis-and-security`, `secret-detection`, `dependency-scan`, `container-image-scan`, `push-to-registry`).
+
+**Runs only if:**
+```
+always() &&
+needs.build-and-test.result == 'success' &&
+needs.static-analysis-and-security.result == 'success' &&
+needs.secret-detection.result == 'success' &&
+needs.dependency-scan.result == 'success' &&
+needs.container-image-scan.result == 'success' &&
+(needs.push-to-registry.result == 'success' || needs.push-to-registry.result == 'skipped')
+```
+
+This is an explicit condition rather than the plain `if: success()` used before. It's needed because `push-to-registry` is now intentionally skipped on `teamA_1`/`teamA_2`/`frontend` (see above), and GitHub Actions' default `success()` treats a skipped dependency the same as a failed one — so without this change, `pr-validation` (and everything that follows it) would have been skipped on every branch except `main`.
 
 **Steps:**
 1. **Verify all gates passed** — prints a summary of all quality and security gates, including the container scan, to the Actions log
 2. **Publish quality summary to PR** (on pull requests) — posts a consolidated CI Quality Report comment with a table of all jobs, gates, and tools (the two Trivy rows are marked **Reported**, not **Passed**, reflecting the soft-gate note above)
 
-A PR cannot be merged until this job succeeds, which now requires every preceding job — including the container build, scan, and registry push — to have passed.
+A PR cannot be merged until this job succeeds: every job must have actually passed, except `push-to-registry`, which is allowed to have been skipped (on non-`main` branches) without blocking the gate.
 
 ---
 
@@ -533,10 +553,10 @@ Every PR must follow the project PR template, which includes:
 - **Changes Made** — bullet list of the main changes
 - **Checklist** — code guidelines, self-review, tests, documentation
 - **Security Review Checklist** — a structured set of items reviewers must confirm before approving (US069):
-    - **Input Validation** — user input is validated appropriately; invalid input is handled safely
-    - **Authentication** — marked not applicable, or confirmation that authentication-related changes were reviewed
-    - **Secrets** — confirmation that no credentials, passwords, or API keys were committed
-    - **Logging** — logs do not contain sensitive information; error messages do not expose implementation details
+  - **Input Validation** — user input is validated appropriately; invalid input is handled safely
+  - **Authentication** — marked not applicable, or confirmation that authentication-related changes were reviewed
+  - **Secrets** — confirmation that no credentials, passwords, or API keys were committed
+  - **Logging** — logs do not contain sensitive information; error messages do not expose implementation details
 - **Notes / Known Issues** — anything reviewers should be aware of
 - **Reviewer Notes** — specific areas where feedback is requested
 
@@ -569,6 +589,102 @@ The expected workflow for each team member is as follows:
 9. **Review artifacts** — JaCoCo, PITest, Checkstyle, PMD, OWASP, dependency-tree, and Trivy reports are all available from the Actions run page.
 10. **Check PR comments** — Semgrep, OWASP, and Trivy results are automatically posted as PR comments with severity breakdowns. A consolidated quality summary is posted once all gates pass.
 
+---
+
+## Known Limitations & Accepted Risks (US078)
+
+This section documents security-relevant scope decisions for the SWitCH Dev 2025/2026 delivery, so gaps are visible and traceable rather than silently absent from the documentation.
+
+### No application-level authentication, authorization, or ACL
+
+**Status:** Accepted risk / explicit scope decision — not an oversight.
+
+**Description:** This delivery does not implement application-level login, authentication, authorization, or access-control-list (ACL) mechanisms. Endpoints that conceptually require a "current user" (e.g. listing a user's own transactions) currently identify the user via a `@RequestParam userId` rather than a verified session or token; this is intentionally marked with `TODO` comments in the codebase pending future JWT integration, not left undocumented.
+
+**Decision source:** Per faculty guidance for the Sprint 7 deliverable, application-level auth/ACL was confirmed out of scope for this iteration. The affected Sprint 7 user stories were adapted accordingly rather than marked as failed or skipped:
+
+| US | Adapted handling |
+|---|---|
+| US069 | The "Authentication" item in the PR Security Review Checklist is marked **Not applicable** on every PR — there is no authentication logic to review. |
+| US075 | Docker Compose port/volume/env-var exposure is scoped strictly to what the app needs today; no additional auth-related ports or services were added by design. |
+| US077 | "Broken Access Control" (OWASP A01) is marked **Not applicable** in the security testing scope, since there is no access-control layer to test. Coverage instead focuses on OWASP risks that *are* applicable without one: Injection (A03), Security Misconfiguration (A05), and Vulnerable/Outdated Components (A06) — see [Sprint 7 DevSecOps Traceability](#sprint-7-devsecops-traceability) below. |
+| US080 | The DEI cloud deployment should document this gap explicitly and apply a compensating control at the **infrastructure** level — e.g. restricting access to the deployed services via a reverse proxy with HTTP Basic Authentication — rather than relying on the application to gate access itself. *(Not yet implemented in `docker-compose.yml` as of this writing.)* |
+
+**Residual risk:** Without application-level authorization, any client that can reach the deployed services can call any endpoint — including ones that would normally return another user's data — as long as it supplies a plausible `userId`. For this academic delivery, the accepted mitigation is restricting *network-level* access (US080), not adding application-level access control.
+
+**Re-evaluation trigger:** Revisit this decision once JWT-based authentication is implemented — the codebase's existing `@RequestParam userId` `TODO` markers already anticipate that change.
+
+---
+
+## DevSecOps Retrospective (US079)
+
+A closing retrospective on the Sprint 7 DevSecOps work: what was implemented, what was explicitly skipped (and why), and what could be improved in a future iteration.
+
+### Security controls implemented
+
+| Control | Story | Notes |
+|---|---|---|
+| Test coverage gates (JaCoCo ≥85%, PITest ≥95%) | US033, US054 | Hard gate in `build-and-test` |
+| Static analysis (Checkstyle, PMD, Semgrep) | US048 | Semgrep is a hard gate; Checkstyle/PMD are report-only |
+| Secret scanning across full git history | US049 | Hard gate via Gitleaks |
+| Dependency CVE scanning | US053, US071 (partial) | Hard gate via OWASP Dependency-Check |
+| Severity-tagged findings posted to PRs | US056 | Semgrep, OWASP, and Trivy all post PR comments |
+| Security code review checklist in PR template | US069 | Input Validation, Secrets, Logging items; Authentication marked N/A |
+| Hardened Dockerfiles (pinned images, multi-stage builds, non-root users, `.dockerignore`) | US072 | Both backend and frontend images |
+| Hardened container runtime (`cap_drop: ALL`, `no-new-privileges`, resource limits, healthchecks) | US074, US075 | `docker-compose.yml` |
+| Image versioning & traceability (`:latest` + `:sha` tags, JAR SHA versioning) | US076 | |
+| Container image vulnerability scanning | US073 | Implemented, but as a **soft gate** — see below |
+| Registry publishing restricted to `main` (`push-to-registry`) | US073, US076 | Prevents unmerged PRs from overwriting `:latest` on Docker Hub; `pr-validation`'s gate condition was adjusted to tolerate the resulting skip on other branches |
+
+### Security controls skipped — and why
+
+| Control | Story affected | Reason |
+|---|---|---|
+| Application-level authentication, authorization, ACL | US069, US075, US077, US080 | Confirmed out of scope for this delivery per faculty guidance — see [Known Limitations & Accepted Risks](#known-limitations--accepted-risks-us078) |
+| License-risk dependency scanning | US071 | Not implemented — OWASP Dependency-Check covers CVEs only; no license-compliance tool was added |
+| Backend dependency lock file | US070 | Maven has no native lockfile equivalent to `package-lock.json`; only the frontend's dependencies are pinned this way |
+| Reverse proxy / HTTP Basic Auth compensating control | US080 | Not yet implemented in `docker-compose.yml`; documented as a follow-up |
+
+### What could be improved next iteration
+
+- The container scan (`container-image-scan`) currently runs with `exit-code: '0'` — CRITICAL/HIGH findings are reported but never block the build, unlike every other security gate in the pipeline. Tightening this would better match US073's "scanned before acceptance" intent.
+- `publish-artifact` still has no event-type or branch guard, so it runs on every successful pipeline run (not only on merges to `main`), unlike `push-to-registry`, which was restricted to `main` to stop unmerged PRs from overwriting `:latest` on Docker Hub.
+- The Semgrep ruleset used to gate the build (`p/java`, `p/owasp-top-ten`) differs from the one used to generate the PR comment (which also includes `p/spring`), so posted findings counts can include results that never actually affected the gate.
+- `aquasecurity/trivy-action` is pinned to `@master` rather than a release tag — the one unpinned third-party action in an otherwise version-pinned pipeline.
+- `container-image-scan`'s permissions block grants `pull-requests: write` but not `issues: write`, unlike the other PR-commenting jobs; worth confirming its PR comment step actually succeeds.
+
+### Action items for next iteration
+
+- [x] Restrict `push-to-registry` to `main` so images are only published on merge, not on every PR — done; required adjusting `pr-validation`'s gate condition to tolerate the resulting skip
+- [ ] Decide whether the Trivy container scan should become a hard gate before final delivery
+- [ ] Add an HTTP Basic Auth (or equivalent) reverse-proxy layer for the DEI cloud deployment (US080)
+- [ ] Investigate a license-compliance scanning tool for US071
+- [ ] Align the Semgrep rulesets used by the gate and the PR-comment step
+- [ ] Add an event-type/branch guard to `publish-artifact` if artifact publishing should also be restricted to `main`
+
+---
+
+## Sprint 7 DevSecOps Traceability
+
+The non-functional requirements defined by US046–US057 remain in force in Sprint 7 alongside the new US068–US080. This table maps each Sprint 7 DevSecOps user story to where it is currently addressed.
+
+> US069, US075, US077, US078, US079, and US080 were adapted per faculty guidance, since this delivery does not implement application-level login, authentication, authorization, or ACL. See [Known Limitations & Accepted Risks](#known-limitations--accepted-risks-us078) for the full rationale.
+
+| US | Summary | Where it's addressed |
+|---|---|---|
+| US068 | Evidence of build, test, SAST, dependency scan, container scan | [Artifacts Produced](#artifacts-produced) table + PR comments from each job |
+| US069 | Security code review checklist in PRs | [Pull Request Process](#pull-request-process) — Security Review Checklist (Input Validation, Secrets, Logging). **Authentication item marked N/A** per scope decision in [Known Limitations](#known-limitations--accepted-risks-us078) — no app-level auth exists to review |
+| US070 | Dependency lock files kept and checked in | Frontend: `package-lock.json`, installed via `npm ci` in `frontend/Dockerfile`. Backend: dependency versions are managed in `pom.xml` (Maven has no native lockfile mechanism) |
+| US071 | CVE and license-risk dependency scanning | CVEs: OWASP Dependency-Check in `dependency-scan`. **License-risk scanning is not currently implemented** — flagged as a gap |
+| US072 | Secure Dockerfile practices (pinned images, multi-stage, `.dockerignore`, no secrets) | [Docker Images](#docker-images-us072) |
+| US073 | Automated image scanning before registry upload | [`container-image-scan`](#job-container-image-scan--container-vulnerability-scan-us073) and [`push-to-registry`](#job-push-to-registry--publish-images-to-docker-hub-us073) jobs |
+| US074 | Hardened container runtime (non-root, no privileged mode, limited capabilities, resource limits) | [Container Runtime Hardening](#container-runtime-hardening--compose-configuration-us074-us075-us076) — Hardened runtime settings |
+| US075 | Least-privilege Compose config with health checks | [Container Runtime Hardening](#container-runtime-hardening--compose-configuration-us074-us075-us076) — Least-privilege Compose configuration. **Aligned with US080**: ports/volumes/env vars are scoped to exactly what's needed, with no auth-related exposure added |
+| US076 | Versioned, traceable final images | [Container Runtime Hardening](#container-runtime-hardening--compose-configuration-us074-us075-us076) — Image versioning & traceability |
+| US077 | OWASP-risk security tests applicable to the project | Covered partially via Semgrep's `p/owasp-top-ten` ruleset (Injection, Security Misconfiguration, Vulnerable Components). **Broken Access Control marked N/A** — see [Known Limitations](#known-limitations--accepted-risks-us078) |
+| US078 | Unresolved findings documented with mitigation decisions | [Known Limitations & Accepted Risks](#known-limitations--accepted-risks-us078) — documents the no-auth/no-ACL scope decision |
+| US079 | Final DevSecOps retrospective | [DevSecOps Retrospective](#devsecops-retrospective-us079) — implemented/skipped/improvement breakdown, including the auth/ACL scope decision |
+| US080 | Secure deployment to DEI cloud via Docker Compose | `docker-compose.yml` (ports, health checks, env vars documented above). **Compensating control still to be implemented**: a reverse proxy with HTTP Basic Authentication in front of the deployed services, to avoid the app being freely accessible given the lack of app-level auth — see [Known Limitations](#known-limitations--accepted-risks-us078) |
 
 ---
 
