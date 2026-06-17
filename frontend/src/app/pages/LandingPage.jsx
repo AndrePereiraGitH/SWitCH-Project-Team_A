@@ -1,21 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import { BookOpen, ShoppingBag, List, Users, ArrowRight, Star, Shield, Heart, Search, ShoppingCart, Tag } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BookCard } from "../components/BookCard";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
-import { usePurchases } from "../components/PurchasesContext";
-import { API_BASE_URL, CURRENT_USER_ID } from "@/api/constants.js";
+import { API_BASE_URL } from "../../api/constants";
 
 export function LandingPage() {
   const { addToCart } = useCart();
-  const { soldItemIds } = usePurchases();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [bidModalOpen, setBidModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [sales, setSales] = useState([]);
-  const [genres, setGenres] = useState([]);
+
+  const [featuredSales, setFeaturedSales] = useState([]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -24,49 +22,39 @@ export function LandingPage() {
     }
   };
 
-  const mapListingToSale = (listing) => ({
-    id: listing.id,
-    title: listing.listingTile ?? listing.listingTitle,
-    author: listing.authors?.join(", ") ?? "Unknown",
-    genre: listing.genre ?? [],
-    price: Number(listing.price),
-    condition: listing.condition,
-    isAuction: listing.saleType === "AUCTION",
-    type: "book",
-  });
-
-  const getGenreName = (genreId) => {
-    return genres.find(g => g.id === genreId)?.genreName ?? genreId;
-  };
-
-  const getSaleGenreNames = (sale) => {
-    return sale.genre?.map(getGenreName).join(", ") ?? "";
-  };
-
   useEffect(() => {
-    async function fetchData() {
+    async function fetchFeaturedListings() {
       try {
-        const [genresRes, listingsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/genres`),
-          fetch(`${API_BASE_URL}/listings?userId=${CURRENT_USER_ID}`),
-        ]);
+        const res = await fetch(`${API_BASE_URL}/listings`);
 
-        if (!genresRes.ok || !listingsRes.ok) {
-          throw new Error("Failed to fetch landing data");
+        if (!res.ok) {
+          throw new Error("Failed to fetch listings");
         }
 
-        const genresData = await genresRes.json();
-        const listingsData = await listingsRes.json();
+        const data = await res.json();
 
-        setGenres(genresData);
-        setSales(listingsData.map(mapListingToSale));
+        const mapped = data.map(listing => ({
+          id: listing.id,
+          title: listing.listingTitle,
+          author: listing.authors?.join(", ") ?? "Unknown",
+          genre: listing.genre?.join(", ") ?? "",
+          price: Number(listing.price),
+          condition: listing.condition,
+          isAuction: listing.saleType === "AUCTION",
+        }));
+
+        const shuffled = [...mapped].sort(() => Math.random() - 0.5);
+
+        setFeaturedSales(shuffled.slice(0, 4));
+
       } catch (error) {
-        console.error("Error loading listings:", error);
+        console.error("Error loading featured listings:", error);
       }
     }
 
-    fetchData();
+    fetchFeaturedListings();
   }, []);
+ 
 
   return (
     <div className="min-h-screen">
@@ -230,7 +218,7 @@ export function LandingPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {sales.map(sale => (
+            {featuredSales.map(sale => (
               <div key={sale.id} className="relative group flex flex-col">
                 <div className="absolute top-3 right-3 z-10">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -241,26 +229,23 @@ export function LandingPage() {
                     {sale.isAuction ? "Auction" : "Direct Sale"}
                   </span>
                 </div>
+                <div
+                  onClick={() => navigate(`/product/${sale.id}`)}
+                  className="cursor-pointer"
+                  >
                 <BookCard
                   title={sale.title}
                   author={sale.author}
-                  genre={getSaleGenreNames(sale)}
+                  genre={sale.genre}
                   price={sale.price}
                   condition={sale.condition}
                   isAuction={sale.isAuction}
                   auctionEndDate={sale.auctionEndDate}
                   imageUrl={sale.image}
-                  isSold={soldItemIds.has(sale.id)}
                 />
+                </div>
                 <div className="mt-3">
-                  {soldItemIds.has(sale.id) ? (
-                      <button
-                          disabled
-                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
-                      >
-                        Sold
-                      </button>
-                  ) : sale.isAuction ? (
+                  {sale.isAuction ? (
                     <button
                       onClick={() => {
                         setSelectedItem(sale);

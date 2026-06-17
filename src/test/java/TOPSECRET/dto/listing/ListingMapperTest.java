@@ -479,6 +479,27 @@ class ListingMapperTest {
     }
 
     @Test
+    void toListingDetailsDTO_shouldUseDefaultBuyer_whenBuyerIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing,
+                List.of(mockPublicationSample()),
+                List.of(mockBibliographicalData()),
+                List.of(mockEdition()),
+                List.of(mockAuthor()),
+                List.of(mockGenre()),
+                List.of(mockPublisher()),
+                null
+        );
+
+        // Assert
+        assertEquals("N/A", result.getBuyer());
+    }
+
+    @Test
     void toListingDetailsDTO_shouldMapPublicationStatus() {
         // Arrange
         ListingDetailsDTO result;
@@ -594,6 +615,42 @@ class ListingMapperTest {
         // Assert
         assertEquals("N/A", result.getLanguage());
     }
+
+    @Test
+    void toListingDetailsDTO_shouldUseDefaultPublisherId_whenPublisherIsMissing() {
+        // Arrange
+        Listing listing = mockListing();
+        User buyer = mockBuyer();
+
+        // Act
+        ListingDetailsDTO result = ListingMapper.toListingDetailsDTO(
+                listing, List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), buyer
+        );
+
+        // Assert
+        assertEquals("N/A", result.getPublisherId());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapAuthorIds() {
+        // arrange + act
+        ListingDetailsDTO result = mockListingDetailsDTO();
+
+        // assert
+        assertEquals(List.of("author-1"), result.getAuthorIds());
+    }
+
+    @Test
+    void toListingDetailsDTO_shouldMapPublisherId() {
+        // arrange + act
+        ListingDetailsDTO result = mockListingDetailsDTO();
+
+        // assert
+        assertEquals("publisher-1", result.getPublisherId());
+    }
+
+
+
 
     @Test
     void toPublicationId_shouldReturnPublicationSampleId() {
@@ -920,7 +977,10 @@ class ListingMapperTest {
 
     private Author mockAuthor() {
         Author author = mock(Author.class);
+        AuthorId authorId = mock(AuthorId.class);
         lenient().when(author.getName()).thenReturn("Robert C. Martin");
+        lenient().when(author.id()).thenReturn(authorId);
+        lenient().when(authorId.getId()).thenReturn("author-1");
         return author;
     }
 
@@ -932,7 +992,10 @@ class ListingMapperTest {
 
     private Publisher mockPublisher() {
         Publisher publisher = mock(Publisher.class);
+        PublisherID publisherId = mock(PublisherID.class);
         lenient().when(publisher.getName()).thenReturn("Prentice Hall");
+        lenient().when(publisher.id()).thenReturn(publisherId);
+        lenient().when(publisherId.getId()).thenReturn("publisher-1");
         return publisher;
     }
 }
