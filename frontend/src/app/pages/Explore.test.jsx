@@ -165,6 +165,17 @@ function setupFetch({ publicationListings = null, genreListings = null } = {}) {
       const publisher002 = urlString.includes("publisherId=publisher-002");
       const bd001 = urlString.includes("bibliographicalDataId=bd-001");
 
+      // Combined bibliographicalDataId + saleType: proves the two filters
+      // genuinely intersect end-to-end, not just that both query params are
+      // present on the wire.
+      if (bd001 && isDirectSale) {
+        return { ok: true, json: async () => [mockPublicationListings[0]] };
+      }
+
+      if (bd001 && isAuction) {
+        return { ok: true, json: async () => [mockPublicationListings[1]] };
+      }
+
       if (bd001) {
         return { ok: true, json: async () => publicationListings ?? mockPublicationListings };
       }
@@ -225,6 +236,11 @@ async function renderLoadedExplore() {
   await waitFor(() => {
     expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
   });
+}
+
+function lastFetchedUrl() {
+  const calls = global.fetch.mock.calls;
+  return String(calls[calls.length - 1][0]);
 }
 
 const getGenreSelect = () => screen.getAllByRole("combobox")[0];
@@ -539,6 +555,209 @@ describe("Explore", () => {
       });
 
       expect(screen.queryByText(/Harry Potter/i)).not.toBeInTheDocument();
+    });
+  });
+
+  // These tests target the exact bug found during manual testing: selecting
+  // one filter and then a second filter (in either order) used to reset the
+  // first one back to "all" because handlePublicationChange and
+  // handleGenreChange carried leftover side effects from when Publication
+  // was a mutually-exclusive, dedicated endpoint. Now that every filter is
+  // just another query param on the same GET /listings call, no selection
+  // should ever clear another, regardless of order.
+  describe("Combined filters", () => {
+    test("keeps sale type active after selecting publication afterward (reported bug)", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
+      });
+
+      fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("The Lord of the Rings - Direct Sale")).toBeInTheDocument();
+      });
+
+      // If saleType had been reset, the auction copy would show up here too.
+      expect(screen.queryByText("The Lord of the Rings - Auction")).not.toBeInTheDocument();
+
+      const url = lastFetchedUrl();
+      expect(url).toContain("saleType=Direct");
+      expect(url).toContain("bibliographicalDataId=bd-001");
+    });
+
+    test("keeps publication active after selecting sale type afterward (reverse order)", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("The Lord of the Rings - Direct Sale")).toBeInTheDocument();
+        expect(screen.getByText("The Lord of the Rings - Auction")).toBeInTheDocument();
+      });
+
+      fireEvent.change(getSaleTypeSelect(), { target: { value: "auction" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("The Lord of the Rings - Auction")).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText("The Lord of the Rings - Direct Sale")).not.toBeInTheDocument();
+
+      const url = lastFetchedUrl();
+      expect(url).toContain("bibliographicalDataId=bd-001");
+      expect(url).toContain("saleType=Auction");
+    });
+
+    test("keeps genre active after selecting publication afterward", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("The Lord of the Rings - Auction")).toBeInTheDocument();
+      });
+
+      fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("genreId=fantasy");
+        expect(url).toContain("bibliographicalDataId=bd-001");
+      });
+    });
+
+    test("keeps publication active after selecting genre afterward (reverse order)", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("The Lord of the Rings - Direct Sale")).toBeInTheDocument();
+      });
+
+      fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("bibliographicalDataId=bd-001");
+        expect(url).toContain("genreId=fantasy");
+      });
+    });
+
+    test("keeps author and publisher active when publication is selected afterward", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getAuthorSelect(), { target: { value: "author-002" } });
+
+      await waitFor(() => {
+        expect(global.fetch).toHaveBeenCalledWith(
+            expect.stringContaining("authorId=author-002")
+        );
+      });
+
+      fireEvent.change(getPublisherSelect(), { target: { value: "publisher-002" } });
+
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("authorId=author-002");
+        expect(url).toContain("publisherId=publisher-002");
+      });
+
+      fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("authorId=author-002");
+        expect(url).toContain("publisherId=publisher-002");
+        expect(url).toContain("bibliographicalDataId=bd-001");
+      });
+    });
+
+    test("combines every filter together regardless of selection order, ending on publication", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+      await waitFor(() => {
+        expect(lastFetchedUrl()).toContain("genreId=fantasy");
+      });
+
+      fireEvent.change(getAuthorSelect(), { target: { value: "author-002" } });
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("genreId=fantasy");
+        expect(url).toContain("authorId=author-002");
+      });
+
+      fireEvent.change(getPublisherSelect(), { target: { value: "publisher-002" } });
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("genreId=fantasy");
+        expect(url).toContain("authorId=author-002");
+        expect(url).toContain("publisherId=publisher-002");
+      });
+
+      fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("genreId=fantasy");
+        expect(url).toContain("authorId=author-002");
+        expect(url).toContain("publisherId=publisher-002");
+        expect(url).toContain("saleType=Direct");
+      });
+
+      // Publication selected last is the exact shape of the reported bug:
+      // it used to wipe every filter selected before it.
+      fireEvent.change(getPublicationSelect(), { target: { value: "bd-001" } });
+      await waitFor(() => {
+        const url = lastFetchedUrl();
+        expect(url).toContain("genreId=fantasy");
+        expect(url).toContain("authorId=author-002");
+        expect(url).toContain("publisherId=publisher-002");
+        expect(url).toContain("saleType=Direct");
+        expect(url).toContain("bibliographicalDataId=bd-001");
+      });
+    });
+
+    test("shows a combined filter label listing every active filter", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+
+      await waitFor(() => {
+        expect(screen.getByText(/filtered by sale type/i)).toBeInTheDocument();
+      });
+
+      fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+
+      await waitFor(() => {
+        expect(screen.getByText(/filtered by genre, sale type/i)).toBeInTheDocument();
+      });
+    });
+
+    test("clear filters resets every active filter at once", async () => {
+      await renderLoadedExplore();
+
+      fireEvent.change(getGenreSelect(), { target: { value: "fantasy" } });
+      await waitFor(() => {
+        expect(screen.getByText(/filtered by genre/i)).toBeInTheDocument();
+      });
+
+      fireEvent.change(getSaleTypeSelect(), { target: { value: "direct" } });
+      await waitFor(() => {
+        expect(screen.getByText(/filtered by genre, sale type/i)).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByText("Clear filters"));
+
+      await waitFor(() => {
+        expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
+        expect(screen.getByText("Game of Thrones")).toBeInTheDocument();
+        expect(screen.queryByText(/filtered by/i)).not.toBeInTheDocument();
+      });
     });
   });
 
