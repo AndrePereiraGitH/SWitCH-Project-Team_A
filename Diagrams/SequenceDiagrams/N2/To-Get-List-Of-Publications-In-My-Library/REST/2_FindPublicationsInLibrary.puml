@@ -8,7 +8,8 @@ participant ":IUserRepository" as UserRepo
 participant "user: Optional<User>" as user
 participant ":PublicationSampleAuthorizationPolicy" as Policy
 participant ":IPublicationSampleRepository" as PubRepo
-participant "publications: List<PublicationSample>" as publications
+participant "pbSampleList: List<PublicationSample>" as pbSampleList
+participant "Database" as db
 
 note over Service #E3F2FD
 <b>Navigation</b>
@@ -18,6 +19,10 @@ end note
 
 Service -> UserRepo : findByID(id)
 activate UserRepo
+UserRepo -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> UserRepo : data
+deactivate db
 UserRepo -->> user ** : <<create>>
 UserRepo --> Service : user
 deactivate UserRepo
@@ -37,8 +42,12 @@ end
 
 Service -> PubRepo : findPublicationsInLibrary(id)
 activate PubRepo
-PubRepo -->> publications ** : <<create>>
-PubRepo --> Service : publications
+PubRepo -> db : SELECT * FROM publication_sample WHERE library_id = ?
+activate db
+db --> PubRepo : data
+deactivate db
+PubRepo -->> pbSampleList ** : <<create>>
+PubRepo --> Service : pbSampleList
 deactivate PubRepo
 
 @enduml

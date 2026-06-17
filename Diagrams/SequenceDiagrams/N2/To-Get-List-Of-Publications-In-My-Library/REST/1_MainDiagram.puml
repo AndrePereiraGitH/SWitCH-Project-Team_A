@@ -3,21 +3,27 @@ autonumber
 hide footbox
 title As a User, I want to get the list of publications in my library (Main)
 
-actor User
 participant ":UI" as UI
 participant ":PublicationSampleRESTController" as Ctrl
 participant ":PublicationSampleMapper" as Mapper
 participant ":PublicationSampleService" as Service
 participant "publicationDTOS: List<PublicationDTO>" as ListDTO
 
-User -> UI : I want to see a list of the publications in my library
-activate UI
-UI --> User : Enter your userId
-deactivate UI
-User -> UI : userId
+[o-> UI : OPTIONS /publicationSamples/in-library
 activate UI
 
-UI -> Ctrl : GET /publicationSamples/in-library?userId={userId}
+UI -> Ctrl : optionsInLibrary()
+activate Ctrl
+Ctrl --> UI : 200 OK\n Allow: GET, OPTIONS
+deactivate Ctrl
+
+[o<-- UI : 200 OK\n Allow: GET, OPTIONS
+deactivate UI
+
+[o-> UI : GET /publicationSamples/in-library?userId={userId}
+activate UI
+
+UI -> Ctrl : findPublicationsInLibrary(userId)
 activate Ctrl
 
 Ctrl -> Mapper : toUserId(userId)
@@ -32,7 +38,7 @@ ref over Service
 [[2_FindPublicationsInLibrary.puml Find Publications in Library]]
 end ref
 
-Service --> Ctrl : publications
+Service --> Ctrl : pbSampleList
 deactivate Service
 
 Ctrl -->> ListDTO ** : <<create>>
@@ -44,7 +50,7 @@ end ref
 Ctrl --> UI : 200 OK\n body: publicationDTOS
 deactivate Ctrl
 
-UI --> User : Display list of publications
+[o<-- UI : 200 OK\n body: publicationDTOS
 deactivate UI
 
 @enduml

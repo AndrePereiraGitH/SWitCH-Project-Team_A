@@ -15,9 +15,8 @@ participant "genres: List<Genre>" as genres
 participant ":UserService" as UserService
 participant "owner: User" as owner
 participant ":PublicationSampleMapper" as Mapper
-participant "result: PublicationDTO" as pubDTO
+participant "result: PublicationDTO" as result
 participant ":PublicationSampleLinkProvider" as LinkProvider
-participant "links: List<Link>" as links
 
 note over Ctrl #E3F2FD
 <b>Navigation</b>
@@ -25,7 +24,7 @@ note over Ctrl #E3F2FD
 [[1_MainDiagram.puml Return to Main Diagram]]
 end note
 
-loop for each pbSample in publications
+loop for each pbSample in pbSampleList
 
     Ctrl -> BDService : findById(pbSample.getBibliographicalDataID())
     activate BDService
@@ -59,15 +58,18 @@ loop for each pbSample in publications
 
     Ctrl -> Mapper : toPublicationDTO(pbSample, bd, edition, authors, genres, owner)
     activate Mapper
-    Mapper -->> pubDTO ** : <<create>>
+    Mapper -->> result ** : <<create>>
     Mapper --> Ctrl : result
     deactivate Mapper
 
+    Ctrl -> Ctrl : links.add(linkTo(methodOn(Ctrl).findById(pbSample.id().getID())).withSelfRel())
+
     Ctrl -> LinkProvider : getPublicLinks()
     activate LinkProvider
-    LinkProvider -->> links ** : <<create>>
-    LinkProvider --> Ctrl : links
+    LinkProvider --> Ctrl : publicLinks
     deactivate LinkProvider
+
+    Ctrl -> Ctrl : links.addAll(publicLinks)
 
     Ctrl -> LinkProvider : getLibraryLinks(id)
     activate LinkProvider
@@ -75,7 +77,6 @@ loop for each pbSample in publications
     deactivate LinkProvider
 
     Ctrl -> Ctrl : links.addAll(libraryLinks)
-    Ctrl -> Ctrl : links.add(methodOn(findById(pbSample.id())).withSelfRel())
     Ctrl -> Ctrl : links.forEach(result::add)
     Ctrl -> Ctrl : publicationDTOS.add(result)
 

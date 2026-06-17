@@ -3,7 +3,6 @@ autonumber
 hide footbox
 title As a User, I want to get the list of publications in my library
 
-actor User
 participant ":UI" as UI
 participant ":PublicationSampleRESTController" as Ctrl
 participant ":PublicationSampleMapper" as Mapper
@@ -12,7 +11,7 @@ participant ":IUserRepository" as UserRepo
 participant "user: Optional<User>" as user
 participant ":PublicationSampleAuthorizationPolicy" as Policy
 participant ":IPublicationSampleRepository" as PubRepo
-participant "publications: List<PublicationSample>" as publications
+participant "pbSampleList: List<PublicationSample>" as pbSampleList
 participant ":BibliographicalDataService" as BDService
 participant "bd: BibliographicalData" as bd
 participant ":EditionService" as EditionService
@@ -24,18 +23,25 @@ participant "genres: List<Genre>" as genres
 participant ":UserService" as UserService
 participant "owner: User" as owner
 participant ":PublicationSampleLinkProvider" as LinkProvider
-participant "links: List<Link>" as links
-participant "result: PublicationDTO" as pubDTO
+participant "result: PublicationDTO" as result
 participant "publicationDTOS: List<PublicationDTO>" as ListDTO
+participant "Database" as db
 
-User -> UI : I want to see a list of the publications in my library
+[o-> UI : OPTIONS /publicationSamples/in-library
 activate UI
-UI --> User : Enter your userId
+
+UI -> Ctrl : optionsInLibrary()
+activate Ctrl
+Ctrl --> UI : 200 OK\n Allow: GET, OPTIONS
+deactivate Ctrl
+
+[o<-- UI : 200 OK\n Allow: GET, OPTIONS
 deactivate UI
-User -> UI : userId
+
+[o-> UI : GET /publicationSamples/in-library?userId={userId}
 activate UI
 
-UI -> Ctrl : GET /publicationSamples/in-library?userId={userId}
+UI -> Ctrl : findPublicationsInLibrary(userId)
 activate Ctrl
 
 Ctrl -> Mapper : toUserId(userId)
@@ -48,6 +54,10 @@ activate Service
 
 Service -> UserRepo : findByID(id)
 activate UserRepo
+UserRepo -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> UserRepo : data
+deactivate db
 UserRepo -->> user ** : <<create>>
 UserRepo --> Service : user
 deactivate UserRepo
@@ -69,16 +79,20 @@ end
 
 Service -> PubRepo : findPublicationsInLibrary(id)
 activate PubRepo
-PubRepo -->> publications ** : <<create>>
-PubRepo --> Service : publications
+PubRepo -> db : SELECT * FROM publication_sample WHERE library_id = ?
+activate db
+db --> PubRepo : data
+deactivate db
+PubRepo -->> pbSampleList ** : <<create>>
+PubRepo --> Service : pbSampleList
 deactivate PubRepo
 
-Service --> Ctrl : publications
+Service --> Ctrl : pbSampleList
 deactivate Service
 
 Ctrl -->> ListDTO ** : <<create>>
 
-loop for each pbSample in publications
+loop for each pbSample in pbSampleList
 
     Ctrl -> BDService : findById(pbSample.getBibliographicalDataID())
     activate BDService
@@ -112,15 +126,18 @@ loop for each pbSample in publications
 
     Ctrl -> Mapper : toPublicationDTO(pbSample, bd, edition, authors, genres, owner)
     activate Mapper
-    Mapper -->> pubDTO ** : <<create>>
+    Mapper -->> result ** : <<create>>
     Mapper --> Ctrl : result
     deactivate Mapper
 
+    Ctrl -> Ctrl : links.add(linkTo(methodOn(Ctrl).findById(pbSample.id().getID())).withSelfRel())
+
     Ctrl -> LinkProvider : getPublicLinks()
     activate LinkProvider
-    LinkProvider -->> links ** : <<create>>
-    LinkProvider --> Ctrl : links
+    LinkProvider --> Ctrl : publicLinks
     deactivate LinkProvider
+
+    Ctrl -> Ctrl : links.addAll(publicLinks)
 
     Ctrl -> LinkProvider : getLibraryLinks(id)
     activate LinkProvider
@@ -128,16 +145,15 @@ loop for each pbSample in publications
     deactivate LinkProvider
 
     Ctrl -> Ctrl : links.addAll(libraryLinks)
-    Ctrl -> Ctrl : links.add(methodOn(findById(pbSample.id())).withSelfRel())
     Ctrl -> Ctrl : links.forEach(result::add)
     Ctrl -> Ctrl : publicationDTOS.add(result)
 
 end
 
-Ctrl --> UI : 200 OK\n body: publicationsDTOS
+Ctrl --> UI : 200 OK\n body: publicationDTOS
 deactivate Ctrl
 
-UI --> User : Display list of publications
+[o<-- UI : 200 OK\n body: publicationDTOS
 deactivate UI
 
 @enduml
