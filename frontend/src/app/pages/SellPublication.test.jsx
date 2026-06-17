@@ -53,6 +53,28 @@ function renderNotFound() {
     );
 }
 
+// Helper: fill in auction fields with valid future dates
+function fillAuctionFields(form) {
+    fireEvent.change(form.querySelector('input[name="startingPrice"]'), {
+        target: { value: "10.00" },
+    });
+    fireEvent.change(form.querySelector('input[name="buyoutPrice"]'), {
+        target: { value: "50.00" },
+    });
+    fireEvent.change(form.querySelector('input[name="auctionStartDate"]'), {
+        target: { value: "2027-01-10" },
+    });
+    fireEvent.change(form.querySelector('input[name="auctionStartTime"]'), {
+        target: { value: "10:00" },
+    });
+    fireEvent.change(form.querySelector('input[name="auctionEndDate"]'), {
+        target: { value: "2027-01-20" },
+    });
+    fireEvent.change(form.querySelector('input[name="auctionEndTime"]'), {
+        target: { value: "10:00" },
+    });
+}
+
 describe("SellPublication", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -61,6 +83,7 @@ describe("SellPublication", () => {
 
         global.fetch = vi.fn().mockResolvedValue({
             ok: true,
+            json: vi.fn().mockResolvedValue({ id: "listing-123" }),
             text: vi.fn().mockResolvedValue(""),
         });
     });
@@ -74,6 +97,12 @@ describe("SellPublication", () => {
         test("shows back button when publication not found", () => {
             renderNotFound();
             expect(screen.getByText("Voltar")).toBeInTheDocument();
+        });
+
+        test("navigates back when Voltar is clicked", () => {
+            renderNotFound();
+            fireEvent.click(screen.getByText("Voltar"));
+            expect(mockNavigate).toHaveBeenCalledWith(-1);
         });
     });
 
@@ -149,7 +178,7 @@ describe("SellPublication", () => {
             renderWithRealPublication();
 
             const descriptionInput = screen.getByPlaceholderText(
-                "Describe the condition, edition, or any useful details..."
+                "Describe the condition, edition, or any useful details (min 10 characters)..."
             );
 
             fireEvent.change(descriptionInput, {
@@ -205,7 +234,8 @@ describe("SellPublication", () => {
                 target: { value: "15.99" },
             });
 
-            fireEvent.click(screen.getByRole("button", { name: /Publish Sale/i }));
+            const form = document.querySelector("form");
+            fireEvent.submit(form);
 
             await waitFor(() => {
                 expect(global.fetch).toHaveBeenCalledWith(
@@ -226,7 +256,7 @@ describe("SellPublication", () => {
                 publicationIds: ["book-1"],
                 saleType: "Direct Sale",
                 price: "15.99",
-                shortDescription: "",
+                shortDescription: "No description provided.",
                 pictures: [],
             });
 
@@ -240,31 +270,9 @@ describe("SellPublication", () => {
 
             const form = document.querySelector("form");
 
-            fireEvent.change(form.querySelector('input[name="startingPrice"]'), {
-                target: { value: "5.00" },
-            });
+            fillAuctionFields(form);
 
-            fireEvent.change(form.querySelector('input[name="buyoutPrice"]'), {
-                target: { value: "20.00" },
-            });
-
-            fireEvent.change(form.querySelector('input[name="auctionStartDate"]'), {
-                target: { value: "2026-06-10" },
-            });
-
-            fireEvent.change(form.querySelector('input[name="auctionStartTime"]'), {
-                target: { value: "10:00" },
-            });
-
-            fireEvent.change(form.querySelector('input[name="auctionEndDate"]'), {
-                target: { value: "2026-06-11" },
-            });
-
-            fireEvent.change(form.querySelector('input[name="auctionEndTime"]'), {
-                target: { value: "10:00" },
-            });
-
-            fireEvent.click(screen.getByRole("button", { name: /Publish Sale/i }));
+            fireEvent.submit(form);
 
             await waitFor(() => {
                 expect(global.fetch).toHaveBeenCalled();
@@ -276,8 +284,8 @@ describe("SellPublication", () => {
                 listingTitle: "Clean Code",
                 publicationIds: ["book-1"],
                 saleType: "Auction",
-                price: "5.00",
-                shortDescription: "",
+                price: "10.00",
+                shortDescription: "No description provided.",
                 pictures: [],
             });
 
@@ -287,6 +295,7 @@ describe("SellPublication", () => {
         test("shows error when listing creation fails", async () => {
             global.fetch.mockResolvedValueOnce({
                 ok: false,
+                json: vi.fn().mockResolvedValue({}),
                 text: vi.fn().mockResolvedValue("Failed to create listing"),
             });
 
@@ -296,10 +305,241 @@ describe("SellPublication", () => {
                 target: { value: "15.99" },
             });
 
-            fireEvent.click(screen.getByRole("button", { name: /Publish Sale/i }));
+            const form = document.querySelector("form");
+            fireEvent.submit(form);
 
             expect(await screen.findByText("Failed to create listing")).toBeInTheDocument();
             expect(mockNavigate).not.toHaveBeenCalledWith("/explore");
+        });
+    });
+
+    describe("Validation", () => {
+        test("shows error when description is between 1 and 9 characters", async () => {
+            renderWithRealPublication();
+
+            fireEvent.change(screen.getByPlaceholderText("25.00"), {
+                target: { value: "15.99" },
+            });
+
+            const descriptionInput = screen.getByPlaceholderText(
+                "Describe the condition, edition, or any useful details (min 10 characters)..."
+            );
+            fireEvent.change(descriptionInput, { target: { value: "short" } });
+
+            const form = document.querySelector("form");
+            fireEvent.submit(form);
+
+            expect(await screen.findByText("Description must be between 10 and 100 characters.")).toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalledWith("/explore");
+        });
+
+        test("does not show error when description is empty", async () => {
+            renderWithRealPublication();
+
+            fireEvent.change(screen.getByPlaceholderText("25.00"), {
+                target: { value: "15.99" },
+            });
+
+            const form = document.querySelector("form");
+            fireEvent.submit(form);
+
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith("/explore");
+            });
+
+            expect(screen.queryByText("Description must be between 10 and 100 characters.")).not.toBeInTheDocument();
+        });
+
+        test("shows error when auction end date/time is before start date/time", async () => {
+            renderWithRealPublication();
+
+            fireEvent.click(screen.getByText("Auction"));
+
+            const form = document.querySelector("form");
+
+            fillAuctionFields(form);
+
+            fireEvent.change(form.querySelector('input[name="auctionEndDate"]'), {
+                target: { value: "2027-01-05" },
+            });
+
+            fireEvent.submit(form);
+
+            expect(await screen.findByText("Auction end date/time must be after start date/time.")).toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalledWith("/explore");
+        });
+
+        test("shows error when auction start date/time is in the past", async () => {
+            renderWithRealPublication();
+
+            fireEvent.click(screen.getByText("Auction"));
+
+            const form = document.querySelector("form");
+
+            fillAuctionFields(form);
+
+            fireEvent.change(form.querySelector('input[name="auctionStartDate"]'), {
+                target: { value: "2020-01-01" },
+            });
+            fireEvent.change(form.querySelector('input[name="auctionStartTime"]'), {
+                target: { value: "10:00" },
+            });
+
+            fireEvent.submit(form);
+
+            expect(await screen.findByText("Auction start date/time must be in the future.")).toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalledWith("/explore");
+        });
+
+        test("shows error when buyout price is less than or equal to starting price", async () => {
+            renderWithRealPublication();
+
+            fireEvent.click(screen.getByText("Auction"));
+
+            const form = document.querySelector("form");
+
+            fillAuctionFields(form);
+
+            fireEvent.change(form.querySelector('input[name="buyoutPrice"]'), {
+                target: { value: "5.00" },
+            });
+
+            fireEvent.submit(form);
+
+            expect(await screen.findByText("Buyout price must be greater than the starting price.")).toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalledWith("/explore");
+        });
+    });
+
+    describe("Auction Submission", () => {
+        test("sends second API call to /auctions when auction is created", async () => {
+            renderWithRealPublication();
+
+            fireEvent.click(screen.getByText("Auction"));
+
+            const form = document.querySelector("form");
+
+            fillAuctionFields(form);
+
+            fireEvent.submit(form);
+
+            await waitFor(() => {
+                expect(mockNavigate).toHaveBeenCalledWith("/explore");
+            });
+
+            expect(global.fetch).toHaveBeenCalledTimes(2);
+
+            const [, auctionOptions] = global.fetch.mock.calls[1];
+            expect(auctionOptions).toMatchObject({
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            });
+
+            const auctionBody = JSON.parse(auctionOptions.body);
+            expect(auctionBody).toMatchObject({
+                listingId: "listing-123",
+                initialPrice: 10.00,
+                buyoutPrice: 50.00,
+            });
+            expect(auctionBody.startDateTime).toBeDefined();
+            expect(auctionBody.endDateTime).toBeDefined();
+        });
+
+        test("shows error when auction creation fails but listing succeeds", async () => {
+            global.fetch
+                .mockResolvedValueOnce({
+                    ok: true,
+                    json: vi.fn().mockResolvedValue({ id: "listing-123" }),
+                    text: vi.fn().mockResolvedValue(""),
+                })
+                .mockResolvedValueOnce({
+                    ok: false,
+                    json: vi.fn().mockResolvedValue({}),
+                    text: vi.fn().mockResolvedValue("Failed to create auction"),
+                });
+
+            renderWithRealPublication();
+
+            fireEvent.click(screen.getByText("Auction"));
+
+            const form = document.querySelector("form");
+
+            fillAuctionFields(form);
+
+            fireEvent.submit(form);
+
+            expect(await screen.findByText("Failed to create auction")).toBeInTheDocument();
+            expect(mockNavigate).not.toHaveBeenCalledWith("/explore");
+        });
+    });
+
+    describe("Description Handling", () => {
+        test("includes valid description (>=10 chars) in request body", async () => {
+            renderWithRealPublication();
+
+            fireEvent.change(screen.getByPlaceholderText("25.00"), {
+                target: { value: "15.99" },
+            });
+
+            const descriptionInput = screen.getByPlaceholderText(
+                "Describe the condition, edition, or any useful details (min 10 characters)..."
+            );
+            fireEvent.change(descriptionInput, {
+                target: { value: "Great condition book" },
+            });
+
+            const form = document.querySelector("form");
+            fireEvent.submit(form);
+
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalled();
+            });
+
+            const [, options] = global.fetch.mock.calls[0];
+            expect(JSON.parse(options.body).shortDescription).toBe("Great condition book");
+        });
+
+        test("defaults empty description to 'No description provided.'", async () => {
+            renderWithRealPublication();
+
+            fireEvent.change(screen.getByPlaceholderText("25.00"), {
+                target: { value: "15.99" },
+            });
+
+            const form = document.querySelector("form");
+            fireEvent.submit(form);
+
+            await waitFor(() => {
+                expect(global.fetch).toHaveBeenCalled();
+            });
+
+            const [, options] = global.fetch.mock.calls[0];
+            expect(JSON.parse(options.body).shortDescription).toBe("No description provided.");
+        });
+    });
+
+    describe("Submit Button State", () => {
+        test("shows 'Publishing...' and is disabled during submission", async () => {
+            let resolveFetch;
+            global.fetch = vi.fn().mockReturnValue(new Promise(resolve => {
+                resolveFetch = resolve;
+            }));
+
+            renderWithRealPublication();
+
+            fireEvent.change(screen.getByPlaceholderText("25.00"), {
+                target: { value: "15.99" },
+            });
+
+            const form = document.querySelector("form");
+            fireEvent.submit(form);
+
+            expect(screen.getByText("Publishing...")).toBeInTheDocument();
+
+            const submitButton = screen.getByRole("button", { name: /Publishing/i });
+            expect(submitButton).toBeDisabled();
+
+            resolveFetch({ ok: true, json: vi.fn().mockResolvedValue({}), text: vi.fn().mockResolvedValue("") });
         });
     });
 });

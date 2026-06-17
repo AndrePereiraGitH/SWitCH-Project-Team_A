@@ -10,6 +10,21 @@ vi.mock("../components/BidModal", () => ({
 
 const mockAddToCart = vi.fn();
 
+const mockAuctions = {
+    "2": [
+        {
+            auctionId: "auction-001",
+            listingId: "2",
+            initialPrice: "18.00",
+            buyoutPrice: "30.00",
+            currentHighestBid: null,
+            auctionStartDateTime: "2026-06-01T10:00:00",
+            auctionEndDateTime: "2026-06-20T10:00:00",
+            auctionStatus: "ACTIVE",
+        }
+    ]
+};
+
 vi.mock("../components/CartContext", () => ({
     useCart: () => ({
         addToCart: mockAddToCart,
@@ -83,12 +98,23 @@ describe("ProductDetail", () => {
         global.fetch = vi.fn(async (url) => {
             const match = String(url).match(/\/listings\/([^?]+)/);
             const productId = match?.[1];
+            const urlStr = String(url);
 
             if (productId && mockProducts[productId]) {
                 return {
                     ok: true,
                     status: 200,
                     json: async () => mockProducts[productId],
+                };
+            }
+
+            const auctionMatch = urlStr.match(/\/auctions\?listingId=([^&]+)/);
+            if (auctionMatch) {
+                const listingId = auctionMatch[1];
+                return {
+                    ok: true,
+                    status: 200,
+                    json: async () => mockAuctions[listingId] ?? []
                 };
             }
 
@@ -145,11 +171,6 @@ describe("ProductDetail", () => {
         test("renders product condition", async () => {
             await renderLoadedProduct("1");
             expect(screen.getAllByText("Good").length).toBeGreaterThan(0);
-        });
-
-        test("renders product price", async () => {
-            await renderLoadedProduct("1");
-            expect(screen.getByText("€12.50")).toBeInTheDocument();
         });
 
         test("renders sale type badge", async () => {
@@ -223,7 +244,7 @@ describe("ProductDetail", () => {
 
         test("renders buyout price", async () => {
             await renderLoadedProduct("2");
-            expect(screen.getByText(/Buyout Price: €27.00/i)).toBeInTheDocument();
+            expect(screen.getByText(/Buyout Price: €30.00/i)).toBeInTheDocument();
         });
 
         test("clicking Make Offer opens bid modal", async () => {
@@ -242,6 +263,11 @@ describe("ProductDetail", () => {
             expect(screen.getByTestId("bid-modal")).toHaveTextContent(
                 "Harry Potter and the Philosopher's Stone"
             );
+        });
+
+        test("renders product price", async () => {
+            await renderLoadedProduct("2");
+            expect(screen.getByText("€18.00")).toBeInTheDocument();
         });
     });
 
@@ -277,5 +303,56 @@ describe("ProductDetail", () => {
             await renderLoadedProduct("1");
             expect(screen.queryByText(/Sold — No Longer Available/i)).not.toBeInTheDocument();
         });
+    });
+
+
+    test("renders disabled button when auction is not active", async () => {
+        global.fetch = vi.fn(async (url) => {
+            const urlStr = String(url);
+            const listingMatch = urlStr.match(/\/listings\/([^?]+)/);
+            if (listingMatch) {
+                return { ok: true, status: 200, json: async () => mockProducts["2"] };
+            }
+            const auctionMatch = urlStr.match(/\/auctions\?listingId=([^&]+)/);
+            if (auctionMatch) {
+                return {
+                    ok: true,
+                    status: 200,
+                    json: async () => [{
+                        ...mockAuctions["2"][0],
+                        auctionStatus: "SCHEDULED"
+                    }]
+                };
+            }
+            return { ok: false, status: 404, json: async () => ({}) };
+        });
+
+        await renderLoadedProduct("2");
+        expect(screen.getByRole("button", { name: /Starts Soon/i })).toBeDisabled();
+    });
+
+    test("renders auction ended button when auction is in terminal state", async () => {
+        global.fetch = vi.fn(async (url) => {
+            const urlStr = String(url);
+            const listingMatch = urlStr.match(/\/listings\/([^?]+)/);
+            if (listingMatch) {
+                return { ok: true, status: 200, json: async () => mockProducts["2"] };
+            }
+            const auctionMatch = urlStr.match(/\/auctions\?listingId=([^&]+)/);
+            if (auctionMatch) {
+                return {
+                    ok: true,
+                    status: 200,
+                    json: async () => [{
+                        ...mockAuctions["2"][0],
+                        auctionStatus: "BOUGHT_OUT"
+                    }]
+                };
+            }
+            return { ok: false, status: 404, json: async () => ({}) };
+        });
+
+        await renderLoadedProduct("2");
+        expect(screen.getByRole("button", { name: /Auction Ended/i })).toBeDisabled();
     });
 });

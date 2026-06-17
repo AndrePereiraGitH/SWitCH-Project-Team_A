@@ -3,15 +3,26 @@ import { X, Euro, Gavel } from "lucide-react";
 
 export function BidModal({ isOpen, onClose, itemTitle, currentBid, buyoutPrice, onSubmitBid, onBuyNow }) {
   const [bidAmount, setBidAmount] = useState(currentBid + 1);
+  const [bidError, setBidError] = useState(null);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (bidAmount > currentBid) {
-      onSubmitBid(bidAmount);
-      onClose();
+    if (!bidAmount) {
+        setBidError("Please enter a valid bid amount.");
+        return;
     }
+    if (bidAmount <= currentBid) {
+        setBidError(`Bid must be higher than the current bid of €${currentBid.toFixed(2)}`);
+        return;
+    }
+    if (buyoutPrice && bidAmount > buyoutPrice) {
+        setBidError(`Bid cannot exceed the buyout price`);
+        return;
+    }
+    setBidError(null);
+    await onSubmitBid(bidAmount, (error) => setBidError(error));
   };
 
   return (
@@ -49,7 +60,7 @@ export function BidModal({ isOpen, onClose, itemTitle, currentBid, buyoutPrice, 
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <label className="block mb-2 font-semibold text-foreground">Your Bid</label>
             <div className="relative">
@@ -65,13 +76,16 @@ export function BidModal({ isOpen, onClose, itemTitle, currentBid, buyoutPrice, 
               />
             </div>
             <p className="text-xs text-muted-foreground mt-1">Minimum: €{(currentBid + 0.01).toFixed(2)}</p>
+            {bidError && (
+               <p className="text-sm text-red-500 mt-1">{bidError}</p>
+            )}
           </div>
           <div className="flex gap-3">
             <button type="submit" className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold">
               <Gavel className="w-5 h-5" />Submit Bid
             </button>
             {buyoutPrice && onBuyNow && (
-              <button type="button" onClick={() => { onBuyNow(); onClose(); }} className="flex-1 px-6 py-3 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold">
+              <button type="button" onClick={async () => { await onBuyNow() ;}} className="flex-1 px-6 py-3 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold">
                 Buy Now
               </button>
             )}
