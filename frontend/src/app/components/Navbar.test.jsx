@@ -87,4 +87,23 @@ describe("Navbar", () => {
 
         expect(mockNavigate).toHaveBeenCalledWith("/explore?search=harry%20potter");
     });
+
+    test("shows My Purchases link in user dropdown when logged in", () => {
+        renderNavbar();
+
+        const userButton = screen.getByText("U");
+        fireEvent.click(userButton);
+
+        expect(screen.getByText("My Purchases")).toBeInTheDocument();
+    });
+
+    test("My Purchases link points to /my-purchases", () => {
+        renderNavbar();
+
+        const userButton = screen.getByText("U");
+        fireEvent.click(userButton);
+
+        const myPurchasesLink = screen.getByText("My Purchases").closest("a");
+        expect(myPurchasesLink).toHaveAttribute("href", "/my-purchases");
+    });
 });

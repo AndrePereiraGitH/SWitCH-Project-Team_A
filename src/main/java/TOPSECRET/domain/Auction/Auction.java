@@ -236,10 +236,11 @@ public class Auction implements AggregateRoot<AuctionId> {
 
         _bidHistory.add(bid);
 
-        if (_buyoutPrice != null && value.getPrice().equals(_buyoutPrice.getPrice())) {
+        if (_buyoutPrice != null && value.getPrice().compareTo(_buyoutPrice.getPrice()) == 0) {
             _winningBid = bid;
             _auctionStatus = AuctionStatus.BOUGHT_OUT;
             _finalPrice = _buyoutPrice;
+            _closedAt = LocalDateTime.now(_clock);
         }
 
         return bid;

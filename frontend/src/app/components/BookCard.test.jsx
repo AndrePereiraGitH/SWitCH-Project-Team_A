@@ -1,7 +1,7 @@
-import { describe, test, expect } from "vitest";
-import { screen } from "@testing-library/react";
-import { renderWithProviders } from "../../test-utils";
-import { BookCard } from "./BookCard";
+import {describe, test, expect} from "vitest";
+import {screen} from "@testing-library/react";
+import {renderWithProviders} from "../../test-utils";
+import {BookCard} from "./BookCard";
 
 function renderBookCard(props = {}) {
     const defaultProps = {
@@ -41,17 +41,17 @@ describe("BookCard — Rendering", () => {
     });
 
     test("renders the price formatted to 2 decimal places", () => {
-        renderBookCard({ price: 12.5 });
+        renderBookCard({price: 12.5});
         expect(screen.getByText("12.50")).toBeInTheDocument();
     });
 
     test("renders different title when prop changes", () => {
-        renderBookCard({ title: "Harry Potter" });
+        renderBookCard({title: "Harry Potter"});
         expect(screen.getByText("Harry Potter")).toBeInTheDocument();
     });
 
     test("renders different author when prop changes", () => {
-        renderBookCard({ author: "J.K. Rowling" });
+        renderBookCard({author: "J.K. Rowling"});
         expect(screen.getByText("J.K. Rowling")).toBeInTheDocument();
     });
 
@@ -63,23 +63,23 @@ describe("BookCard — Auction", () => {
 
     test("shows days left when isAuction is true and auctionEndDate is set", () => {
         const futureDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
-        renderBookCard({ isAuction: true, auctionEndDate: futureDate });
+        renderBookCard({isAuction: true, auctionEndDate: futureDate});
         expect(screen.getByText(/d left/i)).toBeInTheDocument();
     });
 
     test("does not show days left when isAuction is false", () => {
-        renderBookCard({ isAuction: false, auctionEndDate: null });
+        renderBookCard({isAuction: false, auctionEndDate: null});
         expect(screen.queryByText(/d left/i)).not.toBeInTheDocument();
     });
 
     test("does not show days left when auctionEndDate is null", () => {
-        renderBookCard({ isAuction: true, auctionEndDate: null });
+        renderBookCard({isAuction: true, auctionEndDate: null});
         expect(screen.queryByText(/d left/i)).not.toBeInTheDocument();
     });
 
     test("shows 5 days left for auction ending in 5 days", () => {
         const futureDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
-        renderBookCard({ isAuction: true, auctionEndDate: futureDate });
+        renderBookCard({isAuction: true, auctionEndDate: futureDate});
         expect(screen.getByText("5d left")).toBeInTheDocument();
     });
 
@@ -90,18 +90,51 @@ describe("BookCard — Auction", () => {
 describe("BookCard — Price", () => {
 
     test("renders price when provided", () => {
-        renderBookCard({ price: 22.00 });
+        renderBookCard({price: 22.00});
         expect(screen.getByText("22.00")).toBeInTheDocument();
     });
 
     test("does not render price section when price is not provided", () => {
-        renderBookCard({ price: undefined });
+        renderBookCard({price: undefined});
         expect(screen.queryByText(/\.00/)).not.toBeInTheDocument();
     });
 
     test("renders correct price for different values", () => {
-        renderBookCard({ price: 9.99 });
+        renderBookCard({price: 9.99});
         expect(screen.getByText("9.99")).toBeInTheDocument();
+    });
+
+// ── Sold State ────────────────────────────────────────────────────────────────
+
+    describe("BookCard — Sold State", () => {
+
+        test("does not show sold overlay when isSold is false", () => {
+            renderBookCard({isSold: false});
+            expect(screen.queryByText("Sold")).not.toBeInTheDocument();
+        });
+
+        test("does not show sold overlay when isSold is not provided", () => {
+            renderBookCard();
+            expect(screen.queryByText("Sold")).not.toBeInTheDocument();
+        });
+
+        test("shows sold overlay when isSold is true", () => {
+            renderBookCard({isSold: true});
+            expect(screen.getByText("Sold")).toBeInTheDocument();
+        });
+
+        test("applies reduced opacity when isSold is true", () => {
+            renderBookCard({isSold: true});
+            const card = screen.getByText("The Da Vinci Code").closest(".opacity-75");
+            expect(card).toBeInTheDocument();
+        });
+
+        test("does not apply reduced opacity when isSold is false", () => {
+            renderBookCard({isSold: false});
+            const card = screen.getByText("The Da Vinci Code").closest(".opacity-75");
+            expect(card).not.toBeInTheDocument();
+        });
+
     });
 
 });

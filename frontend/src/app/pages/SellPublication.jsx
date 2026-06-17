@@ -25,6 +25,11 @@ export function SellPublication() {
         shortDescription: ""
     });
 
+    const minDateTime = new Date();
+    minDateTime.setMinutes(minDateTime.getMinutes() + 5);
+    const minDate = minDateTime.toISOString().split("T")[0];
+    const minTime = minDateTime.toTimeString().slice(0, 5);
+
     const book = getAllPublications().find(pub => pub.id === bookId);
 
     if (!book) {
@@ -51,54 +56,95 @@ export function SellPublication() {
         setSubmitting(true);
         setSubmitError("");
 
+        if (formData.shortDescription.length > 0 && formData.shortDescription.length < 10) {
+            setSubmitError("Description must be between 10 and 100 characters.");
+            setSubmitting(false);
+            return;
+        }
+
+        if (saleType === "auction") {
+            const start = new Date(`${formData.auctionStartDate}T${formData.auctionStartTime}`);
+            const end = new Date(`${formData.auctionEndDate}T${formData.auctionEndTime}`);
+            if (start >= end) {
+                setSubmitError("Auction end date/time must be after start date/time.");
+                setSubmitting(false);
+                return;
+            }
+            if (start <= new Date()) {
+                setSubmitError("Auction start date/time must be in the future.");
+                setSubmitting(false);
+                return;
+            }
+            if (formData.buyoutPrice && parseFloat(formData.buyoutPrice) <= parseFloat(formData.startingPrice)) {
+                setSubmitError("Buyout price must be greater than the starting price.");
+                setSubmitting(false);
+                return;
+            }
+        }
+
         try {
-            //const userId = "user-001";
-
             const price =
-            saleType === "direct"
-                ? formData.price
-                : formData.startingPrice;
-
+                saleType === "direct"
+                    ? formData.price
+                    : formData.startingPrice;
+            const description = formData.shortDescription && formData.shortDescription.length >= 10
+                ? formData.shortDescription
+                : "No description provided.";
             const body = {
-            listingTitle: book.title,
-            publicationIds: [bookId],
-            saleType: saleType === "direct" ? "Direct Sale" : "Auction",
-            price: price.toString(),
-            shortDescription: formData.shortDescription || "",
-            pictures: [],
-            publicationDate: new Date().toISOString().split("T")[0]
+                listingTitle: book.title,
+                publicationIds: [bookId],
+                saleType: saleType === "direct" ? "Direct Sale" : "Auction",
+                price: price.toString(),
+                shortDescription: description,
+                pictures: [],
+                publicationDate: new Date().toISOString().split("T")[0]
             };
-
-            console.log("Creating listing with body:", body);
-            console.log("book:", book);
-            console.log("bookId:", bookId);
-            console.log("Creating listing with body:", body);
-
             const response = await fetch(
-            `http://localhost:8081/listings?userId=${CURRENT_USER_ID}`,
-            {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json"
-                },
-                body: JSON.stringify(body)
-            }
+                `${API_BASE_URL}/listings?userId=${CURRENT_USER_ID}`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                }
             );
-
             if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Create listing failed:", response.status, errorText);
-            throw new Error(errorText || "Failed to create listing");
+                const errorText = await response.text();
+                throw new Error(errorText || "Failed to create listing");
             }
-
+            const listing = await response.json();
+            if (saleType === "auction") {
+                const startDateTime = `${formData.auctionStartDate}T${formData.auctionStartTime}:00`;
+                const endDateTime = `${formData.auctionEndDate}T${formData.auctionEndTime}:00`;
+                const buyoutPrice = formData.buyoutPrice
+                    ? parseFloat(formData.buyoutPrice)
+                    : null;
+                const auctionBody = {
+                    listingId: listing.id,
+                    startDateTime: startDateTime,
+                    endDateTime: endDateTime,
+                    initialPrice: parseFloat(formData.startingPrice),
+                    ...(buyoutPrice !== null && { buyoutPrice: buyoutPrice })
+                };
+                const auctionResponse = await fetch(
+                    `${API_BASE_URL}/auctions?userId=${CURRENT_USER_ID}`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(auctionBody)
+                    }
+                );
+                if (!auctionResponse.ok) {
+                    const errorText = await auctionResponse.text();
+                    throw new Error(errorText || "Failed to create auction");
+                }
+            }
             navigate("/explore");
         } catch (error) {
-            console.error("Create listing error:", error);
             setSubmitError(error.message);
         } finally {
             setSubmitting(false);
         }
-        };
+    };
 
     const handleChange = (e) => {
         setFormData(prev => ({
@@ -220,8 +266,10 @@ export function SellPublication() {
                                 name="shortDescription"
                                 value={formData.shortDescription}
                                 onChange={handleChange}
-                                placeholder="Describe the condition, edition, or any useful details..."
+                                placeholder="Describe the condition, edition, or any useful details (min 10 characters)..."
                                 rows={4}
+                                minLength={10}
+                                maxLength={100}
                                 className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                             />
                         </div>
@@ -342,6 +390,7 @@ export function SellPublication() {
                                             name="auctionStartDate"
                                             value={formData.auctionStartDate}
                                             onChange={handleChange}
+                                            min={minDate}
                                             className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl"
                                             required
                                         />
@@ -355,6 +404,7 @@ export function SellPublication() {
                                             name="auctionStartTime"
                                             value={formData.auctionStartTime}
                                             onChange={handleChange}
+                                            min={formData.auctionStartDate === minDate ? minTime : undefined}
                                             className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl"
                                             required
                                         />
@@ -371,6 +421,7 @@ export function SellPublication() {
                                             name="auctionEndDate"
                                             value={formData.auctionEndDate}
                                             onChange={handleChange}
+                                            min={formData.auctionStartDate || minDate}
                                             className="w-full px-4 py-4 bg-input-background border-2 border-border rounded-xl"
                                             required
                                         />
