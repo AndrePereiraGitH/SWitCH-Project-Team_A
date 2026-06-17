@@ -1,6 +1,8 @@
 package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.ListingAuthorizationPolicy;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Enum.SaleType;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +37,8 @@ public class ListingService {
     private final ListingFactory listingFactory;
     private final IUserRepository userRepository;
     private final IPublicationSampleRepository publicationSampleRepository;
+    private final IEditionRepository editionRepository;
+    private final IBibliographicalDataRepository bibliographicalDataRepository;
     private final ListingAuthorizationPolicy policy;
 
     /**
@@ -44,11 +47,13 @@ public class ListingService {
      * @param listingRepository the repository used to persist listings; must not be {@code null}
      * @param listingFactory    the factory used to create listing instances; must not be {@code null}
      */
-    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, IPublicationSampleRepository publicationSampleRepository, ListingAuthorizationPolicy policy) {
+    public ListingService(IListingRepository listingRepository, ListingFactory listingFactory, IUserRepository userRepository, IPublicationSampleRepository publicationSampleRepository, IEditionRepository editionRepository, IBibliographicalDataRepository bibliographicalDataRepository, ListingAuthorizationPolicy policy) {
         this.listingRepository = Objects.requireNonNull(listingRepository, "listingRepository must not be null");
         this.listingFactory = Objects.requireNonNull(listingFactory, "listingFactory must not be null");
         this.userRepository = Objects.requireNonNull(userRepository, "User repository cannot be null");
         this.publicationSampleRepository = publicationSampleRepository;
+        this.editionRepository = editionRepository;
+        this.bibliographicalDataRepository = bibliographicalDataRepository;
         this.policy = Objects.requireNonNull(policy, "Listing Authorization Policy cannot be null");
     }
 
@@ -87,6 +92,20 @@ public class ListingService {
         return listingRepository.save(createdListing);
     }
 
+    /**
+     * Verifies that all publication samples belong to the given seller.
+     *
+     * <p>Each publication sample identifier is resolved through the publication
+     * sample repository. If any publication sample does not exist, an
+     * {@link jakarta.persistence.EntityNotFoundException} is thrown. If any
+     * publication sample belongs to a different user, an
+     * {@link org.springframework.security.access.AccessDeniedException} is thrown.</p>
+     *
+     * @param itemIds the publication sample identifiers to verify
+     * @param sellerId the identifier of the seller creating the listing
+     * @throws jakarta.persistence.EntityNotFoundException if any publication sample does not exist
+     * @throws org.springframework.security.access.AccessDeniedException if any publication sample is not owned by the seller
+     */
     private boolean verifyPublicationsOwner(List<PublicationSampleId> itemIds, UserId sellerId) {
 
         for (PublicationSampleId itemId : itemIds) {
@@ -116,6 +135,93 @@ public class ListingService {
      */
     public List<Listing> findAll() {
         return listingRepository.findAll();
+    }
+
+    /**
+     * Retrieves listings that match the provided filter criteria.
+     *
+     * <p>All filters are optional and are applied cumulatively. When multiple
+     * filters are provided, only listings satisfying all criteria are returned.</p>
+     *
+     * <p>The filtering process is performed in the following order:</p>
+     * <ol>
+     *     <li>Sale type</li>
+     *     <li>Publisher</li>
+     *     <li>Genre</li>
+     *     <li>Author</li>
+     * </ol>
+     *
+     * <p>If no filters are provided, all listings are returned.</p>
+     *
+     * @param genreId the identifier of the genre to filter by; may be {@code null}
+     * @param authorId the identifier of the author to filter by; may be {@code null}
+     * @param publisherId the identifier of the publisher to filter by; may be {@code null}
+     * @param saleType the sale type to filter by; may be {@code null}
+     * @return a list of listings matching all provided filter criteria; never {@code null}
+     */
+    public List<Listing> findAllFiltered(
+            GenreId genreId,
+            AuthorId authorId,
+            PublisherID publisherId,
+            SaleType saleType,
+            BibliographicalDataId bibliographicalDataId
+            ) {
+
+        List<Listing> listings = listingRepository.findAll();
+
+        if (saleType != null) {
+            listings = listings.stream().filter(listing -> listing.getSaleType().equals(saleType)).toList();
+        }
+
+        if (publisherId != null) {
+            List<EditionId> editionIds = editionRepository.findIdsByPublisherId(publisherId);
+            List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByEditionIdIn(editionIds);
+
+            listings = filterByPublicationSampleIds(listings, pubIds);
+        }
+
+        if (genreId != null) {
+            List<BibliographicalDataId> bdIds = bibliographicalDataRepository.findAllByGenreId(genreId);
+            List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+
+            listings = filterByPublicationSampleIds(listings, pubIds);
+        }
+
+        if (authorId != null) {
+            List<BibliographicalDataId> bdIds = bibliographicalDataRepository.findIdByAuthorId(authorId);
+            List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+
+            listings = filterByPublicationSampleIds(listings, pubIds);
+        }
+
+        if (bibliographicalDataId != null) {
+            List <PublicationSampleId> allPublicationIdsWithSpecificBdId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId));
+
+            List<Listing> allListingsWithSpecificBdId = listingRepository.findByPublicationSampleIdIn(allPublicationIdsWithSpecificBdId);
+
+            listings = filterByPublicationSampleIds(allListingsWithSpecificBdId, allPublicationIdsWithSpecificBdId);
+        }
+
+        return listings;
+    }
+
+    /**
+     * Filters the provided listings by the given publication sample identifiers.
+     *
+     * <p>A listing is included in the result when at least one of its publication
+     * sample identifiers matches one of the provided identifiers.</p>
+     *
+     * @param listings the listings to filter
+     * @param pubIds the publication sample identifiers used as filter criteria
+     * @return the listings containing at least one matching publication sample identifier
+     */
+    private List<Listing> filterByPublicationSampleIds(List<Listing> listings, List<PublicationSampleId> pubIds) {
+        return listings.stream()
+                .filter(listing ->
+                        listing.getItemsId().stream()
+                                .anyMatch(pubIds::contains)
+                )
+                .toList();
     }
 
     /**
