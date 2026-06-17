@@ -11,6 +11,7 @@ import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.Publisher.Publisher;
 import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
+import TOPSECRET.dto.author.AuthorMapper;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingDetailsDTO;
@@ -197,14 +198,26 @@ public class ListingRESTController {
      * or {@code 500_INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("")
-    public ResponseEntity<List<ListingDetailsDTO>> findAll() {
+    public ResponseEntity<List<ListingDetailsDTO>> findAll(
+            @RequestParam(required = false) String genreId,
+            @RequestParam(required = false) String authorId,
+            @RequestParam(required = false) String publisherId,
+            @RequestParam(required = false) String saleType,
+            @RequestParam(required = false) String bibliographicalDataId
+    ) {
 
         try {
-            List<Listing> allListings = listingService.findAll();
+            List<Listing> filteredListings = listingService.findAllFiltered(
+                    genreId != null ? ListingMapper.toGenreId(genreId) : null,
+                    authorId != null ? AuthorMapper.toAuthorId(authorId) : null,
+                    publisherId != null ? ListingMapper.toPublisherId(publisherId) : null,
+                    saleType != null ? ListingMapper.toSaleType(saleType) : null,
+                    bibliographicalDataId != null ? ListingMapper.toBibliographicalDataId(bibliographicalDataId) : null
+            );
 
             List<ListingDetailsDTO> allDTO = new ArrayList<>();
 
-            for (Listing listing : allListings) {
+            for (Listing listing : filteredListings) {
                 allDTO.add(convertIntoListingDetailsDTO(listing, LinkContext.PUBLIC, null));
             }
             return ResponseEntity.status(HttpStatus.OK).body(allDTO);

@@ -1,6 +1,8 @@
 package TOPSECRET.services;
 
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.ListingAuthorizationPolicy;
+import TOPSECRET.domain.BibliographicalData.IBibliographicalDataRepository;
+import TOPSECRET.domain.Edition.IEditionRepository;
 import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.IListingRepository;
@@ -25,8 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ListingService}.
@@ -54,6 +55,12 @@ class ListingServiceTest {
     private IPublicationSampleRepository publicationRepository;
 
     @Mock
+    private IEditionRepository editionRepository;
+
+    @Mock
+    private IBibliographicalDataRepository bibliographicalDataRepository;
+
+    @Mock
     private ListingAuthorizationPolicy policy;
 
     @InjectMocks
@@ -68,6 +75,8 @@ class ListingServiceTest {
         listingFactory = mock(ListingFactory.class);
         userRepository = mock(IUserRepository.class);
         publicationRepository = mock(IPublicationSampleRepository.class);
+        editionRepository = mock(IEditionRepository.class);
+        bibliographicalDataRepository = mock(IBibliographicalDataRepository.class);
         policy = mock(ListingAuthorizationPolicy.class);
 
         service = new ListingService(
@@ -75,6 +84,8 @@ class ListingServiceTest {
                 listingFactory,
                 userRepository,
                 publicationRepository,
+                editionRepository,
+                bibliographicalDataRepository,
                 policy
         );
 
@@ -82,27 +93,25 @@ class ListingServiceTest {
         sampleId = mock(PublicationSampleId.class);
     }
 
-
     // =========================================================================
     // Constructor
     // =========================================================================
 
     @Test
     void constructor_shouldThrowNullPointerException_whenRepositoryIsNull() {
-
-        //Act + Assert
+        // Act + Assert
         assertThrows(NullPointerException.class,
-                () -> new ListingService(null, listingFactory, userRepository, publicationRepository, policy));
+                () -> new ListingService(null, listingFactory, userRepository,
+                        publicationRepository, editionRepository, bibliographicalDataRepository, policy));
     }
 
     @Test
     void constructor_shouldThrowNullPointerException_whenFactoryIsNull() {
-
-        //Act + Assert
+        // Act + Assert
         assertThrows(NullPointerException.class,
-                () -> new ListingService(listingRepository, null, userRepository, publicationRepository, policy));
+                () -> new ListingService(listingRepository, null, userRepository,
+                        publicationRepository, editionRepository, bibliographicalDataRepository, policy));
     }
-
 
     // =========================================================================
     // createAndSave
@@ -110,7 +119,7 @@ class ListingServiceTest {
 
     @Test
     void createAndSave_shouldReturnSavedListing_whenUserCanCreateAndOwnsPublications() {
-
+        // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
         Price price = mock(Price.class);
@@ -143,6 +152,7 @@ class ListingServiceTest {
         )).thenReturn(createdListing);
         when(listingRepository.save(createdListing)).thenReturn(savedListing);
 
+        // Act
         Listing result = service.createAndSave(
                 title,
                 itemsId,
@@ -153,12 +163,13 @@ class ListingServiceTest {
                 pictures
         );
 
+        // Assert
         assertEquals(savedListing, result);
     }
 
     @Test
     void createAndSave_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
-
+        // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
         Price price = mock(Price.class);
@@ -169,6 +180,7 @@ class ListingServiceTest {
 
         when(userRepository.findByID(sellerId)).thenReturn(Optional.empty());
 
+        // Act + Assert
         assertThrows(
                 EntityNotFoundException.class,
                 () -> service.createAndSave(
@@ -182,8 +194,6 @@ class ListingServiceTest {
                 )
         );
     }
-
-
 
     @Test
     void createAndSave_shouldThrowAccessDeniedException_whenUserCannotCreateListing() {
@@ -209,7 +219,7 @@ class ListingServiceTest {
 
     @Test
     void createAndSave_shouldThrowAccessDeniedException_whenPublicationIsNotOwnedByUser() {
-
+        // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
         Price price = mock(Price.class);
@@ -228,6 +238,7 @@ class ListingServiceTest {
                 .thenReturn(Optional.of(publicationSample));
         when(publicationSample.getOwnerID()).thenReturn(otherUserId);
 
+        // Act + Assert
         assertThrows(
                 AccessDeniedException.class,
                 () -> service.createAndSave(
@@ -244,7 +255,7 @@ class ListingServiceTest {
 
     @Test
     void createAndSave_shouldThrowEntityNotFoundException_whenPublicationDoesNotExist() {
-
+        // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
         Price price = mock(Price.class);
@@ -260,6 +271,7 @@ class ListingServiceTest {
         when(publicationRepository.findById(publicationSampleId))
                 .thenReturn(Optional.empty());
 
+        // Act + Assert
         assertThrows(
                 EntityNotFoundException.class,
                 () -> service.createAndSave(
@@ -275,7 +287,7 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findById()
+    // findById()
     // =========================================================================
 
     @Test
@@ -307,8 +319,9 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findAll()
+    // findAll()
     // =========================================================================
+
     @Test
     void findAll_shouldReturnAllListings() {
         // Arrange
@@ -338,7 +351,165 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findAllDirectSale()
+    // findAllFiltered()
+    // =========================================================================
+
+    @Test
+    void findAllFiltered_shouldReturnAllListings_whenNoFiltersAreProvided() {
+        // Arrange
+        Listing listing1 = mock(Listing.class);
+        Listing listing2 = mock(Listing.class);
+
+        when(listingRepository.findAll()).thenReturn(List.of(listing1, listing2));
+
+        // Act
+        List<Listing> result = service.findAllFiltered(null, null, null, null, null);
+
+        // Assert
+        assertEquals(List.of(listing1, listing2), result);
+    }
+
+    @Test
+    void findAllFiltered_shouldFilterBySaleType() {
+        // Arrange
+        Listing directSale = mock(Listing.class);
+        Listing auction = mock(Listing.class);
+
+        when(directSale.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+        when(auction.getSaleType()).thenReturn(SaleType.AUCTION);
+        when(listingRepository.findAll()).thenReturn(List.of(directSale, auction));
+
+        // Act
+        List<Listing> result =
+                service.findAllFiltered(null, null, null, SaleType.DIRECT_SALE, null);
+
+        // Assert
+        assertEquals(List.of(directSale), result);
+    }
+
+    @Test
+    void findAllFiltered_shouldFilterByPublisherId() {
+        // Arrange
+        PublisherID publisherId = mock(PublisherID.class);
+        EditionId editionId = mock(EditionId.class);
+        PublicationSampleId matchingPubId = mock(PublicationSampleId.class);
+        PublicationSampleId nonMatchingPubId = mock(PublicationSampleId.class);
+
+        Listing matchingListing = mock(Listing.class);
+        Listing nonMatchingListing = mock(Listing.class);
+
+        when(listingRepository.findAll()).thenReturn(List.of(matchingListing, nonMatchingListing));
+
+        when(editionRepository.findIdsByPublisherId(publisherId))
+                .thenReturn(List.of(editionId));
+
+        when(publicationRepository.findIdsByEditionIdIn(List.of(editionId)))
+                .thenReturn(List.of(matchingPubId));
+
+        when(matchingListing.getItemsId()).thenReturn(List.of(matchingPubId));
+        when(nonMatchingListing.getItemsId()).thenReturn(List.of(nonMatchingPubId));
+
+        // Act
+        List<Listing> result =
+                service.findAllFiltered(null, null, publisherId, null, null);
+
+        // Assert
+        assertEquals(List.of(matchingListing), result);
+    }
+
+    @Test
+    void findAllFiltered_shouldFilterByGenreId() {
+        // Arrange
+        GenreId genreId = mock(GenreId.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        PublicationSampleId matchingPubId = mock(PublicationSampleId.class);
+        PublicationSampleId nonMatchingPubId = mock(PublicationSampleId.class);
+
+        Listing matchingListing = mock(Listing.class);
+        Listing nonMatchingListing = mock(Listing.class);
+
+        when(listingRepository.findAll()).thenReturn(List.of(matchingListing, nonMatchingListing));
+
+        when(bibliographicalDataRepository.findAllByGenreId(genreId))
+                .thenReturn(List.of(bdId));
+
+        when(publicationRepository.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                .thenReturn(List.of(matchingPubId));
+
+        when(matchingListing.getItemsId()).thenReturn(List.of(matchingPubId));
+        when(nonMatchingListing.getItemsId()).thenReturn(List.of(nonMatchingPubId));
+
+        // Act
+        List<Listing> result =
+                service.findAllFiltered(genreId, null, null, null, null);
+
+        // Assert
+        assertEquals(List.of(matchingListing), result);
+    }
+
+    @Test
+    void findAllFiltered_shouldFilterByAuthorId() {
+        // Arrange
+        AuthorId authorId = mock(AuthorId.class);
+        BibliographicalDataId bdId = mock(BibliographicalDataId.class);
+        PublicationSampleId matchingPubId = mock(PublicationSampleId.class);
+        PublicationSampleId nonMatchingPubId = mock(PublicationSampleId.class);
+
+        Listing matchingListing = mock(Listing.class);
+        Listing nonMatchingListing = mock(Listing.class);
+
+        when(listingRepository.findAll()).thenReturn(List.of(matchingListing, nonMatchingListing));
+
+        when(bibliographicalDataRepository.findIdByAuthorId(authorId))
+                .thenReturn(List.of(bdId));
+
+        when(publicationRepository.findIdsByBibliographicalDataIdIn(List.of(bdId)))
+                .thenReturn(List.of(matchingPubId));
+
+        when(matchingListing.getItemsId()).thenReturn(List.of(matchingPubId));
+        when(nonMatchingListing.getItemsId()).thenReturn(List.of(nonMatchingPubId));
+
+        // Act
+        List<Listing> result =
+                service.findAllFiltered(null, authorId, null, null, null);
+
+        // Assert
+        assertEquals(List.of(matchingListing), result);
+    }
+
+    @Test
+    void findAllFiltered_shouldCombineSaleTypeAndPublisherId() {
+        // Arrange
+        PublisherID publisherId = mock(PublisherID.class);
+        EditionId editionId = mock(EditionId.class);
+        PublicationSampleId matchingPubId = mock(PublicationSampleId.class);
+
+        Listing matchingDirectSale = mock(Listing.class);
+        Listing matchingAuction = mock(Listing.class);
+
+        when(matchingDirectSale.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
+
+        when(listingRepository.findAll())
+                .thenReturn(List.of(matchingDirectSale, matchingAuction));
+
+        when(editionRepository.findIdsByPublisherId(publisherId))
+                .thenReturn(List.of(editionId));
+
+        when(publicationRepository.findIdsByEditionIdIn(List.of(editionId)))
+                .thenReturn(List.of(matchingPubId));
+
+        when(matchingDirectSale.getItemsId()).thenReturn(List.of(matchingPubId));
+
+        // Act
+        List<Listing> result =
+                service.findAllFiltered(null, null, publisherId, SaleType.DIRECT_SALE, null);
+
+        // Assert
+        assertEquals(List.of(matchingDirectSale), result);
+    }
+
+    // =========================================================================
+    // findAllDirectSale()
     // =========================================================================
 
     @Test
@@ -370,8 +541,9 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findAllAuction()
+    // findAllAuction()
     // =========================================================================
+
     @Test
     void findAllAuction_shouldReturnAllAuctionListings() {
         // Arrange
@@ -401,8 +573,9 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findIdsByPublicationSampleIdIn()
+    // findIdsByPublicationSampleIdIn()
     // =========================================================================
+
     @Test
     void findIdsByPublicationSampleIdIn_shouldReturnListingIds() {
         // Arrange
@@ -438,7 +611,7 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findByPublicationSampleIdIn()
+    // findByPublicationSampleIdIn()
     // =========================================================================
 
     @Test
@@ -529,37 +702,43 @@ class ListingServiceTest {
     }
 
     // =========================================================================
-    //  findByAuctionAndPublicationSampleIdIn
+    // findByAuctionAndPublicationSampleIdIn
     // =========================================================================
 
     @Test
     void findByAuctionAndPublicationSampleIdIn_shouldReturnAuctionListings() {
+        // Arrange
         List<PublicationSampleId> sampleIds = List.of(mock(PublicationSampleId.class));
         List<Listing> listings = List.of(mock(Listing.class), mock(Listing.class));
 
         when(listingRepository.findAllByAuctionAndPublicationSampleIdIn(sampleIds))
                 .thenReturn(listings);
 
+        // Act
         List<Listing> result = service.findByAuctionAndPublicationSampleIdIn(sampleIds);
 
+        // Assert
         assertSame(listings, result);
     }
+
     @Test
     void findByAuctionAndPublicationSampleIdIn_shouldReturnEmptyList_whenNoAuctionListingsMatch() {
+        // Arrange
         List<PublicationSampleId> sampleIds = List.of(mock(PublicationSampleId.class));
 
         when(listingRepository.findAllByAuctionAndPublicationSampleIdIn(sampleIds))
                 .thenReturn(List.of());
 
+        // Act
         List<Listing> result = service.findByAuctionAndPublicationSampleIdIn(sampleIds);
 
+        // Assert
         assertTrue(result.isEmpty());
     }
 
     // =========================================================================
-    //  findAllByDirectSaleAndPublicationSampleIdIn()
+    // findAllByDirectSaleAndPublicationSampleIdIn()
     // =========================================================================
-
 
     @Test
     void findAllDirectSaleAndPublicationSampleIdIn_shouldReturnDirectSaleListings() {
@@ -633,9 +812,10 @@ class ListingServiceTest {
     void markListingAsSold_shouldThrowEntityNotFoundException_whenListingNotFound() {
         // Arrange
         UserId buyerId = mock(UserId.class);
+
         when(listingRepository.findById(listingId)).thenReturn(Optional.empty());
 
-        // Act & Assert
+        // Act + Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.markListingAsSold(listingId, buyerId));
     }
@@ -649,7 +829,7 @@ class ListingServiceTest {
         when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
         when(listing.getListingStatus()).thenReturn(ListingStatus.SOLD);
 
-        // Act & Assert
+        // Act + Assert
         assertThrows(IllegalStateException.class, () ->
                 service.markListingAsSold(listingId, buyerId));
     }
@@ -664,7 +844,7 @@ class ListingServiceTest {
         when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
         when(listing.getSellerId()).thenReturn(buyerId);
 
-        // Act & Assert
+        // Act + Assert
         assertThrows(AccessDeniedException.class, () ->
                 service.markListingAsSold(listingId, buyerId));
     }
@@ -681,7 +861,7 @@ class ListingServiceTest {
         when(listing.getSellerId()).thenReturn(sellerId);
         when(userRepository.findByID(buyerId)).thenReturn(Optional.empty());
 
-        // Act & Assert
+        // Act + Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.markListingAsSold(listingId, buyerId));
     }
@@ -700,7 +880,7 @@ class ListingServiceTest {
         when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
         when(policy.canBuyListing(buyer)).thenReturn(false);
 
-        // Act & Assert
+        // Act + Assert
         assertThrows(AccessDeniedException.class, () ->
                 service.markListingAsSold(listingId, buyerId));
     }
@@ -721,7 +901,7 @@ class ListingServiceTest {
         when(listing.getItemsId()).thenReturn(List.of(sampleId));
         when(publicationRepository.findById(sampleId)).thenReturn(Optional.empty());
 
-        // Act & Assert
+        // Act + Assert
         assertThrows(EntityNotFoundException.class, () ->
                 service.markListingAsSold(listingId, buyerId));
     }
@@ -731,16 +911,15 @@ class ListingServiceTest {
         // Arrange
         UserId buyerId = mock(UserId.class);
 
-        // Act & Assert
+        // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.markListingAsSold(null, buyerId));
     }
 
     @Test
     void markListingAsSold_shouldThrowNullPointerException_whenBuyerIdIsNull() {
-        // Act & Assert
+        // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.markListingAsSold(listingId, null));
     }
-
 }

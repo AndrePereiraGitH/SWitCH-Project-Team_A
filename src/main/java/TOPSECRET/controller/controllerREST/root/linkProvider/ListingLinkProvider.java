@@ -128,7 +128,7 @@ public class ListingLinkProvider implements RootLinkProvider {
                 .withRel("find-by-id"));
 
         links.add(linkTo(methodOn(ListingRESTController.class)
-                .findAll())
+                .findAll(null, null, null, null, null))
                 .withRel("find-all"));
 
         links.add(linkTo(methodOn(ListingRESTController.class)
