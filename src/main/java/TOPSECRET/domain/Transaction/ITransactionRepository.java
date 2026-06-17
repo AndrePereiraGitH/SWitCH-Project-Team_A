@@ -1,6 +1,7 @@
 package TOPSECRET.domain.Transaction;
 
 import TOPSECRET.domain.ValueObjects.TransactionID;
+import TOPSECRET.domain.ValueObjects.UserId;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,4 +42,12 @@ public interface ITransactionRepository {
      * @return a list containing all transactions
      */
     List<Transaction> findAll();
+
+
+    /**
+     * Returns all stored transactions with the given identifier exists.
+     *
+     * @param buyerId the transaction identifier
+     */
+    List<Transaction> findAllByBuyerId(UserId buyerId);
 }
