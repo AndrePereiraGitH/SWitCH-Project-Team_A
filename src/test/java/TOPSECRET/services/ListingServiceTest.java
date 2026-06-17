@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for {@link ListingService}.
@@ -489,7 +488,6 @@ class ListingServiceTest {
         Listing matchingAuction = mock(Listing.class);
 
         when(matchingDirectSale.getSaleType()).thenReturn(SaleType.DIRECT_SALE);
-        when(matchingAuction.getSaleType()).thenReturn(SaleType.AUCTION);
 
         when(listingRepository.findAll())
                 .thenReturn(List.of(matchingDirectSale, matchingAuction));

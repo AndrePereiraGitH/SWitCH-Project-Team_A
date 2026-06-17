@@ -169,10 +169,6 @@ public class ListingService {
 
         List<Listing> listings = listingRepository.findAll();
 
-        if (saleType != null) {
-            listings = listings.stream().filter(listing -> listing.getSaleType().equals(saleType)).toList();
-        }
-
         if (publisherId != null) {
             List<EditionId> editionIds = editionRepository.findIdsByPublisherId(publisherId);
             List<PublicationSampleId> pubIds = publicationSampleRepository.findIdsByEditionIdIn(editionIds);
@@ -197,9 +193,11 @@ public class ListingService {
         if (bibliographicalDataId != null) {
             List <PublicationSampleId> allPublicationIdsWithSpecificBdId = publicationSampleRepository.findIdsByBibliographicalDataIdIn(List.of(bibliographicalDataId));
 
-            List<Listing> allListingsWithSpecificBdId = listingRepository.findByPublicationSampleIdIn(allPublicationIdsWithSpecificBdId);
+            listings = filterByPublicationSampleIds(listings, allPublicationIdsWithSpecificBdId);
+        }
 
-            listings = filterByPublicationSampleIds(allListingsWithSpecificBdId, allPublicationIdsWithSpecificBdId);
+        if (saleType != null) {
+            listings = listings.stream().filter(listing -> listing.getSaleType().equals(saleType)).toList();
         }
 
         return listings;
