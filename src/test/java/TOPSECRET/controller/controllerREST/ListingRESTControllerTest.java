@@ -475,7 +475,7 @@ class ListingRESTControllerTest {
         Listing listing = fullListingGraphDouble();
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of(listing));
         publicLinks(dto);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
@@ -492,7 +492,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnOkStatus_whenNoListingsExist() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of());
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of());
 
         // Act
         ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
@@ -504,7 +504,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnEmptyBody_whenNoListingsExist() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of());
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of());
 
         // Act
         ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
@@ -519,7 +519,7 @@ class ListingRESTControllerTest {
         Listing listing = mock(Listing.class);
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
 
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of(listing));
         when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
         when(publicationService.findById(publicationSampleId))
                 .thenThrow(new EntityNotFoundException());
@@ -534,7 +534,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenThrow(new RuntimeException());
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenThrow(new RuntimeException());
 
         // Act
         ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
@@ -546,7 +546,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnBadRequest_whenIllegalArgumentExceptionOccurs() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null))
+        when(listingService.findAllFiltered(null, null, null, null, null))
                 .thenThrow(new IllegalArgumentException());
 
         // Act
@@ -1567,7 +1567,7 @@ class ListingRESTControllerTest {
         ResponseEntity<Void> response = controller.optionsById();
 
         // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
     }
 
     @Test
@@ -1585,7 +1585,7 @@ class ListingRESTControllerTest {
         ResponseEntity<Void> response = controller.optionsByPublication();
 
         // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
     }
 
     @Test
@@ -1603,7 +1603,7 @@ class ListingRESTControllerTest {
         ResponseEntity<Void> response = controller.optionsDirectSaleByGenre();
 
         // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
     }
 
     @Test
@@ -1621,7 +1621,7 @@ class ListingRESTControllerTest {
         ResponseEntity<Void> response = controller.optionsByGenre();
 
         // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
     }
 
     @Test
@@ -1639,8 +1639,27 @@ class ListingRESTControllerTest {
         ResponseEntity<Void> response = controller.optionsDirectSaleByPublisher();
 
         // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
     }
+
+    @Test
+    void optionsListingSold_shouldReturnOkStatus() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsListingSold();
+
+        // assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnAllowHeaderWithSupportedMethods() {
+        //Act
+        ResponseEntity<Void> response = controller.optionsListingSold();
+
+        // Assert
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.PATCH, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+    }
+
 
     // =========================================================================
     // PRIVATE HELPER METHODS - SETUP & MOCKING
