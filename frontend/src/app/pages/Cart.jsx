@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Trash2, CheckCircle, CreditCard, MapPin, Mail } from "lucide-react";
 import { useCart } from "../components/CartContext";
 import { usePurchases } from "../components/PurchasesContext";
+import { createTransaction, CURRENT_USER_ID } from "../../api/transactions";
 
 const emptyShipping = { street: "", number: "", zipCode: "", city: "" };
 const emptyPayment = { cardHolderName: "", cardNumber: "", expiryMonth: "", expiryYear: "" };
@@ -23,6 +24,7 @@ export function Cart() {
     const [payment, setPayment] = useState(emptyPayment);
     const [shippingErrors, setShippingErrors] = useState({});
     const [paymentErrors, setPaymentErrors] = useState({});
+    const [confirmedTotal, setConfirmedTotal] = useState(0);
 
     const total = items.reduce((sum, item) => sum + item.price, 0);
 
@@ -52,12 +54,33 @@ export function Cart() {
         if (validateShipping()) setStep("payment");
     }
 
-    function handlePaymentConfirm() {
-        if (validatePayment()) {
-            const confirmedTotal = total;
-            addPurchase(items, shipping, maskCardNumber(payment.cardNumber));
+    async function handlePaymentConfirm() {
+        if (!validatePayment()) return;
+
+        try {
+            const payload = {
+                buyerId: CURRENT_USER_ID,
+                price: total.toFixed(2),
+                transactionDate: new Date().toISOString().slice(0, 19),
+                street: shipping.street,
+                number: shipping.number,
+                zipCode: shipping.zipCode,
+                cityId: shipping.city,
+                cardHolderName: payment.cardHolderName,
+                maskedCardNumber: maskCardNumber(payment.cardNumber),
+                expiryMonth: payment.expiryMonth,
+                expiryYear: payment.expiryYear,
+                listingIds: items.map(item => item.id),
+            };
+
+            await createTransaction(payload);
+
+            setConfirmedTotal(total);
             clearCart();
             setStep("success");
+        } catch (e) {
+            console.error("[Cart] transaction failed:", e);
+            alert("Purchase failed. Check backend console.");
         }
     }
 
@@ -136,7 +159,7 @@ export function Cart() {
                             <div className="space-y-3 mb-6">
                                 <div className="flex justify-between text-muted-foreground">
                                     <span>Subtotal</span>
-                                    <span>€{total.toFixed(2)}</span>
+                                    <span>€{confirmedTotal.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between text-muted-foreground">
                                     <span>Shipping</span>
@@ -387,7 +410,7 @@ export function Cart() {
                                         </div>
                                         <div className="flex justify-between font-bold text-foreground border-t-2 border-border pt-2 mt-2">
                                             <span>Total charged</span>
-                                            <span className="text-primary">€{total.toFixed(2)}</span>
+                                            <span className="text-primary">€{confirmedTotal.toFixed(2)}</span>
                                         </div>
                                     </div>
 
