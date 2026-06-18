@@ -11,339 +11,578 @@ import TOPSECRET.dto.author.request.CreateAuthorDTO;
 import TOPSECRET.dto.author.response.AuthorDTO;
 import TOPSECRET.services.AuthorService;
 import TOPSECRET.services.CountryService;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AuthorRESTController}.
+ *
+ * <p>Verifies the behaviour of each endpoint, including:</p>
+ * <ul>
+ *     <li>{@code createAuthor} — returns {@code 201 Created} on success,
+ *         {@code 400 Bad Request} for invalid input,
+ *         {@code 403 Forbidden} when the user lacks permission,
+ *         {@code 409 Conflict} when the author already exists,
+ *         {@code 500 Internal Server Error} for unexpected errors;</li>
+ *     <li>{@code findAll} — returns {@code 200 OK} with all authors,
+ *         an empty list when none exist,
+ *         {@code 400 Bad Request} for invalid arguments,
+ *         {@code 500 Internal Server Error} for unexpected errors;</li>
+ *     <li>{@code findById} — returns {@code 200 OK} when the author exists,
+ *         {@code 404 Not Found} when the identifier format is invalid or the
+ *         author does not exist,
+ *         {@code 500 Internal Server Error} for unexpected errors.</li>
+ * </ul>
+ */
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class AuthorRESTControllerTest {
 
-    @Mock private AuthorService service;
-    @Mock private AuthorLinkProvider provider;
-    @Mock private CountryService countryService;
-    @Mock private Author author;
-    @Mock private AuthorId authorId;
-    @Mock private Country country;
-    @Mock private CountryId countryId;
-    @Mock private UserId userId;
+    @Mock
+    private AuthorService service;
 
-    private static final String USER_ID_STR   = "user-uuid-123";
-    private static final String AUTHOR_ID_STR = "author-uuid-456";
+    @Mock
+    private AuthorLinkProvider provider;
 
-    private static final Link CREATE_LINK = Link.of("/authors").withRel("create-author");
+    @Mock
+    private CountryService countryService;
 
-    private CreateAuthorDTO dto;
-    private AuthorRESTController sut;
+    @Mock
+    private CreateAuthorDTO createDTO;
 
-    @BeforeEach
-    void setup() {
-        dto = new CreateAuthorDTO(
-                "José Saramago",
-                "PORTUGAL",
-                LocalDate.of(1922, 11, 16),
-                "Portuguese Nobel Prize-winning author."
-        );
-        sut = new AuthorRESTController(service, provider, countryService);
+    @InjectMocks
+    private AuthorRESTController controller;
+
+    // =========================================================
+    // CREATE — SUCCESS
+    // =========================================================
+
+    @Test
+    void shouldCreateAuthorSuccessfully() throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        Author author = mock(Author.class);
+        AuthorId authorId = mock(AuthorId.class);
+        Country country = mock(Country.class);
+        CountryId countryId = mock(CountryId.class);
+        AuthorDTO responseDTO = mock(AuthorDTO.class);
+        Link link = mock(Link.class);
+
+        when(author.id()).thenReturn(authorId);
+        when(authorId.toString()).thenReturn("author-1");
+        when(author.getCountryID()).thenReturn(countryId);
+        when(countryService.findById(countryId)).thenReturn(country);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(responseDTO);
+            stubCreateDTO(mapper, author);
+            stubProviderLinks(userId, List.of(link), List.of());
+
+            // ACT
+            ResponseEntity<AuthorDTO> response =
+                    controller.createAuthor(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.CREATED, response.getStatusCode());
+            assertEquals(responseDTO, response.getBody());
+        }
     }
 
-    private AuthorDTO freshDTO() {
-        return new AuthorDTO(AUTHOR_ID_STR, "José Saramago", "Portugal", "1922-11-16",
-                "Portuguese Nobel Prize-winning author.");
+    @Test
+    void shouldAddPublicAndPrivateLinksOnCreate() throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        Author author = mock(Author.class);
+        AuthorId authorId = mock(AuthorId.class);
+        Country country = mock(Country.class);
+        CountryId countryId = mock(CountryId.class);
+        AuthorDTO responseDTO = buildAuthorDTO("author-1");
+
+        Link publicLink = Link.of("/authors", "find-all");
+        Link privateLink = Link.of("/authors", "create-author");
+
+        when(author.id()).thenReturn(authorId);
+        when(authorId.toString()).thenReturn("author-1");
+        when(author.getCountryID()).thenReturn(countryId);
+        when(countryService.findById(countryId)).thenReturn(country);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(responseDTO);
+            stubCreateDTO(mapper, author);
+            stubProviderLinks(userId, List.of(publicLink), List.of(privateLink));
+
+            // ACT
+            controller.createAuthor(createDTO, userIdStr);
+
+            // ASSERT — public link + private link + selfRel = 3
+            assertEquals(3, responseDTO.getLinks().toList().size());
+        }
+    }
+
+    @Test
+    void shouldAddCreateAuthorRelOnCreate() throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        Author author = mock(Author.class);
+        AuthorId authorId = mock(AuthorId.class);
+        Country country = mock(Country.class);
+        CountryId countryId = mock(CountryId.class);
+        AuthorDTO responseDTO = buildAuthorDTO("author-1");
+
+        Link privateLink = Link.of("/authors", "create-author");
+
+        when(author.id()).thenReturn(authorId);
+        when(authorId.toString()).thenReturn("author-1");
+        when(author.getCountryID()).thenReturn(countryId);
+        when(countryService.findById(countryId)).thenReturn(country);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(responseDTO);
+            stubCreateDTO(mapper, author);
+            stubProviderLinks(userId, List.of(), List.of(privateLink));
+
+            // ACT
+            controller.createAuthor(createDTO, userIdStr);
+
+            // ASSERT
+            assertTrue(responseDTO.getLinks().toList().stream()
+                    .anyMatch(l -> l.getRel().value().equals("create-author")));
+        }
+    }
+
+    // =========================================================
+    // CREATE — ERROR CASES
+    // =========================================================
+
+    @Test
+    void shouldReturnForbiddenWhenAccessDeniedOnCreate() throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+            stubCreateDTOThrows(mapper, new AccessDeniedException("Denied"));
+
+            // ACT
+            ResponseEntity<AuthorDTO> response =
+                    controller.createAuthor(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenIllegalArgumentOnCreate() throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+            stubCreateDTOThrows(mapper, new IllegalArgumentException());
+
+            // ACT
+            ResponseEntity<AuthorDTO> response =
+                    controller.createAuthor(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void shouldReturnConflictWhenAuthorAlreadyExistsOnCreate() throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+            stubCreateDTOThrows(mapper, new InstanceAlreadyExistsException());
+
+            // ACT
+            ResponseEntity<AuthorDTO> response =
+                    controller.createAuthor(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void shouldReturnInternalServerErrorOnCreateWhenUnexpectedExceptionOccurs()
+            throws Exception {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+            stubCreateDTOThrows(mapper, new RuntimeException());
+
+            // ACT
+            ResponseEntity<AuthorDTO> response =
+                    controller.createAuthor(createDTO, userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================
+    // FIND ALL — SUCCESS
+    // =========================================================
+
+    @Test
+    void shouldReturnAllAuthorsSuccessfully() {
+
+        // ARRANGE
+        Author a1 = mock(Author.class);
+        Author a2 = mock(Author.class);
+        AuthorId id1 = mock(AuthorId.class);
+        AuthorId id2 = mock(AuthorId.class);
+        CountryId cId1 = mock(CountryId.class);
+        CountryId cId2 = mock(CountryId.class);
+        Country country1 = mock(Country.class);
+        Country country2 = mock(Country.class);
+
+        when(a1.id()).thenReturn(id1);
+        when(a2.id()).thenReturn(id2);
+        when(id1.toString()).thenReturn("author-1");
+        when(id2.toString()).thenReturn("author-2");
+        when(a1.getCountryID()).thenReturn(cId1);
+        when(a2.getCountryID()).thenReturn(cId2);
+        when(countryService.findById(cId1)).thenReturn(country1);
+        when(countryService.findById(cId2)).thenReturn(country2);
+
+        AuthorDTO dto1 = buildAuthorDTO("author-1");
+        AuthorDTO dto2 = buildAuthorDTO("author-2");
+
+        when(service.findAll()).thenReturn(List.of(a1, a2));
+        when(provider.getPublicLinks()).thenReturn(List.of());
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toDTO(a1, country1)).thenReturn(dto1);
+            mapper.when(() -> AuthorMapper.toDTO(a2, country2)).thenReturn(dto2);
+
+            // ACT
+            ResponseEntity<List<AuthorDTO>> response = controller.findAll();
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertEquals(2, response.getBody().size());
+            assertTrue(response.getBody().containsAll(List.of(dto1, dto2)));
+        }
+    }
+
+    @Test
+    void shouldAddSelfLinkToEachDTOWhenFindingAll() {
+
+        // ARRANGE
+        Author a1 = mock(Author.class);
+        AuthorId id1 = mock(AuthorId.class);
+        CountryId cId1 = mock(CountryId.class);
+        Country country1 = mock(Country.class);
+
+        when(a1.id()).thenReturn(id1);
+        when(id1.toString()).thenReturn("author-1");
+        when(a1.getCountryID()).thenReturn(cId1);
+        when(countryService.findById(cId1)).thenReturn(country1);
+
+        AuthorDTO dto1 = buildAuthorDTO("author-1");
+        when(service.findAll()).thenReturn(List.of(a1));
+        when(provider.getPublicLinks()).thenReturn(List.of());
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toDTO(a1, country1)).thenReturn(dto1);
+
+            // ACT
+            controller.findAll();
+
+            // ASSERT
+            assertTrue(dto1.getLinks().toList().stream()
+                    .anyMatch(l -> l.getRel().value().equals("self")));
+        }
+    }
+
+    // =========================================================
+    // FIND ALL — ERROR CASES
+    // =========================================================
+
+    @Test
+    void shouldReturnEmptyListWhenNoAuthorsExist() {
+
+        // ARRANGE
+        when(service.findAll()).thenReturn(List.of());
+
+        // ACT
+        ResponseEntity<List<AuthorDTO>> response = controller.findAll();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isEmpty());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenFindAllThrowsIllegalArgumentException() {
+
+        // ARRANGE
+        when(service.findAll()).thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<List<AuthorDTO>> response = controller.findAll();
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnInternalServerErrorWhenFindAllThrowsUnexpectedException() {
+
+        // ARRANGE
+        when(service.findAll()).thenThrow(new RuntimeException());
+
+        // ACT
+        ResponseEntity<List<AuthorDTO>> response = controller.findAll();
+
+        // ASSERT
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    // =========================================================
+    // FIND BY ID — SUCCESS
+    // =========================================================
+
+    @Test
+    void shouldReturnAuthorByIdSuccessfully() throws Exception {
+
+        // ARRANGE
+        String rawId = "author-1";
+        AuthorId authorId = mock(AuthorId.class);
+        Author author = mock(Author.class);
+        AuthorId idFromAuthor = mock(AuthorId.class);
+        CountryId countryId = mock(CountryId.class);
+        Country country = mock(Country.class);
+        AuthorDTO responseDTO = mock(AuthorDTO.class);
+
+        when(author.id()).thenReturn(idFromAuthor);
+        when(idFromAuthor.toString()).thenReturn("author-1");
+        when(author.getCountryID()).thenReturn(countryId);
+        when(countryService.findById(countryId)).thenReturn(country);
+        when(service.findById(authorId)).thenReturn(author);
+        when(provider.getPublicLinks()).thenReturn(List.of());
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toAuthorId(rawId)).thenReturn(authorId);
+            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<AuthorDTO> response = controller.findById(rawId);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(responseDTO, response.getBody());
+        }
+    }
+
+    @Test
+    void shouldAddSelfRelAndPublicLinksWhenFindingById() throws Exception {
+
+        // ARRANGE
+        String rawId = "author-1";
+        AuthorId authorId = mock(AuthorId.class);
+        Author author = mock(Author.class);
+        AuthorId idFromAuthor = mock(AuthorId.class);
+        CountryId countryId = mock(CountryId.class);
+        Country country = mock(Country.class);
+        AuthorDTO responseDTO = buildAuthorDTO("author-1");
+
+        when(author.id()).thenReturn(idFromAuthor);
+        when(idFromAuthor.toString()).thenReturn("author-1");
+        when(author.getCountryID()).thenReturn(countryId);
+        when(countryService.findById(countryId)).thenReturn(country);
+        when(service.findById(authorId)).thenReturn(author);
+        when(provider.getPublicLinks()).thenReturn(
+                List.of(Link.of("/authors", "find-all")));
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toAuthorId(rawId)).thenReturn(authorId);
+            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(responseDTO);
+
+            // ACT
+            controller.findById(rawId);
+
+            // ASSERT — public link + selfRel = 2
+            List<Link> links = responseDTO.getLinks().toList();
+            assertEquals(2, links.size());
+            assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("self")));
+            assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-all")));
+        }
+    }
+
+    // =========================================================
+    // FIND BY ID — ERROR CASES
+    // =========================================================
+
+    @Test
+    void shouldReturnNotFoundWhenAuthorIdFormatIsInvalid() {
+
+        // ARRANGE
+        String rawId = "invalid";
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toAuthorId(rawId))
+                    .thenThrow(new IllegalArgumentException("Invalid ID"));
+
+            // ACT
+            ResponseEntity<AuthorDTO> response = controller.findById(rawId);
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenAuthorDoesNotExist() {
+
+        // ARRANGE
+        String rawId = "author-999";
+        AuthorId authorId = mock(AuthorId.class);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toAuthorId(rawId)).thenReturn(authorId);
+            when(service.findById(authorId))
+                    .thenThrow(new IllegalArgumentException("Author not found"));
+
+            // ACT
+            ResponseEntity<AuthorDTO> response = controller.findById(rawId);
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void shouldReturnInternalServerErrorWhenFindByIdThrowsUnexpectedException() {
+
+        // ARRANGE
+        String rawId = "author-1";
+        AuthorId authorId = mock(AuthorId.class);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toAuthorId(rawId)).thenReturn(authorId);
+            when(service.findById(authorId)).thenThrow(new RuntimeException());
+
+            // ACT
+            ResponseEntity<AuthorDTO> response = controller.findById(rawId);
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================
+    // HELPERS
+    // =========================================================
+
+    /**
+     * Stubs provider public and private links for create-endpoint tests.
+     * Uses doAnswer to bypass the checked InstanceNotFoundException on getPrivateLinks.
+     */
+    private void stubProviderLinks(UserId userId, List<Link> publicLinks, List<Link> privateLinks)
+            throws Exception {
+        when(provider.getPublicLinks()).thenReturn(publicLinks);
+        lenient().doAnswer(inv -> privateLinks).when(provider).getPrivateLinks(userId);
+        lenient().doAnswer(inv -> privateLinks).when(provider).getPrivateLinks(any());
     }
 
     /**
-     * findAll and findById use linkTo(methodOn(...).findById(...)) which
-     * re-executes the full findById body. All dependencies must be stubbed
-     * so the proxy doesn't throw and get caught as a 500.
+     * Stubs AuthorMapper static methods so service.createAndSave() succeeds,
+     * returning the provided author.
      */
-    private void stubProxyFindById(MockedStatic<AuthorMapper> mapper) {
-        mapper.when(() -> AuthorMapper.toAuthorId(any())).thenReturn(authorId);
-        mapper.when(() -> AuthorMapper.toUserId(any())).thenReturn(userId);
-        mapper.when(() -> AuthorMapper.toDTO(any(), any())).thenReturn(freshDTO());
-        when(author.getCountryID()).thenReturn(countryId);
-        when(author.id()).thenReturn(authorId);
-        when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
-        when(countryService.findById(any())).thenReturn(country);
-        when(provider.getLinks(any())).thenReturn(new ArrayList<>());
-        // service.findById NOT stubbed here — each test controls it directly
+    private void stubCreateDTO(MockedStatic<AuthorMapper> mapper, Author author)
+            throws Exception {
+
+        mapper.when(() -> AuthorMapper.toCountryId(createDTO)).thenReturn(null);
+
+        when(service.createAndSave(any(), any(), any(), any(), any()))
+                .thenReturn(author);
     }
 
-    // =========================================================================
-    // createAuthor — success
-    // createAuthor uses linkTo(AuthorRESTController.class).slash(...) — no proxy
-    // =========================================================================
+    /**
+     * Stubs AuthorMapper static methods and makes service.createAndSave()
+     * throw the provided exception.
+     */
+    private void stubCreateDTOThrows(MockedStatic<AuthorMapper> mapper,
+                                     Exception exception) throws Exception {
 
-    @Test
-    void createAuthor_shouldReturnCreated_whenSuccess() throws Exception {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            // ARRANGE
-            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
-            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
-            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(freshDTO());
+        mapper.when(() -> AuthorMapper.toCountryId(createDTO)).thenReturn(null);
 
-            when(author.getCountryID()).thenReturn(countryId);
-            when(author.id()).thenReturn(authorId);
-            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
-            when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-            when(countryService.findById(any())).thenReturn(country);
-            when(provider.getLinks(userId)).thenReturn(new ArrayList<>());
-
-            // ACT
-            ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, USER_ID_STR);
-
-            // ASSERT
-            assertEquals(HttpStatus.CREATED, result.getStatusCode());
-            assertNotNull(result.getBody());
-        }
+        when(service.createAndSave(any(), any(), any(), any(), any()))
+                .thenThrow(exception);
     }
 
-    @Test
-    void createAuthor_shouldAddLinks_whenProviderReturnsLinks() throws Exception {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            // ARRANGE
-            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
-            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
-            mapper.when(() -> AuthorMapper.toDTO(author, country)).thenReturn(freshDTO());
-
-            when(author.getCountryID()).thenReturn(countryId);
-            when(author.id()).thenReturn(authorId);
-            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
-            when(service.createAndSave(any(), any(), any(), any(), any())).thenReturn(author);
-            when(countryService.findById(any())).thenReturn(country);
-            // provider returns one withRel link; controller adds self → total 2
-            when(provider.getLinks(userId)).thenReturn(new ArrayList<>(List.of(CREATE_LINK)));
-
-            // ACT
-            ResponseEntity<AuthorDTO> result = sut.createAuthor(dto, USER_ID_STR);
-
-            // ASSERT
-            assertNotNull(result.getBody());
-            assertEquals(2, result.getBody().getLinks().toList().size());
-        }
-    }
-
-    // =========================================================================
-    // createAuthor — exceptions
-    // =========================================================================
-
-    @Test
-    void createAuthor_shouldReturnForbidden_whenAccessDenied() throws Exception {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
-            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
-
-            when(service.createAndSave(any(), any(), any(), any(), any()))
-                    .thenThrow(new AccessDeniedException("denied"));
-
-            assertEquals(HttpStatus.FORBIDDEN, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
-        }
-    }
-
-    @Test
-    void createAuthor_shouldReturnBadRequest_whenIllegalArgument() throws Exception {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
-            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
-
-            when(service.createAndSave(any(), any(), any(), any(), any()))
-                    .thenThrow(new IllegalArgumentException());
-
-            assertEquals(HttpStatus.BAD_REQUEST, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
-        }
-    }
-
-    @Test
-    void createAuthor_shouldReturnConflict_whenInstanceAlreadyExists() throws Exception {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
-            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
-
-            when(service.createAndSave(any(), any(), any(), any(), any()))
-                    .thenThrow(new InstanceAlreadyExistsException());
-
-            assertEquals(HttpStatus.CONFLICT, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
-        }
-    }
-
-    @Test
-    void createAuthor_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            mapper.when(() -> AuthorMapper.toUserId(USER_ID_STR)).thenReturn(userId);
-            mapper.when(() -> AuthorMapper.toCountryId(dto)).thenReturn(countryId);
-
-            when(service.createAndSave(any(), any(), any(), any(), any()))
-                    .thenThrow(new RuntimeException());
-
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, sut.createAuthor(dto, USER_ID_STR).getStatusCode());
-        }
-    }
-
-    // =========================================================================
-    // findAll — success
-    // findAll uses methodOn — proxy re-enters findById, needs full stub
-    // =========================================================================
-
-    @Test
-    void findAll_shouldReturnOk_whenAuthorsExist() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            // ARRANGE
-            stubProxyFindById(mapper);
-            when(author.id()).thenReturn(authorId);
-            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
-            when(service.findById(any())).thenReturn(author); // for the proxy
-            when(service.findAll()).thenReturn(List.of(author));
-
-            // ACT
-            ResponseEntity<List<AuthorDTO>> result = sut.findAll(USER_ID_STR);
-
-            // ASSERT
-            assertEquals(HttpStatus.OK, result.getStatusCode());
-            assertNotNull(result.getBody());
-            assertEquals(1, result.getBody().size());
-        }
-    }
-
-    @Test
-    void findAll_shouldReturnEmptyList_whenNoAuthorsExist() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            stubProxyFindById(mapper);
-            when(service.findAll()).thenReturn(List.of());
-
-            ResponseEntity<List<AuthorDTO>> result = sut.findAll(USER_ID_STR);
-
-            assertEquals(HttpStatus.OK, result.getStatusCode());
-            assertNotNull(result.getBody());
-            assertTrue(result.getBody().isEmpty());
-        }
-    }
-
-    @Test
-    void findAll_shouldAddSelfLink_toEachAuthor() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            // ARRANGE
-            stubProxyFindById(mapper);
-            when(author.id()).thenReturn(authorId);
-            when(authorId.toString()).thenReturn(AUTHOR_ID_STR);
-            when(service.findById(any())).thenReturn(author);
-            when(service.findAll()).thenReturn(List.of(author));
-
-            // ACT
-            ResponseEntity<List<AuthorDTO>> result = sut.findAll(USER_ID_STR);
-
-            // ASSERT
-            assertNotNull(result.getBody());
-            assertTrue(result.getBody().get(0).hasLink("self"));
-        }
-    }
-
-    // =========================================================================
-    // findAll — exceptions
-    // =========================================================================
-
-    @Test
-    void findAll_shouldReturnBadRequest_whenIllegalArgument() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            stubProxyFindById(mapper);
-
-            when(service.findAll()).thenThrow(new IllegalArgumentException());
-
-            assertEquals(HttpStatus.BAD_REQUEST, sut.findAll(USER_ID_STR).getStatusCode());
-        }
-    }
-
-    @Test
-    void findAll_shouldReturnInternalServerError_whenUnexpectedException() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            stubProxyFindById(mapper);
-            when(service.findAll()).thenThrow(new RuntimeException());
-
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, sut.findAll(USER_ID_STR).getStatusCode());
-        }
-    }
-
-    // =========================================================================
-    // findById — success
-    // findById uses methodOn — proxy re-enters itself, needs full stub
-    // =========================================================================
-
-    @Test
-    void findById_shouldReturnOk_whenAuthorExists() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            // ARRANGE
-            stubProxyFindById(mapper);
-            when(service.findById(any())).thenReturn(author);
-
-            // ACT
-            ResponseEntity<AuthorDTO> result = sut.findById(AUTHOR_ID_STR, USER_ID_STR);
-
-            // ASSERT
-            assertEquals(HttpStatus.OK, result.getStatusCode());
-            assertNotNull(result.getBody());
-        }
-    }
-
-    @Test
-    void findById_shouldAddSelfLink() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            // ARRANGE
-            stubProxyFindById(mapper);
-            when(service.findById(any())).thenReturn(author);
-
-            // ACT
-            ResponseEntity<AuthorDTO> result = sut.findById(AUTHOR_ID_STR, USER_ID_STR);
-
-            // ASSERT
-            assertNotNull(result.getBody());
-            assertTrue(result.getBody().hasLink("self"));
-        }
-    }
-
-    // =========================================================================
-    // findById — exceptions
-    // =========================================================================
-
-    @Test
-    void findById_shouldReturnBadRequest_whenIllegalArgument() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            stubProxyFindById(mapper);
-            // override: first call (real) throws; proxy call also throws but
-            // that's fine — exception is already caught before proxy runs
-            when(service.findById(any()))
-                    .thenThrow(new IllegalArgumentException())
-                    .thenReturn(author); // proxy call if it gets that far
-
-            assertEquals(HttpStatus.BAD_REQUEST, sut.findById(AUTHOR_ID_STR, USER_ID_STR).getStatusCode());
-        }
-    }
-
-    @Test
-    void findById_shouldReturnInternalServerError_whenUnexpectedException() {
-        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
-            stubProxyFindById(mapper);
-            when(service.findById(any()))
-                    .thenThrow(new RuntimeException())
-                    .thenReturn(author);
-
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, sut.findById(AUTHOR_ID_STR, USER_ID_STR).getStatusCode());
-        }
+    /**
+     * Builds an {@link AuthorDTO} with stub values for use in link-assertion tests.
+     */
+    private AuthorDTO buildAuthorDTO(String authorId) {
+        return new AuthorDTO(
+                authorId,
+                "Test Author",
+                "Portugal",
+                "1980-01-01",
+                "A biography."
+        );
     }
 }
