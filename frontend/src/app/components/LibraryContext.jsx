@@ -29,7 +29,6 @@ export function LibraryProvider({ children }) {
             }
             if (!res.ok) throw new Error(`GET library failed: ${res.status}`);
             const data = await res.json();
-            console.log("[LibraryContext] library:", data);
             setLibrary(data);
         } catch (e) {
             console.error("[LibraryContext] fetch failed:", e);

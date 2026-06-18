@@ -166,14 +166,24 @@ describe("Library Component", () => {
         });
 
         test("filters publications by type", () => {
+            mockUsePublications.mockReturnValue({
+                publications: [
+                    { id: "1", title: "In Lib Book", author: "Auth 1", genre: "Fiction", libraryId: "lib-1", code: "978-0-13-468599-1" },
+                    { id: "3", title: "In Lib Magazine", author: "Auth 3", genre: "Science", libraryId: "lib-1", code: "0027-9358" },
+                ],
+                addToLibrary: vi.fn(),
+            });
+
             renderLibrary();
             const typeSelect = screen.getByDisplayValue("All Types");
 
             fireEvent.change(typeSelect, { target: { value: "magazine" } });
             expect(screen.queryByText("In Lib Book")).not.toBeInTheDocument();
+            expect(screen.getByText("In Lib Magazine")).toBeInTheDocument();
 
             fireEvent.change(typeSelect, { target: { value: "book" } });
             expect(screen.getByText("In Lib Book")).toBeInTheDocument();
+            expect(screen.queryByText("In Lib Magazine")).not.toBeInTheDocument();
         });
     });
 
@@ -211,7 +221,6 @@ describe("Library Component", () => {
             renderLibrary();
             const bookCards = screen.getAllByTestId("book-card");
             fireEvent.click(bookCards[0]);
-            // Modal should show a "Close" and "Sell" button (there will now be multiple "Sell" buttons)
             expect(screen.getAllByRole("button", { name: /Sell/i }).length).toBeGreaterThanOrEqual(2);
             expect(screen.getByRole("button", { name: /Close/i })).toBeInTheDocument();
         });
@@ -249,7 +258,6 @@ describe("Library Component", () => {
         });
     });
 
-    // ── Sorting ──
     describe("Sorting", () => {
         beforeEach(() => {
             mockUseLibrary.mockReturnValue({ library: mockLibraryObj, loading: false, error: null });
@@ -289,9 +297,9 @@ describe("Library Component", () => {
         test("sorts by type ascending", () => {
             mockUsePublications.mockReturnValue({
                 publications: [
-                    { id: "1", title: "Zen and the Art", author: "Pirsig", genre: "Fiction", libraryId: "lib-1", type: "magazine", isbn: "111" },
-                    { id: "2", title: "Anna Karenina", author: "Tolstoy", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "222" },
-                    { id: "3", title: "Middlemarch", author: "Eliot", genre: "Fiction", libraryId: "lib-1", type: "book", isbn: "333" },
+                    { id: "1", title: "Zen and the Art", author: "Pirsig", genre: "Fiction", libraryId: "lib-1", code: "0027-9358" },
+                    { id: "2", title: "Anna Karenina", author: "Tolstoy", genre: "Fiction", libraryId: "lib-1", code: "978-0-13-468599-1" },
+                    { id: "3", title: "Middlemarch", author: "Eliot", genre: "Fiction", libraryId: "lib-1", code: "0-13-110362-8" },
                 ],
                 addToLibrary: vi.fn(),
             });

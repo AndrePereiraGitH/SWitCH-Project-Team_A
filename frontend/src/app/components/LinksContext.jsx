@@ -16,7 +16,6 @@ export function LinksProvider({ children }) {
                 const res = await fetch(`${BASE_URL}/?userId=${CURRENT_USER_ID}`);
                 if (!res.ok) throw new Error(`GET root failed: ${res.status}`);
                 const data = await res.json();
-                console.log("[LinksContext] root links:", data._links);
                 setLinks(data._links ?? {});
             } catch (e) {
                 console.error("[LinksContext] fetch failed:", e);
