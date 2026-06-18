@@ -92,7 +92,7 @@ public class LibraryRESTController {
             response.add(libLinkProvider.getOwnerLinks(id));
 
             response.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibrary(library.id().toString()))
+                    .getLibrary(library.id().toString(), userId))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -117,25 +117,33 @@ public class LibraryRESTController {
     /**
      * Returns all libraries registered in the system.
      *
+     * <p>Access is restricted to administrators only. The requesting user must have
+     * the {@code ADMIN} role to perform this operation.</p>
+     *
      * <p>Each library is enriched with a HATEOAS self-link.</p>
      *
+     * @param requestingUserId the identifier of the user performing the request; must not be blank
      * @return 200 OK with list of libraries, or:
      * <ul>
      *   <li>400 Bad Request – invalid request parameters</li>
+     *   <li>403 Forbidden – requesting user does not have admin privileges</li>
      *   <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      */
     @GetMapping
-    public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries() {
+    public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries(
+            @NotBlank @RequestParam String requestingUserId) {
 
         try {
-            List<Library> libraries = libService.findAll();
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            List<Library> libraries = libService.findAll(requesterId);
 
             List<ResponseLibraryDTO> response = libraries.stream()
                     .map(library -> {
                         ResponseLibraryDTO dto = LibraryMapper.toDTO(library);
                         dto.add(linkTo(methodOn(LibraryRESTController.class)
-                                .getLibrary(library.id().toString()))
+                                .getLibrary(library.id().toString(), requestingUserId))
                                 .withSelfRel());
                         return dto;
                     })
@@ -143,6 +151,8 @@ public class LibraryRESTController {
 
             return ResponseEntity.ok(response);
 
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -164,40 +174,40 @@ public class LibraryRESTController {
     /**
      * Retrieves a single Library by its unique identifier.
      *
-     * <p>The returned resource includes HATEOAS links:</p>
-     * <ul>
-     *     <li>self link</li>
-     * </ul>
+     * <p>The requesting user must be the owner of the library or an administrator.</p>
      *
-     * @param libraryId the unique identifier of the library to retrieve.
-     * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO} if found,
-     * or an error status:
+     * @param libraryId        the unique identifier of the library to retrieve
+     * @param requestingUserId the identifier of the user performing the request
+     * @return 200 OK with the library, or:
      * <ul>
-     *     <li>200 OK – when the library is found</li>
-     *     <li>404 Not Found – when no library exists for the given ID</li>
-     *     <li>400 Bad Request – if the ID format is invalid</li>
-     *     <li>500 Internal Server Error – for unexpected failures</li>
+     *   <li>400 Bad Request – invalid ID format</li>
+     *   <li>403 Forbidden – requesting user does not have permission</li>
+     *   <li>404 Not Found – library does not exist</li>
+     *   <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      */
     @GetMapping("/{libraryId}")
     public ResponseEntity<ResponseLibraryDTO> getLibrary(
-            @PathVariable String libraryId) {
-
+            @PathVariable String libraryId,
+            @NotBlank @RequestParam String requestingUserId) {
 
         try {
             LibraryId libId = LibraryMapper.toLibraryId(libraryId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
 
-            Library library = libService.findById(libId);
+            Library library = libService.findById(libId, requesterId);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibrary(libId.toString()))
+                    .getLibrary(libId.toString(), requestingUserId))
                     .withSelfRel());
 
             return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
@@ -221,7 +231,8 @@ public class LibraryRESTController {
     /**
      * Retrieves the library associated with a specific user.
      *
-     * <p>This endpoint resolves a library using the owning user's identifier.</p>
+     * <p>This endpoint resolves a library using the owning user's identifier.
+     * The requesting user must be the owner of the library or an administrator.</p>
      *
      * <p>The returned resource includes HATEOAS links:</p>
      * <ul>
@@ -229,31 +240,35 @@ public class LibraryRESTController {
      *     <li>owner links – actions available to the library owner</li>
      * </ul>
      *
-     * @param userId the unique identifier of the user whose library is to be retrieved.
+     * @param userId             the unique identifier of the user whose library is to be retrieved
+     * @param requestingUserId   the identifier of the user performing the request
      * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO} if found,
      * or an error status:
      * <ul>
      *     <li>200 OK – when the library is found</li>
-     *     <li>404 Not Found – when no library exists for the given user</li>
      *     <li>400 Bad Request – if the user ID format is invalid</li>
+     *     <li>403 Forbidden – if the requesting user does not have permission</li>
+     *     <li>404 Not Found – when no library exists for the given user</li>
      *     <li>500 Internal Server Error – for unexpected failures</li>
      * </ul>
      */
     @GetMapping("/by-user/{userId}")
-    public ResponseEntity<ResponseLibraryDTO> getLibraryByUserId(@PathVariable String userId) {
-
+    public ResponseEntity<ResponseLibraryDTO> getLibraryByUserId(
+            @PathVariable String userId,
+            @NotBlank @RequestParam String requestingUserId) {
 
         try {
             UserId ownerId = UserMapper.toUserId(userId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
 
-            Library library = libService.findByUserId(ownerId);
+            Library library = libService.findByUserId(ownerId, requesterId);
 
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(libLinkProvider.getOwnerLinks(ownerId));
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibraryByUserId(userId))
+                    .getLibraryByUserId(userId, requestingUserId))
                     .withSelfRel());
 
             return ResponseEntity.ok(result);
@@ -261,13 +276,14 @@ public class LibraryRESTController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         } catch (InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 }

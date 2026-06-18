@@ -74,29 +74,84 @@ public class LibraryService {
     /**
      * Retrieves all registered {@link Library} entities.
      *
+     * <p>Access is restricted to administrators only. The requesting user must have
+     * the {@code ADMIN} role to perform this operation.</p>
+     *
+     * @param requestingUserId the identifier of the user requesting the operation; must not be null
      * @return a list of all libraries in the system
+     * @throws InstanceNotFoundException if the requesting user does not exist
+     * @throws AccessDeniedException     if the requesting user does not have the {@code ADMIN} role
      */
-    public List<Library> findAll() {
+    public List<Library> findAll(UserId requestingUserId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(requestingUserId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + requestingUserId));
+
+        if (!policy.canGetAllLibrary(user)) {
+            throw new AccessDeniedException("You do not have permission to retrieve all libraries");
+        }
+
         return _libraryRepository.findAll();
     }
 
     /**
      * Retrieves a {@link Library} by its unique identifier.
+     *
+     * <p>Access is granted only to the owner of the library or to an administrator.
+     * The library is first retrieved, then the requesting user's authorization is validated
+     * against the library's owner before returning the result.</p>
+     *
+     * @param id               the unique identifier of the library to retrieve; must not be null
+     * @param requestingUserId the identifier of the user requesting the operation; must not be null
+     * @return the {@link Library} associated with the given identifier
+     * @throws IllegalArgumentException  if {@code id} is null
+     * @throws InstanceNotFoundException if no library exists for the given ID,
+     *                                   or if the requesting user does not exist
+     * @throws AccessDeniedException     if the requesting user is neither the owner
+     *                                   nor an administrator
      */
-    public Library findById(LibraryId id) throws InstanceNotFoundException {
+    public Library findById(LibraryId id, UserId requestingUserId) throws InstanceNotFoundException {
         Objects.requireNonNull(id, "LibraryID cannot be null");
 
-        return _libraryRepository.findById(id)
-                .orElseThrow(() ->
-                        new InstanceNotFoundException("Library not found with id: " + id));
-    }
+        Library library = _libraryRepository.findById(id)
+                .orElseThrow(() -> new InstanceNotFoundException("Library not found with id: " + id));
 
+        User user = userRepository.findByID(requestingUserId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + requestingUserId));
+
+        if (!policy.canGetLibrary(user, library.getUserId())) {
+            throw new AccessDeniedException("You do not have permission to retrieve this library");
+        }
+
+        return library;
+    }
     /**
-     * Finds and returns the {@link Library} associated with the given user ID.
+     * Retrieves the {@link Library} associated with the given user ID.
+     *
+     * <p>Access is granted only to the owner of the library or to an administrator.
+     * The requesting user's authorization is validated against the target user ID
+     * before returning the result.</p>
+     *
+     * @param userId           the identifier of the user whose library is to be retrieved;
+     *                         must not be null
+     * @param requestingUserId the identifier of the user requesting the operation;
+     *                         must not be null
+     * @return the {@link Library} associated with the given user ID
+     * @throws IllegalArgumentException  if {@code userId} is null
+     * @throws InstanceNotFoundException if no library exists for the given user ID,
+     *                                   or if the requesting user does not exist
+     * @throws AccessDeniedException     if the requesting user is neither the owner
+     *                                   nor an administrator
      */
-    public Library findByUserId(UserId userId) throws InstanceNotFoundException {
+    public Library findByUserId(UserId userId, UserId requestingUserId) throws InstanceNotFoundException {
         if (userId == null) {
             throw new IllegalArgumentException("UserId cannot be null");
+        }
+
+        User requestingUser = userRepository.findByID(requestingUserId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + requestingUserId));
+
+        if (!policy.canGetLibrary(requestingUser, userId)) {
+            throw new AccessDeniedException("You do not have permission to retrieve this library");
         }
 
         return _libraryRepository.findByUserId(userId)
