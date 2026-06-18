@@ -269,7 +269,5 @@ public class LibraryRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
-        //add validations in library service
-
     }
 }
