@@ -1,18 +1,13 @@
 package TOPSECRET.persistence.mem;
 
-import TOPSECRET.domain.Enum.TransactionStatus;
+import TOPSECRET.domain.Transaction.ITransactionRepository;
 import TOPSECRET.domain.Transaction.Transaction;
-import TOPSECRET.domain.Transaction.TransactionFactory;
-import TOPSECRET.domain.ValueObjects.AuctionId;
-import TOPSECRET.domain.ValueObjects.DirectSaleID;
-import TOPSECRET.domain.ValueObjects.Price;
-import TOPSECRET.domain.ValueObjects.UserId;
+import TOPSECRET.domain.ValueObjects.TransactionID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.management.InstanceAlreadyExistsException;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -20,126 +15,144 @@ import static org.mockito.Mockito.when;
 
 class TransactionRepositoryMemTest {
 
-    private TransactionFactory transactionFactory;
-    private TransactionRepositoryMem repository;
-
-    private UserId buyer;
-    private AuctionId auction;
-    private DirectSaleID directSale;
-    private Price price;
-    private List<UserId> sellers;
     private Transaction transaction;
-
-    private LocalDateTime transactionDate;
-    private LocalDateTime paymentDate;
-    private TransactionStatus status;
+    private TransactionID transactionId;
 
     @BeforeEach
     void setUp() {
-        transactionFactory = mock(TransactionFactory.class);
-        repository = new TransactionRepositoryMem(transactionFactory);
-
-        buyer = mock(UserId.class);
-        auction = mock(AuctionId.class);
-        directSale = mock(DirectSaleID.class);
-        price = mock(Price.class);
-        sellers = List.of(mock(UserId.class));
-
         transaction = mock(Transaction.class);
+        transactionId = mock(TransactionID.class);
 
-        transactionDate = LocalDateTime.now();
-        paymentDate = LocalDateTime.now().plusDays(1);
-        status = TransactionStatus.PENDING;
+        when(transaction.id()).thenReturn(transactionId);
     }
 
     @Test
-    void createAndAddFromAuction_shouldAddTransaction_whenNotExisting() throws Exception {
-
+    void save_shouldStoreTransaction_whenNotExisting() {
         // Arrange
-        when(transactionFactory.createFromAuction(
-                buyer, auction, price, transactionDate, paymentDate, sellers, status))
-                .thenReturn(transaction);
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act
-        Transaction result = repository.createAndAddFromAuction(
-                buyer, auction, price, transactionDate, paymentDate, sellers, status
-        );
+        Transaction result = repository.save(transaction);
 
         // Assert
         assertEquals(transaction, result);
-        assertTrue(repository.getAllTransactions().contains(transaction));
+        assertTrue(repository.findAll().contains(transaction));
     }
 
     @Test
-    void createAndAddFromAuction_shouldThrowException_whenAlreadyExisting() throws Exception {
+    void save_shouldThrowException_whenTransactionIsNull() {
+        // Arrange
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
-        //Arrange
-        when(transactionFactory.createFromAuction(
-                buyer, auction, price, transactionDate, paymentDate, sellers, status))
-                .thenReturn(transaction);
-
-        repository.createAndAddFromAuction(buyer, auction, price, transactionDate,
-                paymentDate, sellers, status);
-
-        //Act + assert
-        assertThrows(InstanceAlreadyExistsException.class, () -> repository.createAndAddFromAuction(
-                        buyer, auction, price, transactionDate, paymentDate, sellers, status
-                )
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.save(null)
         );
     }
 
     @Test
-    void createAndAddFromDirectSale_shouldAddTransaction_whenNotExisting() throws Exception {
+    void save_shouldThrowException_whenTransactionAlreadyExists() {
         // Arrange
-        when(transactionFactory.createFromDirectSale(
-                buyer, price, directSale, transactionDate, paymentDate, sellers, status))
-                .thenReturn(transaction);
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
         // Act
-        Transaction result = repository.createAndAddFromDirectSale(
-                buyer, price, directSale, transactionDate, paymentDate, sellers, status
+        repository.save(transaction);
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.save(transaction)
         );
+    }
+
+    @Test
+    void findById_shouldReturnTransaction_whenExisting() {
+        // Arrange
+        ITransactionRepository repository = new TransactionRepositoryMem();
+
+        // Act
+        repository.save(transaction);
+
+        Optional<Transaction> result = repository.findById(transactionId);
 
         // Assert
-        assertEquals(transaction, result);
-        assertTrue(repository.getAllTransactions().contains(transaction));
+        assertTrue(result.isPresent());
+        assertEquals(transaction, result.get());
     }
 
     @Test
-    void createAndAddFromDirectSale_shouldThrowException_whenTransactionAlreadyExists() throws Exception {
+    void findById_shouldReturnEmpty_whenNotExisting() {
         // Arrange
-        when(transactionFactory.createFromDirectSale(
-                buyer, price, directSale, transactionDate, paymentDate, sellers, status))
-                .thenReturn(transaction);
+        ITransactionRepository repository = new TransactionRepositoryMem();
 
-        repository.createAndAddFromDirectSale(buyer, price, directSale, transactionDate,
-                paymentDate, sellers, status);
-
-        // Act & Assert
-        assertThrows(InstanceAlreadyExistsException.class, () ->
-                repository.createAndAddFromDirectSale(
-                        buyer, price, directSale, transactionDate, paymentDate, sellers, status
-                )
-        );
-    }
-
-    @Test
-    void getAllTransactions_shouldReturnCopy_notOriginalList() throws Exception {
-        // Arrange
-        when(transactionFactory.createFromAuction(buyer, auction, price, transactionDate, paymentDate,
-                sellers, status))
-                .thenReturn(transaction);
-
-        repository.createAndAddFromAuction(
-                buyer, auction, price, transactionDate, paymentDate,
-                sellers, status
-        );
+        TransactionID otherId = mock(TransactionID.class);
 
         // Act
-        List<Transaction> result = repository.getAllTransactions();
+        Optional<Transaction> result = repository.findById(otherId);
+
+        // Assert
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void findById_shouldThrowException_whenIdIsNull() {
+        // Arrange
+        ITransactionRepository repository = new TransactionRepositoryMem();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.findById(null)
+        );
+    }
+
+    @Test
+    void existsById_shouldReturnTrue_whenExisting() {
+        // Arrange
+        ITransactionRepository repository = new TransactionRepositoryMem();
+
+        // Act
+        repository.save(transaction);
+
+        // Arrange
+        assertTrue(repository.existsById(transactionId));
+    }
+
+    @Test
+    void existsById_shouldReturnFalse_whenNotExisting() {
+        // Arrange
+        ITransactionRepository repository = new TransactionRepositoryMem();
+
+        TransactionID otherId = mock(TransactionID.class);
+
+        // Act+Assert
+        assertFalse(repository.existsById(otherId));
+    }
+
+    @Test
+    void existsById_shouldThrowException_whenIdIsNull() {
+        // Arrange
+        ITransactionRepository repository = new TransactionRepositoryMem();
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () ->
+                repository.existsById(null)
+        );
+    }
+
+    @Test
+    void findAll_shouldReturnImmutableCopy() {
+        // Arrange
+        ITransactionRepository repository = new TransactionRepositoryMem();
+
+        // Act
+        repository.save(transaction);
+
+        List<Transaction> result = repository.findAll();
 
         // Assert
         assertEquals(1, result.size());
-        assertThrows(UnsupportedOperationException.class, () -> result.add(mock(Transaction.class)));
+        assertTrue(result.contains(transaction));
+        assertThrows(UnsupportedOperationException.class, () ->
+                result.add(mock(Transaction.class))
+        );
     }
 }

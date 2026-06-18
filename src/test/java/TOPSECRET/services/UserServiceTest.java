@@ -85,7 +85,7 @@ class UserServiceTest {
         when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.empty());
 
         // Act + Assert
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NoSuchElementException.class,
                 () -> service.createAndSave("user", profileDouble, Set.of(UserRole.NORMAL_USER), requesterIdDouble));
     }
 

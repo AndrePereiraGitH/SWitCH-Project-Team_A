@@ -1,5 +1,6 @@
 package TOPSECRET.dataInitializers;
 
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.Listing.ListingFactory;
@@ -53,8 +54,10 @@ public class ListingDataInitializer implements ApplicationRunner {
                 new Price(BigDecimal.valueOf(24.99)),
                 "Paperback edition in poor condition.",
                 new UserId("user-001"),
+                null,
                 List.of(new Picture("https://example.com/images/lotr.jpg")),
-                LocalDate.now());
+                LocalDate.now(),
+                ListingStatus.ACTIVE);
     }
 
     /**
@@ -72,8 +75,10 @@ public class ListingDataInitializer implements ApplicationRunner {
                 new Price(BigDecimal.valueOf(45.00)),
                 "Collection of classic Portuguese and Spanish literature.",
                 new UserId("user-002"),
+                null,
                 List.of(new Picture("https://example.com/images/bundle.jpg")),
-                LocalDate.now());
+                LocalDate.now(),
+                ListingStatus.ACTIVE);
     }
 
     /**
@@ -88,8 +93,10 @@ public class ListingDataInitializer implements ApplicationRunner {
                 new Price(BigDecimal.valueOf(89.99)),
                 "Hardcover collector's edition in poor condition.",
                 new UserId("user-003"),
+                null,
                 List.of(new Picture("https://example.com/images/foundation.jpg")),
-                LocalDate.now());
+                LocalDate.now(),
+                ListingStatus.ACTIVE);
     }
 
     /**
@@ -104,8 +111,11 @@ public class ListingDataInitializer implements ApplicationRunner {
                 new Price(BigDecimal.valueOf(10.00)),
                 "Starting bid is low for this classic.",
                 new UserId("user-002"),
+                null,
                 List.of(),
-                LocalDate.now());
+                LocalDate.now(),
+                ListingStatus.ACTIVE
+        );
     }
 
     /**
@@ -120,7 +130,10 @@ public class ListingDataInitializer implements ApplicationRunner {
                 new Price(BigDecimal.valueOf(10.00)),
                 "Very good condition copy.",
                 new UserId("user-001"),
+                null,
                 List.of(new Picture("https://example.com/images/lotr-auction.jpg")),
-                LocalDate.now());
+                LocalDate.now(),
+                ListingStatus.ACTIVE
+        );
     }
 }

@@ -517,4 +517,42 @@ public class PublicationSampleService {
 
         return publicationAssignedToCollection;
     }
+
+    /**
+     * Retrieves all {@link PublicationSample} instances belonging to a public collection.
+     *
+     * <p>Unlike {@link #findByCollectionOfPublicationsId}, this method does not enforce
+     * ownership — any registered user may access the publications of a collection that
+     * is currently public.</p>
+     *
+     * @param collectionId the identifier of the collection to retrieve publications from;
+     *                     must not be {@code null}
+     * @param userId       the identifier of the requesting user; must not be {@code null}
+     * @return a list of {@link PublicationSample} instances belonging to the collection;
+     *         may be empty
+     * @throws InstanceNotFoundException if the collection or user cannot be found
+     * @throws AccessDeniedException     if the user lacks the required role, or if the
+     *                                   collection is not currently public
+     */
+    public List<PublicationSample> findPublicationsInPublicCollection(CollectionOfPublicationsId collectionId, UserId userId)
+            throws InstanceNotFoundException {
+
+        Objects.requireNonNull(collectionId, "CollectionId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        if (!policy.canFindByCollectionOfPublicationsId(user)) {
+            throw new AccessDeniedException("Access denied");
+        }
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
+
+        if (!collection.isCurrentlyPublic()) {
+            throw new AccessDeniedException("Collection is not public");
+        }
+
+        return publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+    }
 }

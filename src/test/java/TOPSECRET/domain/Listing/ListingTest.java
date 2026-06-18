@@ -30,8 +30,10 @@ class ListingTest {
     private PublicationSampleId pub1IdDouble;
     private PublicationSampleId pub2IdDouble;
     private UserId validSellerIdDouble;
+    private UserId validBuyerIdDouble;
     private ListingFactory listingFactory;
     private LocalDate date;
+    private ListingStatus listingStatus;
 
     @BeforeEach
     void setup() {
@@ -43,8 +45,11 @@ class ListingTest {
         oneItemList = List.of(pub1IdDouble);
         severalItemList = List.of(pub1IdDouble, pub2IdDouble);
         validSellerIdDouble = mock(UserId.class);
+        validBuyerIdDouble = mock(UserId.class);
         listingFactory = new ListingFactory();
         date = LocalDate.now();
+        listingStatus = ListingStatus.ACTIVE;
+
     }
 
 
@@ -125,11 +130,46 @@ class ListingTest {
         ListingId listingIdDouble = mock(ListingId.class);
 
         // Act
-        Listing listing = new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                validPrice, validDescription, validSellerIdDouble, validPictures,date);
+        Listing listing = new Listing(
+                listingIdDouble,
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                null,
+                validPictures,
+                date,
+                listingStatus);
 
         // Assert
         assertNotNull(listing);
+    }
+
+    @Test
+    void constructor_shouldCreateSoldListingWithBuyerId() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act
+        Listing listing = new Listing(
+                listingIdDouble,
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                validBuyerIdDouble,
+                validPictures,
+                date,
+                ListingStatus.SOLD);
+
+        // Assert
+        assertNotNull(listing);
+        assertEquals(validBuyerIdDouble, listing.getBuyerId());
+        assertEquals(ListingStatus.SOLD, listing.getListingStatus());
     }
 
     @Test
@@ -138,8 +178,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new Listing(null, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
+                new Listing(
+                        null,
+                        validTitle,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -149,8 +199,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Listing(listingIdDouble, null, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
+                new Listing(
+                        listingIdDouble,
+                        null,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -160,8 +220,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Listing(listingIdDouble, validTitle, null, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        null,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -171,8 +241,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(NullPointerException.class, () ->
-                new Listing(listingIdDouble, validTitle, oneItemList, null,
-                        validPrice, validDescription, validSellerIdDouble, validPictures,date));
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        oneItemList,
+                        null,
+                        validPrice,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -182,8 +262,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        null, validDescription, validSellerIdDouble, validPictures,date));
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        null,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -193,8 +283,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, null, validSellerIdDouble, validPictures,date));
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        null,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -204,8 +304,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, null, validPictures,date));
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        validDescription,
+                        null,
+                        null,
+                        validPictures,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -215,8 +325,18 @@ class ListingTest {
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                        validPrice, validDescription, validSellerIdDouble, null,date));
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        null,
+                        date,
+                        listingStatus));
     }
 
     @Test
@@ -225,11 +345,63 @@ class ListingTest {
         ListingId listingIdDouble = mock(ListingId.class);
 
         // Act
-        Listing listing = new Listing(listingIdDouble, validTitle, oneItemList, SaleType.DIRECT_SALE,
-                validPrice, validDescription, validSellerIdDouble, validPictures,date);
+        Listing listing = new Listing(
+                listingIdDouble,
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                null,
+                validPictures,
+                date,
+                listingStatus);
 
         // Assert
         assertSame(listingIdDouble, listing.id());
+    }
+
+    @Test
+    void constructor_shouldThrowWhenListingStatusIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () ->
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        date,
+                        null));
+    }
+
+    @Test
+    void constructor_shouldThrowWhenPublicationDateIsNull() {
+        // Arrange
+        ListingId listingIdDouble = mock(ListingId.class);
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () ->
+                new Listing(
+                        listingIdDouble,
+                        validTitle,
+                        oneItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        validDescription,
+                        validSellerIdDouble,
+                        null,
+                        validPictures,
+                        null,
+                        listingStatus));
     }
 
     // ========== DESCRIPTION VALIDATION TESTS ==========
@@ -241,7 +413,14 @@ class ListingTest {
 
         //Act & Assert
         assertThrows(IllegalArgumentException.class,
-                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, invalidDescription, validSellerIdDouble, validPictures));
+                () -> listingFactory.create(
+                        validTitle,
+                        severalItemList,
+                        SaleType.DIRECT_SALE,
+                        validPrice,
+                        invalidDescription,
+                        validSellerIdDouble,
+                        validPictures));
     }
 
     @Test
@@ -433,6 +612,42 @@ class ListingTest {
 
         //Assert
         assertEquals(date, LocalDate.now());
+    }
+
+    @Test
+    void shouldReturnPublicationStatus() {
+        //Arrange
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        ListingStatus status = listing.getListingStatus();
+
+        //Assert
+        assertEquals(status, ListingStatus.ACTIVE);
+    }
+
+    @Test
+    void shouldReturnNullBuyerId_whenListingNotSold() {
+        //Arrange
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        UserId buyerId = listing.getBuyerId();
+
+        //Assert
+        assertNull(buyerId);
+    }
+
+    @Test
+    void shouldReturnBuyerId_whenListingSold() {
+        //Arrange
+        Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        //Act
+        listing.markListingAsSold(validBuyerIdDouble);
+
+        //Assert
+        assertEquals(validBuyerIdDouble, listing.getBuyerId());
     }
 
     // ========== ID VALIDATION TESTS ==========
@@ -660,6 +875,38 @@ class ListingTest {
     }
 
     @Test
+    void sameAsShouldReturnFalseWhenListingStatusDiffers() {
+        // Arrange
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+        listing2.markListingAsSold(validBuyerIdDouble);
+
+        // Act
+        boolean result = listing1.sameAs(listing2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void sameAsShouldReturnFalseWhenBuyerIdDiffers() {
+        // Arrange
+        Listing listing1 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+        listing1.markListingAsSold(validBuyerIdDouble);
+
+        Listing listing2 = listingFactory.create(validTitle, List.of(pub1IdDouble), SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
+        UserId otherBuyerIdDouble = mock(UserId.class);
+        listing2.markListingAsSold(otherBuyerIdDouble);
+
+        // Act
+        boolean result = listing1.sameAs(listing2);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
     void sameAsShouldReturnFalseWhenObjectIsNotAListing() {
         // Act
         Listing listing = listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validSellerIdDouble, validPictures);
@@ -676,61 +923,6 @@ class ListingTest {
         // Assert
         assertFalse(listing.sameAs(null));
     }
-
-
-
-
-    // ========== PUBLICATION STATUS VALIDATION TESTS ==========
-
-    // With DDD (and the use of IDs to communicate between aggregates) the following methods don't apply (they should be on
-    // the application layer, but we don't have it yet)
-
-//    /**
-//     * Tests that an {@link IllegalArgumentException} is thrown when attempting to create a listing
-//     * with an item that already has a {@link PublicationStatus#FOR_SALE} status from a previously
-//     * created listing.
-//     */
-//    @Test
-//    void shouldThrowAnExceptionWhenAnItemIsAlreadyInAListing() {
-//        //Arrange
-//        listingFactory.create(validTitle, oneItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validPictures);
-//
-//        //Act & Assert
-//        assertEquals(PublicationStatus.FOR_SALE, oneItemList.get(0).getPublicationStatus());
-//        assertThrows(IllegalArgumentException.class,
-//                () -> listingFactory.create(validTitle, severalItemList, SaleType.DIRECT_SALE, validPrice, validDescription, validPictures));
-//    }
-//
-//    /**
-//     * Tests that an {@link IllegalArgumentException} is thrown when attempting to create a listing
-//     * with an item that already has a {@link PublicationStatus#SOLD} status.
-//     */
-//    @Test
-//    void shouldThrowExceptionWhenItemIsAlreadySold() {
-//        //Arrange
-//        PublicationSample pubSampleWithSoldStatus = mock(PublicationSample.class);
-//        when(pubSampleWithSoldStatus.getPublicationStatus()).thenReturn(PublicationStatus.SOLD);
-//
-//        //Act & Assert
-//        assertThrows(IllegalArgumentException.class,
-//                () -> listingFactory.create(validTitle, List.of(pubSampleWithSoldStatus), SaleType.DIRECT_SALE, validPrice, validDescription, validPictures));
-//    }
-//
-//    /**
-//     * Tests that all publication samples in the listing have their status automatically set
-//     * to {@link PublicationStatus#FOR_SALE} upon listing creation.
-//     */
-//    @Test
-//    void shouldChangePublicationSampleStatusToSale() {
-//        //Arrange
-//
-//        //Act
-//        Listing validListing = listingFactory.create(validTitle, List.of(pub1Id), SaleType.DIRECT_SALE, validPrice, validDescription, validPictures);
-//        PublicationStatus actualStatus = validListing.getItems().get(0).getPublicationStatus();
-//
-//        //Assert
-//        assertEquals(PublicationStatus.FOR_SALE, actualStatus);
-//    }
 
 
     // ========== isListingLinkedToAnAuction TESTS ==========
@@ -825,30 +1017,83 @@ class ListingTest {
 
     }
 
+    // ========== markListingAsSold TESTS ==========
 
+    @Test
+    void markListingAsSold_shouldChangeStatusToSold() {
+        // Arrange
+        Listing validListing = listingFactory.create(
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                validPictures
+        );
 
-    // ========== HELPER METHODS ==========
+        // Act
+        validListing.markListingAsSold(validBuyerIdDouble);
 
-//    /**
-//     * Creates a mock {@link PublicationSample} that simulates real status transitions.
-//     * The mock starts with {@link PublicationStatus#READING} and correctly transitions
-//     * to {@link PublicationStatus#FOR_SALE} when {@code changeStatusToForSale()} is called,
-//     * mimicking the behaviour of a real domain object.
-//     *
-//     * @return a configured mock {@link PublicationSample}
-//     */
-//    private PublicationSample createMockValidPublicationSample() {
-//        PublicationSample pub = mock(PublicationSample.class);
-//
-//        PublicationStatus[] status = {PublicationStatus.READING};
-//
-//        when(pub.getPublicationStatus()).thenAnswer(inv -> status[0]);
-//
-//        doAnswer(inv -> {
-//            status[0] = PublicationStatus.FOR_SALE;
-//            return null;
-//        }).when(pub).changeStatusToForSale();
-//
-//        return pub;
-//    }
+        // Assert
+        assertEquals(ListingStatus.SOLD, validListing.getListingStatus(), "Listing status should be updated to SOLD.");
+    }
+
+    @Test
+    void markListingAsSold_shouldSetBuyerId() {
+        // Arrange
+        Listing validListing = listingFactory.create(
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                validPictures
+        );
+
+        // Act
+        validListing.markListingAsSold(validBuyerIdDouble);
+
+        // Assert
+        assertEquals(validBuyerIdDouble, validListing.getBuyerId(), "Buyer ID should be recorded after sale.");
+    }
+
+    @Test
+    void markListingAsSold_shouldReturnSameInstance() {
+        // Arrange
+        Listing validListing = listingFactory.create(
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                validPictures
+        );
+
+        // Act
+        Listing returnedListing = validListing.markListingAsSold(validBuyerIdDouble);
+
+        // Assert
+        assertSame(validListing, returnedListing, "Method should return the same Listing instance to support method chaining.");
+    }
+
+    @Test
+    void markListingAsSold_shouldThrowNullPointerException_whenBuyerIdIsNull() {
+        // Arrange
+        Listing validListing = listingFactory.create(
+                validTitle,
+                oneItemList,
+                SaleType.DIRECT_SALE,
+                validPrice,
+                validDescription,
+                validSellerIdDouble,
+                validPictures
+        );
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> validListing.markListingAsSold(null));
+    }
+
 }

@@ -36,87 +36,24 @@ class UserLinkProviderTest {
     private UserLinkProvider sut;
 
     // ================================================================
-    // getPublicLinks
-    // ================================================================
-
-    @Test
-    void getPublicLinks_shouldReturnEmptyList() {
-        // Act
-        List<Link> result = sut.getPublicLinks();
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    // ================================================================
-    // getAdminLinks
-    // ================================================================
-
-    @Test
-    void getAdminLinks_shouldReturnThreeLinks_whenUserIsAdmin() throws InstanceNotFoundException {
-        // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
-
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canRegisterUser(userDouble)).thenReturn(true);
-
-        // Act
-        List<Link> result = sut.getAdminLinks(userIdDouble);
-
-        // Assert
-        assertEquals(3, result.size());
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-user")));
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-all-users")));
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("register-user")));
-    }
-
-    @Test
-    void getAdminLinks_shouldReturnEmptyList_whenUserIsNotAdmin() throws InstanceNotFoundException {
-        // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
-
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canRegisterUser(userDouble)).thenReturn(false);
-
-        // Act
-        List<Link> result = sut.getAdminLinks(userIdDouble);
-
-        // Assert
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getAdminLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
-        // Arrange
-        UserId userIdDouble = mock(UserId.class);
-
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThrows(InstanceNotFoundException.class, () -> sut.getAdminLinks(userIdDouble));
-    }
-
-    // ================================================================
     // getLinks
     // ================================================================
 
     @Test
-    void getLinks_shouldReturnThreeLinks_whenUserIsAdmin() throws InstanceNotFoundException {
+    void getLinks_shouldReturnTwoLinks_whenUserIsAdmin() throws InstanceNotFoundException {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
+        UserId requesterIdDouble = mock(UserId.class);
+        User requesterDouble = mock(User.class);
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canRegisterUser(userDouble)).thenReturn(true);
+        when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.of(requesterDouble));
+        when(authPolicy.canFindAllUsers(requesterDouble)).thenReturn(true);
+        when(authPolicy.canRegisterUser(requesterDouble)).thenReturn(true);
 
         // Act
-        List<Link> result = sut.getLinks(userIdDouble);
+        List<Link> result = sut.getLinks(requesterIdDouble);
 
         // Assert
-        assertEquals(3, result.size());
-        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-user")));
+        assertEquals(2, result.size());
         assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-all-users")));
         assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("register-user")));
     }
@@ -124,14 +61,15 @@ class UserLinkProviderTest {
     @Test
     void getLinks_shouldReturnEmptyList_whenUserIsNotAdmin() throws InstanceNotFoundException {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
+        UserId requesterIdDouble = mock(UserId.class);
+        User requesterDouble = mock(User.class);
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canRegisterUser(userDouble)).thenReturn(false);
+        when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.of(requesterDouble));
+        when(authPolicy.canFindAllUsers(requesterDouble)).thenReturn(false);
+        when(authPolicy.canRegisterUser(requesterDouble)).thenReturn(false);
 
         // Act
-        List<Link> result = sut.getLinks(userIdDouble);
+        List<Link> result = sut.getLinks(requesterIdDouble);
 
         // Assert
         assertTrue(result.isEmpty());
@@ -140,47 +78,58 @@ class UserLinkProviderTest {
     @Test
     void getLinks_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
+        UserId requesterIdDouble = mock(UserId.class);
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
+        when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(InstanceNotFoundException.class, () -> sut.getLinks(userIdDouble));
+        assertThrows(InstanceNotFoundException.class, () -> sut.getLinks(requesterIdDouble));
     }
 
     // ================================================================
-    // getLinksForUsers
+    // getLinksForUserResource
     // ================================================================
 
     @Test
-    void getLinksForUsers_shouldReturnTwoLinks_whenUserIsAuthorized() {
+    void getLinksForUserResource_shouldReturnThreeLinks_whenRequesterIsAdminAndCanAccessUser()
+            throws InstanceNotFoundException {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
+        UserId requesterIdDouble = mock(UserId.class);
+        UserId targetUserIdDouble = mock(UserId.class);
+        User requesterDouble = mock(User.class);
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canRegisterUser(userDouble)).thenReturn(true);
+        when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.of(requesterDouble));
+
+        when(authPolicy.canFindUserById(requesterDouble, targetUserIdDouble)).thenReturn(true);
+        when(authPolicy.canFindAllUsers(requesterDouble)).thenReturn(true);
+        when(authPolicy.canRegisterUser(requesterDouble)).thenReturn(true);
 
         // Act
-        List<Link> result = sut.getLinksForUsers(userIdDouble);
+        List<Link> result = sut.getLinksForUserResource(requesterIdDouble, targetUserIdDouble);
 
         // Assert
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
         assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-user")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("get-all-users")));
         assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("register-user")));
     }
 
     @Test
-    void getLinksForUsers_shouldReturnOneLink_whenUserIsNotAuthorized() {
+    void getLinksForUserResource_shouldReturnOneLink_whenRequesterCanOnlyAccessOwnUser()
+            throws InstanceNotFoundException {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
+        UserId requesterIdDouble = mock(UserId.class);
+        UserId targetUserIdDouble = mock(UserId.class);
+        User requesterDouble = mock(User.class);
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.of(userDouble));
-        when(authPolicy.canRegisterUser(userDouble)).thenReturn(false);
+        when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.of(requesterDouble));
+
+        when(authPolicy.canFindUserById(requesterDouble, targetUserIdDouble)).thenReturn(true);
+        when(authPolicy.canFindAllUsers(requesterDouble)).thenReturn(false);
+        when(authPolicy.canRegisterUser(requesterDouble)).thenReturn(false);
 
         // Act
-        List<Link> result = sut.getLinksForUsers(userIdDouble);
+        List<Link> result = sut.getLinksForUserResource(requesterIdDouble, targetUserIdDouble);
 
         // Assert
         assertEquals(1, result.size());
@@ -188,17 +137,38 @@ class UserLinkProviderTest {
     }
 
     @Test
-    void getLinksForUsers_shouldReturnOneLink_whenUserDoesNotExist() {
+    void getLinksForUserResource_shouldReturnEmptyList_whenRequesterCannotAccessUser()
+            throws InstanceNotFoundException {
         // Arrange
-        UserId userIdDouble = mock(UserId.class);
+        UserId requesterIdDouble = mock(UserId.class);
+        UserId targetUserIdDouble = mock(UserId.class);
+        User requesterDouble = mock(User.class);
 
-        when(userRepository.findByID(userIdDouble)).thenReturn(Optional.empty());
+        when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.of(requesterDouble));
+
+        when(authPolicy.canFindUserById(requesterDouble, targetUserIdDouble)).thenReturn(false);
+        when(authPolicy.canFindAllUsers(requesterDouble)).thenReturn(false);
+        when(authPolicy.canRegisterUser(requesterDouble)).thenReturn(false);
 
         // Act
-        List<Link> result = sut.getLinksForUsers(userIdDouble);
+        List<Link> result = sut.getLinksForUserResource(requesterIdDouble, targetUserIdDouble);
 
         // Assert
-        assertEquals(1, result.size());
-        assertEquals("get-user", result.get(0).getRel().value());
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getLinksForUserResource_shouldThrowInstanceNotFoundException_whenRequesterDoesNotExist() {
+        // Arrange
+        UserId requesterIdDouble = mock(UserId.class);
+        UserId targetUserIdDouble = mock(UserId.class);
+
+        when(userRepository.findByID(requesterIdDouble)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> sut.getLinksForUserResource(requesterIdDouble, targetUserIdDouble)
+        );
     }
 }

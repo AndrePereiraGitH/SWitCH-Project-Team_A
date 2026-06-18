@@ -27,4 +27,18 @@ public class ListingAuthorizationPolicy {
         return user.getUserRoles().contains(UserRole.NORMAL_USER);
     }
 
+    /**
+     * Determines whether the given user can buy a listing.
+     *
+     * <p>A user can buy a listing when they have the
+     * {@link UserRole#NORMAL_USER} role.</p>
+     *
+     * @param user the user whose permissions should be checked
+     * @return {@code true} if the user has permission to buy a listing;
+     *         {@code false} otherwise
+     */
+    public boolean canBuyListing(User user) {
+        return user.getUserRoles().contains(UserRole.NORMAL_USER);
+    }
+
 }

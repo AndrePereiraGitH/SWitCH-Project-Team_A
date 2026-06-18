@@ -1,6 +1,7 @@
 package TOPSECRET.domain.Listing;
 
 import TOPSECRET.ddd.AggregateRoot;
+import TOPSECRET.domain.Enum.ListingStatus;
 import TOPSECRET.domain.Enum.SaleType;
 import TOPSECRET.domain.ValueObjects.*;
 
@@ -35,8 +36,10 @@ public class Listing implements AggregateRoot<ListingId> {
     private final Price _price;
     private final String _shortDescription;
     private final UserId _sellerId;
+    private UserId _buyerId;
     private final List<Picture> _pictures;
     private final LocalDate _publicationDate;
+    private ListingStatus _listingStatus;
 
     // ============================================================
     // ============== CONSTRUCTOR =================================
@@ -80,8 +83,10 @@ public class Listing implements AggregateRoot<ListingId> {
         _price = validatePrice(price);
         _shortDescription = validateDescription(shortDescription);
         _sellerId = validateSellerId(sellerId);
+        _buyerId = null;
         _pictures = List.copyOf(validatePictures(pictures));
         _publicationDate = LocalDate.now();
+        _listingStatus = ListingStatus.ACTIVE;
 
     }
 
@@ -89,8 +94,7 @@ public class Listing implements AggregateRoot<ListingId> {
      * Reconstructs an existing {@link Listing} from a known state, typically when rehydrating
      * from persistence.
      *
-     * <p>This constructor is protected and intended for use by the domain factory only,
-     * via {@link ListingFactory#create(ListingId, String, List, SaleType, Price, String, UserId, List, LocalDate)}.
+     * <p>This constructor is protected and intended for use by the domain factory only
      * Unlike the creation constructor, this does not generate a new identifier —
      * it uses the {@link ListingId} provided.
      *
@@ -115,8 +119,10 @@ public class Listing implements AggregateRoot<ListingId> {
                       Price price,
                       String shortDescription,
                       UserId sellerId,
+                      UserId buyerId,
                       List<Picture> pictures,
-                      LocalDate publicationDate) {
+                      LocalDate publicationDate,
+                      ListingStatus listingStatus) {
 
         _listingId = Objects.requireNonNull(listingId, "Listing ID cannot be null.");
         _listingTitle = validateTitle(listingTitle);
@@ -125,17 +131,15 @@ public class Listing implements AggregateRoot<ListingId> {
         _price = validatePrice(price);
         _shortDescription = validateDescription(shortDescription);
         _sellerId = validateSellerId(sellerId);
+        _buyerId = buyerId;
         _pictures = List.copyOf(validatePictures(pictures));
         _publicationDate = Objects.requireNonNull(publicationDate, "Publication date cannot be null.");
+        _listingStatus = Objects.requireNonNull(listingStatus, "Listing status cannot be null.");
     }
 
     // ============================================================
     // ================= BUSINESS METHODS =========================
     // ============================================================
-
-    // TODO: validate PublicationSample state in Application Layer
-    // With DDD (and the use of IDs to communicate between aggregates) the following methods don't apply (they should be on
-    // the application layer, but we don't have it yet)
 
 
     /**
@@ -176,6 +180,23 @@ public class Listing implements AggregateRoot<ListingId> {
         return false;
     }
 
+    /**
+     * Marks the current listing as sold by the given buyer.
+     * <p>
+     * This method transitions the internal state of the listing by setting
+     * its status to {@link ListingStatus#SOLD} and recording the buyer's identity.
+     *
+     * @param buyerId the identifier of the user who purchased this listing; must not be {@code null}
+     * @return the current {@link Listing} instance updated to the sold state
+     * @throws NullPointerException if {@code buyerId} is {@code null}
+     */
+    public Listing markListingAsSold(UserId buyerId){
+        Objects.requireNonNull(buyerId, "Buyer ID cannot be null.");
+        _buyerId = buyerId;
+        _listingStatus = ListingStatus.SOLD;
+        return this;
+    }
+
 
     // ============================================================
     // ============== GETTERS =====================================
@@ -214,6 +235,19 @@ public class Listing implements AggregateRoot<ListingId> {
         return _publicationDate;
     }
 
+    public ListingStatus getListingStatus() {
+        return _listingStatus;
+    }
+
+    /**
+     * Returns the identifier of the user who purchased this listing.
+     *
+     * @return the buyer's {@link UserId}, or {@code null} if the listing has not been sold
+     */
+    public UserId getBuyerId() {
+        return _buyerId;
+    }
+
     @Override
     public ListingId id() {
         return _listingId;
@@ -234,16 +268,16 @@ public class Listing implements AggregateRoot<ListingId> {
     @Override
     public boolean sameAs(Object object) {
         if (!(object instanceof Listing)) return false;
-
         Listing other = (Listing) object;
-
         return this._listingTitle.equals(other._listingTitle)
                 && this._itemsId.equals(other._itemsId)
                 && this._saleType.equals(other._saleType)
                 && this._price.equals(other._price)
                 && this._shortDescription.equals(other._shortDescription)
                 && this._sellerId.equals(other._sellerId)
-                && this._pictures.equals(other._pictures);
+                && this._pictures.equals(other._pictures)
+                && this._listingStatus == other._listingStatus
+                && Objects.equals(this._buyerId, other._buyerId);
     }
 
 
