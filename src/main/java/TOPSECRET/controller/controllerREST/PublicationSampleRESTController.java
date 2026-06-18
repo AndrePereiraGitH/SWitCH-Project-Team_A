@@ -650,6 +650,15 @@ public class PublicationSampleRESTController {
         }
     }
 
+    @RequestMapping(value = "/{collectionId}/available", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsAvailableForCollection() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+
     /**
      * Retrieves all publication samples belonging to the specified public collection.
      *
@@ -669,7 +678,7 @@ public class PublicationSampleRESTController {
      *     <li>{@code 500 INTERNAL SERVER ERROR} if an unexpected error occurs</li>
      * </ul>
      */
-    @GetMapping("{collectionId}/publication-sample")
+    @GetMapping("/{collectionId}/shared-publications")
     public ResponseEntity<List<PublicationDTO>> findPublicationSampleInSharedCollection(
             @PathVariable("collectionId") String collectionId,
             @RequestParam String userId) {
@@ -683,7 +692,7 @@ public class PublicationSampleRESTController {
 
             List<PublicationDTO> publicationDTOS = new ArrayList<>();
             for (PublicationSample pbSample : pbSampleList) {
-                publicationDTOS.add(toPublicationDTO(pbSample, id, LinkContext.OWNER));
+                publicationDTOS.add(toPublicationDTO(pbSample));
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(publicationDTOS);
@@ -699,8 +708,8 @@ public class PublicationSampleRESTController {
         }
     }
 
-    @RequestMapping(value = "/{collectionId}/available", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsAvailableForCollection() {
+    @RequestMapping(value = "/{collectionId}/shared-publications", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsPublicationSampleInSharedCollection() {
         return ResponseEntity.ok()
                 .allow(HttpMethod.GET,
                         HttpMethod.OPTIONS)

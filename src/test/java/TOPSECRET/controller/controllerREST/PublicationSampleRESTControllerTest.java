@@ -55,10 +55,13 @@ import static org.mockito.Mockito.*;
  *   <li><b>findByBibliographicalDataIdIn</b> — filter by multiple BD IDs.</li>
  *   <li><b>findByEditionIdIn</b> — filter by edition IDs.</li>
  *   <li><b>findByCollectionOfPublicationsId</b> — filter by collection with authorization.</li>
+ *   <li><b>findAllPublicationsOwnedByUser</b> — publications owned by the requesting user.</li>
  *   <li><b>findPublicationsInLibrary</b> — user publications assigned to a library.</li>
  *   <li><b>findPublicationsNotInLibrary</b> — user publications not assigned to any library.</li>
  *   <li><b>findByLibraryIdAndPublicationStatusNotIn</b> — available publications in library.</li>
  *   <li><b>findAvailableForCollection</b> — domain filtering for collection eligibility.</li>
+ *   <li><b>findPublicationSampleInSharedCollection</b> — public collection retrieval, including
+ *       a regression check that owner/library/collection links are withheld from non-owners.</li>
  *   <li><b>addPublicationToLibrary</b> — domain operation with authorization.</li>
  *   <li><b>assignPublicationToCollection</b> — domain operation with authorization.</li>
  *   <li><b>OPTIONS endpoints</b> — explicit Allow header per resource URI.</li>
@@ -2128,7 +2131,7 @@ class PublicationSampleRESTControllerTest {
     // =========================================================================
 
     @Test
-    void shouldReturnForbiddenWhenAccessDeniedExceptionOccurs() throws InstanceNotFoundException {
+    void findPublicationSampleInSharedCollection_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
 
         when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
                 .thenThrow(new AccessDeniedException("forbidden"));
@@ -2140,7 +2143,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void shouldReturnBadRequestWhenIllegalArgumentExceptionOccurs() throws InstanceNotFoundException {
+    void findPublicationSampleInSharedCollection_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
 
         when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
                 .thenThrow(new IllegalArgumentException());
@@ -2152,7 +2155,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void shouldReturnNotFoundWhenEntityNotFoundExceptionOccurs() throws InstanceNotFoundException {
+    void findPublicationSampleInSharedCollection_shouldReturnNotFound_whenEntityNotFound() throws InstanceNotFoundException {
 
         when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
                 .thenThrow(new EntityNotFoundException());
@@ -2164,7 +2167,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void shouldReturnNotFoundWhenInstanceNotFoundExceptionOccurs() throws Exception {
+    void findPublicationSampleInSharedCollection_shouldReturnNotFound_whenInstanceNotFound() throws Exception {
 
         when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
                 .thenThrow(new InstanceNotFoundException("not found"));
@@ -2176,7 +2179,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void shouldReturnInternalServerErrorWhenUnexpectedExceptionOccurs() throws InstanceNotFoundException {
+    void findPublicationSampleInSharedCollection_shouldReturnInternalServerError_whenUnexpectedException() throws InstanceNotFoundException {
 
         when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
                 .thenThrow(new RuntimeException());
@@ -2193,7 +2196,7 @@ class PublicationSampleRESTControllerTest {
 
 
     @Test
-    void shouldReturnOkWhenNoPublicationSamplesExist() throws InstanceNotFoundException {
+    void findPublicationSampleInSharedCollection_shouldReturnOk_whenNoPublicationsExist() throws InstanceNotFoundException {
 
         when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
                 .thenReturn(List.of());
@@ -2207,7 +2210,7 @@ class PublicationSampleRESTControllerTest {
     }
 
     @Test
-    void shouldReturnOkWithEmptyListWhenNoPublicationSamplesExist()
+    void findPublicationSampleInSharedCollection_shouldReturnEmptyList_whenNoPublicationsExist()
             throws Exception {
 
         // ARRANGE
@@ -2224,6 +2227,79 @@ class PublicationSampleRESTControllerTest {
         assertEquals(HttpStatus.OK, result.getStatusCode());
         assertNotNull(result.getBody());
         assertTrue(result.getBody().isEmpty());
+    }
+
+    @Test
+    void findPublicationSampleInSharedCollection_shouldReturnOk_whenPublicationsExist() throws Exception {
+
+        // Arrange
+        setupPublicationSampleMocks();
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(mock(PublicationDTO.class));
+            when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                    .thenReturn(List.of(publicationSample));
+            when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findPublicationSampleInSharedCollection("collection-id", "user-id");
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertNotNull(result.getBody());
+            assertEquals(1, result.getBody().size());
+        }
+    }
+
+    @Test
+    void findPublicationSampleInSharedCollection_shouldAddSelfLinkAndPublicLinks_whenSuccess() throws Exception {
+
+        // Arrange
+        setupPublicationSampleMocks();
+        Link publicLink = Link.of("/publicationSamples").withRel("all-publications");
+        when(publicationSampleLinkProvider.getPublicLinks())
+                .thenReturn(new ArrayList<>(List.of(publicLink)));
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
+            when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                    .thenReturn(List.of(publicationSample));
+            when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
+
+            // Act
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findPublicationSampleInSharedCollection("collection-id", "user-id");
+
+            // Assert
+            assertNotNull(result.getBody());
+            assertTrue(result.getBody().get(0).hasLink("self"));
+            assertTrue(result.getBody().get(0).hasLink("all-publications"));
+        }
+    }
+
+    @Test
+    void findPublicationSampleInSharedCollection_shouldNotAddOwnerLibraryOrCollectionLinks_whenSuccess() throws Exception {
+
+        // Arrange — regression guard for the owner/public link-context bug: a non-owner
+        // viewing a shared/public collection must never receive owner-, library-, or
+        // collection-scoped affordances, only the self-link and public navigational links.
+        setupPublicationSampleMocks();
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
+                    .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
+            when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
+                    .thenReturn(List.of(publicationSample));
+            when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
+
+            // Act
+            sut.findPublicationSampleInSharedCollection("collection-id", "user-id");
+
+            // Assert
+            verify(publicationSampleLinkProvider, never()).getOwnerLinks(any());
+            verify(publicationSampleLinkProvider, never()).getLibraryLinks(any());
+            verify(publicationSampleLinkProvider, never()).getCollectionLinks(any());
+        }
     }
 
 
@@ -2886,6 +2962,23 @@ class PublicationSampleRESTControllerTest {
 
         // Act
         ResponseEntity<Void> result = sut.optionsAvailableForCollection();
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                result.getHeaders().getAllow());
+    }
+
+    // =========================================================================
+    // OPTIONS — /{collectionId}/shared-publications
+    // =========================================================================
+
+    @Test
+    void optionsPublicationSampleInSharedCollection_shouldReturnOk_withGetOptions() {
+
+        // Act
+        ResponseEntity<Void> result = sut.optionsPublicationSampleInSharedCollection();
 
         // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
