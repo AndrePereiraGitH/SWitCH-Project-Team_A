@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -144,6 +145,15 @@ public class ListingRESTController {
         }
     }
 
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
     // =========================================================================
     // READ / GET ENDPOINTS
     // =========================================================================
@@ -183,6 +193,15 @@ public class ListingRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
@@ -231,6 +250,7 @@ public class ListingRESTController {
 
     }
 
+
     /**
      * Retrieves all listings (direct sale and auction) associated with the given
      * bibliographical data identifier.
@@ -276,6 +296,16 @@ public class ListingRESTController {
         }
     }
 
+    @RequestMapping(value = "/by-publication/{bibliographicalDataId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsByPublication() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+
     /**
      * Retrieves all direct-sale listings associated with a given genre.
      *
@@ -311,6 +341,15 @@ public class ListingRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @RequestMapping(value = "/direct-sale/genre/{genreId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsDirectSaleByGenre() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
 
@@ -362,6 +401,15 @@ public class ListingRESTController {
         }
     }
 
+    @RequestMapping(value = "/genre/{genreId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsByGenre() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
 
     /**
      * Retrieves all direct-sale listings associated with a given publisher.
@@ -403,6 +451,17 @@ public class ListingRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @RequestMapping(value = "/direct-sale/publisher/{publisherId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsDirectSaleByPublisher() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+
 
     // =========================================================================
     // UPDATE / PATCH ENDPOINTS

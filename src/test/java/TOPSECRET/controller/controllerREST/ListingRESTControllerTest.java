@@ -23,12 +23,14 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -1525,6 +1527,119 @@ class ListingRESTControllerTest {
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         }
+    }
+
+
+    // =========================================================================
+    // TESTS: OPTIONS
+    // =========================================================================
+
+    @Test
+    void optionsRoot_shouldReturnOkStatus() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsRoot_shouldReturnAllowHeaderWithSupportedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot();
+
+        // Assert
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+    }
+
+    @Test
+    void optionsById_shouldReturnOkStatus() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsById();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsById_shouldReturnAllowHeaderWithSupportedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsById();
+
+        // Assert
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+    }
+
+    @Test
+    void optionsByPublication_shouldReturnOkStatus() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsByPublication();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsByPublication_shouldReturnAllowHeaderWithSupportedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsByPublication();
+
+        // Assert
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+    }
+
+    @Test
+    void optionsDirectSaleByGenre_shouldReturnOkStatus() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsDirectSaleByGenre();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsDirectSaleByGenre_shouldReturnAllowHeaderWithSupportedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsDirectSaleByGenre();
+
+        // Assert
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+    }
+
+    @Test
+    void optionsByGenre_shouldReturnOkStatus() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsByGenre();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsByGenre_shouldReturnAllowHeaderWithSupportedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsByGenre();
+
+        // Assert
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+    }
+
+    @Test
+    void optionsDirectSaleByPublisher_shouldReturnOkStatus() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsDirectSaleByPublisher();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsDirectSaleByPublisher_shouldReturnAllowHeaderWithSupportedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsDirectSaleByPublisher();
+
+        // Assert
+        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
     }
 
     // =========================================================================
