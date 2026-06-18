@@ -16,7 +16,7 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class TransactionID implements DomainID {
 
-    private final String transaction_id;
+    private String transaction_id;
 
     /**
      * Constructs a {@code TransactionID} with the specified identifier.
@@ -32,6 +32,10 @@ public class TransactionID implements DomainID {
         }
 
         this.transaction_id = id;
+    }
+
+    protected TransactionID() {
+        // Required by JPA
     }
 
     /**

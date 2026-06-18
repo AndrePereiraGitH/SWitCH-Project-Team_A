@@ -1,181 +1,272 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { screen, fireEvent } from "@testing-library/react";
-import { renderWithProviders } from "../../test-utils";
+import { screen, fireEvent, waitFor } from "@testing-library/react";
+import { renderWithProviders } from "@/test-utils.jsx";
 import { MyPurchases } from "./MyPurchases";
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
+const mockGetMyTransactions = vi.hoisted(() => vi.fn());
+const mockGetListingById = vi.hoisted(() => vi.fn());
 
-const mockPurchases = [
-    {
-        orderId: "ORD-001",
-        date: new Date("2026-06-01T10:00:00"),
-        items: [
-            { id: "1", title: "The Da Vinci Code", price: 12.5 },
-            { id: "2", title: "1984", price: 15.0 },
-        ],
-        total: 27.5,
-        shipping: { street: "Rua de Cedofeita", number: "123", zipCode: "4050-180", city: "Porto" },
-        maskedCard: "**** **** **** 1234",
-    },
-    {
-        orderId: "ORD-002",
-        date: new Date("2026-06-05T14:30:00"),
-        items: [
-            { id: "3", title: "Harry Potter", price: 18.0 },
-        ],
-        total: 18.0,
-        shipping: { street: "Avenida da Liberdade", number: "45", zipCode: "1250-096", city: "Lisboa" },
-        maskedCard: "**** **** **** 5678",
-    },
-];
-
-// ── Mocks ─────────────────────────────────────────────────────────────────────
+vi.mock("@/api/transactions.js", () => ({
+    getMyTransactions: mockGetMyTransactions,
+    getListingById: mockGetListingById,
+}));
 
 const mockNavigate = vi.fn();
+
 vi.mock("react-router-dom", async (importOriginal) => {
     const actual = await importOriginal();
     return { ...actual, useNavigate: () => mockNavigate };
 });
 
-let mockPurchasesValue = { purchases: [] };
-vi.mock("../components/PurchasesContext", () => ({
-    usePurchases: () => mockPurchasesValue,
-    PurchasesProvider: ({ children }) => children,
-    PurchasesContext: { Provider: ({ children }) => children },
-}));
+const mockTransactions = [
+    {
+        transactionId: "ORD-001",
+        buyerId: "user-001",
+        price: "27.5",
+        transactionDate: "2026-06-01T10:00:00",
+        street: "Rua de Cedofeita",
+        number: "123",
+        zipCode: "4050-180",
+        cityId: "Porto",
+        cardHolderName: "David Silva",
+        maskedCardNumber: "**** **** **** 1234",
+        expiryMonth: "09",
+        expiryYear: "2027",
+        status: "COMPLETED",
+        listingIds: ["listing-001", "listing-002"],
+    },
+    {
+        transactionId: "ORD-002",
+        buyerId: "user-001",
+        price: "18.0",
+        transactionDate: "2026-06-05T14:30:00",
+        street: "Avenida da Liberdade",
+        number: "45",
+        zipCode: "1250-096",
+        cityId: "Lisboa",
+        cardHolderName: "David Silva",
+        maskedCardNumber: "**** **** **** 5678",
+        expiryMonth: "09",
+        expiryYear: "2027",
+        status: "COMPLETED",
+        listingIds: ["listing-003"],
+    },
+];
+
+const mockListings = {
+    "listing-001": {
+        id: "listing-001",
+        listingTitle: "The Da Vinci Code",
+        price: "12.50",
+    },
+    "listing-002": {
+        id: "listing-002",
+        listingTitle: "1984",
+        price: "15.00",
+    },
+    "listing-003": {
+        id: "listing-003",
+        listingTitle: "Harry Potter",
+        price: "18.00",
+    },
+};
 
 beforeEach(() => {
-    mockPurchasesValue = { purchases: [] };
     vi.clearAllMocks();
+
+    mockGetMyTransactions.mockResolvedValue([]);
+
+    mockGetListingById.mockImplementation(async (id) => {
+        return mockListings[id];
+    });
 });
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function renderEmpty() {
+    mockGetMyTransactions.mockResolvedValue([]);
     return renderWithProviders(<MyPurchases />);
 }
 
-function renderWithPurchases(purchases = mockPurchases) {
-    mockPurchasesValue = { purchases, soldItemIds: new Set(), addPurchase: vi.fn() };
+function renderWithPurchases(transactions = mockTransactions) {
+    mockGetMyTransactions.mockResolvedValue(transactions);
     return renderWithProviders(<MyPurchases />);
 }
-
-// ── Empty State ───────────────────────────────────────────────────────────────
 
 describe("MyPurchases — Empty State", () => {
-
-    test("shows No Purchases Yet heading", () => {
+    test("shows No Purchases Yet heading", async () => {
         renderEmpty();
-        expect(screen.getByText("No Purchases Yet")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("No Purchases Yet")).toBeInTheDocument();
+        });
     });
 
-    test("shows 0 orders placed", () => {
+    test("shows 0 orders placed", async () => {
         renderEmpty();
-        expect(screen.getByText("0 orders placed")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("0 orders placed")).toBeInTheDocument();
+        });
     });
 
-    test("shows Browse Marketplace button", () => {
+    test("shows Browse Marketplace button", async () => {
         renderEmpty();
-        expect(screen.getByText("Browse Marketplace")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("Browse Marketplace")).toBeInTheDocument();
+        });
     });
 
-    test("Browse Marketplace navigates to /explore", () => {
+    test("Browse Marketplace navigates to /explore", async () => {
         renderEmpty();
+
+        await waitFor(() => {
+            expect(screen.getByText("Browse Marketplace")).toBeInTheDocument();
+        });
+
         fireEvent.click(screen.getByText("Browse Marketplace"));
+
         expect(mockNavigate).toHaveBeenCalledWith("/explore");
     });
 
-    test("shows My Purchases heading", () => {
+    test("shows My Purchases heading", async () => {
         renderEmpty();
-        expect(screen.getByText("My Purchases")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("My Purchases")).toBeInTheDocument();
+        });
     });
-
 });
-
-// ── With Purchases ────────────────────────────────────────────────────────────
 
 describe("MyPurchases — With Purchases", () => {
-
-    test("shows correct order count", () => {
+    test("loads purchases from backend transactions API", async () => {
         renderWithPurchases();
-        expect(screen.getByText("2 orders placed")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(mockGetMyTransactions).toHaveBeenCalledTimes(1);
+        });
     });
 
-    test("shows order ID", () => {
+    test("loads listing details for purchased listing ids", async () => {
         renderWithPurchases();
-        expect(screen.getByText("ORD-001")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(mockGetListingById).toHaveBeenCalledWith("listing-001");
+            expect(mockGetListingById).toHaveBeenCalledWith("listing-002");
+            expect(mockGetListingById).toHaveBeenCalledWith("listing-003");
+        });
     });
 
-    test("shows item titles", () => {
+    test("shows correct order count", async () => {
         renderWithPurchases();
-        expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
-        expect(screen.getByText("1984")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("2 orders placed")).toBeInTheDocument();
+        });
     });
 
-    test("shows shipping address", () => {
+    test("shows order ID", async () => {
         renderWithPurchases();
-        expect(screen.getByText(/Rua de Cedofeita/i)).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("ORD-001")).toBeInTheDocument();
+        });
     });
 
-    test("shows masked card", () => {
+    test("shows item titles", async () => {
         renderWithPurchases();
-        expect(screen.getByText("**** **** **** 1234")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("The Da Vinci Code")).toBeInTheDocument();
+            expect(screen.getByText("1984")).toBeInTheDocument();
+        });
     });
 
-    test("shows order total", () => {
+    test("shows shipping address", async () => {
         renderWithPurchases();
-        const totals = screen.getAllByText("€27.50");
-        expect(totals.length).toBeGreaterThan(0);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Rua de Cedofeita/i)).toBeInTheDocument();
+        });
     });
 
-    test("shows Purchased badge", () => {
+    test("shows masked card", async () => {
         renderWithPurchases();
-        const badges = screen.getAllByText("Purchased");
-        expect(badges.length).toBeGreaterThan(0);
+
+        await waitFor(() => {
+            expect(screen.getByText("**** **** **** 1234")).toBeInTheDocument();
+        });
     });
 
-    test("shows multiple orders", () => {
+    test("shows order total", async () => {
         renderWithPurchases();
-        expect(screen.getByText("ORD-001")).toBeInTheDocument();
-        expect(screen.getByText("ORD-002")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getAllByText("€27.50").length).toBeGreaterThan(0);
+        });
     });
 
-    test("shows Harry Potter in second order", () => {
+    test("shows Purchased badge", async () => {
         renderWithPurchases();
-        expect(screen.getByText("Harry Potter")).toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getAllByText("Purchased").length).toBeGreaterThan(0);
+        });
     });
 
-    test("does not show empty state when purchases exist", () => {
+    test("shows multiple orders", async () => {
         renderWithPurchases();
-        expect(screen.queryByText("No Purchases Yet")).not.toBeInTheDocument();
+
+        await waitFor(() => {
+            expect(screen.getByText("ORD-001")).toBeInTheDocument();
+            expect(screen.getByText("ORD-002")).toBeInTheDocument();
+        });
     });
 
+    test("shows Harry Potter in second order", async () => {
+        renderWithPurchases();
+
+        await waitFor(() => {
+            expect(screen.getByText("Harry Potter")).toBeInTheDocument();
+        });
+    });
+
+    test("does not show empty state when purchases exist", async () => {
+        renderWithPurchases();
+
+        await waitFor(() => {
+            expect(screen.queryByText("No Purchases Yet")).not.toBeInTheDocument();
+        });
+    });
 });
-
-// ── Navigation ────────────────────────────────────────────────────────────────
 
 describe("MyPurchases — Navigation", () => {
-
-    test("Back button calls navigate(-1)", () => {
+    test("Back button calls navigate(-1)", async () => {
         renderEmpty();
+
+        await waitFor(() => {
+            expect(screen.getByText("Back")).toBeInTheDocument();
+        });
+
         fireEvent.click(screen.getByText("Back"));
+
         expect(mockNavigate).toHaveBeenCalledWith(-1);
     });
-
 });
 
-// ── Singular vs Plural ────────────────────────────────────────────────────────
-
 describe("MyPurchases — Order Count Text", () => {
+    test("shows singular order when count is 1", async () => {
+        renderWithPurchases([mockTransactions[0]]);
 
-    test("shows singular order when count is 1", () => {
-        renderWithPurchases([mockPurchases[0]]);
-        expect(screen.getByText("1 order placed")).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText("1 order placed")).toBeInTheDocument();
+        });
     });
 
-    test("shows plural orders when count is 2", () => {
-        renderWithPurchases(mockPurchases);
-        expect(screen.getByText("2 orders placed")).toBeInTheDocument();
-    });
+    test("shows plural orders when count is 2", async () => {
+        renderWithPurchases(mockTransactions);
 
+        await waitFor(() => {
+            expect(screen.getByText("2 orders placed")).toBeInTheDocument();
+        });
+    });
 });

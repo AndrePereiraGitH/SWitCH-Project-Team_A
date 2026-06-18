@@ -1,10 +1,67 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingBag, BookOpen, MapPin, CreditCard, Calendar, Package } from "lucide-react";
-import { usePurchases } from "../components/PurchasesContext";
+import { useEffect, useState } from "react";
+import { usePublications } from "../components/PublicationsContext";
+import { getMyTransactions, getListingById } from "@/api/transactions.js";
+
 
 export function MyPurchases() {
     const navigate = useNavigate();
-    const { purchases } = usePurchases();
+    const [purchases, setPurchases] = useState([]);
+    const { publications } = usePublications();
+
+    useEffect(() => {
+        async function loadPurchases() {
+            try {
+                const transactions = await getMyTransactions();
+
+                const mapped = await Promise.all(
+                    transactions.map(async (t) => {
+                        const items = await Promise.all(
+                            (t.listingIds ?? []).map(async (id) => {
+                                try {
+                                    const listing = await getListingById(id);
+
+                                    return {
+                                        id,
+                                        title: listing.listingTitle ?? id,
+                                        price: Number(listing.price ?? t.price ?? 0),
+                                    };
+                                } catch (e) {
+                                    return {
+                                        id,
+                                        title: id,
+                                        price: Number(t.price ?? 0),
+                                    };
+                                }
+                            })
+                        );
+
+                        return {
+                            orderId: t.transactionId,
+                            date: new Date(t.transactionDate),
+                            total: Number(t.price),
+                            shipping: {
+                                street: t.street,
+                                number: t.number,
+                                zipCode: t.zipCode,
+                                city: t.cityId,
+                            },
+                            maskedCard: t.maskedCardNumber,
+                            items,
+                        };
+                    })
+                );
+
+                setPurchases(mapped);
+
+            } catch (e) {
+                console.error("[MyPurchases] failed to load purchases:", e);
+            }
+        }
+
+        loadPurchases();
+    }, [publications]);
 
     return (
         <div className="min-h-screen bg-background pt-24 pb-12">
