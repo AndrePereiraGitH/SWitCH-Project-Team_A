@@ -24,6 +24,8 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import org.springframework.http.HttpMethod;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -45,6 +47,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // CREATE - SUCCESS
     // ==========================================================
+
     @Test
     void createPublisher_shouldReturnCreated_onSuccess() throws InstanceNotFoundException {
 
@@ -84,6 +87,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // CREATE - BAD REQUEST
     // ==========================================================
+
     @Test
     void createPublisher_shouldReturnBadRequest_onIllegalArgumentException() throws InstanceNotFoundException {
 
@@ -111,6 +115,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // CREATE - FORBIDDEN
     // ==========================================================
+
     @Test
     void createPublisher_shouldReturnForbidden_onAccessDeniedException() throws InstanceNotFoundException {
 
@@ -138,6 +143,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // CREATE - INTERNAL ERROR
     // ==========================================================
+
     @Test
     void createPublisher_shouldReturnInternalServerError_onException() throws InstanceNotFoundException {
 
@@ -165,6 +171,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // CREATE - NOT FOUND
     // ==========================================================
+
     @Test
     void createPublisher_shouldReturnNotFound_whenUserDoesNotExist() throws InstanceNotFoundException {
 
@@ -195,6 +202,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET ALL - SUCCESS
     // ==========================================================
+
     @Test
     void getAllPublishers_shouldReturnOk_whenPublishersExist() {
 
@@ -221,6 +229,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET ALL - EMPTY
     // ==========================================================
+
     @Test
     void getAllPublishers_shouldReturnOK_whenListEmpty() {
 
@@ -236,6 +245,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET ALL - BAD REQUEST
     // ==========================================================
+
     @Test
     void getAllPublishers_shouldReturnBadRequest_onIllegalArgumentException() {
 
@@ -250,6 +260,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET ALL - INTERNAL ERROR
     // ==========================================================
+
     @Test
     void getAllPublishers_shouldReturnInternalServerError_onException() {
 
@@ -264,6 +275,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET BY ID - SUCCESS
     // ==========================================================
+
     @Test
     void getPublisher_shouldReturnOk_whenFound() {
 
@@ -288,6 +300,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET BY ID - BAD REQUEST
     // ==========================================================
+
     @Test
     void getPublisher_shouldReturnBadRequest_whenIdFormatIsInvalid() {
 
@@ -306,6 +319,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET BY ID - NOT FOUND
     // ==========================================================
+
     @Test
     void getPublisher_shouldReturnNotFound_whenMissing() {
 
@@ -327,6 +341,7 @@ class PublisherRESTControllerTest {
     // ==========================================================
     // GET BY ID - INTERNAL ERROR
     // ==========================================================
+
     @Test
     void getPublisher_shouldReturnInternalServerError_onException() {
 
@@ -343,5 +358,96 @@ class PublisherRESTControllerTest {
             assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
             assertNull(response.getBody());
         }
+    }
+
+    // =========================================================
+    // OPTIONS - /publishers
+    // =========================================================
+
+    @Test
+    void optionsPublishers_shouldReturnOk_withAllowHeader() {
+        ResponseEntity<?> response = controller.optionsPublishers();
+
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(
+                Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+        ));
+    }
+
+    @Test
+    void optionsPublishers_shouldReturnEmptyBody() {
+        ResponseEntity<?> response = controller.optionsPublishers();
+
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsPublishers_shouldNotAllowDelete() {
+        ResponseEntity<?> response = controller.optionsPublishers();
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+    }
+
+    @Test
+    void optionsPublishers_shouldNotAllowPut() {
+        ResponseEntity<?> response = controller.optionsPublishers();
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+    }
+
+    @Test
+    void optionsPublishers_shouldNotAllowPatch() {
+        ResponseEntity<?> response = controller.optionsPublishers();
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
+    }
+
+    // =========================================================
+    // OPTIONS - /publishers/{id}
+    // =========================================================
+
+    @Test
+    void optionsPublisherById_shouldReturnOk_withAllowHeader() {
+        ResponseEntity<?> response = controller.optionsPublisherById( );
+
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS)
+        ));
+    }
+
+    @Test
+    void optionsPublisherById_shouldReturnEmptyBody() {
+        ResponseEntity<?> response = controller.optionsPublisherById( );
+
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsPublisherById_shouldNotAllowPost() {
+        ResponseEntity<?> response = controller.optionsPublisherById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsPublisherById_shouldNotAllowDelete() {
+        ResponseEntity<?> response = controller.optionsPublisherById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+    }
+
+    @Test
+    void optionsPublisherById_shouldNotAllowPut() {
+        ResponseEntity<?> response = controller.optionsPublisherById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+    }
+
+    @Test
+    void optionsPublisherById_shouldNotAllowPatch() {
+        ResponseEntity<?> response = controller.optionsPublisherById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
     }
 }

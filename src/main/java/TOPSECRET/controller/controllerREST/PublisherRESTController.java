@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.http.HttpMethod;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,15 +32,20 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 /**
  * REST Controller for managing Publisher resources.
  *
- * <p>This controller provides endpoints for the lifecycle of a {@link Publisher},
+ * <p>This controller provides endpoints for the full lifecycle of a {@link Publisher},
  * including creation and retrieval of publisher entities. It integrates with
  * HATEOAS to provide dynamic hypermedia links based on the requester's permissions.</p>
  *
  * <p>Endpoints are grouped into two categories:</p>
  * <ul>
- *   <li><b>POST</b> — creation of a new publisher; requires admin privileges.</li>
- *   <li><b>GET</b> — retrieval by identity or full collection; publicly accessible.</li>
+ *   <li><b>POST /publishers</b> — creation of a new publisher; requires admin privileges.</li>
+ *   <li><b>GET /publishers</b> — retrieval of all publishers; publicly accessible.</li>
+ *   <li><b>GET /publishers/{id}</b> — retrieval by identifier; publicly accessible.</li>
+ *   <li><b>OPTIONS /publishers</b> — discovery of available HTTP methods.</li>
+ *   <li><b>OPTIONS /publishers/{id}</b> — discovery of available HTTP methods for a specific publisher.</li>
  * </ul>
+ *
+ * <p>All responses are enriched with HATEOAS hypermedia links following REST level 3.</p>
  */
 @RestController
 @Tag(name = "Publishers", description = "Publisher management endpoints")
@@ -56,25 +62,47 @@ public class PublisherRESTController {
     }
 
     /**
+     * Returns the available HTTP methods for the {@code /publishers} endpoint.
+     *
+     * <p>This endpoint supports HTTP method discovery as part of REST level 3 (HATEOAS).
+     * Clients can use this to determine which operations are permitted on the
+     * {@code /publishers} collection resource before attempting them.</p>
+     *
+     * @return 200 OK with an {@code Allow: GET, POST, OPTIONS} response header
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsPublishers() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Creates and registers a new Publisher in the system.
      *
-     * <p>The request is mapped from {@link RequestPublisherDTO} into domain objects,
-     * persisted via {@link PublisherService}, and returned as a
-     * {@link ResponsePublisherDTO} enriched with HATEOAS links.</p>
+     * <p>This endpoint is restricted to admin users. The request body is validated
+     * and mapped from {@link RequestPublisherDTO} into domain objects, persisted via
+     * {@link PublisherService}, and returned as a {@link ResponsePublisherDTO}
+     * enriched with HATEOAS links.</p>
      *
-     * <p>Responses:</p>
+     * <p>The response includes:</p>
      * <ul>
-     *     <li>201 Created – Publisher successfully created</li>
-     *     <li>400 Bad Request – invalid input data or user not found</li>
-     *     <li>403 Forbidden – user is not authorized to perform this action</li>
-     *     <li>404 Not Found – user does not exist</li>
-     *     <li>500 Internal Server Error – unexpected failure</li>
+     *   <li>A self-link pointing to the created publisher's resource endpoint.</li>
+     *   <li>Owner/admin links available to the requesting user.</li>
      * </ul>
      *
-     * @param requestPublisherDTO the publisher data to create
-     * @param userId              the identifier of the user performing the operation
+     * @param requestPublisherDTO the validated request body containing the publisher data:
+     *                            name, VAT number, and contact information
+     * @param userId              the identifier of the admin user performing the operation;
+     *                            must not be blank
      * @return a {@link ResponseEntity} containing the created {@link ResponsePublisherDTO}
-     * or an appropriate HTTP error status
+     * with HTTP 201 Created, or an appropriate error status:
+     * <ul>
+     *   <li>400 Bad Request – invalid input data or malformed arguments</li>
+     *   <li>403 Forbidden – user does not have admin privileges</li>
+     *   <li>404 Not Found – user does not exist in the system</li>
+     *   <li>500 Internal Server Error – unexpected failure during processing</li>
+     * </ul>
      */
     @PostMapping
     public ResponseEntity<ResponsePublisherDTO> createPublisher(
@@ -116,22 +144,39 @@ public class PublisherRESTController {
     }
 
     /**
+     * Returns the available HTTP methods for the {@code /publishers/{id}} endpoint.
+     *
+     * <p>This endpoint supports HTTP method discovery as part of REST level 3 (HATEOAS).
+     * Clients can use this to determine which operations are permitted on a specific
+     * publisher resource before attempting them.</p>
+     * @return 200 OK with an {@code Allow: GET, OPTIONS} response header
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsPublisherById() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Retrieves all publishers registered in the system.
      *
-     * <p>Each returned publisher is enriched with public HATEOAS navigational links
+     * <p>This endpoint is publicly accessible and requires no authentication.
+     * Each returned publisher is enriched with public HATEOAS navigational links
      * and a self-link pointing to its individual resource endpoint.</p>
      *
-     * <p>No authentication required.</p>
-     *
-     * <p>Responses:</p>
+     * <p>The response includes:</p>
      * <ul>
-     *     <li>200 OK – list of publishers returned; may be empty</li>
-     *     <li>400 Bad Request – invalid request parameters</li>
-     *     <li>500 Internal Server Error – unexpected failure</li>
+     *   <li>A list of all publishers, each with a self-link and public navigation links.</li>
+     *   <li>An empty list if no publishers are registered.</li>
      * </ul>
      *
      * @return a {@link ResponseEntity} containing a list of {@link ResponsePublisherDTO}
-     * or an appropriate HTTP error status
+     * with HTTP 200 OK, or an appropriate error status:
+     * <ul>
+     *   <li>400 Bad Request – invalid request parameters</li>
+     *   <li>500 Internal Server Error – unexpected failure during processing</li>
+     * </ul>
      */
     @GetMapping
     public ResponseEntity<List<ResponsePublisherDTO>> getAllPublishers() {
@@ -164,22 +209,25 @@ public class PublisherRESTController {
     /**
      * Retrieves a single Publisher by its unique identifier.
      *
-     * <p>The returned resource is enriched with public HATEOAS navigational links
+     * <p>This endpoint is publicly accessible and requires no authentication.
+     * The returned resource is enriched with public HATEOAS navigational links
      * and a self-link pointing to this endpoint.</p>
      *
-     * <p>No authentication required.</p>
-     *
-     * <p>Responses:</p>
+     * <p>The response includes:</p>
      * <ul>
-     *     <li>200 OK – publisher found and returned</li>
-     *     <li>400 Bad Request – invalid ID format</li>
-     *     <li>404 Not Found – no publisher exists for the given ID</li>
-     *     <li>500 Internal Server Error – unexpected failure</li>
+     *   <li>The publisher's full data as a {@link ResponsePublisherDTO}.</li>
+     *   <li>Public navigation links available to any client.</li>
+     *   <li>A self-link pointing to {@code /publishers/{id}}.</li>
      * </ul>
      *
-     * @param id the unique identifier of the publisher to retrieve
+     * @param id the unique identifier of the publisher to retrieve; must not be blank
      * @return a {@link ResponseEntity} containing the {@link ResponsePublisherDTO}
-     * or an appropriate HTTP error status
+     * with HTTP 200 OK, or an appropriate error status:
+     * <ul>
+     *   <li>400 Bad Request – invalid or malformed ID format</li>
+     *   <li>404 Not Found – no publisher exists for the given ID</li>
+     *   <li>500 Internal Server Error – unexpected failure during processing</li>
+     * </ul>
      */
     @GetMapping("/{id}")
     public ResponseEntity<ResponsePublisherDTO> getPublisher(
