@@ -23,6 +23,8 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Set;
+import org.springframework.http.HttpMethod;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -353,6 +355,7 @@ class LibraryRESTControllerTest {
         assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
     }
+
     // =========================================================
     // GET BY ID - BAD REQUEST
     // =========================================================
@@ -372,6 +375,7 @@ class LibraryRESTControllerTest {
             assertNull(response.getBody());
         }
     }
+
     // =========================================================
     // GET BY USER ID - SUCCESS
     // =========================================================
@@ -430,6 +434,7 @@ class LibraryRESTControllerTest {
         assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
     }
+
     // =========================================================
     // GET BY USER ID - NOT FOUND
     // =========================================================
@@ -446,6 +451,146 @@ class LibraryRESTControllerTest {
 
         assertEquals(NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
+    }
+
+    // =========================================================
+    // OPTIONS - /libraries
+    // =========================================================
+
+    @Test
+    void optionsLibraries_shouldReturnOk_withAllowHeader() {
+        ResponseEntity<?> response = controller.optionsLibraries();
+
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(
+                Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+        ));
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnEmptyBody() {
+        ResponseEntity<?> response = controller.optionsLibraries();
+
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraries_shouldNotAllowDelete() {
+        ResponseEntity<?> response = controller.optionsLibraries();
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+    }
+
+    @Test
+    void optionsLibraries_shouldNotAllowPut() {
+        ResponseEntity<?> response = controller.optionsLibraries();
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+    }
+
+    @Test
+    void optionsLibraries_shouldNotAllowPatch() {
+        ResponseEntity<?> response = controller.optionsLibraries();
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
+    }
+
+    // =========================================================
+    // OPTIONS - /libraries/{libraryId}
+    // =========================================================
+
+    @Test
+    void optionsLibraryById_shouldReturnOk_withAllowHeader() {
+        ResponseEntity<?> response = controller.optionsLibraryById( );
+
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS)
+        ));
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnEmptyBody() {
+        ResponseEntity<?> response = controller.optionsLibraryById( );
+
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryById_shouldNotAllowPost() {
+        ResponseEntity<?> response = controller.optionsLibraryById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsLibraryById_shouldNotAllowDelete() {
+        ResponseEntity<?> response = controller.optionsLibraryById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+    }
+
+    @Test
+    void optionsLibraryById_shouldNotAllowPut() {
+        ResponseEntity<?> response = controller.optionsLibraryById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+    }
+
+    @Test
+    void optionsLibraryById_shouldNotAllowPatch() {
+        ResponseEntity<?> response = controller.optionsLibraryById( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
+    }
+
+    // =========================================================
+    // OPTIONS - /libraries/by-user/{userId}
+    // =========================================================
+
+    @Test
+    void optionsLibraryByUser_shouldReturnOk_withAllowHeader() {
+        ResponseEntity<?> response = controller.optionsLibraryByUser( );
+
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS)
+        ));
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnEmptyBody() {
+        ResponseEntity<?> response = controller.optionsLibraryByUser( );
+
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldNotAllowPost() {
+        ResponseEntity<?> response = controller.optionsLibraryByUser( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldNotAllowDelete() {
+        ResponseEntity<?> response = controller.optionsLibraryByUser( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldNotAllowPut() {
+        ResponseEntity<?> response = controller.optionsLibraryByUser( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldNotAllowPatch() {
+        ResponseEntity<?> response = controller.optionsLibraryByUser( );
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
     }
 
 }

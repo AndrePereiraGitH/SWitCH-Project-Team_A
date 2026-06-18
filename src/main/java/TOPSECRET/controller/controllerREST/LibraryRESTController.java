@@ -22,11 +22,18 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.List;
+import org.springframework.http.HttpMethod;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
+/**
+ * REST controller for managing Library resources.
+ *
+ * <p>Exposes endpoints for creating, retrieving libraries,
+ * and discovering available HTTP methods via OPTIONS.</p>
+ */
 @RestController
 @Tag(name = "Libraries", description = "Library management endpoints")
 @RequestMapping("/libraries")
@@ -41,20 +48,33 @@ public class LibraryRESTController {
         this.libService = libService;
     }
 
+
+    /**
+     * Returns the available HTTP methods for the {@code /libraries} endpoint.
+     *
+     * @return 200 OK with {@code Allow: GET, POST, OPTIONS} header
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsLibraries() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                .build();
+    }
+
     /**
      * Creates and registers a new Library in the system.
      *
-     * <p>This endpoint creates a new library associated with the given user.</p>
+     * <p>Creates a library associated with the given user and returns it
+     * enriched with HATEOAS links for the owner and a self-link.</p>
      *
-     * @param requestLibraryDTO the validated request body containing the library creation data.
-     * @param userId            the identifier of the user creating the library. Must not be blank.
-     * @return a {@link ResponseEntity} containing the created {@link ResponseLibraryDTO}
-     * and HTTP 201 status if successful, or an error status:
+     * @param requestLibraryDTO validated request body containing the library name
+     * @param userId            identifier of the user creating the library
+     * @return 201 Created with the created library, or:
      * <ul>
-     *      * <li>404 Not Found – if the user does not exist</li>
-     *      * <li>409 Conflict – if a library already exists for the given user</li>  // também faltava este!
-     *      * <li>400 Bad Request – if input validation fails or arguments are invalid</li>
-     *      * <li>403 Forbidden – if the user is not allowed to create a library</li>
+     *   <li>400 Bad Request – invalid input or arguments</li>
+     *   <li>403 Forbidden – user is not allowed to create a library</li>
+     *   <li>404 Not Found – user does not exist</li>
+     *   <li>409 Conflict – library already exists for this user</li>
      * </ul>
      */
     @PostMapping
@@ -95,22 +115,18 @@ public class LibraryRESTController {
     }
 
     /**
-     * Retrieves all libraries registered in the system.
+     * Returns all libraries registered in the system.
      *
-     * <p>Each returned library is enriched with a HATEOAS self-link pointing to its
-     * individual resource endpoint.</p>
+     * <p>Each library is enriched with a HATEOAS self-link.</p>
      *
-     * @return a {@link ResponseEntity} containing a list of {@link ResponseLibraryDTO}
-     * and HTTP 200 OK when libraries exist, or:
+     * @return 200 OK with list of libraries, or:
      * <ul>
-     *     <li>204 No Content – when no libraries are found</li>
-     *     <li>400 Bad Request – for invalid request parameters (rare)</li>
-     *     <li>500 Internal Server Error – for unexpected failures</li>
+     *   <li>400 Bad Request – invalid request parameters</li>
+     *   <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      */
     @GetMapping
     public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries() {
-        // TODO: add libLinkProvider.getAdminLinks(userId) when we start Spring Security
 
         try {
             List<Library> libraries = libService.findAll();
@@ -134,6 +150,17 @@ public class LibraryRESTController {
         }
     }
 
+    /**
+     * Returns the available HTTP methods for the {@code /libraries/{libraryId}} endpoint.
+     *
+     * @return 200 OK with {@code Allow: GET, OPTIONS} header
+     */
+    @RequestMapping(value = "/{libraryId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsLibraryById() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .build();
+    }
     /**
      * Retrieves a single Library by its unique identifier.
      *
@@ -176,6 +203,19 @@ public class LibraryRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Returns the available HTTP methods for the {@code /libraries/by-user/{userId}} endpoint.
+     *
+     * @return 200 OK with {@code Allow: GET, OPTIONS} header
+     */
+
+    @RequestMapping(value = "/by-user/{userId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsLibraryByUser() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
@@ -228,6 +268,8 @@ public class LibraryRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+
+        //add validations in library service
 
     }
 }
