@@ -36,3 +36,24 @@ export async function getListingById(listingId) {
 
     return res.json();
 }
+
+export async function getCities() {
+    const res = await fetch(`${BASE_URL}/cities`);
+
+    if (!res.ok) throw new Error(`Get cities failed: ${res.status}`);
+
+    return res.json();
+}
+
+export async function markListingAsSold(listingId) {
+    const res = await fetch(
+        `${BASE_URL}/listings/${listingId}/sold?buyerId=${CURRENT_USER_ID}`,
+        { method: "PATCH" }
+    );
+
+    if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`Mark listing as sold failed: ${res.status} - ${body}`);
+    }
+    return res.json();
+}

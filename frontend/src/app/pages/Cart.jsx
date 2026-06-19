@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Trash2, CheckCircle, CreditCard, MapPin, Mail } from "lucide-react";
 import { useCart } from "../components/CartContext";
 import { usePurchases } from "../components/PurchasesContext";
-import { createTransaction, CURRENT_USER_ID } from "../../api/transactions";
+import { createTransaction, getCities, markListingAsSold, CURRENT_USER_ID } from "../../api/transactions";
 
 const emptyShipping = { street: "", number: "", zipCode: "", city: "" };
 const emptyPayment = { cardHolderName: "", cardNumber: "", expiryMonth: "", expiryYear: "" };
@@ -19,6 +19,20 @@ export function Cart() {
     const { items, removeFromCart, clearCart } = useCart();
     const { addPurchase } = usePurchases();
 
+    const [cities, setCities] = useState([]);
+
+    useEffect(() => {
+        async function loadCities() {
+            try {
+                const data = await getCities();
+                setCities(data);
+            } catch (error) {
+                console.error("Error loading cities:", error);
+            }
+        }
+        loadCities();
+    }, []);
+
     const [step, setStep] = useState("idle");
     const [shipping, setShipping] = useState(emptyShipping);
     const [payment, setPayment] = useState(emptyPayment);
@@ -28,12 +42,23 @@ export function Cart() {
 
     const total = items.reduce((sum, item) => sum + item.price, 0);
 
+    function findCityId(cityName) {
+        const match = cities.find(
+            c => c.cityName.trim().toLowerCase() === cityName.trim().toLowerCase()
+        );
+        return match ? match.cityId : null;
+    }
+
     function validateShipping() {
         const errors = {};
         if (!shipping.street.trim()) errors.street = "Street is required";
         if (!shipping.number.trim()) errors.number = "Number is required";
         if (!shipping.zipCode.trim()) errors.zipCode = "Zip code is required";
-        if (!shipping.city.trim()) errors.city = "City is required";
+        if (!shipping.city.trim()) {
+            errors.city = "City is required";
+        } else if (!findCityId(shipping.city)) {
+            errors.city = "City not recognized. Please check the spelling.";
+        }
         setShippingErrors(errors);
         return Object.keys(errors).length === 0;
     }
@@ -65,7 +90,7 @@ export function Cart() {
                 street: shipping.street,
                 number: shipping.number,
                 zipCode: shipping.zipCode,
-                cityId: shipping.city,
+                cityId: findCityId(shipping.city),
                 cardHolderName: payment.cardHolderName,
                 maskedCardNumber: maskCardNumber(payment.cardNumber),
                 expiryMonth: payment.expiryMonth,
@@ -74,6 +99,14 @@ export function Cart() {
             };
 
             await createTransaction(payload);
+
+            for (const item of items) {
+                try {
+                    await markListingAsSold(item.id);
+                } catch (err) {
+                    console.error(`Failed to mark listing ${item.id} as sold:`, err);
+                }
+            }
 
             setConfirmedTotal(total);
             clearCart();
