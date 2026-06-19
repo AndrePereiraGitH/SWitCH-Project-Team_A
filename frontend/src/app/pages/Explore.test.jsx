@@ -4,7 +4,6 @@ import { MemoryRouter } from "react-router-dom";
 import { Explore } from "./Explore";
 
 const mockAddToCart = vi.fn();
-let mockSoldItemIds = new Set();
 
 vi.mock("../components/CartContext", () => ({
   useCart: () => ({ addToCart: mockAddToCart })
@@ -13,10 +12,6 @@ vi.mock("../components/CartContext", () => ({
 vi.mock("../../api/constants", () => ({
   API_BASE_URL: "http://localhost:8081",
   CURRENT_USER_ID: "user-123"
-}));
-
-vi.mock("../components/PurchasesContext", () => ({
-  usePurchases: () => ({ soldItemIds: mockSoldItemIds })
 }));
 
 const mockGenres = [
@@ -51,6 +46,7 @@ const mockListings = [
     saleType: "DIRECT_SALE",
     publisherId: "publisher-001",
     publisher: "Penguin Random House",
+    publicationStatus: "ACTIVE",
   },
   {
     id: "2",
@@ -63,6 +59,7 @@ const mockListings = [
     saleType: "AUCTION",
     publisherId: "publisher-002",
     publisher: "Bloomsbury",
+    publicationStatus: "ACTIVE",
   },
   {
     id: "3",
@@ -75,6 +72,7 @@ const mockListings = [
     saleType: "DIRECT_SALE",
     publisherId: "publisher-001",
     publisher: "Penguin Random House",
+    publicationStatus: "ACTIVE",
   },
 ];
 
@@ -90,6 +88,7 @@ const mockPublicationListings = [
     saleType: "DIRECT_SALE",
     publisherId: "publisher-001",
     publisher: "Penguin Random House",
+    publicationStatus: "ACTIVE",
   },
   {
     id: "5",
@@ -102,6 +101,7 @@ const mockPublicationListings = [
     saleType: "AUCTION",
     publisherId: "publisher-001",
     publisher: "Penguin Random House",
+    publicationStatus: "ACTIVE",
   },
 ];
 
@@ -130,6 +130,7 @@ const mockFantasyGenreListings = [
     saleType: "AUCTION",
     publisherId: "publisher-001",
     publisher: "Penguin Random House",
+    publicationStatus: "ACTIVE",
   },
 ];
 
@@ -253,7 +254,6 @@ const getPublisherSelect = () => screen.getAllByRole("combobox")[5];
 describe("Explore", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockSoldItemIds = new Set();
     setupFetch();
   });
 
@@ -284,7 +284,26 @@ describe("Explore", () => {
 
   describe("Sold State", () => {
     test("shows Sold button for purchased items", async () => {
-      mockSoldItemIds = new Set(["1"]);
+      global.fetch = vi.fn(async (url) => {
+        const urlString = String(url);
+
+        if (urlString.includes("/genres")) return { ok: true, json: async () => mockGenres };
+        if (urlString.includes("/bibliographicalDatas")) return { ok: true, json: async () => mockPublications };
+        if (urlString.includes("/publishers")) return { ok: true, json: async () => mockPublishers };
+        if (urlString.includes("/auctions")) return { ok: true, json: async () => mockAuctions };
+        if (urlString.includes("/listings")) {
+          return {
+            ok: true,
+            json: async () => [
+              { ...mockListings[0], publicationStatus: "SOLD" },
+              mockListings[1],
+              mockListings[2],
+            ],
+          };
+        }
+        return { ok: false, status: 404 };
+      });
+
       await renderLoadedExplore();
 
       expect(screen.getAllByText("Sold").length).toBeGreaterThan(0);
@@ -297,7 +316,26 @@ describe("Explore", () => {
     });
 
     test("Sold button is disabled", async () => {
-      mockSoldItemIds = new Set(["1"]);
+      global.fetch = vi.fn(async (url) => {
+        const urlString = String(url);
+
+        if (urlString.includes("/genres")) return { ok: true, json: async () => mockGenres };
+        if (urlString.includes("/bibliographicalDatas")) return { ok: true, json: async () => mockPublications };
+        if (urlString.includes("/publishers")) return { ok: true, json: async () => mockPublishers };
+        if (urlString.includes("/auctions")) return { ok: true, json: async () => mockAuctions };
+        if (urlString.includes("/listings")) {
+          return {
+            ok: true,
+            json: async () => [
+              { ...mockListings[0], publicationStatus: "SOLD" },
+              mockListings[1],
+              mockListings[2],
+            ],
+          };
+        }
+        return { ok: false, status: 404 };
+      });
+
       await renderLoadedExplore();
 
       const soldButtons = screen.getAllByRole("button", { name: /sold/i });
