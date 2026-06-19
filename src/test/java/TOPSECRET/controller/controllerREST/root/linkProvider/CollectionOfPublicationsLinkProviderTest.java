@@ -34,9 +34,9 @@ class CollectionOfPublicationsLinkProviderTest {
     @InjectMocks
     private CollectionOfPublicationsLinkProvider provider;
 
-// -------------------------------------------------------------------------
-// getPublicLinks
-// -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+    // getPublicLinks
+    // -------------------------------------------------------------------------
 
     @Test
     void getPublicLinks_shouldReturnThreeLinks() {
@@ -75,11 +75,11 @@ class CollectionOfPublicationsLinkProviderTest {
     }
 
     // -------------------------------------------------------------------------
-// getOwnerLinks
-// -------------------------------------------------------------------------
+    // getOwnerLinks
+    // -------------------------------------------------------------------------
 
     @Test
-    void getOwnerLinks_shouldReturnTwoLinks_whenUserHasAllPermissions()
+    void getOwnerLinks_shouldReturnFiveLinks_whenUserHasAllPermissions()
             throws InstanceNotFoundException {
         // ARRANGE
         UserId userId = mock(UserId.class);
@@ -92,9 +92,12 @@ class CollectionOfPublicationsLinkProviderTest {
         List<Link> result = provider.getOwnerLinks(userId);
 
         // ASSERT
-        assertEquals(2, result.size());
+        assertEquals(5, result.size());
         assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("create-collection-of-publications")));
         assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("find-own-collections")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("make-collection-public")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("make-collection-private")));
+        assertTrue(result.stream().anyMatch(l -> l.getRel().value().equals("make-collection-public-until")));
     }
 
     @Test
@@ -133,8 +136,8 @@ class CollectionOfPublicationsLinkProviderTest {
     }
 
     // -------------------------------------------------------------------------
-// getLinks
-// -------------------------------------------------------------------------
+    // getLinks
+    // -------------------------------------------------------------------------
 
     @Test
     void getLinks_shouldReturnPublicAndOwnerLinks_whenUserHasAllPermissions()

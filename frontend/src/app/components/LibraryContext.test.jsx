@@ -16,13 +16,31 @@ function TestLibrary() {
     );
 }
 
+// Double root response with the link the LibraryProvider needs
+const rootResponse = {
+    _links: {
+        "get-library-by-user": {
+            href: "http://localhost:8081/libraries/by-user/user-001"
+        }
+    }
+};
+
 describe("LibraryContext", () => {
 
-    // Globally mock the fetch calls made by the LibraryProvider
+    // Globally mock the fetch calls made by the providers
     beforeEach(() => {
         vi.clearAllMocks();
 
         global.fetch = vi.fn(async (url) => {
+            // Root endpoint — returns the links the LibraryProvider follows
+            if (url.includes("/?userId=") || url.endsWith("/?userId=user-001")) {
+                return {
+                    ok: true,
+                    status: 200,
+                    json: async () => rootResponse
+                };
+            }
+            // Library endpoint
             if (url.includes("/libraries/by-user/")) {
                 return {
                     ok: true,
@@ -39,35 +57,41 @@ describe("LibraryContext", () => {
     test("fetches and exposes library data on mount", async () => {
         renderWithProviders(<TestLibrary />);
 
-        // Wait for loading to finish and library to be populated
         await waitFor(() => expect(screen.getByTestId("exists").textContent).toBe("exists"));
         expect(screen.getByTestId("name").textContent).toBe("My Personal Library");
     });
 
     test("handles 404 correctly when user has no library", async () => {
-        // Override mock for this specific test to return a 404
-        global.fetch = vi.fn(async () => ({ ok: false, status: 404 }));
+        // Root succeeds, library returns 404
+        global.fetch = vi.fn(async (url) => {
+            if (url.includes("/?userId=")) {
+                return { ok: true, status: 200, json: async () => rootResponse };
+            }
+            return { ok: false, status: 404 };
+        });
 
         renderWithProviders(<TestLibrary />);
 
-        // Wait for loading to resolve
         await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
 
-        // State should be clean/empty
         expect(screen.getByTestId("exists").textContent).toBe("empty");
         expect(screen.getByTestId("error").textContent).toBe("none");
     });
 
     test("handles server errors correctly", async () => {
-        // Override mock to return a 500 error
-        global.fetch = vi.fn(async () => ({ ok: false, status: 500 }));
+        global.fetch = vi.fn(async (url) => {
+            if (url.includes("/?userId=")) {
+                return { ok: true, status: 200, json: async () => rootResponse };
+            }
+            return { ok: false, status: 500 };
+        });
 
         renderWithProviders(<TestLibrary />);
 
-        await waitFor(() => expect(screen.getByTestId("loading").textContent).toBe("false"));
-
-        // The error text should no longer be 'none'
-        expect(screen.getByTestId("error").textContent).not.toBe("none");
+        // Wait for error to appear
+        await waitFor(() => {
+            expect(screen.getByTestId("error").textContent).not.toBe("none");
+        });
         expect(screen.getByTestId("exists").textContent).toBe("empty");
     });
 
@@ -82,7 +106,6 @@ describe("LibraryContext", () => {
                 return null;
             }
 
-            // Render directly from RTL (no providers) to test the missing context error
             expect(() => render(<ComponentWithoutProvider />)).toThrow(
                 "useLibrary must be used within LibraryProvider"
             );

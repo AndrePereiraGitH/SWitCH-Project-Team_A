@@ -1,6 +1,43 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { ListsProvider, useLists } from "./ListsContext";
+import { renderWithProviders } from "../../test-utils";
+import { useLists } from "./ListsContext";
+import { useLinks } from "./LinksContext";
+
+const rootResponse = {
+    _links: {
+        "find-own-collections": {
+            href: "http://localhost:8081/collection-of-publications/owner?userId={userId}",
+            templated: true
+        },
+        "create-collection-of-publications": {
+            href: "http://localhost:8081/collection-of-publications/?ownerId={ownerId}",
+            templated: true
+        },
+        "make-collection-public": {
+            href: "http://localhost:8081/collection-of-publications/{collectionId}/make-public?userId={userId}",
+            templated: true
+        },
+        "make-collection-private": {
+            href: "http://localhost:8081/collection-of-publications/{collectionId}/make-private?userId={userId}",
+            templated: true
+        },
+        "make-collection-public-until": {
+            href: "http://localhost:8081/collection-of-publications/{collectionId}/make-public-until?publicUntil={publicUntil}&userId={userId}",
+            templated: true
+        },
+        "assign-to-collection": {
+            href: "http://localhost:8081/publicationSamples/{publicationSampleId}/collection?collectionId={collectionId}&userId={userId}",
+            templated: true
+        }
+    }
+};
+
+// Exposes the loading state of LinksContext to wait until links are ready
+function LinksReady({ children }) {
+    const { loading } = useLinks();
+    return loading ? <p data-testid="links-loading">true</p> : children;
+}
 
 // Helper component that exposes lists context state to the screen
 function TestLists() {
@@ -37,10 +74,16 @@ function TestLists() {
 }
 
 function renderListsContext() {
-    return render(
-        <ListsProvider>
+    return renderWithProviders(
+        <LinksReady>
             <TestLists />
-        </ListsProvider>
+        </LinksReady>
+    );
+}
+
+async function waitForLinks() {
+    await waitFor(() =>
+        expect(screen.queryByTestId("links-loading")).not.toBeInTheDocument()
     );
 }
 
@@ -49,36 +92,45 @@ describe("ListsContext", () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
-        // Globally mock the fetch calls made by the ListsProvider
         global.fetch = vi.fn(async (url, options) => {
+            // Root endpoint
+            if (url.includes("/?userId=") || url.match(/^http:\/\/localhost:8081\/\?/)) {
+                return { ok: true, status: 200, json: async () => rootResponse };
+            }
             if (url.includes("/collection-of-publications/owner") && (!options || options.method === "GET")) {
                 return {
                     ok: true,
                     json: async () => [{ collectionId: "list-1", collectionName: "Initial List", private: true }]
                 };
             }
+            if (url.includes("/make-public-until") && options?.method === "PATCH") {
+                return {
+                    ok: true,
+                    json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: false })
+                };
+            }
+            if (url.includes("/make-public") && options?.method === "PATCH") {
+                return {
+                    ok: true,
+                    json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: false })
+                };
+            }
+            if (url.includes("/make-private") && options?.method === "PATCH") {
+                return {
+                    ok: true,
+                    json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: true })
+                };
+            }
+            if (url.includes("/publicationSamples/") && url.includes("/collection") && options?.method === "PATCH") {
+                return {
+                    ok: true,
+                    json: async () => ({ id: "pub-1" })
+                };
+            }
             if (url.includes("/collection-of-publications/") && options?.method === "POST") {
                 return {
                     ok: true,
                     json: async () => ({ collectionId: "list-2", collectionName: "New List", private: true })
-                };
-            }
-            if (url.includes("/publicUntil") && options?.method === "PATCH") {
-                return {
-                    ok: true,
-                    json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: false })
-                };
-            }
-            if (url.includes("/public") && options?.method === "PATCH") {
-                return {
-                    ok: true,
-                    json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: false })
-                };
-            }
-            if (url.includes("/collection") && options?.method === "PATCH") {
-                return {
-                    ok: true,
-                    json: async () => ({ id: "pub-1" }) // Returns the publication sample
                 };
             }
             return { ok: false, status: 404, text: async () => "Not found" };
@@ -90,8 +142,8 @@ describe("ListsContext", () => {
     describe("Fetching and Initial State", () => {
         test("fetches and sets lists on mount", async () => {
             renderListsContext();
+            await waitForLinks();
 
-            // Wait for the async GET to populate the state
             await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
             expect(screen.getByTestId("first-name").textContent).toBe("Initial List");
             expect(screen.getByTestId("first-public").textContent).toBe("private");
@@ -99,6 +151,7 @@ describe("ListsContext", () => {
 
         test("getListById works correctly when data is loaded", async () => {
             renderListsContext();
+            await waitForLinks();
             await waitFor(() => expect(screen.getByTestId("specific-list").textContent).toBe("Initial List"));
         });
     });
@@ -108,6 +161,7 @@ describe("ListsContext", () => {
     describe("Add List", () => {
         test("adds a new list and updates state", async () => {
             renderListsContext();
+            await waitForLinks();
             await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
 
             fireEvent.click(screen.getByText("Add List"));
@@ -120,6 +174,7 @@ describe("ListsContext", () => {
     describe("Visibility Management", () => {
         test("makePublic updates the list to public", async () => {
             renderListsContext();
+            await waitForLinks();
             await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
 
             expect(screen.getByTestId("first-public").textContent).toBe("private");
@@ -130,6 +185,7 @@ describe("ListsContext", () => {
 
         test("makePublicUntil updates the list to public", async () => {
             renderListsContext();
+            await waitForLinks();
             await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
 
             expect(screen.getByTestId("first-public").textContent).toBe("private");
@@ -144,13 +200,15 @@ describe("ListsContext", () => {
     describe("Add Publication", () => {
         test("addPublicationToList successfully calls fetch", async () => {
             renderListsContext();
+            await waitForLinks();
             await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
 
             fireEvent.click(screen.getByText("Add Pub to First"));
 
-            // Wait for the patch fetch to be called
             await waitFor(() => {
-                const patchCalls = global.fetch.mock.calls.filter(c => c[1]?.method === "PATCH" && c[0].includes("/collection"));
+                const patchCalls = global.fetch.mock.calls.filter(
+                    c => c[1]?.method === "PATCH" && c[0].includes("/collection")
+                );
                 expect(patchCalls.length).toBe(1);
             });
         });
@@ -167,7 +225,6 @@ describe("ListsContext", () => {
                 return null;
             }
 
-            // render directly (no providers) to test the missing context error
             expect(() => render(<ComponentWithoutProvider />)).toThrow(
                 "useLists must be used within ListsProvider"
             );

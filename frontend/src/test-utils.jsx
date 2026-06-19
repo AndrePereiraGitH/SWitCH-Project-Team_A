@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./app/components/AuthContext";
+import { LinksProvider } from "./app/components/LinksContext";
 import { PublicationsProvider } from "./app/components/PublicationsContext";
 import { LibraryProvider } from "./app/components/LibraryContext";
 import { CartProvider } from "./app/components/CartContext";
@@ -10,19 +11,21 @@ import { PurchasesProvider } from "./app/components/PurchasesContext";
 function AllProviders({ children }) {
     return (
         <AuthProvider>
-            <PublicationsProvider>
-                <LibraryProvider>
-                    <PurchasesProvider>
-                        <CartProvider>
-                            <ListsProvider>
-                                <BrowserRouter>
-                                    {children}
-                                </BrowserRouter>
-                            </ListsProvider>
-                        </CartProvider>
-                    </PurchasesProvider>
-                </LibraryProvider>
-            </PublicationsProvider>
+            <LinksProvider>
+                <PublicationsProvider>
+                    <LibraryProvider>
+                        <PurchasesProvider>
+                            <CartProvider>
+                                <ListsProvider>
+                                    <BrowserRouter>
+                                        {children}
+                                    </BrowserRouter>
+                                </ListsProvider>
+                            </CartProvider>
+                        </PurchasesProvider>
+                    </LibraryProvider>
+                </PublicationsProvider>
+            </LinksProvider>
         </AuthProvider>
     );
 }
