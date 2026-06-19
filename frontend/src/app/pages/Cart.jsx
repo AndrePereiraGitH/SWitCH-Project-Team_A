@@ -159,7 +159,7 @@ export function Cart() {
                             <div className="space-y-3 mb-6">
                                 <div className="flex justify-between text-muted-foreground">
                                     <span>Subtotal</span>
-                                    <span>€{confirmedTotal.toFixed(2)}</span>
+                                    <span>€{total.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between text-muted-foreground">
                                     <span>Shipping</span>

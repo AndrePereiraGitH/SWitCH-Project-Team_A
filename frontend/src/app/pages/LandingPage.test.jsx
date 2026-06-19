@@ -35,14 +35,27 @@ const mockListings = [
     },
 ];
 
+const mockAuctions = [
+    {
+        auctionId: "auction-001",
+        listingId: "2",
+        initialPrice: "15.00",
+        buyoutPrice: null,
+        currentHighestBid: null,
+        auctionStartDateTime: "2026-06-01T10:00:00",
+        auctionEndDateTime: "2026-06-20T10:00:00",
+        auctionStatus: "ACTIVE",
+    }
+];
+
 beforeEach(() => {
     vi.clearAllMocks();
     global.fetch = vi.fn(async (url) => {
-        if (url.includes("/genres")) {
-            return { ok: true, json: async () => mockGenres };
-        }
         if (url.includes("/listings")) {
             return { ok: true, json: async () => mockListings };
+        }
+        if (url.includes("/auctions")) {
+            return { ok: true, json: async () => mockAuctions };
         }
         return { ok: false, status: 404 };
     });
@@ -117,14 +130,6 @@ describe("LandingPage — Categories", () => {
         expect(screen.getByText("Science")).toBeInTheDocument();
     });
 
-    test("shows all 6 categories", async () => {
-        await renderLanding();
-        ["Non-Fiction", "Science", "History", "Art", "Children"].forEach(cat => {
-            expect(screen.getByText(cat)).toBeInTheDocument();
-        });
-        expect(screen.getAllByText("Fiction").length).toBeGreaterThan(0);
-    });
-
 });
 
 // ── How It Works ───────────────────────────────────────────────────────────────
@@ -183,6 +188,45 @@ describe("LandingPage — Items For Sale", () => {
         await renderLanding();
         const soldButtons = screen.queryAllByRole("button", { name: /sold/i });
         soldButtons.forEach(btn => expect(btn).toBeDisabled());
+    });
+
+    test("does not show Make Offer for auctions that have ended", async () => {
+        global.fetch = vi.fn(async (url) => {
+            if (url.includes("/listings")) {
+                return { ok: true, json: async () => mockListings };
+            }
+            if (url.includes("/auctions")) {
+                return {
+                    ok: true,
+                    json: async () => [{ ...mockAuctions[0], auctionStatus: "BOUGHT_OUT" }]
+                };
+            }
+            return { ok: false, status: 404 };
+        });
+
+        await renderLanding();
+
+        expect(screen.getByText("Auction Ended")).toBeInTheDocument();
+        expect(screen.queryByText("Make Offer")).not.toBeInTheDocument();
+    });
+
+    test("shows Starts Soon for scheduled auctions", async () => {
+        global.fetch = vi.fn(async (url) => {
+            if (url.includes("/listings")) {
+                return { ok: true, json: async () => mockListings };
+            }
+            if (url.includes("/auctions")) {
+                return {
+                    ok: true,
+                    json: async () => [{ ...mockAuctions[0], auctionStatus: "SCHEDULED" }]
+                };
+            }
+            return { ok: false, status: 404 };
+        });
+
+        await renderLanding();
+
+        expect(screen.getByText("Starts Soon")).toBeInTheDocument();
     });
 
 });

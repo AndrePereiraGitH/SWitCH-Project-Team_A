@@ -1,21 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import { BookOpen, ShoppingBag, List, Users, ArrowRight, Star, Shield, Heart, Search, ShoppingCart, Tag } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { BookCard } from "../components/BookCard";
 import { BidModal } from "../components/BidModal";
 import { useCart } from "../components/CartContext";
-import { usePurchases } from "../components/PurchasesContext";
-import { API_BASE_URL, CURRENT_USER_ID } from "@/api/constants.js";
+import { API_BASE_URL, CURRENT_USER_ID } from "../../api/constants";
 
 export function LandingPage() {
   const { addToCart } = useCart();
-  const { soldItemIds } = usePurchases();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [bidModalOpen, setBidModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [sales, setSales] = useState([]);
-  const [genres, setGenres] = useState([]);
+
+  const [featuredSales, setFeaturedSales] = useState([]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -24,49 +22,56 @@ export function LandingPage() {
     }
   };
 
-  const mapListingToSale = (listing) => ({
-    id: listing.id,
-    title: listing.listingTile ?? listing.listingTitle,
-    author: listing.authors?.join(", ") ?? "Unknown",
-    genre: listing.genre ?? [],
-    price: Number(listing.price),
-    condition: listing.condition,
-    isAuction: listing.saleType === "AUCTION",
-    type: "book",
-  });
+  const terminalStatuses = ["ENDED_WITH_WINNER", "ENDED_WITHOUT_BIDS", "BOUGHT_OUT", "CANCELLED"];
 
-  const getGenreName = (genreId) => {
-    return genres.find(g => g.id === genreId)?.genreName ?? genreId;
-  };
 
-  const getSaleGenreNames = (sale) => {
-    return sale.genre?.map(getGenreName).join(", ") ?? "";
-  };
-
-  useEffect(() => {
-    async function fetchData() {
+    useEffect(() => {
+    async function fetchFeaturedListings() {
       try {
-        const [genresRes, listingsRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/genres`),
-          fetch(`${API_BASE_URL}/listings?userId=${CURRENT_USER_ID}`),
+        const [listingsRes, auctionRes] = await Promise.all([
+            fetch(`${API_BASE_URL}/listings`),
+            fetch(`${API_BASE_URL}/auctions`),
         ]);
 
-        if (!genresRes.ok || !listingsRes.ok) {
-          throw new Error("Failed to fetch landing data");
+        if (!listingsRes.ok || !auctionRes.ok) {
+            throw new Error("Failed to fetch listings");
         }
 
-        const genresData = await genresRes.json();
-        const listingsData = await listingsRes.json();
+        const data = await listingsRes.json();
+        const auctionsData = await auctionRes.json();
 
-        setGenres(genresData);
-        setSales(listingsData.map(mapListingToSale));
+        const auctionsByListingId = Object.fromEntries(
+            auctionsData.map(a => [a.listingId, a])
+        );
+
+        const mapped = data.map(listing => {
+            const auction = auctionsByListingId[listing.id];
+            return {
+                id: listing.id,
+                title: listing.listingTitle,
+                author: listing.authors?.join(", ") ?? "Unknown",
+                genre: listing.genre?.join(", ") ?? "",
+                price: listing.saleType === "AUCTION" && auction
+                    ? Number(auction.currentHighestBid ?? auction.initialPrice)
+                    : Number(listing.price),
+                condition: listing.condition,
+                isAuction: listing.saleType === "AUCTION",
+                auctionStatus: auction?.auctionStatus ?? null,
+            }
+        });
+
+        const shuffled = [...mapped].sort(() => Math.random() - 0.5);
+
+        setFeaturedSales(shuffled.slice(0, 4));
+
       } catch (error) {
-        console.error("Error loading listings:", error);
+        console.error("Error loading featured listings:", error);
       }
     }
 
-    fetchData();
+    fetchFeaturedListings();
   }, []);
+ 
 
   return (
     <div className="min-h-screen">
@@ -230,7 +235,7 @@ export function LandingPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {sales.map(sale => (
+            {featuredSales.map(sale => (
               <div key={sale.id} className="relative group flex flex-col">
                 <div className="absolute top-3 right-3 z-10">
                   <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -241,52 +246,78 @@ export function LandingPage() {
                     {sale.isAuction ? "Auction" : "Direct Sale"}
                   </span>
                 </div>
+                <div
+                  onClick={() => navigate(`/product/${sale.id}`)}
+                  className="cursor-pointer"
+                  >
                 <BookCard
                   title={sale.title}
                   author={sale.author}
-                  genre={getSaleGenreNames(sale)}
+                  genre={sale.genre}
                   price={sale.price}
                   condition={sale.condition}
                   isAuction={sale.isAuction}
                   auctionEndDate={sale.auctionEndDate}
                   imageUrl={sale.image}
-                  isSold={soldItemIds.has(sale.id)}
                 />
-                <div className="mt-3">
-                  {soldItemIds.has(sale.id) ? (
-                      <button
-                          disabled
-                          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
-                      >
-                        Sold
-                      </button>
-                  ) : sale.isAuction ? (
-                    <button
-                      onClick={() => {
-                        setSelectedItem(sale);
-                        setBidModalOpen(true);
-                      }}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold"
-                    >
-                      <Tag className="w-5 h-5" />
-                      Make Offer
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        addToCart({
-                          id: sale.id,
-                          title: sale.title,
-                          price: sale.price
-                        });
-                      }}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
-                    >
-                      <ShoppingCart className="w-5 h-5" />
-                      Add to Cart
-                    </button>
-                  )}
                 </div>
+                  <div className="mt-3">
+                      {sale.isAuction ? (
+                          sale.auctionStatus === "ACTIVE" ? (
+                              <button
+                                  onClick={async () => {
+                                      const auctionRes = await fetch(`${API_BASE_URL}/auctions?listingId=${sale.id}`);
+                                      if (auctionRes.ok) {
+                                          const auctions = await auctionRes.json();
+                                          const auction = auctions[0];
+                                          if (auction) {
+                                              setSelectedItem({
+                                                  ...sale,
+                                                  auctionId: auction.auctionId,
+                                                  price: Number(auction.currentHighestBid ?? auction.initialPrice),
+                                                  buyoutPrice: auction.buyoutPrice != null ? Number(auction.buyoutPrice) : null,
+                                              });
+                                              setBidModalOpen(true);
+                                          }
+                                      }
+                                  }}
+                                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors font-semibold"
+                              >
+                                  <Tag className="w-5 h-5" />
+                                  Make Offer
+                              </button>
+                          ) : terminalStatuses.includes(sale.auctionStatus) ? (
+                              <button
+                                  disabled
+                                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 text-gray-400 rounded-xl font-semibold cursor-not-allowed"
+                              >
+                                  Auction Ended
+                              </button>
+                          ) : (
+                              <button
+                                  disabled
+                                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-muted text-muted-foreground rounded-xl font-semibold cursor-not-allowed"
+                              >
+                                  <Tag className="w-5 h-5" />
+                                  {sale.auctionStatus === "SCHEDULED" ? "Starts Soon" : "Not Available"}
+                              </button>
+                          )
+                      ) : (
+                          <button
+                              onClick={() => {
+                                  addToCart({
+                                      id: sale.id,
+                                      title: sale.title,
+                                      price: sale.price
+                                  });
+                              }}
+                              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 transition-colors font-semibold"
+                          >
+                              <ShoppingCart className="w-5 h-5" />
+                              Add to Cart
+                          </button>
+                      )}
+                  </div>
               </div>
             ))}
           </div>
@@ -303,16 +334,51 @@ export function LandingPage() {
           }}
           itemTitle={selectedItem.title}
           currentBid={selectedItem.price}
-          buyoutPrice={selectedItem.price * 1.5}
-          onSubmitBid={(amount) => {
-            console.log("Bid submitted:", amount);
+          buyoutPrice={selectedItem.buyoutPrice}
+          onSubmitBid={async (amount, onError) => {
+              const res = await fetch(
+                  `${API_BASE_URL}/auctions/${selectedItem.auctionId}/bids?bidderId=${CURRENT_USER_ID}`,
+                  {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ value: amount })
+                  }
+              );
+              if (res.status === 204) {
+                  setBidModalOpen(false);
+                  setFeaturedSales(prev => prev.map(s =>
+                      s.id === selectedItem.id ? { ...s, price: amount } : s
+                  ));
+                  setSelectedItem(null);
+              } else if (res.status === 400) {
+                  onError?.("Invalid bid. Please try a higher amount.");
+              } else {
+                  onError?.("Something went wrong. Please try again.");
+              }
           }}
-          onBuyNow={() => {
-            addToCart({
-              id: selectedItem.id,
-              title: selectedItem.title,
-              price: selectedItem.price * 1.5
-            });
+          onBuyNow={async () => {
+              const res = await fetch(
+                  `${API_BASE_URL}/auctions/${selectedItem.auctionId}/bids?bidderId=${CURRENT_USER_ID}`,
+                  {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ value: selectedItem.buyoutPrice })
+                  }
+              );
+              if (res.status === 204) {
+                  setBidModalOpen(false);
+                  setFeaturedSales(prev => prev.map(s =>
+                      s.id === selectedItem.id
+                          ? { ...s, price: selectedItem.buyoutPrice, auctionStatus: "BOUGHT_OUT" }
+                          : s
+                  ));
+                  addToCart({
+                      id: selectedItem.id,
+                      title: selectedItem.title,
+                      price: selectedItem.buyoutPrice
+                  });
+                  setSelectedItem(null);
+              }
           }}
         />
       )}
