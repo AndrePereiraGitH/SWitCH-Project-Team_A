@@ -4,6 +4,12 @@ import { renderWithProviders } from "../../test-utils";
 import { useLists } from "./ListsContext";
 import { useLinks } from "./LinksContext";
 
+// ── Root HATEOAS fixture ──────────────────────────────────────────────
+
+/**
+ * Simulated root response from the API, containing all HATEOAS links needed
+ * by {@link ListsContext}. Mirrors the structure returned by the real backend.
+ */
 const rootResponse = {
     _links: {
         "find-own-collections": {
@@ -33,13 +39,32 @@ const rootResponse = {
     }
 };
 
-// Exposes the loading state of LinksContext to wait until links are ready
+// ── Helper components ─────────────────────────────────────────────────
+
+/**
+ * Wrapper that defers rendering `children` until {@link LinksContext} has
+ * finished loading. Renders a `data-testid="links-loading"` sentinel while
+ * waiting, which tests use as a synchronisation point via {@link waitForLinks}.
+ *
+ * @param {{ children: React.ReactNode }} props
+ */
 function LinksReady({ children }) {
     const { loading } = useLinks();
     return loading ? <p data-testid="links-loading">true</p> : children;
 }
 
-// Helper component that exposes lists context state to the screen
+/**
+ * Test component that exposes {@link ListsContext} state and actions to the
+ * DOM so assertions can be made through rendered text and button clicks.
+ *
+ * Rendered elements:
+ * - `data-testid="count"` — total number of lists in state.
+ * - `data-testid="first-id"` — `collectionId` of the first list.
+ * - `data-testid="first-name"` — `collectionName` of the first list.
+ * - `data-testid="first-public"` — `"public"` or `"private"` for the first list.
+ * - `data-testid="specific-list"` — name of the list with id `"list-1"`, or `"none"`.
+ * - Buttons to trigger `makePublic`, `makePublicUntil`, `addPublicationToList`, and `addList`.
+ */
 function TestLists() {
     const {
         lists,
@@ -73,6 +98,13 @@ function TestLists() {
     );
 }
 
+/**
+ * Renders {@link TestLists} inside the full provider tree (including
+ * {@link ListsProvider} and {@link LinksContext}) using the shared
+ * `renderWithProviders` test utility.
+ *
+ * @returns {import("@testing-library/react").RenderResult}
+ */
 function renderListsContext() {
     return renderWithProviders(
         <LinksReady>
@@ -81,52 +113,71 @@ function renderListsContext() {
     );
 }
 
+/**
+ * Waits until the {@link LinksReady} sentinel element is removed from the DOM,
+ * indicating that {@link LinksContext} has finished loading and HATEOAS links
+ * are available.
+ *
+ * @returns {Promise<void>}
+ */
 async function waitForLinks() {
     await waitFor(() =>
         expect(screen.queryByTestId("links-loading")).not.toBeInTheDocument()
     );
 }
 
+// ── Test suite ────────────────────────────────────────────────────────
+
 describe("ListsContext", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
 
+        /**
+         * Global fetch mock that dispatches responses based on URL and HTTP method.
+         * Each branch corresponds to one backend endpoint used by {@link ListsContext}.
+         */
         global.fetch = vi.fn(async (url, options) => {
-            // Root endpoint
+            // Root HATEOAS entry-point
             if (url.includes("/?userId=") || url.match(/^http:\/\/localhost:8081\/\?/)) {
                 return { ok: true, status: 200, json: async () => rootResponse };
             }
+            // GET /collection-of-publications/owner — initial list fetch
             if (url.includes("/collection-of-publications/owner") && (!options || options.method === "GET")) {
                 return {
                     ok: true,
                     json: async () => [{ collectionId: "list-1", collectionName: "Initial List", private: true }]
                 };
             }
+            // PATCH /make-public-until — must be checked before /make-public (more specific path)
             if (url.includes("/make-public-until") && options?.method === "PATCH") {
                 return {
                     ok: true,
                     json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: false })
                 };
             }
+            // PATCH /make-public
             if (url.includes("/make-public") && options?.method === "PATCH") {
                 return {
                     ok: true,
                     json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: false })
                 };
             }
+            // PATCH /make-private
             if (url.includes("/make-private") && options?.method === "PATCH") {
                 return {
                     ok: true,
                     json: async () => ({ collectionId: "list-1", collectionName: "Initial List", private: true })
                 };
             }
+            // PATCH /publicationSamples/{id}/collection — assign publication to list
             if (url.includes("/publicationSamples/") && url.includes("/collection") && options?.method === "PATCH") {
                 return {
                     ok: true,
                     json: async () => ({ id: "pub-1" })
                 };
             }
+            // POST /collection-of-publications/ — create new list
             if (url.includes("/collection-of-publications/") && options?.method === "POST") {
                 return {
                     ok: true,
@@ -137,7 +188,7 @@ describe("ListsContext", () => {
         });
     });
 
-    // ── Initial State & Fetching ──────────────────────────────────────────────────
+    // ── Initial State & Fetching ──────────────────────────────────────
 
     describe("Fetching and Initial State", () => {
         test("fetches and sets lists on mount", async () => {
@@ -156,7 +207,7 @@ describe("ListsContext", () => {
         });
     });
 
-    // ── Add List ──────────────────────────────────────────────────────────────────
+    // ── Add List ──────────────────────────────────────────────────────
 
     describe("Add List", () => {
         test("adds a new list and updates state", async () => {
@@ -165,11 +216,12 @@ describe("ListsContext", () => {
             await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
 
             fireEvent.click(screen.getByText("Add List"));
+            // Count increments optimistically from the local state update in addList.
             await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("2"));
         });
     });
 
-    // ── Update Visibility ─────────────────────────────────────────────────────────
+    // ── Visibility Management ─────────────────────────────────────────
 
     describe("Visibility Management", () => {
         test("makePublic updates the list to public", async () => {
@@ -195,7 +247,7 @@ describe("ListsContext", () => {
         });
     });
 
-    // ── Add Publication ───────────────────────────────────────────────────────────
+    // ── Add Publication ───────────────────────────────────────────────
 
     describe("Add Publication", () => {
         test("addPublicationToList successfully calls fetch", async () => {
@@ -206,6 +258,7 @@ describe("ListsContext", () => {
             fireEvent.click(screen.getByText("Add Pub to First"));
 
             await waitFor(() => {
+                // Verify exactly one PATCH to the /collection endpoint was issued.
                 const patchCalls = global.fetch.mock.calls.filter(
                     c => c[1]?.method === "PATCH" && c[0].includes("/collection")
                 );
@@ -214,10 +267,11 @@ describe("ListsContext", () => {
         });
     });
 
-    // ── Error Handling ────────────────────────────────────────────────────────────
+    // ── Error Handling ────────────────────────────────────────────────
 
     describe("Error Handling", () => {
         test("useLists throws when used outside ListsProvider", () => {
+            // Suppress the React error boundary console output during this intentional throw.
             const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
             function ComponentWithoutProvider() {

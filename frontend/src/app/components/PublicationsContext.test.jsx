@@ -4,6 +4,15 @@ import { renderWithProviders } from "../../test-utils";
 import { usePublications } from "./PublicationsContext";
 import { useLinks } from "./LinksContext";
 
+// ── Fixtures ──────────────────────────────────────────────────────────
+
+/**
+ * Minimal valid form payload for a single physical book.
+ * Used as the base for `addPublication` calls throughout the suite.
+ * `mockBookB` is a shallow clone with a different title to test multiple additions.
+ *
+ * @type {object}
+ */
 const mockBookA = {
     title: "Book A",
     authorNames: ["AUTH1"],
@@ -23,8 +32,13 @@ const mockBookA = {
     typeOfBinding: "Paperback"
 };
 
+/** Variant of {@link mockBookA} with a distinct title for multi-publication tests. */
 const mockBookB = { ...mockBookA, title: "Book B" };
 
+/**
+ * Simulated root HATEOAS response containing all links required by
+ * {@link PublicationsProvider}. Mirrors the structure returned by the real backend.
+ */
 const rootResponse = {
     _links: {
         "find-in-library": {
@@ -50,12 +64,30 @@ const rootResponse = {
     }
 };
 
-// Exposes the loading state of LinksContext to wait until links are ready
+// ── Helper components ─────────────────────────────────────────────────
+
+/**
+ * Defers rendering `children` until {@link LinksContext} has finished loading.
+ * Renders a `data-testid="links-loading"` sentinel while waiting, used by
+ * {@link waitForLinks} as a synchronisation point.
+ *
+ * @param {{ children: React.ReactNode }} props
+ */
 function LinksReady({ children }) {
     const { loading } = useLinks();
     return loading ? <p data-testid="links-loading">true</p> : children;
 }
 
+/**
+ * Test component exposing {@link PublicationsContext} state to the DOM.
+ *
+ * Rendered elements:
+ * - `data-testid="count"`       — total publications in state.
+ * - `data-testid="all-count"`   — result of `getAllPublications().length`.
+ * - `data-testid="sale-count"`  — result of `getPublicationsForSale().length`.
+ * - Per publication: `data-testid="pub-{id}"`, `"title-{id}"`, `"forsale-{id}"`.
+ * - Buttons to trigger `addPublication` for Book A and Book B.
+ */
 function TestPublications() {
     const { publications, addPublication, getPublicationsForSale, getAllPublications } = usePublications();
     return (
@@ -77,6 +109,15 @@ function TestPublications() {
     );
 }
 
+/**
+ * Variant test component that also exposes `setPublicationForSale` to test
+ * the for-sale mutation on the first loaded publication.
+ *
+ * Rendered elements (in addition to count):
+ * - `data-testid="first-title"`   — title of the first publication.
+ * - `data-testid="first-forsale"` — `"for-sale"` or `"not-for-sale"`.
+ * - "Sell First" button — calls `setPublicationForSale(first.id, 15)`.
+ */
 function TestPublicationsWithActions() {
     const { publications, addPublication, setPublicationForSale } = usePublications();
     const first = publications[0];
@@ -95,6 +136,12 @@ function TestPublicationsWithActions() {
     );
 }
 
+/**
+ * Renders {@link TestPublications} inside the full provider tree via
+ * `renderWithProviders`, gated by {@link LinksReady}.
+ *
+ * @returns {import("@testing-library/react").RenderResult}
+ */
 function renderPublications() {
     return renderWithProviders(
         <LinksReady>
@@ -103,6 +150,12 @@ function renderPublications() {
     );
 }
 
+/**
+ * Renders {@link TestPublicationsWithActions} inside the full provider tree,
+ * used by tests that need to exercise `setPublicationForSale`.
+ *
+ * @returns {import("@testing-library/react").RenderResult}
+ */
 function renderPublicationsWithActions() {
     return renderWithProviders(
         <LinksReady>
@@ -111,36 +164,57 @@ function renderPublicationsWithActions() {
     );
 }
 
+/**
+ * Waits until the {@link LinksReady} sentinel is removed from the DOM,
+ * confirming HATEOAS links are resolved and the provider is ready.
+ *
+ * @returns {Promise<void>}
+ */
 async function waitForLinks() {
     await waitFor(() =>
         expect(screen.queryByTestId("links-loading")).not.toBeInTheDocument()
     );
 }
 
+// ── Test suite ────────────────────────────────────────────────────────
+
 describe("PublicationsContext", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
 
+        /**
+         * Default fetch mock dispatching responses by URL pattern and HTTP method.
+         * Each branch corresponds to one backend endpoint used by {@link PublicationsProvider}.
+         * Note: `/publicationSamples` POST is matched after `/in-library` GET to avoid
+         * the broader pattern swallowing the initial fetch.
+         */
         global.fetch = vi.fn(async (url, options) => {
+            // Root HATEOAS entry-point
             if (url.includes("/?userId=") || url.match(/^http:\/\/localhost:8081\/\?/)) {
                 return { ok: true, status: 200, json: async () => rootResponse };
             }
+            // GET /publicationSamples/in-library — initial publications fetch (returns empty)
             if (url.includes("/in-library") || (url.includes("/publicationSamples") && (!options || options.method === "GET"))) {
                 return { ok: true, json: async () => [] };
             }
+            // POST /bibliographicalDatas — step 1 of addPublication
             if (url.includes("/bibliographicalDatas")) {
                 return { ok: true, json: async () => ({ bdId: "bd-mock" }) };
             }
+            // POST /editions — step 2 of addPublication
             if (url.includes("/editions")) {
                 return { ok: true, json: async () => ({ editionId: "ed-mock" }) };
             }
+            // POST /publicationSamples — step 3 of addPublication; random id simulates server-assigned ids
             if (url.includes("/publicationSamples") && options?.method === "POST") {
                 return { ok: true, json: async () => ({ id: Math.random().toString() }) };
             }
             return { ok: false, status: 404, text: async () => "Not found" };
         });
     });
+
+    // ── Initial State ─────────────────────────────────────────────────
 
     describe("Initial State", () => {
         test("publications list starts empty", async () => {
@@ -162,6 +236,8 @@ describe("PublicationsContext", () => {
         });
     });
 
+    // ── Add Publication ───────────────────────────────────────────────
+
     describe("Add Publication", () => {
         test("adding a publication increments the count to 1", async () => {
             renderPublications();
@@ -181,6 +257,7 @@ describe("PublicationsContext", () => {
             renderPublications();
             await waitForLinks();
             fireEvent.click(screen.getByText("Add Book A"));
+            // The enriched sample is created with forSale: false.
             const pub = await screen.findAllByText("not-for-sale");
             expect(pub.length).toBeGreaterThan(0);
         });
@@ -202,12 +279,15 @@ describe("PublicationsContext", () => {
         });
     });
 
+    // ── Set For Sale ──────────────────────────────────────────────────
+
     describe("Set For Sale", () => {
         test("setPublicationForSale marks the publication as for sale", async () => {
             renderPublicationsWithActions();
             await waitForLinks();
             fireEvent.click(screen.getByText("Add Book A"));
 
+            // Wait for the publication to appear before clicking Sell.
             const sellButton = await screen.findByText("Sell First");
             fireEvent.click(sellButton);
 
@@ -217,12 +297,16 @@ describe("PublicationsContext", () => {
         test("getPublicationsForSale count increases after setting for sale", async () => {
             renderPublications();
             await waitForLinks();
+            // Baseline: no publications for sale on an empty list.
             await waitFor(() => expect(screen.getByTestId("sale-count").textContent).toBe("0"));
         });
     });
 
+    // ── Error Handling ────────────────────────────────────────────────
+
     describe("Error Handling", () => {
         test("usePublications throws when used outside PublicationsProvider", () => {
+            // Suppress the React error boundary console output during this intentional throw.
             const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
             function ComponentWithoutProvider() {
