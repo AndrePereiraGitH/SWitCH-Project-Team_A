@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -265,5 +266,59 @@ public class AuctionRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+
+    /**
+     * Handles OPTIONS requests for the auction collection endpoint ({@code /auctions}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, POST, OPTIONS}
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.POST,
+                        HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+
+    /**
+     * Handles OPTIONS requests for the bid placement endpoint ({@code /auctions/{auctionId}/bids}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @param auctionId the unique identifier of the auction; used for URL matching
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code POST, OPTIONS}
+     */
+    @RequestMapping(value = "/{auctionId}/bids", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsBids(@PathVariable String auctionId) {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+
+    /**
+     * Handles OPTIONS requests for the auction detail endpoint ({@code /auctions/{auctionId}}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @param auctionId the unique identifier of the auction; used for URL matching
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS}
+     */
+    @RequestMapping(value = "/{auctionId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById(@PathVariable String auctionId) {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 }
