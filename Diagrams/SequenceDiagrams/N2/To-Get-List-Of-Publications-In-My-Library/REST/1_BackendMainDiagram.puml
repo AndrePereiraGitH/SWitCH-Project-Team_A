@@ -3,27 +3,17 @@ autonumber
 hide footbox
 title As a User, I want to get the list of publications in my library (Main)
 
-participant ":UI" as UI
 participant ":PublicationSampleRESTController" as Ctrl
 participant ":PublicationSampleMapper" as Mapper
 participant ":PublicationSampleService" as Service
 participant "publicationDTOS: List<PublicationDTO>" as ListDTO
 
-[o-> UI : OPTIONS /publicationSamples/in-library
-activate UI
-
-UI -> Ctrl : optionsInLibrary()
+[o-> Ctrl : OPTIONS /publicationSamples/in-library
 activate Ctrl
-Ctrl --> UI : 200 OK\n Allow: GET, OPTIONS
+[o<-- Ctrl : 200 OK\n Allow: GET, OPTIONS
 deactivate Ctrl
 
-[o<-- UI : 200 OK\n Allow: GET, OPTIONS
-deactivate UI
-
-[o-> UI : GET /publicationSamples/in-library?userId={userId}
-activate UI
-
-UI -> Ctrl : findPublicationsInLibrary(userId)
+[o-> Ctrl : GET /publicationSamples/in-library?userId={userId}
 activate Ctrl
 
 Ctrl -> Mapper : toUserId(userId)
@@ -35,7 +25,7 @@ Ctrl -> Service : findPublicationsInLibrary(id)
 activate Service
 
 ref over Service
-[[2_FindPublicationsInLibrary.puml Find Publications in Library]]
+[[2_BackendFindPublicationsInLibrary.puml Find Publications in Library]]
 end ref
 
 Service --> Ctrl : pbSampleList
@@ -44,13 +34,10 @@ deactivate Service
 Ctrl -->> ListDTO ** : <<create>>
 
 ref over Ctrl
-[[3_BuildResponse.puml Build Response]]
+[[3_BackendBuildResponse.puml Build Response]]
 end ref
 
-Ctrl --> UI : 200 OK\n body: publicationDTOS
+[o<-- Ctrl : 200 OK\n body: publicationDTOS
 deactivate Ctrl
-
-[o<-- UI : 200 OK\n body: publicationDTOS
-deactivate UI
 
 @enduml

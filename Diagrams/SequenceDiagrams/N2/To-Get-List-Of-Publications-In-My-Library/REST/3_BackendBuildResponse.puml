@@ -1,17 +1,9 @@
 @startuml
 autonumber
 hide footbox
-title As a User, I want to get the list of publications in my library
+title Build Response
 
-participant ":UI" as UI
 participant ":PublicationSampleRESTController" as Ctrl
-participant ":PublicationSampleMapper" as Mapper
-participant ":PublicationSampleService" as Service
-participant ":IUserRepository" as UserRepo
-participant "user: Optional<User>" as user
-participant ":PublicationSampleAuthorizationPolicy" as Policy
-participant ":IPublicationSampleRepository" as PubRepo
-participant "pbSampleList: List<PublicationSample>" as pbSampleList
 participant ":BibliographicalDataService" as BDService
 participant "bd: BibliographicalData" as bd
 participant ":EditionService" as EditionService
@@ -22,75 +14,15 @@ participant ":GenreService" as GenreService
 participant "genres: List<Genre>" as genres
 participant ":UserService" as UserService
 participant "owner: User" as owner
-participant ":PublicationSampleLinkProvider" as LinkProvider
+participant ":PublicationSampleMapper" as Mapper
 participant "result: PublicationDTO" as result
-participant "publicationDTOS: List<PublicationDTO>" as ListDTO
-participant "Database" as db
+participant ":PublicationSampleLinkProvider" as LinkProvider
 
-[o-> UI : OPTIONS /publicationSamples/in-library
-activate UI
-
-UI -> Ctrl : optionsInLibrary()
-activate Ctrl
-Ctrl --> UI : 200 OK\n Allow: GET, OPTIONS
-deactivate Ctrl
-
-[o<-- UI : 200 OK\n Allow: GET, OPTIONS
-deactivate UI
-
-[o-> UI : GET /publicationSamples/in-library?userId={userId}
-activate UI
-
-UI -> Ctrl : findPublicationsInLibrary(userId)
-activate Ctrl
-
-Ctrl -> Mapper : toUserId(userId)
-activate Mapper
-Mapper --> Ctrl : id: UserId
-deactivate Mapper
-
-Ctrl -> Service : findPublicationsInLibrary(id)
-activate Service
-
-Service -> UserRepo : findByID(id)
-activate UserRepo
-UserRepo -> db : SELECT * FROM users WHERE id = ?
-activate db
-db --> UserRepo : data
-deactivate db
-UserRepo -->> user ** : <<create>>
-UserRepo --> Service : user
-deactivate UserRepo
-
-alt user not found
-    Service --> Ctrl : EntityNotFoundException
-    Ctrl --> UI : 404 Not Found
-end
-
-Service -> Policy : canFindPublicationsInLibrary(user)
-activate Policy
-Policy --> Service : boolean
-deactivate Policy
-
-alt not allowed
-    Service --> Ctrl : AccessDeniedException
-    Ctrl --> UI : 403 Forbidden
-end
-
-Service -> PubRepo : findPublicationsInLibrary(id)
-activate PubRepo
-PubRepo -> db : SELECT * FROM publication_sample WHERE library_id = ?
-activate db
-db --> PubRepo : data
-deactivate db
-PubRepo -->> pbSampleList ** : <<create>>
-PubRepo --> Service : pbSampleList
-deactivate PubRepo
-
-Service --> Ctrl : pbSampleList
-deactivate Service
-
-Ctrl -->> ListDTO ** : <<create>>
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
 
 loop for each pbSample in pbSampleList
 
@@ -149,11 +81,5 @@ loop for each pbSample in pbSampleList
     Ctrl -> Ctrl : publicationDTOS.add(result)
 
 end
-
-Ctrl --> UI : 200 OK\n body: publicationDTOS
-deactivate Ctrl
-
-[o<-- UI : 200 OK\n body: publicationDTOS
-deactivate UI
 
 @enduml
