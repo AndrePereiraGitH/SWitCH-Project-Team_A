@@ -1,0 +1,64 @@
+@startuml MiteLovers_Logical_View_L3_Backend
+
+title MiteLovers Logical View - Level 3 (Backend)
+
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam folder {
+  BackgroundColor #7EC8E3
+  BorderColor #1B1B1B
+}
+skinparam ArrowColor #1B1B1B
+skinparam ArrowFontSize 11
+
+interface "API" as API
+interface "Database" as Database
+
+folder "Backend" as BackendApp {
+
+    folder "Infrastructure" as infrastructure {
+        folder "Router" as router
+        folder "Persistence" as persistence
+    }
+
+    folder "Interface Adapter" as adapter {
+        folder "ControllerREST" as ctrl
+        folder "ImplRepository" as implrepo
+    }
+
+    folder "Mapper + DTO" as mapper
+
+    folder "Service" as service {
+        folder "Service" as Services
+    }
+
+    folder "Domain" as DomainLayer {
+        folder "IRepository" as irepo
+        folder "Aggregates" as aggregates
+        folder "Factories" as factories
+    }
+
+    folder "Value Objects" as VO {
+    }
+
+
+
+    router ..> ctrl
+    persistence ..|> implrepo
+    implrepo ..|> irepo
+    ctrl ..> Services
+    ctrl ..> mapper
+    Services ..> aggregates
+    Services ..> factories
+    Services ..> irepo
+
+    adapter ..> VO
+    service ..> VO
+    DomainLayer ..> VO
+
+}
+
+API -- router
+Database -- persistence
+
+@enduml

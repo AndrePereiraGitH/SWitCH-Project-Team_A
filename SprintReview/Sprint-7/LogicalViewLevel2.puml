@@ -1,0 +1,36 @@
+@startuml MiteLovers_Logical_View_L2
+
+title MiteLovers Logical View - Level 2
+
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+
+package "MiteLovers" <<System>> {
+  component "db" as db
+  component "Backend" as Backend
+  component "Frontend" as Frontend
+
+  interface "Persistence API" as PersistenceAPI
+
+  db -- PersistenceAPI
+  Backend -( PersistenceAPI
+
+  Backend -- Frontend
+}
+
+interface "API" as API
+interface "UI" as UI
+
+API -[hidden]r- UI
+
+Backend -u- API
+Frontend -u- UI
+
+@enduml

@@ -1,0 +1,20 @@
+@startuml MiteLovers_Logical_View_L1
+
+title MiteLovers Logical View - Level 1
+
+skinparam componentStyle uml2
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+
+component "MiteLovers" as System <<System>>
+
+interface "UI" as UI
+interface "API" as API
+
+System -- UI
+System -- API
+
+@enduml
