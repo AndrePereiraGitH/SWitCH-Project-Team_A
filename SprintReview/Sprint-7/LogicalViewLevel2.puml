@@ -1,6 +1,6 @@
 @startuml MiteLovers_Logical_View_L2_External_API
 
-title MiteLovers Logical View - Level 2 (Com API Externa)
+title MiteLovers Logical View - Level 2
 
 skinparam backgroundColor transparent
 skinparam component {

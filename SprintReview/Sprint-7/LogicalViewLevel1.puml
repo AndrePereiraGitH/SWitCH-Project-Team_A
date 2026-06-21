@@ -1,6 +1,6 @@
 @startuml MiteLovers_Logical_View_L1
 
-title MiteLovers Logical View - Level 1 (Context)
+title MiteLovers Logical View - Level 1
 
 skinparam backgroundColor transparent
 skinparam component {
