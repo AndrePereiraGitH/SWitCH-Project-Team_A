@@ -555,7 +555,7 @@ class LibraryRESTControllerTest {
         // Assert
         assertEquals(OK, response.getStatusCode());
         assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
         ));
     }
 
@@ -612,7 +612,7 @@ class LibraryRESTControllerTest {
         // Assert
         assertEquals(OK, response.getStatusCode());
         assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS)
+                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
         ));
     }
 
@@ -679,7 +679,7 @@ class LibraryRESTControllerTest {
         // Assert
         assertEquals(OK, response.getStatusCode());
         assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS)
+                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
         ));
     }
 

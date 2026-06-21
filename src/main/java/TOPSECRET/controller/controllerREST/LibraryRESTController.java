@@ -52,12 +52,12 @@ public class LibraryRESTController {
     /**
      * Returns the available HTTP methods for the {@code /libraries} endpoint.
      *
-     * @return 200 OK with {@code Allow: GET, POST, OPTIONS} header
+     * @return 200 OK with {@code Allow: GET, HEAD, POST, OPTIONS} header
      */
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsLibraries() {
         return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
                 .build();
     }
 
@@ -163,12 +163,12 @@ public class LibraryRESTController {
     /**
      * Returns the available HTTP methods for the {@code /libraries/{libraryId}} endpoint.
      *
-     * @return 200 OK with {@code Allow: GET, OPTIONS} header
+     * @return 200 OK with {@code Allow: GET, HEAD, OPTIONS} header
      */
     @RequestMapping(value = "/{libraryId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsLibraryById() {
         return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
                 .build();
     }
     /**
@@ -218,13 +218,12 @@ public class LibraryRESTController {
     /**
      * Returns the available HTTP methods for the {@code /libraries/by-user/{userId}} endpoint.
      *
-     * @return 200 OK with {@code Allow: GET, OPTIONS} header
+     * @return 200 OK with {@code Allow: GET, HEAD, OPTIONS} header
      */
-
     @RequestMapping(value = "/by-user/{userId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsLibraryByUser() {
         return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
                 .build();
     }
 
