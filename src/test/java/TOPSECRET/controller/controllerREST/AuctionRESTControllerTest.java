@@ -245,7 +245,7 @@ class AuctionRESTControllerTest {
     // =================================================================================================================
 
     @Test
-    void getAuctions_shouldReturn200_whenNoFilterProvided() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenNoFilterProvided() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -262,7 +262,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenre() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByGenre() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -277,7 +277,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -292,7 +292,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByAuthor() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByAuthor() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -308,7 +308,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByPublisher() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByPublisher() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -324,7 +324,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -427,7 +427,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByListingId() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByListingId() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -523,12 +523,52 @@ class AuctionRESTControllerTest {
         assertFalse(response.getBody().getLinks().isEmpty());
     }
 
+    // =================================================================================================================
+    // =========== Options =============================================================================================
+    // =================================================================================================================
+
+    @Test
+    void optionsRoot_shouldReturn200_withAllowedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsBids_shouldReturn200_withAllowedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsBids(auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
+    }
+
+    @Test
+    void optionsById_shouldReturn200_withAllowedMethods() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsById(auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+    }
+
 
     // =================================================================================================================
     // ============= Private Helper ====================================================================================
     // =================================================================================================================
 
-    private void setupAuctionDouble() throws InstanceNotFoundException {
+    private void setupAuctionDouble() {
         when(auctionDouble.id()).thenReturn(auctionIdDouble);
         when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
         when(auctionDouble.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
