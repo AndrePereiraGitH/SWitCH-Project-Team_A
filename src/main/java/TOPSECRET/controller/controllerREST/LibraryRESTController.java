@@ -52,7 +52,11 @@ public class LibraryRESTController {
     /**
      * Returns the available HTTP methods for the {@code /libraries} endpoint.
      *
-     * @return 200 OK with {@code Allow: GET, HEAD, POST, OPTIONS} header
+     * <p>This endpoint supports HTTP method discovery. Clients can use it to
+     * determine which operations are permitted on the {@code /libraries}
+     * collection resource before attempting them.</p>
+     *
+     * @return 200 OK with an {@code Allow: GET, HEAD, POST, OPTIONS} response header
      */
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsLibraries() {
@@ -163,7 +167,11 @@ public class LibraryRESTController {
     /**
      * Returns the available HTTP methods for the {@code /libraries/{libraryId}} endpoint.
      *
-     * @return 200 OK with {@code Allow: GET, HEAD, OPTIONS} header
+     * <p>This endpoint supports HTTP method discovery. Clients can use it to
+     * determine which operations are permitted on a specific library resource
+     * before attempting them.</p>
+     *
+     * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
      */
     @RequestMapping(value = "/{libraryId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsLibraryById() {
@@ -218,7 +226,11 @@ public class LibraryRESTController {
     /**
      * Returns the available HTTP methods for the {@code /libraries/by-user/{userId}} endpoint.
      *
-     * @return 200 OK with {@code Allow: GET, HEAD, OPTIONS} header
+     * <p>This endpoint supports HTTP method discovery. Clients can use it to
+     * determine which operations are permitted when retrieving a library by
+     * its owner before attempting them.</p>
+     *
+     * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
      */
     @RequestMapping(value = "/by-user/{userId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsLibraryByUser() {
