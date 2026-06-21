@@ -15,6 +15,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,22 @@ public class BibliographicalDataRESTController {
             BibliographicalDataLinkProvider provider) {
         this.service = service;
         this.provider = provider;
+    }
+
+    /**
+     * Returns the available HTTP methods for the {@code /bibliographicalDatas} endpoint.
+     *
+     * <p>This endpoint supports HTTP method discovery. Clients can use it to
+     * determine which operations are permitted on the {@code /bibliographicalDatas}
+     * collection resource before attempting them.</p>
+     *
+     * @return 200 OK with an {@code Allow: GET, HEAD, POST, OPTIONS} response header
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsBibliographicalData() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
@@ -169,6 +186,22 @@ public class BibliographicalDataRESTController {
         }
     }
 
+
+    /**
+     * Returns the available HTTP methods for the {@code /bibliographicalDatas/{id}} endpoint.
+     *
+     * <p>This endpoint supports HTTP method discovery. Clients can use it to
+     * determine which operations are permitted on a specific bibliographical data resource
+     * before attempting them.</p>
+     *
+     * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsBibliographicalDataById() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
+                .build();
+    }
 
     /**
      * Retrieves bibliographical data by its identifier.

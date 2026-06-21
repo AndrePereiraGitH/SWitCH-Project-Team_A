@@ -18,6 +18,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -530,5 +532,34 @@ class BibliographicalDataRESTControllerTest {
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNull(response.getBody());
+    }
+
+    // ================================================================
+    // ======================= Options Tests ==========================
+    // ================================================================
+
+    @Test
+    void optionsBibliographicalData_ShouldReturnAllowedMethods() {
+        // Act
+        ResponseEntity<?> response = controller.optionsBibliographicalData();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(
+                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
+        ));
+    }
+
+    @Test
+    void optionsBibliographicalDataById_ShouldReturnAllowedMethods() {
+        // Act
+        ResponseEntity<?> response = controller.optionsBibliographicalDataById();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS),
+                response.getHeaders().getAllow()
+        );
     }
 }
