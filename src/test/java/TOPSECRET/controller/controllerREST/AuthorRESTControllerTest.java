@@ -24,6 +24,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.http.HttpMethod;
 
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
@@ -531,6 +532,50 @@ class AuthorRESTControllerTest {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         }
     }
+
+    // =========================================================
+// OPTIONS
+// =========================================================
+
+    @Test
+    void shouldReturnOkForOptionsOnRoot() {
+        // ACT
+        ResponseEntity<Void> response = controller.optionsRoot();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnAllowHeaderWithGetPostOptionsForRoot() {
+        // ACT
+        ResponseEntity<Void> response = controller.optionsRoot();
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void shouldReturnOkForOptionsById() {
+        // ACT
+        ResponseEntity<Void> response = controller.optionsById("author-1");
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void shouldReturnAllowHeaderWithGetOptionsForById() {
+        // ACT
+        ResponseEntity<Void> response = controller.optionsById("author-1");
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
 
     // =========================================================
     // HELPERS

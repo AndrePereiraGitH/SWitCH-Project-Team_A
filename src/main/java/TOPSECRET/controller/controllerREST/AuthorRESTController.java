@@ -12,6 +12,7 @@ import TOPSECRET.services.AuthorService;
 import TOPSECRET.services.CountryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -169,14 +170,50 @@ public class AuthorRESTController {
     }
 
     // =========================================================================
+    // OPTIONS
+    // =========================================================================
+
+    /**
+     * Handles OPTIONS requests for the author collection endpoint ({@code /authors}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, POST, OPTIONS}
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
+     * Handles OPTIONS requests for the author detail endpoint ({@code /authors/{authorId}}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @param authorId the unique identifier of the author; used for URL matching
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS}
+     */
+    @RequestMapping(value = "/{authorId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById(@PathVariable String authorId) {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    // =========================================================================
     // Private helpers
     // =========================================================================
 
     /**
      * Builds an {@link AuthorDTO} for a public endpoint, enriching it with
      * country information and public HATEOAS links only.
-     *
-     * <p>No user identity is required. Only public links and a self-link are attached.</p>
      *
      * @param author the author to convert; must not be {@code null}
      * @return the populated {@link AuthorDTO} with public links attached
