@@ -147,6 +147,7 @@ export function Explore() {
             publisher: listing.publisher,
             auctionStatus: auction?.auctionStatus ?? null,
             isSold: listing.publicationStatus === "SOLD",
+            isbn: listing.isbn,
         }
     };
 
@@ -438,6 +439,7 @@ export function Explore() {
                                         isAuction={sale.isAuction}
                                         auctionEndDate={sale.auctionEndDate}
                                         isSold={sale.isSold}
+                                        isbn={sale.isbn}
                                     />
                                 </div>
 
