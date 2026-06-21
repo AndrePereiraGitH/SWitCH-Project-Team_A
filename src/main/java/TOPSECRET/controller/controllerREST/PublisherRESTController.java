@@ -64,9 +64,9 @@ public class PublisherRESTController {
     /**
      * Returns the available HTTP methods for the {@code /publishers} endpoint.
      *
-     * <p>This endpoint supports HTTP method discovery as part of REST level 3 (HATEOAS).
-     * Clients can use this to determine which operations are permitted on the
-     * {@code /publishers} collection resource before attempting them.</p>
+     * <p>This endpoint supports HTTP method discovery. Clients can use it to
+     * determine which operations are permitted on the {@code /publishers}
+     * collection resource before attempting them.</p>
      *
      * @return 200 OK with an {@code Allow: GET, HEAD, POST, OPTIONS} response header
      */
@@ -146,9 +146,10 @@ public class PublisherRESTController {
     /**
      * Returns the available HTTP methods for the {@code /publishers/{id}} endpoint.
      *
-     * <p>This endpoint supports HTTP method discovery as part of REST level 3 (HATEOAS).
-     * Clients can use this to determine which operations are permitted on a specific
-     * publisher resource before attempting them.</p>
+     * <p>This endpoint supports HTTP method discovery. Clients can use it to
+     * determine which operations are permitted on a specific publisher resource
+     * before attempting them.</p>
+     *
      * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
