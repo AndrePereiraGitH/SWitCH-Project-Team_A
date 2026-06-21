@@ -116,6 +116,18 @@ public class CollectionOfPublicationsLinkProvider implements RootLinkProvider {
             links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
                     .findCollectionsByOwnerId(null))
                     .withRel("find-own-collections"));
+
+            links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .makeCollectionPublic(null, null))
+                    .withRel("make-collection-public"));
+
+            links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .makeCollectionPrivate(null, null))
+                    .withRel("make-collection-private"));
+
+            links.add(linkTo(methodOn(CollectionOfPublicationsRESTController.class)
+                    .makeCollectionPublicUntil(null, null, null))
+                    .withRel("make-collection-public-until"));
         }
 
         return links;
