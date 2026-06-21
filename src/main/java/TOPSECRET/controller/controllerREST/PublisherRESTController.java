@@ -68,12 +68,12 @@ public class PublisherRESTController {
      * Clients can use this to determine which operations are permitted on the
      * {@code /publishers} collection resource before attempting them.</p>
      *
-     * @return 200 OK with an {@code Allow: GET, POST, OPTIONS} response header
+     * @return 200 OK with an {@code Allow: GET, HEAD, POST, OPTIONS} response header
      */
     @RequestMapping(method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsPublishers() {
         return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
                 .build();
     }
 
@@ -149,12 +149,12 @@ public class PublisherRESTController {
      * <p>This endpoint supports HTTP method discovery as part of REST level 3 (HATEOAS).
      * Clients can use this to determine which operations are permitted on a specific
      * publisher resource before attempting them.</p>
-     * @return 200 OK with an {@code Allow: GET, OPTIONS} response header
+     * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsPublisherById() {
         return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .allow(HttpMethod.GET,  HttpMethod.HEAD, HttpMethod.OPTIONS)
                 .build();
     }
 

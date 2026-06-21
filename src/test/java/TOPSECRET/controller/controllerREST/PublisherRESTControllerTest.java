@@ -370,7 +370,7 @@ class PublisherRESTControllerTest {
 
         assertEquals(OK, response.getStatusCode());
         assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
         ));
     }
 
@@ -408,11 +408,11 @@ class PublisherRESTControllerTest {
 
     @Test
     void optionsPublisherById_shouldReturnOk_withAllowHeader() {
-        ResponseEntity<?> response = controller.optionsPublisherById( );
+        ResponseEntity<?> response = controller.optionsPublisherById();
 
         assertEquals(OK, response.getStatusCode());
         assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS)
+                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
         ));
     }
 
