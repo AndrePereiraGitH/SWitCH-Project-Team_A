@@ -6,11 +6,6 @@ title As a User, I want to get the list of publications in my library
 ' ─────────────────────────────────────────
 package "Infrastructure" {
 
-    package "Routes" {
-        class UI {
-        }
-    }
-
     package "Persistence" {
         interface IUserRepositoryJPA {
             + findByUserName(username: String): Optional<UserDM>
@@ -33,9 +28,6 @@ package "Infrastructure" {
             + getCollecOfPubID(): CollecOfPubId
             + getPublicationStatus(): PublicationStatus
             + getCondition(): Condition
-        }
-
-        rectangle Database {
         }
     }
 }
@@ -126,8 +118,6 @@ package "Domain" {
 ' ─────────────────────────────────────────
 '  Relationships (inward-pointing only)
 ' ─────────────────────────────────────────
-UI "1" ..> "1" PublicationSampleRESTController : uses
-
 PublicationSampleRESTController "1" ..> "1" PublicationSampleService : uses
 PublicationSampleRESTController "1" ..> "1" PublicationSampleMapper : uses
 PublicationSampleRESTController "1" ..> "1" PublicationSampleLinkProvider : uses
@@ -143,14 +133,12 @@ PublicationSampleMapper "1" ..> "1" PublicationDTO : creates
 UserRepositoryJpaImpl "1" ..|> "1" IUserRepository : implements
 UserRepositoryJpaImpl "1" ..> "1" IUserRepositoryJPA : uses
 IUserRepositoryJPA "1" ..> "0..1" UserDM : returns
-IUserRepositoryJPA "1" ..> "1" Database : queries
 
 PublicationSampleRepositoryJpaImpl "1" ..|> "1" IPublicationSampleRepository : implements
 PublicationSampleRepositoryJpaImpl "1" ..> "1" IPublicationSampleRepositoryJpa : uses
 PublicationSampleRepositoryJpaImpl "1" ..> "1" PublicationSampleAssembler : uses
 
 IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns
-IPublicationSampleRepositoryJpa "1" ..> "1" Database : queries
 
 PublicationSampleAssembler "1" ..> "1" PublicationSampleDM : reads
 PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
