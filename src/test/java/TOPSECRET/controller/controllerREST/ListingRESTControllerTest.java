@@ -215,7 +215,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void createListing_shouldReturnForbidden_whenServiceThrowsAccessDeniedException() {
+    void createListing_shouldReturnForbidden_whenServiceThrowsAccessDeniedException() throws InstanceNotFoundException {
         // Arrange
         String userId = "user-1";
         ListingRequestDTO request = validCreateRequestWithoutPictures();
@@ -255,7 +255,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void createListing_shouldReturnNotFound_whenRelatedDataDoesNotExist() {
+    void createListing_shouldReturnNotFound_whenRelatedDataDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String userId = "user-1";
         ListingRequestDTO request = validCreateRequestWithoutPictures();
@@ -1535,21 +1535,70 @@ class ListingRESTControllerTest {
     // =========================================================================
 
     @Test
-    void optionsRoot_shouldReturnOkStatus() {
+    void optionsListing_shouldReturnOkStatus() throws InstanceNotFoundException {
+
+        // Arrange
+        String requesterId = "1";
+        when(listingService.canCreate(any(UserId.class))).thenReturn(true);
+
         // Act
-        ResponseEntity<Void> response = controller.optionsRoot();
+        ResponseEntity<?> response = controller.optionsListing(requesterId);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void optionsRoot_shouldReturnAllowHeaderWithSupportedMethods() {
+    void optionsListing_shouldReturnAllowHeaderWithSupportedMethods() throws InstanceNotFoundException {
+
+        // Arrange
+        String requesterId = "1";
+        when(listingService.canCreate(any(UserId.class))).thenReturn(true);
+
         // Act
-        ResponseEntity<Void> response = controller.optionsRoot();
+        ResponseEntity<?> response = controller.optionsListing(requesterId);
 
         // Assert
         assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+    }
+
+    @Test
+    void optionsListing_shouldReturnAllowHeaderWithoutPost_whenUserCannotCreate() throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "1";
+        when(listingService.canCreate(any(UserId.class))).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsListing(requesterId);
+
+        // Assert
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                response.getHeaders().getAllow()
+        );
+    }
+
+    @Test
+    void optionsListing_shouldReturnNotFound_whenRequesterDoesNotExist() throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "999";
+        when(listingService.canCreate(any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException(requesterId));
+
+        // Act
+        ResponseEntity<?> response = controller.optionsListing(requesterId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void optionsListing_shouldReturnBadRequest_whenRequesterIdIsNull() throws InstanceNotFoundException {
+        // Act
+        ResponseEntity<?> response = controller.optionsListing(null);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test

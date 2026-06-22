@@ -15,9 +15,11 @@ import TOPSECRET.dto.author.AuthorMapper;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingDetailsDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpMethod;
@@ -29,7 +31,9 @@ import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -142,8 +146,28 @@ public class ListingRESTController {
      * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
      */
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsRoot() {
-        return ResponseEntity.ok().allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS).build();
+    public ResponseEntity<?> optionsListing(
+            @NotBlank @RequestParam String requesterId) throws InstanceNotFoundException {
+
+        try {
+            UserId sellerId = UserMapper.toUserId(requesterId);
+
+            Set<HttpMethod> allowed = new HashSet<>();
+            allowed.add(HttpMethod.OPTIONS);
+            allowed.add(HttpMethod.GET);
+
+            if (listingService.canCreate(sellerId)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(new HttpMethod[0])).build();
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
     // =========================================================================
     // READ / GET ENDPOINTS
