@@ -14,12 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -456,5 +458,79 @@ class AppraisalEntityRESTControllerTest {
 
         // ASSERT
         assertNull(result.getBody());
+    }
+
+    // OPTIONS
+
+    @Test
+    void optionsRoot_shouldReturnOkStatus() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsRoot_shouldAllowGet() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowPost() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowOptions() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsById_shouldReturnOkStatus() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsById_shouldAllowGet() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
+    }
+
+    @Test
+    void optionsById_shouldAllowOptions() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsById_shouldNotAllowPost() {
+        // ACT
+        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
+
+        // ASSERT
+        assertFalse(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
     }
 }

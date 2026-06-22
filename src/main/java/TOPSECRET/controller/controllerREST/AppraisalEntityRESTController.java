@@ -11,6 +11,7 @@ import TOPSECRET.services.AppraisalEntityService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -144,6 +145,23 @@ public class AppraisalEntityRESTController {
     }
 
     /**
+     * Handles OPTIONS requests for the appraisal entity collection endpoint ({@code /appraisal-entities}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, POST, OPTIONS}
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.POST,
+                        HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
      * Retrieves an appraisal entity by its unique identifier.
      *
      * <p>Returns the publication sample enriched with a self-link and public
@@ -180,6 +198,23 @@ public class AppraisalEntityRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Handles OPTIONS requests for the appraisal entity detail endpoint ({@code /appraisal-entities/{appraisalEntityId}}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @param appraisalEntityId the unique identifier of the appraisal entity; used for URL matching
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS}
+     */
+    @RequestMapping(value = "/{appraisalEntityId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById(@PathVariable String appraisalEntityId) {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 }
 
