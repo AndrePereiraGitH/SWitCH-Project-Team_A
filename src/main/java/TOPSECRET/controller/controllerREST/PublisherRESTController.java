@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.http.HttpMethod;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -62,20 +65,55 @@ public class PublisherRESTController {
     }
 
     /**
-     * Returns the available HTTP methods for the {@code /publishers} endpoint.
+     * Returns the available HTTP methods for the {@code /publishers} endpoint
+     * based on the permissions of the requesting user.
      *
-     * <p>This endpoint supports HTTP method discovery. Clients can use it to
-     * determine which operations are permitted on the {@code /publishers}
-     * collection resource before attempting them.</p>
+     * <p>This endpoint supports HTTP method discovery, allowing clients to determine
+     * which operations are permitted on the {@code /publishers} collection resource
+     * before attempting them. The set of allowed methods is dynamically computed
+     * based on the requesting user's role.</p>
      *
-     * @return 200 OK with an {@code Allow: GET, HEAD, POST, OPTIONS} response header
+     * <p>The following methods may be included in the {@code Allow} response header:</p>
+     * <ul>
+     *   <li>{@code OPTIONS} — always included.</li>
+     *   <li>{@code GET} — always included, as retrieving all publishers is publicly accessible.</li>
+     *   <li>{@code POST} — included only if the requesting user has the {@code ADMIN} role.</li>
+     * </ul>
+     *
+     * @param requestingUserId the identifier of the user performing the request;
+     *                         must not be blank
+     * @return 200 OK with a dynamically computed {@code Allow} header, or:
+     * <ul>
+     *   <li>400 Bad Request – if the user ID format is invalid</li>
+     *   <li>404 Not Found – if no user exists with the given ID</li>
+     *   <li>500 Internal Server Error – for unexpected failures</li>
+     * </ul>
      */
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<?> optionsPublishers() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<?> optionsPublishers(
+            @NotBlank @RequestParam String requestingUserId) {
+        try {
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            Set<HttpMethod> allowed = new HashSet<>();
+            allowed.add(HttpMethod.OPTIONS);
+            allowed.add(HttpMethod.GET);
+
+            if (publisherService.canCreate(requesterId)) allowed.add(HttpMethod.POST);
+
+            return ResponseEntity.ok()
+                    .allow(allowed.toArray(new HttpMethod[0]))
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
     /**
      * Creates and registers a new Publisher in the system.
@@ -146,16 +184,22 @@ public class PublisherRESTController {
     /**
      * Returns the available HTTP methods for the {@code /publishers/{id}} endpoint.
      *
-     * <p>This endpoint supports HTTP method discovery. Clients can use it to
-     * determine which operations are permitted on a specific publisher resource
-     * before attempting them.</p>
+     * <p>This endpoint supports HTTP method discovery. As publisher retrieval by ID
+     * is publicly accessible and requires no authentication, the allowed methods
+     * are static and do not depend on the requesting user.</p>
      *
-     * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
+     * <p>The following methods are always included in the {@code Allow} response header:</p>
+     * <ul>
+     *   <li>{@code GET} — always included; publisher retrieval is public.</li>
+     *   <li>{@code OPTIONS} — always included.</li>
+     * </ul>
+     *
+     * @return 200 OK with an {@code Allow: GET, OPTIONS} response header
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
     public ResponseEntity<?> optionsPublisherById() {
         return ResponseEntity.ok()
-                .allow(HttpMethod.GET,  HttpMethod.HEAD, HttpMethod.OPTIONS)
+                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
                 .build();
     }
 

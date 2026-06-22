@@ -24,7 +24,6 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.springframework.http.HttpMethod;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -360,94 +359,236 @@ class PublisherRESTControllerTest {
         }
     }
 
-    // =========================================================
-    // OPTIONS - /publishers
-    // =========================================================
+    // ==========================================================
+// OPTIONS - /publishers
+// ==========================================================
 
     @Test
-    void optionsPublishers_shouldReturnOk_withAllowHeader() {
-        ResponseEntity<?> response = controller.optionsPublishers();
+    void optionsPublishers_shouldReturnGetAndPost_whenAdmin() throws InstanceNotFoundException {
 
-        assertEquals(OK, response.getStatusCode());
-        assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
-        ));
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class))).thenReturn(true);
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("admin-1");
+
+            // ASSERT
+            assertEquals(OK, response.getStatusCode());
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
     }
 
     @Test
-    void optionsPublishers_shouldReturnEmptyBody() {
-        ResponseEntity<?> response = controller.optionsPublishers();
+    void optionsPublishers_shouldReturnGetOnly_whenNormalUser() throws InstanceNotFoundException {
 
-        assertNull(response.getBody());
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class))).thenReturn(false);
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("user-1");
+
+            // ASSERT
+            assertEquals(OK, response.getStatusCode());
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
     }
 
     @Test
-    void optionsPublishers_shouldNotAllowDelete() {
-        ResponseEntity<?> response = controller.optionsPublishers();
+    void optionsPublishers_shouldReturnNotFound_whenUserDoesNotExist() throws InstanceNotFoundException {
 
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException("User not found"));
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("user-1");
+
+            // ASSERT
+            assertEquals(NOT_FOUND, response.getStatusCode());
+            assertNull(response.getBody());
+        }
     }
 
     @Test
-    void optionsPublishers_shouldNotAllowPut() {
-        ResponseEntity<?> response = controller.optionsPublishers();
+    void optionsPublishers_shouldReturnBadRequest_whenIllegalArgument() {
 
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException());
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("invalid");
+
+            // ASSERT
+            assertEquals(BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
     }
 
     @Test
-    void optionsPublishers_shouldNotAllowPatch() {
-        ResponseEntity<?> response = controller.optionsPublishers();
+    void optionsPublishers_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
 
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class)))
+                .thenThrow(new RuntimeException());
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("user-1");
+
+            // ASSERT
+            assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertNull(response.getBody());
+        }
     }
 
-    // =========================================================
-    // OPTIONS - /publishers/{id}
-    // =========================================================
+    @Test
+    void optionsPublishers_shouldNeverAllowDelete() throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class))).thenReturn(true);
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("admin-1");
+
+            // ASSERT
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+        }
+    }
+
+    @Test
+    void optionsPublishers_shouldNeverAllowPut() throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class))).thenReturn(true);
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("admin-1");
+
+            // ASSERT
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+        }
+    }
+
+    @Test
+    void optionsPublishers_shouldNeverAllowPatch() throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class))).thenReturn(true);
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("admin-1");
+
+            // ASSERT
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
+        }
+    }
+
+    @Test
+    void optionsPublishers_shouldReturnEmptyBody() throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(publisherService.canCreate(any(UserId.class))).thenReturn(false);
+
+        try (MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+
+            // ACT
+            ResponseEntity<?> response = controller.optionsPublishers("user-1");
+
+            // ASSERT
+            assertNull(response.getBody());
+        }
+    }
+
+// ==========================================================
+// OPTIONS - /publishers/{id}
+// ==========================================================
 
     @Test
     void optionsPublisherById_shouldReturnOk_withAllowHeader() {
+
+        // ACT
         ResponseEntity<?> response = controller.optionsPublisherById();
 
+        // ASSERT
         assertEquals(OK, response.getStatusCode());
-        assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
-        ));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
     }
 
     @Test
     void optionsPublisherById_shouldReturnEmptyBody() {
-        ResponseEntity<?> response = controller.optionsPublisherById( );
 
+        // ACT
+        ResponseEntity<?> response = controller.optionsPublisherById();
+
+        // ASSERT
         assertNull(response.getBody());
     }
 
     @Test
-    void optionsPublisherById_shouldNotAllowPost() {
-        ResponseEntity<?> response = controller.optionsPublisherById( );
+    void optionsPublisherById_shouldNeverAllowPost() {
 
+        // ACT
+        ResponseEntity<?> response = controller.optionsPublisherById();
+
+        // ASSERT
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
     }
 
     @Test
-    void optionsPublisherById_shouldNotAllowDelete() {
-        ResponseEntity<?> response = controller.optionsPublisherById( );
+    void optionsPublisherById_shouldNeverAllowDelete() {
 
+        // ACT
+        ResponseEntity<?> response = controller.optionsPublisherById();
+
+        // ASSERT
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
     }
 
     @Test
-    void optionsPublisherById_shouldNotAllowPut() {
-        ResponseEntity<?> response = controller.optionsPublisherById( );
+    void optionsPublisherById_shouldNeverAllowPut() {
 
+        // ACT
+        ResponseEntity<?> response = controller.optionsPublisherById();
+
+        // ASSERT
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
     }
 
     @Test
-    void optionsPublisherById_shouldNotAllowPatch() {
-        ResponseEntity<?> response = controller.optionsPublisherById( );
+    void optionsPublisherById_shouldNeverAllowPatch() {
 
+        // ACT
+        ResponseEntity<?> response = controller.optionsPublisherById();
+
+        // ASSERT
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
     }
 }

@@ -204,4 +204,62 @@ class PublisherServiceTest {
                 () -> service.findById(null)
         );
     }
+
+    // =========================================================
+// canCreate
+// =========================================================
+
+    @Test
+    void givenAdmin_whenCanCreate_thenReturnsTrue() throws InstanceNotFoundException {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+        when(authPolicy.canCreatePublisher(user))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canCreate(userId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenNormalUser_whenCanCreate_thenReturnsFalse() throws InstanceNotFoundException {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+        when(authPolicy.canCreatePublisher(user))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canCreate(userId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void givenUserNotFound_whenCanCreate_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canCreate(userId)
+        );
+    }
 }
