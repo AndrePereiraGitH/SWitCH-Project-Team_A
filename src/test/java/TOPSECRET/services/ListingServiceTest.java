@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,7 +119,7 @@ class ListingServiceTest {
     // =========================================================================
 
     @Test
-    void createAndSave_shouldReturnSavedListing_whenUserCanCreateAndOwnsPublications() {
+    void createAndSave_shouldReturnSavedListing_whenUserCanCreateAndOwnsPublications() throws InstanceNotFoundException {
         // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
@@ -168,7 +169,7 @@ class ListingServiceTest {
     }
 
     @Test
-    void createAndSave_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+    void createAndSave_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
         // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
@@ -182,7 +183,7 @@ class ListingServiceTest {
 
         // Act + Assert
         assertThrows(
-                EntityNotFoundException.class,
+                InstanceNotFoundException.class,
                 () -> service.createAndSave(
                         title,
                         List.of(publicationSampleId),
@@ -921,5 +922,56 @@ class ListingServiceTest {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.markListingAsSold(listingId, null));
+    }
+
+    // =========================================================================
+// canCreate()
+// =========================================================================
+
+    @Test
+    void canCreate_shouldReturnTrue_whenUserExistsAndPolicyAllows() throws InstanceNotFoundException {
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateListing(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canCreate(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreate_shouldReturnFalse_whenUserExistsAndPolicyDenies() throws InstanceNotFoundException {
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateListing(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canCreate(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreate_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+        when(userId.getUserId()).thenReturn("123");
+
+        // Act + Assert
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canCreate(userId)
+        );
     }
 }

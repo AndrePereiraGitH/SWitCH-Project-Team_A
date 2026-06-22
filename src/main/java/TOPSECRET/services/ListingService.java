@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -75,13 +76,11 @@ public class ListingService {
                                  String shortDescription,
                                  UserId sellerId,
                                  List<Picture> pictures
-                                 ) throws AccessDeniedException {
+                                 ) throws AccessDeniedException, InstanceNotFoundException {
 
-        User user = userRepository.findByID(sellerId).orElseThrow(() -> new EntityNotFoundException("User not found id = " + sellerId));
-
-        if (!policy.canCreateListing(user)) {
-            throw new AccessDeniedException("You do not have permissions to create Listing");
-        }
+        if (!canCreate(sellerId)) {
+            throw new AccessDeniedException("User does not have permission to create a listing");
+        };
 
         if (!verifyPublicationsOwner(itemsId, sellerId)) {
             throw new AccessDeniedException("You just have permissions to sell your own Publications");
@@ -204,7 +203,7 @@ public class ListingService {
     }
 
     /**
-     * Filters the provided listings by the given publication sample identifiers.
+     * Filters the provided listings  by the given publication sample identifiers.
      *
      * <p>A listing is included in the result when at least one of its publication
      * sample identifiers matches one of the provided identifiers.</p>
@@ -365,6 +364,11 @@ public class ListingService {
         }
 
         return listingRepository.save(listing);
+    }
+
+    public boolean canCreate(UserId userId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found: " + userId.getUserId()));
+        return policy.canCreateListing(user);
     }
 
 

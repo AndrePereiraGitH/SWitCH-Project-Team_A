@@ -298,7 +298,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     }
 
     @Test
-    void createDirectSaleListing_ShouldReturnListingCreatedByListingService() throws InstanceAlreadyExistsException, AccessDeniedException {
+    void createDirectSaleListing_ShouldReturnListingCreatedByListingService() throws InstanceAlreadyExistsException, AccessDeniedException, InstanceNotFoundException {
         // Arrange
         Listing expectedListing = mock(Listing.class);
         when(listingServiceDouble.createAndSave("title", List.of(pubSampleId1Double), SaleType.DIRECT_SALE,
