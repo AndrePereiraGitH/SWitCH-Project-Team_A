@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -50,6 +52,57 @@ public class CountryRESTController {
 
         this.service = service;
         this.provider = provider;
+    }
+
+    /**
+     * Returns the HTTP methods supported by the Country collection resource.
+     *
+     * <p>This endpoint allows clients to discover which operations are
+     * available on the {@code /countries} resource without invoking them.</p>
+     *
+     * <p>The response includes an {@code Allow} header indicating the
+     * supported HTTP methods:</p>
+     * <ul>
+     *     <li>{@code GET} - retrieve all countries</li>
+     *     <li>{@code POST} - create a new country</li>
+     *     <li>{@code OPTIONS} - discover supported operations</li>
+     * </ul>
+     *
+     * @return a response containing the supported HTTP methods for the
+     *         Country collection resource
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
+     * Returns the HTTP methods supported by an individual Country resource.
+     *
+     * <p>This endpoint allows clients to discover which operations are
+     * available on a specific {@code /countries/{id}} resource without
+     * invoking them.</p>
+     *
+     * <p>The response includes an {@code Allow} header indicating the
+     * supported HTTP methods:</p>
+     * <ul>
+     *     <li>{@code GET} - retrieve a country by its identifier</li>
+     *     <li>{@code OPTIONS} - discover supported operations</li>
+     * </ul>
+     *
+     * <p>This endpoint is intended to support resource discoverability
+     * and improve client navigation in accordance with REST principles.</p>
+     *
+     * @return a response containing the supported HTTP methods for an
+     *         individual Country resource
+     */
+    @RequestMapping(path = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .build();
     }
 
     /**

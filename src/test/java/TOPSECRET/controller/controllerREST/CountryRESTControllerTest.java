@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -357,6 +358,87 @@ class CountryRESTControllerTest {
                 controller.findById("PORTUGAL");
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    // -------------------------------------------------------------------------
+    // Options()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void shouldReturnOkStatus_whenOptionsIsRequested() {
+
+        // ACT
+        ResponseEntity<Void> result = controller.options();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    void shouldAllowGetPostAndOptions_whenOptionsIsRequested() {
+
+        // ACT
+        ResponseEntity<Void> result = controller.options();
+
+        // ASSERT
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void shouldReturnExactlyThreeAllowedMethods_whenOptionsIsRequested() {
+
+        // ACT
+        ResponseEntity<Void> result = controller.options();
+
+        // ASSERT
+        assertEquals(3, result.getHeaders().getAllow().size());
+    }
+
+    // -------------------------------------------------------------------------
+    // Options("id")
+    // -------------------------------------------------------------------------
+
+    @Test
+    void shouldReturnOkStatus_whenOptionsByIdIsRequested() {
+
+        // ACT
+        ResponseEntity<Void> result = controller.optionsById();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    void shouldAllowGetAndOptions_whenOptionsByIdIsRequested() {
+
+        // ACT
+        ResponseEntity<Void> result = controller.optionsById();
+
+        // ASSERT
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void shouldNotAllowPost_whenOptionsByIdIsRequested() {
+
+        // ACT
+        ResponseEntity<Void> result = controller.optionsById();
+
+        // ASSERT
+        assertFalse(result.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void shouldReturnExactlyTwoAllowedMethods_whenOptionsByIdIsRequested() {
+
+        // ACT
+        ResponseEntity<Void> result = controller.optionsById();
+
+        // ASSERT
+        assertEquals(2, result.getHeaders().getAllow().size());
     }
 
 }
