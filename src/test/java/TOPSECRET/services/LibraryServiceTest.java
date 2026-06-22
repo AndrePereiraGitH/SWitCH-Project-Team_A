@@ -386,4 +386,177 @@ class LibraryServiceTest {
                 () -> service.findByUserId(null, requesterIdDouble)
         );
     }
+
+    // =========================================================
+// canCreate()
+// =========================================================
+
+    @Test
+    void givenNormalUser_whenCanCreate_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canCreateLibrary(userDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canCreate(requesterIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenAdmin_whenCanCreate_thenReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canCreateLibrary(userDouble))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canCreate(requesterIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void givenUserNotFound_whenCanCreate_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canCreate(requesterIdDouble)
+        );
+    }
+
+// =========================================================
+// canGetAll()
+// =========================================================
+
+    @Test
+    void givenAdmin_whenCanGetAll_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetAllLibrary(userDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canGetAll(requesterIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenNormalUser_whenCanGetAll_thenReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetAllLibrary(userDouble))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canGetAll(requesterIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void givenUserNotFound_whenCanGetAll_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canGetAll(requesterIdDouble)
+        );
+    }
+
+// =========================================================
+// canGet()
+// =========================================================
+
+    @Test
+    void givenOwner_whenCanGet_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canGet(requesterIdDouble, ownerIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenAdmin_whenCanGet_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canGet(requesterIdDouble, ownerIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenNonOwnerNonAdmin_whenCanGet_thenReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canGet(requesterIdDouble, ownerIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void givenUserNotFound_whenCanGet_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canGet(requesterIdDouble, ownerIdDouble)
+        );
+    }
 }

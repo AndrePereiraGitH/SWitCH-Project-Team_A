@@ -24,7 +24,6 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -543,193 +542,376 @@ class LibraryRESTControllerTest {
     }
 
     // =========================================================
-    // OPTIONS - /libraries
-    // =========================================================
+// OPTIONS - /libraries
+// =========================================================
 
     @Test
-    void optionsLibraries_shouldReturnOk_withAllowHeader() {
+    void optionsLibraries_shouldReturnGetAndPost_whenAdmin() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraries();
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
 
         // Assert
         assertEquals(OK, response.getStatusCode());
-        assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
-        ));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
     }
 
     @Test
-    void optionsLibraries_shouldReturnEmptyBody() {
+    void optionsLibraries_shouldReturnPost_whenNormalUser() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraries();
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(false);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
 
         // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.GET));
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnOnlyOptions_whenNoPermissions() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(false);
+        when(libService.canCreate(any(UserId.class))).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnNotFound_whenUserDoesNotExist() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException("User not found"));
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
 
     @Test
-    void optionsLibraries_shouldNotAllowDelete() {
+    void optionsLibraries_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraries();
+        // Arrange
+        when(libService.canGetAll(any(UserId.class)))
+                .thenThrow(new IllegalArgumentException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class)))
+                .thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraries_shouldNeverAllowDelete() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
 
         // Assert
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
     }
 
     @Test
-    void optionsLibraries_shouldNotAllowPut() {
+    void optionsLibraries_shouldNeverAllowPut() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraries();
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
 
         // Assert
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
     }
 
     @Test
-    void optionsLibraries_shouldNotAllowPatch() {
+    void optionsLibraries_shouldNeverAllowPatch() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraries();
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
 
         // Assert
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
     }
 
-    // =========================================================
-    // OPTIONS - /libraries/{libraryId}
-    // =========================================================
+// =========================================================
+// OPTIONS - /libraries/{libraryId}
+// =========================================================
 
     @Test
-    void optionsLibraryById_shouldReturnOk_withAllowHeader() {
+    void optionsLibraryById_shouldReturnGet_whenAuthorized() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryById();
+        // Arrange
+        when(libService.findById(any(LibraryId.class), any(UserId.class))).thenReturn(library);
 
-        // Assert
-        assertEquals(OK, response.getStatusCode());
-        assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
-        ));
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(OK, response.getStatusCode());
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
     }
 
     @Test
-    void optionsLibraryById_shouldReturnEmptyBody() {
+    void optionsLibraryById_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryById();
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new AccessDeniedException("denied"));
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(FORBIDDEN, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnNotFound_whenLibraryDoesNotExist() throws InstanceNotFoundException {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new InstanceNotFoundException());
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(NOT_FOUND, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnBadRequest_whenIdFormatIsInvalid() {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new RuntimeException());
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldNeverAllowPost() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findById(any(LibraryId.class), any(UserId.class))).thenReturn(library);
+
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldNeverAllowDelete() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findById(any(LibraryId.class), any(UserId.class))).thenReturn(library);
+
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+        }
+    }
+
+// =========================================================
+// OPTIONS - /libraries/by-user/{userId}
+// =========================================================
+
+    @Test
+    void optionsLibraryByUser_shouldReturnGet_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
 
         // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(FORBIDDEN, response.getStatusCode());
         assertNull(response.getBody());
     }
 
     @Test
-    void optionsLibraryById_shouldNotAllowPost() {
+    void optionsLibraryByUser_shouldReturnNotFound_whenUserDoesNotExist() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryById();
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException("User not found"));
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class)))
+                .thenThrow(new IllegalArgumentException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class)))
+                .thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldNeverAllowPost() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
 
         // Assert
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
     }
 
     @Test
-    void optionsLibraryById_shouldNotAllowDelete() {
+    void optionsLibraryByUser_shouldNeverAllowDelete() throws InstanceNotFoundException {
 
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryById();
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(true);
 
-        // Assert
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
-    }
-
-    @Test
-    void optionsLibraryById_shouldNotAllowPut() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryById();
-
-        // Assert
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
-    }
-
-    @Test
-    void optionsLibraryById_shouldNotAllowPatch() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryById();
-
-        // Assert
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
-    }
-
-    // =========================================================
-    // OPTIONS - /libraries/by-user/{userId}
-    // =========================================================
-
-    @Test
-    void optionsLibraryByUser_shouldReturnOk_withAllowHeader() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryByUser();
-
-        // Assert
-        assertEquals(OK, response.getStatusCode());
-        assertTrue(response.getHeaders().getAllow().containsAll(
-                Set.of(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
-        ));
-    }
-
-    @Test
-    void optionsLibraryByUser_shouldReturnEmptyBody() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryByUser();
-
-        // Assert
-        assertNull(response.getBody());
-    }
-
-    @Test
-    void optionsLibraryByUser_shouldNotAllowPost() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryByUser();
-
-        // Assert
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
-    }
-
-    @Test
-    void optionsLibraryByUser_shouldNotAllowDelete() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryByUser();
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
 
         // Assert
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
-    }
-
-    @Test
-    void optionsLibraryByUser_shouldNotAllowPut() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryByUser();
-
-        // Assert
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
-    }
-
-    @Test
-    void optionsLibraryByUser_shouldNotAllowPatch() {
-
-        // Arrange & Act
-        ResponseEntity<?> response = controller.optionsLibraryByUser();
-
-        // Assert
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
     }
 }

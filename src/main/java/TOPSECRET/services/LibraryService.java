@@ -158,4 +158,91 @@ public class LibraryService {
                 .orElseThrow(() ->
                         new InstanceNotFoundException("Library not found for user: " + userId));
     }
+    /**
+     * Determines whether the requesting user is authorized to create a new library.
+     *
+     * <p>This method is intended to support HTTP OPTIONS discovery on the
+     * {@code /libraries} endpoint, allowing clients to determine in advance
+     * whether a POST operation would be permitted for the given user.</p>
+     *
+     * <p>A user is authorized to create a library if they hold the
+     * {@code NORMAL_USER} role. Administrators are not permitted to create
+     * libraries directly.</p>
+     *
+     * <p>Note that this method only checks role-based authorization. It does
+     * not verify whether the user already has an existing library — that
+     * constraint is enforced during the actual creation in
+     * {@link #createAndSave(String, UserId)}.</p>
+     *
+     * @param requestingUserId the identifier of the user whose permissions are being checked;
+     *                         must not be {@code null}
+     * @return {@code true} if the user is authorized to create a library,
+     *         {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists with the given {@code requestingUserId}
+     */
+    public boolean canCreate(UserId requestingUserId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(requestingUserId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + requestingUserId));
+        return policy.canCreateLibrary(user);
+    }
+
+    /**
+     * Determines whether the requesting user is authorized to retrieve all libraries
+     * in the system.
+     *
+     * <p>This method is intended to support HTTP OPTIONS discovery on the
+     * {@code /libraries} endpoint, allowing clients to determine in advance
+     * whether a GET operation on the full collection would be permitted
+     * for the given user.</p>
+     *
+     * <p>Only users with the {@code ADMIN} role are authorized to retrieve
+     * the full list of libraries. Regular users are restricted to accessing
+     * their own library only.</p>
+     *
+     * @param requestingUserId the identifier of the user whose permissions are being checked;
+     *                         must not be {@code null}
+     * @return {@code true} if the user has the {@code ADMIN} role and is therefore
+     *         authorized to retrieve all libraries, {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists with the given {@code requestingUserId}
+     */
+    public boolean canGetAll(UserId requestingUserId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(requestingUserId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + requestingUserId));
+        return policy.canGetAllLibrary(user);
+    }
+
+    /**
+     * Determines whether the requesting user is authorized to retrieve the library
+     * belonging to the specified owner.
+     *
+     * <p>This method is intended to support HTTP OPTIONS discovery on the
+     * {@code /libraries/{libraryId}} and {@code /libraries/by-user/{userId}} endpoints,
+     * allowing clients to determine in advance whether a GET operation would be
+     * permitted for the given user before attempting it.</p>
+     *
+     * <p>Access is granted under either of the following conditions:</p>
+     * <ul>
+     *   <li>The requesting user is the owner of the library (i.e., their ID matches
+     *       {@code ownerId}).</li>
+     *   <li>The requesting user holds the {@code ADMIN} role, granting them
+     *       unrestricted access to all libraries.</li>
+     * </ul>
+     *
+     * <p>This method does not verify that the library actually exists — it only
+     * evaluates whether the requesting user would have permission to access it
+     * if it did.</p>
+     *
+     * @param requestingUserId the identifier of the user whose permissions are being checked;
+     *                         must not be {@code null}
+     * @param ownerId          the identifier of the user who owns the target library;
+     *                         must not be {@code null}
+     * @return {@code true} if the requesting user is the owner or has the {@code ADMIN} role,
+     *         {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists with the given {@code requestingUserId}
+     */
+    public boolean canGet(UserId requestingUserId, UserId ownerId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(requestingUserId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + requestingUserId));
+        return policy.canGetLibrary(user, ownerId);
+    }
 }

@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.http.HttpMethod;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -50,19 +53,59 @@ public class LibraryRESTController {
 
 
     /**
-     * Returns the available HTTP methods for the {@code /libraries} endpoint.
+     * Returns the available HTTP methods for the {@code /libraries} endpoint
+     * based on the permissions of the requesting user.
      *
-     * <p>This endpoint supports HTTP method discovery. Clients can use it to
-     * determine which operations are permitted on the {@code /libraries}
-     * collection resource before attempting them.</p>
+     * <p>This endpoint supports HTTP method discovery, allowing clients to determine
+     * which operations are permitted on the {@code /libraries} collection resource
+     * before attempting them. The set of allowed methods is dynamically computed
+     * based on the requesting user's role and authorization level.</p>
      *
-     * @return 200 OK with an {@code Allow: GET, HEAD, POST, OPTIONS} response header
+     * <p>The following methods may be included in the {@code Allow} response header:</p>
+     * <ul>
+     *   <li>{@code OPTIONS} — always included.</li>
+     *   <li>{@code GET} — included if the requesting user has the {@code ADMIN} role,
+     *       as retrieving all libraries is restricted to administrators.</li>
+     *   <li>{@code POST} — included if the requesting user has the {@code NORMAL_USER} role,
+     *       as only regular users are permitted to create a library.</li>
+     * </ul>
+     *
+     * @param requestingUserId the identifier of the user performing the request;
+     *                         must not be blank
+     * @return 200 OK with a dynamically computed {@code Allow} header, or:
+     * <ul>
+     *   <li>400 Bad Request – if the user ID format is invalid</li>
+     *   <li>404 Not Found – if no user exists with the given ID</li>
+     *   <li>500 Internal Server Error – for unexpected failures</li>
+     * </ul>
      */
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<?> optionsLibraries() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.POST, HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<?> optionsLibraries( @NotBlank @RequestParam String requestingUserId) {
+        try {
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            Set<HttpMethod> allowed = new HashSet<>();
+            allowed.add(HttpMethod.OPTIONS);
+
+            if (libService.canGetAll(requesterId)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            if (libService.canCreate(requesterId)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok()
+                    .allow(allowed.toArray(new HttpMethod[0]))
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
@@ -165,20 +208,64 @@ public class LibraryRESTController {
     }
 
     /**
-     * Returns the available HTTP methods for the {@code /libraries/{libraryId}} endpoint.
+     * Returns the available HTTP methods for the {@code /libraries/{libraryId}} endpoint
+     * based on the permissions of the requesting user.
      *
-     * <p>This endpoint supports HTTP method discovery. Clients can use it to
-     * determine which operations are permitted on a specific library resource
-     * before attempting them.</p>
+     * <p>This endpoint supports HTTP method discovery, allowing clients to determine
+     * which operations are permitted on a specific library resource before attempting
+     * them. Access to this endpoint requires that the requesting user is either the
+     * owner of the library or holds the {@code ADMIN} role.</p>
      *
-     * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
+     * <p>The following methods may be included in the {@code Allow} response header:</p>
+     * <ul>
+     *   <li>{@code OPTIONS} — always included.</li>
+     *   <li>{@code GET} — included if the requesting user is the owner of the library
+     *       or has the {@code ADMIN} role.</li>
+     * </ul>
+     *
+     * <p>If the requesting user does not have permission to access the specified library,
+     * a {@code 403 Forbidden} response is returned rather than disclosing the available
+     * methods.</p>
+     *
+     * @param libraryId        the unique identifier of the library resource being queried;
+     *                         must not be blank
+     * @param requestingUserId the identifier of the user performing the request;
+     *                         must not be blank
+     * @return 200 OK with a dynamically computed {@code Allow} header, or:
+     * <ul>
+     *   <li>400 Bad Request – if the library ID or user ID format is invalid</li>
+     *   <li>403 Forbidden – if the requesting user does not have permission to access
+     *       the specified library</li>
+     *   <li>404 Not Found – if the library or the requesting user does not exist</li>
+     *   <li>500 Internal Server Error – for unexpected failures</li>
+     * </ul>
      */
     @RequestMapping(value = "/{libraryId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<?> optionsLibraryById() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<?> optionsLibraryById(
+            @PathVariable String libraryId,
+            @NotBlank @RequestParam String requestingUserId) {
+        try {
+            LibraryId libId = LibraryMapper.toLibraryId(libraryId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            Library library = libService.findById(libId, requesterId);
+
+            return ResponseEntity.ok()
+                    .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                    .build();
+
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
+
     /**
      * Retrieves a single Library by its unique identifier.
      *
@@ -224,19 +311,61 @@ public class LibraryRESTController {
     }
 
     /**
-     * Returns the available HTTP methods for the {@code /libraries/by-user/{userId}} endpoint.
+     * Returns the available HTTP methods for the {@code /libraries/by-user/{userId}} endpoint
+     * based on the permissions of the requesting user.
      *
-     * <p>This endpoint supports HTTP method discovery. Clients can use it to
-     * determine which operations are permitted when retrieving a library by
-     * its owner before attempting them.</p>
+     * <p>This endpoint supports HTTP method discovery, allowing clients to determine
+     * which operations are permitted when retrieving a library by its owner's identifier
+     * before attempting them. Access to this endpoint requires that the requesting user
+     * is either the owner identified by {@code userId} or holds the {@code ADMIN} role.</p>
      *
-     * @return 200 OK with an {@code Allow: GET, HEAD, OPTIONS} response header
+     * <p>The following methods may be included in the {@code Allow} response header:</p>
+     * <ul>
+     *   <li>{@code OPTIONS} — always included.</li>
+     *   <li>{@code GET} — included if the requesting user is the owner of the library
+     *       or has the {@code ADMIN} role.</li>
+     * </ul>
+     *
+     * <p>If the requesting user does not have permission to access the library belonging
+     * to the specified user, a {@code 403 Forbidden} response is returned rather than
+     * disclosing the available methods.</p>
+     *
+     * @param userId           the unique identifier of the user who owns the target library;
+     *                         must not be blank
+     * @param requestingUserId the identifier of the user performing the request;
+     *                         must not be blank
+     * @return 200 OK with a dynamically computed {@code Allow} header, or:
+     * <ul>
+     *   <li>400 Bad Request – if the user ID format is invalid</li>
+     *   <li>403 Forbidden – if the requesting user does not have permission to access
+     *       the library belonging to the specified user</li>
+     *   <li>404 Not Found – if the requesting user does not exist</li>
+     *   <li>500 Internal Server Error – for unexpected failures</li>
+     * </ul>
      */
     @RequestMapping(value = "/by-user/{userId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<?> optionsLibraryByUser() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<?> optionsLibraryByUser(
+            @PathVariable String userId,
+            @NotBlank @RequestParam String requestingUserId) {
+        try {
+            UserId ownerId = UserMapper.toUserId(userId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            if (!libService.canGet(requesterId, ownerId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            return ResponseEntity.ok()
+                    .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
