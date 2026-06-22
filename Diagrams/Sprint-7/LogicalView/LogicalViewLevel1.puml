@@ -16,7 +16,6 @@ component "MiteLovers" <<System>> {
   port " " as pAPI
 }
 
-' Ligações externas: Interfaces ligam às portas do sistema
 pUI -up- UI
 pAPI -up- API
 
