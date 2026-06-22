@@ -6,15 +6,17 @@ import { useCart } from "../components/CartContext";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-const mockCreateTransaction = vi.fn();
 const mockGetCities = vi.fn();
-const mockMarkListingAsSold = vi.fn();
+const mockCreateTransaction = vi.hoisted(() => vi.fn());
+const mockMarkListingAsSold = vi.hoisted(() => vi.fn());
 
-vi.mock("../../api/transactions", () => ({
-    CURRENT_USER_ID: "user-001",
-    createTransaction: (...args) => mockCreateTransaction(...args),
-    getCities: (...args) => mockGetCities(...args),
-    markListingAsSold: (...args) => mockMarkListingAsSold(...args),
+vi.mock("../components/TransactionsContext", () => ({
+    useTransactions: () => ({
+        createTransaction: mockCreateTransaction,
+        markListingAsSold: mockMarkListingAsSold,
+        getCities: mockGetCities,
+    }),
+    TransactionsProvider: ({ children }) => children,
 }));
 
 const mockNavigate = vi.fn();
@@ -30,11 +32,21 @@ beforeEach(() => {
     vi.clearAllMocks();
 
     mockGetCities.mockResolvedValue([
-        { cityId: "city-porto-001", cityName: "Porto", countryName: "Portugal" },
-        { cityId: "city-lisbon-001", cityName: "Lisbon", countryName: "Portugal" },
+        {
+            cityId: "porto",
+            cityName: "Porto",
+            countryName: "Portugal",
+        },
+        {
+            cityId: "lisbon",
+            cityName: "Lisbon",
+            countryName: "Portugal",
+        },
     ]);
 
     mockMarkListingAsSold.mockResolvedValue({ listingId: "listing-123", publicationStatus: "SOLD" });
+    mockCreateTransaction.mockResolvedValue({});
+    mockMarkListingAsSold.mockResolvedValue({});
 
     mockCreateTransaction.mockResolvedValue({
         transactionId: "transaction-001",
@@ -44,7 +56,7 @@ beforeEach(() => {
         street: "Rua de Cedofeita",
         number: "123",
         zipCode: "4050-180",
-        cityId: "city-porto-001",
+        cityId: "porto",
         cardHolderName: "David Silva",
         maskedCardNumber: "**** **** **** 3456",
         expiryMonth: "09",
@@ -374,7 +386,7 @@ describe("Cart — Success Step", () => {
             street: "Rua de Cedofeita",
             number: "123",
             zipCode: "4050-180",
-            cityId: "city-porto-001",
+            cityId: "porto",
             cardHolderName: "David Silva",
             maskedCardNumber: "**** **** **** 3456",
             expiryMonth: "09",

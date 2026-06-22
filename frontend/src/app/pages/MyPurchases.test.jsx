@@ -6,9 +6,12 @@ import { MyPurchases } from "./MyPurchases";
 const mockGetMyTransactions = vi.hoisted(() => vi.fn());
 const mockGetListingById = vi.hoisted(() => vi.fn());
 
-vi.mock("@/api/transactions.js", () => ({
-    getMyTransactions: mockGetMyTransactions,
-    getListingById: mockGetListingById,
+vi.mock("../components/TransactionsContext", () => ({
+    useTransactions: () => ({
+        getMyTransactions: mockGetMyTransactions,
+        getListingById: mockGetListingById,
+    }),
+    TransactionsProvider: ({ children }) => children,
 }));
 
 const mockNavigate = vi.fn();

@@ -2,13 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingBag, BookOpen, MapPin, CreditCard, Calendar, Package } from "lucide-react";
 import { useEffect, useState } from "react";
 import { usePublications } from "../components/PublicationsContext";
-import { getMyTransactions, getListingById } from "@/api/transactions.js";
+import { useTransactions } from "../components/TransactionsContext";
 
 
 export function MyPurchases() {
     const navigate = useNavigate();
     const [purchases, setPurchases] = useState([]);
     const { publications } = usePublications();
+    const { getMyTransactions, getListingById } = useTransactions();
 
     useEffect(() => {
         async function loadPurchases() {

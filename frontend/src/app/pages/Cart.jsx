@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Trash2, CheckCircle, CreditCard, MapPin, Mail } from "lucide-react";
 import { useCart } from "../components/CartContext";
 import { usePurchases } from "../components/PurchasesContext";
-import { createTransaction, getCities, markListingAsSold, CURRENT_USER_ID } from "../../api/transactions";
+import { useTransactions } from "../components/TransactionsContext";
 
 const emptyShipping = { street: "", number: "", zipCode: "", city: "" };
 const emptyPayment = { cardHolderName: "", cardNumber: "", expiryMonth: "", expiryYear: "" };
@@ -18,6 +18,8 @@ export function Cart() {
     const navigate = useNavigate();
     const { items, removeFromCart, clearCart } = useCart();
     const { addPurchase } = usePurchases();
+    const CURRENT_USER_ID = "user-001";
+    const { createTransaction, markListingAsSold, getCities } = useTransactions();
 
     const [cities, setCities] = useState([]);
 
