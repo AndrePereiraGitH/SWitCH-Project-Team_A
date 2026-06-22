@@ -11,6 +11,7 @@ import TOPSECRET.services.EditionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -55,6 +56,61 @@ public class EditionRESTController {
         this.service = service;
         this.provider = provider;
     }
+
+    /**
+     * Returns the HTTP methods supported by the editions collection resource.
+     *
+     * <p>This endpoint enables clients to discover which operations are available
+     * for the collection of editions. It supports HATEOAS-driven navigation by
+     * exposing the allowed HTTP methods through the {@code Allow} header.</p>
+     *
+     * <p>The following methods are currently supported:</p>
+     * <ul>
+     *     <li>{@code GET} — retrieve all editions</li>
+     *     <li>{@code POST} — create a new edition</li>
+     *     <li>{@code OPTIONS} — discover supported operations</li>
+     * </ul>
+     *
+     * @return a {@link ResponseEntity} with HTTP {@code 200 OK} and an
+     * {@code Allow} header containing the supported methods for the
+     * editions collection resource
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsEditions(){
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+
+    }
+
+    /**
+     * Returns the HTTP methods supported by an individual edition resource.
+     *
+     * <p>This endpoint enables clients to discover which operations are available
+     * for a specific edition resource. It supports HATEOAS-driven navigation by
+     * exposing the allowed HTTP methods through the {@code Allow} header.</p>
+     *
+     * <p>The following methods are currently supported:</p>
+     * <ul>
+     *     <li>{@code GET} — retrieve an edition by its identifier</li>
+     *     <li>{@code OPTIONS} — discover supported operations</li>
+     * </ul>
+     *
+     * @return a {@link ResponseEntity} with HTTP {@code 200 OK} and an
+     * {@code Allow} header containing the supported methods for an
+     * individual edition resource
+     */
+    @RequestMapping(value = "/{editionId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsEdition(){
+        return ResponseEntity.ok()
+                .allow(
+                        HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
 
     // =========================================================================
     // POST — private
