@@ -218,4 +218,53 @@ class GenreRESTControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
         assertNull(result.getBody());
     }
+
+    // OPTIONS
+    @Test
+    void optionsRoot_shouldReturnOkStatus() {
+        // ARRANGE
+        GenreRESTController sut = new GenreRESTController(service, provider);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsRoot_shouldAllowGet() {
+        // ARRANGE
+        GenreRESTController sut = new GenreRESTController(service, provider);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowPost() {
+        // ARRANGE
+        GenreRESTController sut = new GenreRESTController(service, provider);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowOptions() {
+        // ARRANGE
+        GenreRESTController sut = new GenreRESTController(service, provider);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot();
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+    }
 }

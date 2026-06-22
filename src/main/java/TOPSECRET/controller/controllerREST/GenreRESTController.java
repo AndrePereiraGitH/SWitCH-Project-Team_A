@@ -10,6 +10,7 @@ import TOPSECRET.dto.genre.response.GenreResponseDTO;
 import TOPSECRET.services.GenreService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -110,5 +111,22 @@ public class GenreRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Handles OPTIONS requests for the genre collection endpoint ({@code /genres}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, POST, OPTIONS}
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.POST,
+                        HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 }
