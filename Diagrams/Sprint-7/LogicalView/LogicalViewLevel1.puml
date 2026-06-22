@@ -8,15 +8,16 @@ skinparam component {
   BorderColor #5F9B96
 }
 
-
 interface "UI" as UI
 interface "API" as API
 
+component "MiteLovers" <<System>> {
+  port " " as pUI
+  port " " as pAPI
+}
 
-component "MiteLovers System" as MiteLoversSystem
-
-MiteLoversSystem -up- UI
-MiteLoversSystem -up- API
-
+' Ligações externas: Interfaces ligam às portas do sistema
+pUI -up- UI
+pAPI -up- API
 
 @enduml
