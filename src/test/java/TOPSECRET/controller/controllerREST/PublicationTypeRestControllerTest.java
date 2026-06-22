@@ -19,6 +19,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -721,5 +722,39 @@ class PublicationTypeRestControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 
+    @Test
+    void shouldReturnAllowedMethodsForPublicationTypesCollection() {
+
+        // ACT
+        ResponseEntity<Void> response =
+                controller.optionsPublicationTypes();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+
+        assertEquals(3, response.getHeaders().getAllow().size());
+    }
+
+    @Test
+    void shouldReturnAllowedMethodsForSinglePublicationType() {
+
+        // ACT
+        ResponseEntity<Void> response =
+                controller.optionsPublicationType();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+
+        assertEquals(2, response.getHeaders().getAllow().size());
+    }
 
 }
