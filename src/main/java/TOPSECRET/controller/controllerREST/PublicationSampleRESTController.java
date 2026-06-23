@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -163,7 +164,11 @@ public class PublicationSampleRESTController {
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
-            Set<HttpMethod> allowed = publicationSampleService.getAllowedMethodsForRoot(id);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canCreatePublicationSample(id)) {
+                allowed.add(HttpMethod.POST);
+            }
 
             return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
 
@@ -414,7 +419,11 @@ public class PublicationSampleRESTController {
             UserId id = PublicationSampleMapper.toUserId(userId);
             CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
 
-            Set<HttpMethod> allowed = publicationSampleService.getAllowedMethodsForPublicationsByCollection(cpId, id);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canQueryByCollection(cpId, id)) {
+                allowed.add(HttpMethod.GET);
+            }
 
             return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
 
@@ -480,7 +489,11 @@ public class PublicationSampleRESTController {
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
-            Set<HttpMethod> allowed = publicationSampleService.getAllowedMethodsForMyPublications(id);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canFindOwnPublications(id)) {
+                allowed.add(HttpMethod.GET);
+            }
 
             return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
 
@@ -545,7 +558,11 @@ public class PublicationSampleRESTController {
         try {
             UserId id = PublicationSampleMapper.toUserId(userId);
 
-            Set<HttpMethod> allowed = publicationSampleService.getAllowedMethodsForInLibrary(id);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canFindPublicationsInLibrary(id)) {
+                allowed.add(HttpMethod.GET);
+            }
 
             return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
 

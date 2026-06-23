@@ -2285,7 +2285,16 @@ class PublicationSampleRESTControllerTest {
         // viewing a shared/public collection must never receive owner-, library-, or
         // collection-scoped affordances, only the self-link and public navigational links.
         setupPublicationSampleMocks();
+        Link ownerLink = Link.of("/owner").withRel("owner-action");
+        Link libraryLink = Link.of("/library").withRel("library-action");
+        Link collectionLink = Link.of("/collection").withRel("collection-action");
+        when(publicationSampleLinkProvider.getOwnerLinks(any())).thenReturn(List.of(ownerLink));
+        when(publicationSampleLinkProvider.getLibraryLinks(any())).thenReturn(List.of(libraryLink));
+        when(publicationSampleLinkProvider.getCollectionLinks(any())).thenReturn(List.of(collectionLink));
+
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(any())).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(any())).thenReturn(mock(CollectionOfPublicationsId.class));
             mapper.when(() -> PublicationSampleMapper.toPublicationDTO(any(), any(), any(), any(), any(), any()))
                     .thenReturn(new PublicationDTO(null, null, null, null, null, null, null, null, null, null));
             when(publicationSampleService.findPublicationsInPublicCollection(any(), any()))
@@ -2293,12 +2302,15 @@ class PublicationSampleRESTControllerTest {
             when(bibliographicalDataService.findById(any())).thenReturn(bibliographicalData);
 
             // Act
-            sut.findPublicationSampleInSharedCollection("collection-id", "user-id");
+            ResponseEntity<List<PublicationDTO>> result =
+                    sut.findPublicationSampleInSharedCollection(COLLECTION_ID_STRING, USER_ID_STRING);
 
             // Assert
-            verify(publicationSampleLinkProvider, never()).getOwnerLinks(any());
-            verify(publicationSampleLinkProvider, never()).getLibraryLinks(any());
-            verify(publicationSampleLinkProvider, never()).getCollectionLinks(any());
+            assertNotNull(result.getBody());
+            PublicationDTO dto = result.getBody().get(0);
+            assertFalse(dto.hasLink("owner-action"));
+            assertFalse(dto.hasLink("library-action"));
+            assertFalse(dto.hasLink("collection-action"));
         }
     }
 
@@ -2794,7 +2806,7 @@ class PublicationSampleRESTControllerTest {
 
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForRoot(userId)).thenReturn(expected);
+            when(publicationSampleService.canCreatePublicationSample(userId)).thenReturn(true);
 
             // Act
             ResponseEntity<Void> result = sut.optionsRoot(USER_ID_STRING);
@@ -2808,18 +2820,16 @@ class PublicationSampleRESTControllerTest {
     @Test
     void optionsRoot_whenUserIsNotNormalUser_shouldReturnGetAndOptionsOnly() {
         // Arrange
-        Set<HttpMethod> expected = Set.of(HttpMethod.GET, HttpMethod.OPTIONS);
-
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForRoot(userId)).thenReturn(expected);
+            when(publicationSampleService.canCreatePublicationSample(userId)).thenReturn(false);
 
             // Act
             ResponseEntity<Void> result = sut.optionsRoot(USER_ID_STRING);
 
             // Assert
             assertEquals(HttpStatus.OK, result.getStatusCode());
-            assertTrue(result.getHeaders().getAllow().containsAll(expected));
+            assertTrue(result.getHeaders().getAllow().containsAll(Set.of(HttpMethod.GET, HttpMethod.OPTIONS)));
             assertFalse(result.getHeaders().getAllow().contains(HttpMethod.POST));
         }
     }
@@ -2829,7 +2839,7 @@ class PublicationSampleRESTControllerTest {
         // Arrange
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForRoot(userId))
+            when(publicationSampleService.canCreatePublicationSample(userId))
                     .thenThrow(new EntityNotFoundException("User not found"));
 
             // Act
@@ -2868,8 +2878,7 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
                     .thenReturn(mock(CollectionOfPublicationsId.class));
-            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
-                    .thenReturn(expected);
+            when(publicationSampleService.canQueryByCollection(any(), any())).thenReturn(true);
 
             // Act
             ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
@@ -2883,14 +2892,11 @@ class PublicationSampleRESTControllerTest {
     @Test
     void optionsByCollectionOfPublicationsId_whenUserDoesNotOwnCollection_shouldReturnOptionsOnly() {
         // Arrange
-        Set<HttpMethod> expected = Set.of(HttpMethod.OPTIONS);
-
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
                     .thenReturn(mock(CollectionOfPublicationsId.class));
-            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
-                    .thenReturn(expected);
+            when(publicationSampleService.canQueryByCollection(any(), any())).thenReturn(false);
 
             // Act
             ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
@@ -2908,7 +2914,7 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
                     .thenReturn(mock(CollectionOfPublicationsId.class));
-            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
+            when(publicationSampleService.canQueryByCollection(any(), any()))
                     .thenThrow(new EntityNotFoundException("User not found"));
 
             // Act
@@ -2926,7 +2932,7 @@ class PublicationSampleRESTControllerTest {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
             mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
                     .thenReturn(mock(CollectionOfPublicationsId.class));
-            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
+            when(publicationSampleService.canQueryByCollection(any(), any()))
                     .thenThrow(new EntityNotFoundException("Collection not found"));
 
             // Act
@@ -2979,7 +2985,7 @@ class PublicationSampleRESTControllerTest {
 
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForMyPublications(userId)).thenReturn(expected);
+            when(publicationSampleService.canFindOwnPublications(userId)).thenReturn(true);
 
             // Act
             ResponseEntity<Void> result = sut.optionsMyPublications(USER_ID_STRING);
@@ -2993,11 +2999,9 @@ class PublicationSampleRESTControllerTest {
     @Test
     void optionsMyPublications_whenUserIsNotAuthorized_shouldReturnOptionsOnly() {
         // Arrange
-        Set<HttpMethod> expected = Set.of(HttpMethod.OPTIONS);
-
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForMyPublications(userId)).thenReturn(expected);
+            when(publicationSampleService.canFindOwnPublications(userId)).thenReturn(false);
 
             // Act
             ResponseEntity<Void> result = sut.optionsMyPublications(USER_ID_STRING);
@@ -3013,7 +3017,7 @@ class PublicationSampleRESTControllerTest {
         // Arrange
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForMyPublications(userId))
+            when(publicationSampleService.canFindOwnPublications(userId))
                     .thenThrow(new EntityNotFoundException("User not found"));
 
             // Act
@@ -3051,7 +3055,7 @@ class PublicationSampleRESTControllerTest {
 
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForInLibrary(userId)).thenReturn(expected);
+            when(publicationSampleService.canFindPublicationsInLibrary(userId)).thenReturn(true);
 
             // Act
             ResponseEntity<Void> result = sut.optionsInLibrary(USER_ID_STRING);
@@ -3065,11 +3069,9 @@ class PublicationSampleRESTControllerTest {
     @Test
     void optionsInLibrary_whenUserIsNotAuthorized_shouldReturnOptionsOnly() {
         // Arrange
-        Set<HttpMethod> expected = Set.of(HttpMethod.OPTIONS);
-
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForInLibrary(userId)).thenReturn(expected);
+            when(publicationSampleService.canFindPublicationsInLibrary(userId)).thenReturn(false);
 
             // Act
             ResponseEntity<Void> result = sut.optionsInLibrary(USER_ID_STRING);
@@ -3085,7 +3087,7 @@ class PublicationSampleRESTControllerTest {
         // Arrange
         try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
             mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
-            when(publicationSampleService.getAllowedMethodsForInLibrary(userId))
+            when(publicationSampleService.canFindPublicationsInLibrary(userId))
                     .thenThrow(new EntityNotFoundException("User not found"));
 
             // Act
