@@ -1,0 +1,70 @@
+@startuml
+autonumber
+hide footbox
+title To get the list of items on direct sale of a given publication
+
+box "Frontend" #whitesmoke
+actor User
+participant ":UI" as UI
+end box
+
+box "Backend" #aliceblue
+participant ":BibliographicalData\nRESTController" as BDCtrl
+participant ":Listing\nRESTController" as ListCtrl
+end box
+
+box "Database" #honeydew
+database "db" as db
+end box
+
+' ==========================================
+' 1 — Get all bibliographical data
+' ==========================================
+
+User -> UI : I want to see the items\non direct sale of a publication
+activate UI
+UI -> BDCtrl : OPTIONS /bibliographicalDatas
+activate BDCtrl
+BDCtrl --> UI : 200 OK\nAllow: GET, OPTIONS
+deactivate BDCtrl
+UI -> BDCtrl : GET /bibliographicalDatas
+activate BDCtrl
+BDCtrl -> db : SELECT * FROM bibliographical_data
+activate db
+db --> BDCtrl : data
+deactivate db
+BDCtrl -> db : SELECT * FROM authors\nWHERE id IN (...)
+activate db
+db --> BDCtrl : data
+deactivate db
+BDCtrl --> UI : 200 OK\nbody: listOfAllBDDTOs
+deactivate BDCtrl
+UI --> User : Which publication?\nChoose from the list!
+deactivate UI
+
+' =======================================================
+' 2 — Get listings on direct sale for a given publication
+' =======================================================
+
+User -> UI : Selected publication
+activate UI
+UI -> ListCtrl : OPTIONS /listings
+activate ListCtrl
+ListCtrl --> UI : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate ListCtrl
+UI -> ListCtrl : GET /listings?bibliographicalDataId={bdId}&saleType=DIRECT_SALE
+activate ListCtrl
+ListCtrl -> db : SELECT * FROM listings
+activate db
+db --> ListCtrl : data
+deactivate db
+ListCtrl -> db : SELECT id FROM publication_sample\nWHERE bibliographical_data_id IN (?)
+activate db
+db --> ListCtrl : data
+deactivate db
+ListCtrl --> UI : 200 OK\nbody: listOfListingDetailsDTOs
+deactivate ListCtrl
+UI --> User : Here are the items on\ndirect sale for that publication
+deactivate UI
+
+@enduml
