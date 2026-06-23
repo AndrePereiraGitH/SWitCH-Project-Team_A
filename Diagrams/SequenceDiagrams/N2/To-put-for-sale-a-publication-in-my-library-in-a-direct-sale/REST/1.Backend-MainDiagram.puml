@@ -1,0 +1,134 @@
+@startuml
+autonumber
+hide footbox
+title To put for sale a publication in my library in a direct sale (main diagram - backend)
+
+participant ":Router" as Router
+participant ":PublicationSample\nRESTController" as PSCtrl
+participant ":Listing\nRESTController" as ListCtrl
+participant ":Listing\nMapper" as ListMapper
+participant ":Listing\nLinkProvider" as ListLink
+participant ":Listing\nService" as LServ
+participant ":IUserRepository" as UserRepo
+participant ":ListingAuthorization\nPolicy" as ListPolicy
+participant ":Listing\nFactory" as LFactory
+participant "listing:\nListing" as listing
+participant ":IListing\nRepository" as LRepo
+
+
+' ==========================================
+' 1 — GET available publications for sale
+' ==========================================
+
+[o-> Router : OPTIONS /publicationSamples/available-for-sale
+activate Router
+Router -> PSCtrl : optionsAvailableForSale()
+activate PSCtrl
+PSCtrl --> Router : 200 OK\nAllow: GET, OPTIONS
+deactivate PSCtrl
+[o<-- Router : 200 OK\nAllow: GET, OPTIONS
+deactivate Router
+
+[o-> Router : GET /publicationSamples/available-for-sale?userId={userId}
+activate Router
+Router -> PSCtrl : findAvailableForSale(userId)
+activate PSCtrl
+
+ref over PSCtrl
+[[2.Backend-FindAllPublicationsInUserLibraryAvailableForSale.puml]]
+end ref
+
+PSCtrl --> Router : 200 OK\nbody: publicationDTOS
+deactivate PSCtrl
+[o<-- Router : 200 OK\nbody: publicationDTOS
+deactivate Router
+
+' ==========================================
+' 2 — POST create direct sale listing
+' ==========================================
+
+[o-> Router : OPTIONS /listings
+activate Router
+Router -> ListCtrl : optionsRouter()
+activate ListCtrl
+ListCtrl --> Router : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate ListCtrl
+[o<-- Router : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate Router
+
+[o-> Router : POST /listings\n body: {title, selectedPublicationIds,\n saleType, price, shortDescription, userId, pictures}
+activate Router
+Router -> ListCtrl : createDirectSaleListing(title, selectedPublicationIds, saleType,\nprice, shortDescription, userId, pictures)
+activate ListCtrl
+
+ref over ListCtrl, ListMapper
+    [[3.Backend-MapInputStringsToVOs.puml]]
+end ref
+
+ListCtrl -> LServ : createAndSave(title, pubSampleIds, saleType,\nprice, shortDescription, userId, pictures)
+activate LServ
+
+LServ -> UserRepo : findByID(userId)
+activate UserRepo
+UserRepo ->o] : SELECT * FROM users WHERE id ={userId}
+ref over UserRepo
+    [[../UserPersistenceJPA.puml User Persistence JPA]] /
+    [[../UserPersistenceMem.puml User Persistence In-Memory]]
+end ref
+UserRepo <--o]  : data
+UserRepo --> LServ : user
+deactivate UserRepo
+
+alt user not found
+    LServ --> ListCtrl : EntityNotFoundException
+    ListCtrl --> Router : 404 Not Found
+end
+
+LServ -> ListPolicy : canCreateListing(user)
+activate ListPolicy
+ListPolicy --> LServ : boolean
+deactivate ListPolicy
+
+alt not allowed
+    LServ --> ListCtrl : AccessDeniedException
+    ListCtrl --> Router : 403 Forbidden
+end
+
+LServ -> LServ : verifyPublicationsOwner(pbSampleIds, userId)
+
+alt publications not owned by user
+    LServ --> ListCtrl : AccessDeniedException
+    ListCtrl --> Router : 403 Forbidden
+end
+
+LServ -> LFactory : create(title, pbSampleIds, saleType,\nprice, shortDescription, userId, pictures)
+activate LFactory
+LFactory -->> listing ** : <<create>>
+LFactory --> LServ : listing
+deactivate LFactory
+
+LServ -> LRepo : save(listing)
+activate LRepo
+LRepo ->o] : persist(listing)
+ref over LRepo
+    [[../ListingPersistenceJPA.puml Listing Persistence JPA]] /
+    [[../ListingPersistenceMem.puml Listing Persistence In-Memory]]
+end ref
+LRepo <--o] : persistedListing
+LRepo --> LServ : persistedListing
+deactivate LRepo
+
+LServ --> ListCtrl : persistedListing
+deactivate LServ
+
+ref over ListCtrl, ListMapper, ListLink
+    [[4.Backedn-BuildListingDTOWithLinks.puml]]
+end ref
+
+
+ListCtrl --> Router : 201 Created\nbody: listingDTO
+deactivate ListCtrl
+[o<-- Router : 201 Created\nbody: listingDTO
+deactivate Router
+
+@enduml
