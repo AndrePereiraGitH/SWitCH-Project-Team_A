@@ -304,6 +304,38 @@ public class PublicationSampleService {
         return publicationSamplesFromCollection;
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /{collectionId}/publications} resource for the given user.
+     *
+     * <p>Always includes {@code OPTIONS}. {@code GET} is included only if the requesting user
+     * is authorized to query by collection and owns the specified collection.</p>
+     *
+     * @param collectionId the unique identifier of the collection; must not be {@code null}
+     * @param userId       the ID of the requesting user; must not be {@code null}
+     * @return a set of permitted {@link HttpMethod} values for the resource
+     * @throws NullPointerException    if {@code collectionId} or {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user or collection is found for the given identifiers
+     */
+    public Set<HttpMethod> getAllowedMethodsForPublicationsByCollection(CollectionOfPublicationsId collectionId, UserId userId) {
+
+        Objects.requireNonNull(collectionId, "CollectionId cannot be null");
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Collection not found"));
+
+        Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+        if (policy.canFindByCollectionOfPublicationsId(user) && collection.getOwnerId().equals(userId)) {
+            allowed.add(HttpMethod.GET);
+        }
+
+        return allowed;
+    }
+
     // =========================================================================
     // Lookup — by owner
     // =========================================================================

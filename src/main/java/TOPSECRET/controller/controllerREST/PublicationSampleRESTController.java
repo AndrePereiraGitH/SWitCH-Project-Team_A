@@ -210,7 +210,6 @@ public class PublicationSampleRESTController {
     }
 
 
-
     // =========================================================================
     // GET — collections
     // =========================================================================
@@ -353,8 +352,6 @@ public class PublicationSampleRESTController {
         }
     }
 
-
-
     /**
      * Retrieves all publication samples that belong to the specified collection.
      *
@@ -398,12 +395,34 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /{collectionId}/publications} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code GET} is included only if the requesting user
+     * is authorized to query by collection and owns the specified collection.</p>
+     *
+     * @param collectionId the unique identifier of the collection
+     * @param userId       the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user or collection is not found, or HTTP 400 if any identifier is invalid
+     */
     @RequestMapping(value = "/{collectionId}/publications", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsByCollectionOfPublicationsId() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsByCollectionOfPublicationsId(
+            @PathVariable String collectionId,
+            @RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+            CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
+
+            Set<HttpMethod> allowed = publicationSampleService.getAllowedMethodsForPublicationsByCollection(cpId, id);
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**

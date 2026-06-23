@@ -568,6 +568,97 @@ class PublicationSampleServiceTest {
                 service.findByCollectionOfPublicationsId(null, userId));
     }
 
+
+    // =========================================================================
+    // getAllowedMethodsForPublicationsByCollection
+    // =========================================================================
+
+    @Test
+    void getAllowedMethodsForPublicationsByCollection_shouldReturnGetAndOptions_whenUserOwnsCollection() {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(collection.getOwnerId()).thenReturn(userId);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForPublicationsByCollection(collectionId, userId);
+
+        // Assert
+        assertTrue(result.containsAll(Set.of(HttpMethod.GET, HttpMethod.OPTIONS)));
+    }
+
+    @Test
+    void getAllowedMethodsForPublicationsByCollection_shouldReturnOptionsOnly_whenPolicyDenied() {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForPublicationsByCollection(collectionId, userId);
+
+        // Assert
+        assertTrue(result.contains(HttpMethod.OPTIONS));
+        assertFalse(result.contains(HttpMethod.GET));
+    }
+
+    @Test
+    void getAllowedMethodsForPublicationsByCollection_shouldReturnOptionsOnly_whenUserDoesNotOwnCollection() {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        UserId otherUserId = mock(UserId.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(collection.getOwnerId()).thenReturn(otherUserId);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForPublicationsByCollection(collectionId, userId);
+
+        // Assert
+        assertTrue(result.contains(HttpMethod.OPTIONS));
+        assertFalse(result.contains(HttpMethod.GET));
+    }
+
+    @Test
+    void getAllowedMethodsForPublicationsByCollection_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.getAllowedMethodsForPublicationsByCollection(collectionId, userId));
+    }
+
+    @Test
+    void getAllowedMethodsForPublicationsByCollection_shouldThrowEntityNotFoundException_whenCollectionNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.getAllowedMethodsForPublicationsByCollection(collectionId, userId));
+    }
+
+    @Test
+    void getAllowedMethodsForPublicationsByCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.getAllowedMethodsForPublicationsByCollection(null, userId));
+    }
+
+    @Test
+    void getAllowedMethodsForPublicationsByCollection_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.getAllowedMethodsForPublicationsByCollection(collectionId, null));
+    }
+
     // =========================================================================
     // findAllPublicationsOwnedByUser
     // =========================================================================

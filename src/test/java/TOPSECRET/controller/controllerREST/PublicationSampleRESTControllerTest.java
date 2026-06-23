@@ -2856,20 +2856,116 @@ class PublicationSampleRESTControllerTest {
     }
 
     // =========================================================================
-    // OPTIONS — /{collectionId}/publications
-    // =========================================================================
+// OPTIONS — /{collectionId}/publications
+// =========================================================================
 
     @Test
-    void optionsByCollectionOfPublicationsId_shouldReturnOk_withGetOptions() {
+    void optionsByCollectionOfPublicationsId_whenUserOwnsCollection_shouldReturnGetAndOptions() {
+        // Arrange
+        Set<HttpMethod> expected = Set.of(HttpMethod.GET, HttpMethod.OPTIONS);
 
-        // Act
-        ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId();
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
+                    .thenReturn(mock(CollectionOfPublicationsId.class));
+            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
+                    .thenReturn(expected);
 
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
-                result.getHeaders().getAllow());
+            // Act
+            ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertTrue(result.getHeaders().getAllow().containsAll(expected));
+        }
+    }
+
+    @Test
+    void optionsByCollectionOfPublicationsId_whenUserDoesNotOwnCollection_shouldReturnOptionsOnly() {
+        // Arrange
+        Set<HttpMethod> expected = Set.of(HttpMethod.OPTIONS);
+
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
+                    .thenReturn(mock(CollectionOfPublicationsId.class));
+            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
+                    .thenReturn(expected);
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertFalse(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsByCollectionOfPublicationsId_whenUserNotFound_shouldReturn404() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
+                    .thenReturn(mock(CollectionOfPublicationsId.class));
+            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
+                    .thenThrow(new EntityNotFoundException("User not found"));
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsByCollectionOfPublicationsId_whenCollectionNotFound_shouldReturn404() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
+                    .thenReturn(mock(CollectionOfPublicationsId.class));
+            when(publicationSampleService.getAllowedMethodsForPublicationsByCollection(any(), any()))
+                    .thenThrow(new EntityNotFoundException("Collection not found"));
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsByCollectionOfPublicationsId_whenUserIdIsInvalid_shouldReturn400() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsByCollectionOfPublicationsId_whenCollectionIdIsInvalid_shouldReturn400() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            mapper.when(() -> PublicationSampleMapper.toCollectionOfPublicationsId(COLLECTION_ID_STRING))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsByCollectionOfPublicationsId(COLLECTION_ID_STRING, USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        }
     }
 
     // =========================================================================
