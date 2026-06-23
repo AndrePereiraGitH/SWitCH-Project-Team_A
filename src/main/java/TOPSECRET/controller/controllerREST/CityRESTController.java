@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpMethod;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,40 @@ public class CityRESTController {
 
         this.service = service;
         this.provider = provider;
+    }
+
+    /**
+     * Handles OPTIONS requests for the city collection endpoint ({@code /cities}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, POST, OPTIONS}
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.POST,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
+    /**
+     * Handles OPTIONS requests for the city detail endpoint ({@code /cities/{id}}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
+     * enabling CORS preflight requests and API discoverability.</p>
+     *
+     * @param id the unique identifier of the city; used for URL matching
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS}
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById(@PathVariable String id) {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET,
+                        HttpMethod.OPTIONS)
+                .build();
     }
 
     /**
