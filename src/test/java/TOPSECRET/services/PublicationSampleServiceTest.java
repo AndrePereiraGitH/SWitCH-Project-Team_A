@@ -20,12 +20,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -199,6 +201,67 @@ class PublicationSampleServiceTest {
         // Act & Assert
         assertThrows(InstanceAlreadyExistsException.class, () ->
                 service.createAndSave(bdId, userId, editionId, Condition.NEW));
+    }
+
+    // =========================================================================
+    // getAllowedMethodsForRoot
+    // =========================================================================
+
+    @Test
+    void getAllowedMethodsForRoot_shouldReturnGetPostAndOptions_whenUserIsNormalUser() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(true);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForRoot(userId);
+
+        // Assert
+        assertTrue(result.containsAll(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)));
+    }
+
+    @Test
+    void getAllowedMethodsForRoot_shouldReturnGetAndOptionsOnly_whenUserIsNotNormalUser() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForRoot(userId);
+
+        // Assert
+        assertTrue(result.containsAll(Set.of(HttpMethod.GET, HttpMethod.OPTIONS)));
+        assertFalse(result.contains(HttpMethod.POST));
+    }
+
+    @Test
+    void getAllowedMethodsForRoot_shouldAlwaysIncludeGetAndOptions() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForRoot(userId);
+
+        // Assert
+        assertTrue(result.contains(HttpMethod.GET));
+        assertTrue(result.contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void getAllowedMethodsForRoot_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.getAllowedMethodsForRoot(userId));
+    }
+
+    @Test
+    void getAllowedMethodsForRoot_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.getAllowedMethodsForRoot(null));
     }
 
     // =========================================================================

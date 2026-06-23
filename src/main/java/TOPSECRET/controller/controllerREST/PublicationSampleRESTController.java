@@ -27,6 +27,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -147,13 +148,30 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the publication samples root resource for the given user.
+     *
+     * <p>Always includes {@code GET} and {@code OPTIONS}. {@code POST} is included only if the
+     * requesting user is authorized to create publication samples.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
+     */
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsRoot() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.POST,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsRoot(@RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = publicationSampleService.getAllowedMethodsForRoot(id);
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     // =========================================================================
@@ -191,13 +209,7 @@ public class PublicationSampleRESTController {
         }
     }
 
-    @RequestMapping(value = "/{publicationSampleId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsById() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
+
 
     // =========================================================================
     // GET — collections
@@ -268,13 +280,6 @@ public class PublicationSampleRESTController {
         }
     }
 
-    @RequestMapping(value = "/by-bibliographical-data/{bibliographicalDataId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsByBibliographicalDataId() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
 
     /**
      * Retrieves all publication samples whose bibliographical data ID is in the given list.
@@ -311,13 +316,7 @@ public class PublicationSampleRESTController {
         }
     }
 
-    @RequestMapping(value = "/by-bibliographical-data", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsByBibliographicalDataIdIn() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
+
 
     /**
      * Retrieves all publication samples associated with any of the given edition IDs.
@@ -354,13 +353,7 @@ public class PublicationSampleRESTController {
         }
     }
 
-    @RequestMapping(value = "/by-edition", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsByEditionIdIn() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
+
 
     /**
      * Retrieves all publication samples that belong to the specified collection.

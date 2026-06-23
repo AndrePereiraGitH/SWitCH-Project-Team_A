@@ -2788,84 +2788,71 @@ class PublicationSampleRESTControllerTest {
     // =========================================================================
 
     @Test
-    void optionsRoot_shouldReturnOk_withGetPostOptions() {
+    void optionsRoot_whenUserIsNormalUser_shouldReturnGetPostAndOptions() {
+        // Arrange
+        Set<HttpMethod> expected = Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS);
 
-        // Act
-        ResponseEntity<Void> result = sut.optionsRoot();
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.getAllowedMethodsForRoot(userId)).thenReturn(expected);
 
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS),
-                result.getHeaders().getAllow());
+            // Act
+            ResponseEntity<Void> result = sut.optionsRoot(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertTrue(result.getHeaders().getAllow().containsAll(expected));
+        }
     }
 
-    // =========================================================================
-    // OPTIONS — /{publicationSampleId}
-    // =========================================================================
-
     @Test
-    void optionsById_shouldReturnOk_withGetOptions() {
+    void optionsRoot_whenUserIsNotNormalUser_shouldReturnGetAndOptionsOnly() {
+        // Arrange
+        Set<HttpMethod> expected = Set.of(HttpMethod.GET, HttpMethod.OPTIONS);
 
-        // Act
-        ResponseEntity<Void> result = sut.optionsById();
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.getAllowedMethodsForRoot(userId)).thenReturn(expected);
 
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
-                result.getHeaders().getAllow());
+            // Act
+            ResponseEntity<Void> result = sut.optionsRoot(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertTrue(result.getHeaders().getAllow().containsAll(expected));
+            assertFalse(result.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
     }
 
-    // =========================================================================
-    // OPTIONS — /by-bibliographical-data/{bibliographicalDataId}
-    // =========================================================================
-
     @Test
-    void optionsByBibliographicalDataId_shouldReturnOk_withGetOptions() {
+    void optionsRoot_whenUserNotFound_shouldReturn404() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.getAllowedMethodsForRoot(userId))
+                    .thenThrow(new EntityNotFoundException("User not found"));
 
-        // Act
-        ResponseEntity<Void> result = sut.optionsByBibliographicalDataId();
+            // Act
+            ResponseEntity<Void> result = sut.optionsRoot(USER_ID_STRING);
 
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
-                result.getHeaders().getAllow());
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        }
     }
 
-    // =========================================================================
-    // OPTIONS — /by-bibliographical-data
-    // =========================================================================
-
     @Test
-    void optionsByBibliographicalDataIdIn_shouldReturnOk_withGetOptions() {
+    void optionsRoot_whenUserIdIsInvalid_shouldReturn400() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING))
+                    .thenThrow(new IllegalArgumentException());
 
-        // Act
-        ResponseEntity<Void> result = sut.optionsByBibliographicalDataIdIn();
+            // Act
+            ResponseEntity<Void> result = sut.optionsRoot(USER_ID_STRING);
 
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
-                result.getHeaders().getAllow());
-    }
-
-    // =========================================================================
-    // OPTIONS — /by-edition
-    // =========================================================================
-
-    @Test
-    void optionsByEditionIdIn_shouldReturnOk_withGetOptions() {
-
-        // Act
-        ResponseEntity<Void> result = sut.optionsByEditionIdIn();
-
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
-                result.getHeaders().getAllow());
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        }
     }
 
     // =========================================================================

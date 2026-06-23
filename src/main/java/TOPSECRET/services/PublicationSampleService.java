@@ -14,13 +14,16 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Service layer responsible for managing {@link PublicationSample} aggregates.
@@ -113,6 +116,34 @@ public class PublicationSampleService {
         PublicationSample saved = publicationSampleRepository.save(created);
 
         return saved;
+    }
+
+    /**
+     * Returns the HTTP methods allowed on the publication samples root resource for the given user.
+     *
+     * <p>Always includes {@code GET} and {@code OPTIONS}. {@code POST} is included only if the
+     * requesting user is authorized to create publication samples.</p>
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return a set of permitted {@link HttpMethod} values for the root resource
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public Set<HttpMethod> getAllowedMethodsForRoot(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+        if (policy.canCreatePublicationSample(user)) {
+            allowed.add(HttpMethod.POST);
+        }
+
+        return allowed;
     }
 
     // =========================================================================
