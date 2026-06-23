@@ -2973,16 +2973,70 @@ class PublicationSampleRESTControllerTest {
     // =========================================================================
 
     @Test
-    void optionsMyPublications_shouldReturnOk_withGetOptions() {
+    void optionsMyPublications_whenUserIsAuthorized_shouldReturnGetAndOptions() {
+        // Arrange
+        Set<HttpMethod> expected = Set.of(HttpMethod.GET, HttpMethod.OPTIONS);
 
-        // Act
-        ResponseEntity<Void> result = sut.optionsMyPublications();
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.getAllowedMethodsForMyPublications(userId)).thenReturn(expected);
 
-        // Assert
-        assertEquals(HttpStatus.OK, result.getStatusCode());
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
-                result.getHeaders().getAllow());
+            // Act
+            ResponseEntity<Void> result = sut.optionsMyPublications(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertTrue(result.getHeaders().getAllow().containsAll(expected));
+        }
+    }
+
+    @Test
+    void optionsMyPublications_whenUserIsNotAuthorized_shouldReturnOptionsOnly() {
+        // Arrange
+        Set<HttpMethod> expected = Set.of(HttpMethod.OPTIONS);
+
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.getAllowedMethodsForMyPublications(userId)).thenReturn(expected);
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsMyPublications(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.OK, result.getStatusCode());
+            assertFalse(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsMyPublications_whenUserNotFound_shouldReturn404() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING)).thenReturn(userId);
+            when(publicationSampleService.getAllowedMethodsForMyPublications(userId))
+                    .thenThrow(new EntityNotFoundException("User not found"));
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsMyPublications(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsMyPublications_whenUserIdIsInvalid_shouldReturn400() {
+        // Arrange
+        try (MockedStatic<PublicationSampleMapper> mapper = mockStatic(PublicationSampleMapper.class)) {
+            mapper.when(() -> PublicationSampleMapper.toUserId(USER_ID_STRING))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<Void> result = sut.optionsMyPublications(USER_ID_STRING);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        }
     }
 
     // =========================================================================

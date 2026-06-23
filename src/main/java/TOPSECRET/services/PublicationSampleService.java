@@ -366,6 +366,34 @@ public class PublicationSampleService {
     }
 
     /**
+     * Returns the HTTP methods allowed on the {@code /my-publications} resource for the given user.
+     *
+     * <p>Always includes {@code OPTIONS}. {@code GET} is included only if the requesting user
+     * is authorized to retrieve their own publication samples.</p>
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return a set of permitted {@link HttpMethod} values for the resource
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public Set<HttpMethod> getAllowedMethodsForMyPublications(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+
+        Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+        if (policy.canFindPublicationsOwnedByUserId(user)) {
+            allowed.add(HttpMethod.GET);
+        }
+
+        return allowed;
+    }
+
+    /**
      * Retrieves all publications owned by the given user that are assigned to a library.
      *
      * @param userId the user identifier; must not be {@code null}
