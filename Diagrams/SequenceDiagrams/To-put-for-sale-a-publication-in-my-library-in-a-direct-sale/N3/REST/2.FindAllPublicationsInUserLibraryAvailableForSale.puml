@@ -23,7 +23,7 @@ participant ":IUser\nService" as UserService
 database "db" as db
 
 ref over PSCtrl
-[[1.Backend-MainDiagram.puml Back to main diagram]]
+    [[1.MainDiagram.puml Back to main diagram]]
 end ref
 
 PSCtrl -> PSMapper : toUserId(userId)

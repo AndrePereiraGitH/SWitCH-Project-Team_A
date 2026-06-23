@@ -11,7 +11,7 @@ participant "pictures:\nList<Pictures" as pictures
 
 
 ref over ListCtrl
-    [[1.Backend-MainDiagram.puml Back to main diagram]]
+    [[1.MainDiagram.puml Back to main diagram]]
 end ref
 
 

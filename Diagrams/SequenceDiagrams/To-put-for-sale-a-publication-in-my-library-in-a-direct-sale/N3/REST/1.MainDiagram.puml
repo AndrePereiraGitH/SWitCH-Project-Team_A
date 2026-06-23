@@ -1,7 +1,7 @@
 @startuml
 autonumber
 hide footbox
-title To put for sale a publication in my library in a direct sale (main diagram - backend)
+title To put for sale a publication in my library in a direct sale (main diagram)
 
 participant ":Router" as Router
 participant ":PublicationSample\nRESTController" as PSCtrl
@@ -35,7 +35,7 @@ Router -> PSCtrl : findAvailableForSale(userId)
 activate PSCtrl
 
 ref over PSCtrl
-[[2.Backend-FindAllPublicationsInUserLibraryAvailableForSale.puml]]
+    [[2.FindAllPublicationsInUserLibraryAvailableForSale.puml Find All Publications In User's Library Available For Sale]]
 end ref
 
 PSCtrl --> Router : 200 OK\nbody: publicationDTOS
@@ -62,7 +62,7 @@ Router -> ListCtrl : createDirectSaleListing(title, selectedPublicationIds, sale
 activate ListCtrl
 
 ref over ListCtrl, ListMapper
-    [[3.Backend-MapInputStringsToVOs.puml]]
+    [[3.MapInputStringsToVOs.puml Map Input Strings To VOs]]
 end ref
 
 ListCtrl -> LServ : createAndSave(title, pubSampleIds, saleType,\nprice, shortDescription, userId, pictures)
@@ -122,7 +122,7 @@ LServ --> ListCtrl : persistedListing
 deactivate LServ
 
 ref over ListCtrl, ListMapper, ListLink
-    [[4.Backedn-BuildListingDTOWithLinks.puml]]
+    [[4.BuildListingDTOWithLinks.puml Build Listing DTO With Links]]
 end ref
 
 

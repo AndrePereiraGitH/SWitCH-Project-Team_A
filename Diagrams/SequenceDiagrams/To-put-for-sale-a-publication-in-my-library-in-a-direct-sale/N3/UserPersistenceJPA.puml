@@ -15,7 +15,7 @@ database "Database" as db
 
 
 ref over UserRepo
-    [[REST/1.Backend-MainDiagram.puml Back to main diagram REST]]
+    [[REST/1.MainDiagram.puml Back to main diagram REST]]
     [[CLI/1.MainDiagram.puml Back to main diagram CLI]]
 end ref
 
