@@ -1415,7 +1415,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnForbidden_whenBuyerIsSeller() {
+    void markListingAsSold_shouldReturnForbidden_whenBuyerIsSeller() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1438,7 +1438,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnForbidden_whenPolicyDenied() {
+    void markListingAsSold_shouldReturnForbidden_whenPolicyDenied() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1461,7 +1461,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnNotFound_whenListingDoesNotExist() {
+    void markListingAsSold_shouldReturnNotFound_whenListingDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1484,7 +1484,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnConflict_whenListingAlreadySold() {
+    void markListingAsSold_shouldReturnConflict_whenListingAlreadySold() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1507,7 +1507,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnInternalServerError_onUnexpectedException() {
+    void markListingAsSold_shouldReturnInternalServerError_onUnexpectedException() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1536,40 +1536,41 @@ class ListingRESTControllerTest {
 
     @Test
     void optionsListing_shouldReturnOkStatus() throws InstanceNotFoundException {
-
         // Arrange
         String requesterId = "1";
-        when(listingService.canCreate(any(UserId.class))).thenReturn(true);
+        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
+                .thenReturn(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
 
         // Act
-        ResponseEntity<?> response = controller.optionsListing(requesterId);
+        ResponseEntity<?> response = controller.optionsRoot(requesterId);
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
-    void optionsListing_shouldReturnAllowHeaderWithSupportedMethods() throws InstanceNotFoundException {
-
+    void optionsRoot_shouldReturnAllowHeaderWithSupportedMethods() throws InstanceNotFoundException {
         // Arrange
         String requesterId = "1";
-        when(listingService.canCreate(any(UserId.class))).thenReturn(true);
+        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
+                .thenReturn(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
 
         // Act
-        ResponseEntity<?> response = controller.optionsListing(requesterId);
+        ResponseEntity<?> response = controller.optionsRoot(requesterId);
 
         // Assert
         assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
     }
 
     @Test
-    void optionsListing_shouldReturnAllowHeaderWithoutPost_whenUserCannotCreate() throws InstanceNotFoundException {
+    void optionsRoot_shouldReturnAllowHeaderWithoutPost_whenUserCannotCreate() throws InstanceNotFoundException {
         // Arrange
         String requesterId = "1";
-        when(listingService.canCreate(any(UserId.class))).thenReturn(false);
+        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
+                .thenReturn(Set.of(HttpMethod.GET, HttpMethod.OPTIONS));
 
         // Act
-        ResponseEntity<?> response = controller.optionsListing(requesterId);
+        ResponseEntity<?> response = controller.optionsRoot(requesterId);
 
         // Assert
         assertEquals(
@@ -1579,23 +1580,23 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void optionsListing_shouldReturnNotFound_whenRequesterDoesNotExist() throws InstanceNotFoundException {
+    void optionsRoot_shouldReturnNotFound_whenRequesterDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String requesterId = "999";
-        when(listingService.canCreate(any(UserId.class)))
+        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
                 .thenThrow(new InstanceNotFoundException(requesterId));
 
         // Act
-        ResponseEntity<?> response = controller.optionsListing(requesterId);
+        ResponseEntity<?> response = controller.optionsRoot(requesterId);
 
         // Assert
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    void optionsListing_shouldReturnBadRequest_whenRequesterIdIsNull() throws InstanceNotFoundException {
+    void optionsRoot_shouldReturnBadRequest_whenRequesterIdIsNull() throws InstanceNotFoundException {
         // Act
-        ResponseEntity<?> response = controller.optionsListing(null);
+        ResponseEntity<?> response = controller.optionsRoot(null);
 
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -1692,23 +1693,116 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void optionsListingSold_shouldReturnOkStatus() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsListingSold();
+    void optionsListingSold_shouldReturnOkStatus_whenBuyerCanMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
 
-        // assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
+                .thenReturn(Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
     }
 
     @Test
-    void optionsListingSold_shouldReturnAllowHeaderWithSupportedMethods() {
-        //Act
-        ResponseEntity<Void> response = controller.optionsListingSold();
+    void optionsListingSold_shouldReturnAllowHeaderWithPatch_whenBuyerCanMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
 
-        // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.PATCH, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
+                .thenReturn(Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
     }
 
+    @Test
+    void optionsListingSold_shouldReturnBadRequest_whenListingIdIsInvalid() {
+        // Arrange
+        String listingId = "invalid";
+        String userId = "user-2";
+        UserId userIdVO = mock(UserId.class);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnNotFound_whenListingOrUserDoesNotExist() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
+
+        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
+                .thenThrow(new InstanceNotFoundException());
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnForbidden_whenBuyerCannotMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
+
+        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
+                .thenThrow(new AccessDeniedException("denied"));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+    }
 
     // =========================================================================
     // PRIVATE HELPER METHODS - SETUP & MOCKING

@@ -60,6 +60,7 @@ public class ListingRESTController {
     private final ListingLinkProvider listingLinkProvider;
     private final PublisherService publisherService;
     private final UserService userService;
+    private final ListingMapper listingMapper;
 
     private enum LinkContext {
         AUTHENTICATED_USER, PUBLIC
@@ -79,7 +80,7 @@ public class ListingRESTController {
      * @param listingLinkProvider the provider used to generate listing HATEOAS links
      */
     @Autowired
-    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService, UserService userService) {
+    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService, UserService userService, ListingMapper listingMapper) {
         this.biblioDataService = biblioDataService;
         this.publicationService = publicationService;
         this.listingService = listingService;
@@ -89,6 +90,7 @@ public class ListingRESTController {
         this.listingLinkProvider = listingLinkProvider;
         this.publisherService = publisherService;
         this.userService = userService;
+        this.listingMapper = listingMapper;
     }
 
     // =========================================================================
@@ -146,19 +148,13 @@ public class ListingRESTController {
      * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
      */
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
-    public ResponseEntity<?> optionsListing(
+    public ResponseEntity<?> optionsRoot(
             @NotBlank @RequestParam String requesterId) throws InstanceNotFoundException {
 
         try {
             UserId sellerId = UserMapper.toUserId(requesterId);
 
-            Set<HttpMethod> allowed = new HashSet<>();
-            allowed.add(HttpMethod.OPTIONS);
-            allowed.add(HttpMethod.GET);
-
-            if (listingService.canCreate(sellerId)) {
-                allowed.add(HttpMethod.POST);
-            }
+            Set<HttpMethod> allowed= listingService.getAllowedMethodsForRoot(sellerId);
 
             return ResponseEntity.ok().allow(allowed.toArray(new HttpMethod[0])).build();
         } catch (NullPointerException e) {
@@ -524,8 +520,26 @@ public class ListingRESTController {
      * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
      */
     @RequestMapping(value = "/{listingId}/sold", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsListingSold() {
-        return ResponseEntity.ok().allow(HttpMethod.GET, HttpMethod.PATCH, HttpMethod.OPTIONS).build();
+    public ResponseEntity<Void> optionsListingSold(@PathVariable String listingId, @RequestParam String userId) {
+
+        try {
+            UserId buyerId = ListingMapper.toUserId(userId);
+            ListingId listId = ListingMapper.toListingId(listingId);
+
+            Set<HttpMethod> allowed = listingService.getAllowedMethodsForMarkListingAsSold(buyerId, listId);
+
+            return ResponseEntity.ok().allow(allowed.toArray(new HttpMethod[0])).build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 
     // =========================================================================

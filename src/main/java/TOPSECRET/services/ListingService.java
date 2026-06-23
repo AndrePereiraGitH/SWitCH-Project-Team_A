@@ -16,13 +16,16 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Application service responsible for {@link Listing} use cases.
@@ -89,6 +92,16 @@ public class ListingService {
         Listing createdListing = listingFactory.create(listingTitle, itemsId, saleType, price, shortDescription, sellerId, pictures);
 
         return listingRepository.save(createdListing);
+    }
+
+    public Set<HttpMethod> getAllowedMethodsForRoot(UserId userId) throws InstanceNotFoundException {
+
+        Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS, HttpMethod.GET));
+
+        if (canCreate(userId)) {
+            allowed.add(HttpMethod.POST);
+        }
+        return allowed;
     }
 
     /**
@@ -331,28 +344,16 @@ public class ListingService {
      * @throws NullPointerException    if {@code listingId} or {@code buyerId} is {@code null}
      */
     @Transactional
-    public Listing markListingAsSold(ListingId listingId, UserId buyerId) {
+    public Listing markListingAsSold(ListingId listingId, UserId buyerId) throws InstanceNotFoundException {
 
         Objects.requireNonNull(listingId, "listingId cannot be null");
         Objects.requireNonNull(buyerId, "buyerId cannot be null");
 
         Listing listing = listingRepository.findById(listingId).orElseThrow(EntityNotFoundException::new);
 
-        if (listing.getListingStatus() == ListingStatus.SOLD) {
-            throw new IllegalStateException("Listing is already sold");
-        }
-
-        if (listing.getSellerId().equals(buyerId)) {
-            throw new AccessDeniedException("You cannot buy your own listing");
-        }
-
-        User user = userRepository.findByID(buyerId).orElseThrow(EntityNotFoundException::new);
-
-        if (!policy.canBuyListing(user)) {
-            throw new AccessDeniedException("You do not have permissions to buy this listing");
-        }
-
-        listing.markListingAsSold(buyerId);
+       if (canMarkListingAsSold(buyerId, listingId)) {
+           listing.markListingAsSold(buyerId);
+       }
 
         List<PublicationSampleId> itemIds = listing.getItemsId();
 
@@ -365,6 +366,38 @@ public class ListingService {
 
         return listingRepository.save(listing);
     }
+
+    public Set<HttpMethod> getAllowedMethodsForMarkListingAsSold(UserId userId, ListingId listingId) throws InstanceNotFoundException {
+
+        Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS));
+
+        if (canMarkListingAsSold(userId, listingId)) {
+            allowed.add(HttpMethod.PATCH);
+        }
+
+        return allowed;
+    }
+
+    public boolean canMarkListingAsSold(UserId buyerId, ListingId listingId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(buyerId).orElseThrow(()-> new InstanceNotFoundException("User not found " + buyerId.getUserId()));
+        Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new InstanceNotFoundException("Listing not found: " + listingId));
+
+        if (listing.getListingStatus() == ListingStatus.SOLD) {
+            throw new IllegalStateException("Listing is already sold");
+        }
+
+        if (listing.getSellerId().equals(buyerId)) {
+            throw new AccessDeniedException("You cannot buy your own listing");
+        }
+
+        if (!policy.canBuyListing(user)) {
+            throw new AccessDeniedException("You do not have permissions to buy this listing");
+        }
+
+        return true;
+
+    }
+
 
     public boolean canCreate(UserId userId) throws InstanceNotFoundException {
         User user = userRepository.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found: " + userId.getUserId()));
