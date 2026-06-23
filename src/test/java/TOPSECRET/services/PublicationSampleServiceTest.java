@@ -1299,4 +1299,319 @@ class PublicationSampleServiceTest {
         assertThrows(NullPointerException.class, () ->
                 service.findPublicationsInPublicCollection(null, userId));
     }
+
+    // =========================================================================
+    // canFindPublicationsNotInLibrary
+    // =========================================================================
+
+    @Test
+    void canFindPublicationsNotInLibrary_shouldReturnTrue_whenPolicyAllows() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canFindPublicationsNotInLibrary(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindPublicationsNotInLibrary_shouldReturnFalse_whenPolicyDenies() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canFindPublicationsNotInLibrary(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindPublicationsNotInLibrary_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.canFindPublicationsNotInLibrary(userId));
+    }
+
+    @Test
+    void canFindPublicationsNotInLibrary_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.canFindPublicationsNotInLibrary(null));
+    }
+
+    // =========================================================================
+    // canFindAvailableInLibrary
+    // =========================================================================
+
+    @Test
+    void canFindAvailableInLibrary_shouldReturnTrue_whenPolicyAllows() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canFindAvailableInLibrary(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindAvailableInLibrary_shouldReturnFalse_whenPolicyDenies() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canFindAvailableInLibrary(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindAvailableInLibrary_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.canFindAvailableInLibrary(userId));
+    }
+
+    @Test
+    void canFindAvailableInLibrary_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.canFindAvailableInLibrary(null));
+    }
+
+    // =========================================================================
+    // canFindAvailableForCollection
+    // =========================================================================
+
+    @Test
+    void canFindAvailableForCollection_shouldReturnTrue_whenPolicyAllowsAndUserOwnsCollection() throws Exception {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindAvailableForCollection(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(collection.getOwnerId()).thenReturn(userId);
+
+        // Act
+        boolean result = service.canFindAvailableForCollection(userId, collectionId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindAvailableForCollection_shouldReturnFalse_whenPolicyDenies() throws Exception {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+
+        // Act
+        boolean result = service.canFindAvailableForCollection(userId, collectionId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindAvailableForCollection_shouldReturnFalse_whenUserDoesNotOwnCollection() throws Exception {
+        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
+        UserId otherUserId = mock(UserId.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindAvailableForCollection(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(collection.getOwnerId()).thenReturn(otherUserId);
+
+        // Act
+        boolean result = service.canFindAvailableForCollection(userId, collectionId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindAvailableForCollection_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.canFindAvailableForCollection(userId, collectionId));
+    }
+
+    @Test
+    void canFindAvailableForCollection_shouldThrowInstanceNotFoundException_whenCollectionNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(InstanceNotFoundException.class, () ->
+                service.canFindAvailableForCollection(userId, collectionId));
+    }
+
+    @Test
+    void canFindAvailableForCollection_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.canFindAvailableForCollection(null, collectionId));
+    }
+
+    @Test
+    void canFindAvailableForCollection_shouldThrowNullPointerException_whenCollectionIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.canFindAvailableForCollection(userId, null));
+    }
+
+    // =========================================================================
+    // canAddPublicationToLibrary
+    // =========================================================================
+
+    @Test
+    void canAddPublicationToLibrary_shouldReturnTrue_whenPolicyAllows() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canAddPublicationToLibrary(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canAddPublicationToLibrary_shouldReturnFalse_whenPolicyDenies() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canAddPublicationToLibrary(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canAddPublicationToLibrary_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.canAddPublicationToLibrary(userId));
+    }
+
+    @Test
+    void canAddPublicationToLibrary_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.canAddPublicationToLibrary(null));
+    }
+
+    // =========================================================================
+    // canAssignPublicationToCollection
+    // =========================================================================
+
+    @Test
+    void canAssignPublicationToCollection_shouldReturnTrue_whenPolicyAllows() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canAssignPublicationToCollection(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canAssignPublicationToCollection_shouldReturnFalse_whenPolicyDenies() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canAssignPublicationToCollection(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canAssignPublicationToCollection_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.canAssignPublicationToCollection(userId));
+    }
+
+    @Test
+    void canAssignPublicationToCollection_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.canAssignPublicationToCollection(null));
+    }
+
+    // =========================================================================
+    // canFindPublicationsInPublicCollection
+    // =========================================================================
+
+    @Test
+    void canFindPublicationsInPublicCollection_shouldReturnTrue_whenPolicyAllows() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canFindPublicationsInPublicCollection(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindPublicationsInPublicCollection_shouldReturnFalse_whenPolicyDenies() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canFindPublicationsInPublicCollection(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindPublicationsInPublicCollection_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.canFindPublicationsInPublicCollection(userId));
+    }
+
+    @Test
+    void canFindPublicationsInPublicCollection_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.canFindPublicationsInPublicCollection(null));
+    }
 }
