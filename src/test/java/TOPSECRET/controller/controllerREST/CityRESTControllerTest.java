@@ -3,7 +3,6 @@ package TOPSECRET.controller.controllerREST;
 import TOPSECRET.controller.controllerREST.root.linkProvider.CityLinkProvider;
 import TOPSECRET.domain.City.City;
 import TOPSECRET.domain.ValueObjects.CityId;
-import TOPSECRET.domain.ValueObjects.CountryId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.city.request.RequestCityDTO;
 import TOPSECRET.dto.city.response.ResponseCityDTO;
@@ -17,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -38,6 +38,7 @@ import static org.mockito.Mockito.*;
  *   <li><b>POST</b> — creation of a new city, including authorization and error scenarios.</li>
  *   <li><b>GET (collection)</b> — retrieval of all cities, including empty and error scenarios.</li>
  *   <li><b>GET (by identity)</b> — retrieval of a single city by identifier, including error scenarios.</li>
+ *   <li><b>OPTIONS</b> — verification of allowed HTTP methods in headers (API discoverability).</li>
  * </ul>
  */
 @ExtendWith(MockitoExtension.class)
@@ -292,5 +293,77 @@ class CityRESTControllerTest {
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
         assertNull(result.getBody());
+    }
+
+    // ==========================================
+    // OPTIONS /cities (Root)
+    // ==========================================
+
+    @Test
+    void optionsRoot_shouldReturnOkStatus() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsRoot();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsRoot_shouldAllowGet() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsRoot();
+        assertNotNull(response.getHeaders().getAllow());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowPost() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsRoot();
+        assertNotNull(response.getHeaders().getAllow());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowOptions() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsRoot();
+        assertNotNull(response.getHeaders().getAllow());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    // ==========================================
+    // OPTIONS /cities/{id} (By ID)
+    // ==========================================
+
+    @Test
+    void optionsById_shouldReturnOkStatus() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsById("1");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsById_shouldAllowGet() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsById("1");
+        assertNotNull(response.getHeaders().getAllow());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+    }
+
+    @Test
+    void optionsById_shouldAllowOptions() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsById("1");
+        assertNotNull(response.getHeaders().getAllow());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsById_shouldNotAllowPost() {
+        CityRESTController sut = new CityRESTController(service, provider);
+        ResponseEntity<Void> response = sut.optionsById("1");
+        assertNotNull(response.getHeaders().getAllow());
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
     }
 }
