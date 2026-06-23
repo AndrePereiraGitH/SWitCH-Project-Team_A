@@ -840,6 +840,66 @@ class PublicationSampleServiceTest {
     }
 
     // =========================================================================
+    // getAllowedMethodsForInLibrary
+    // =========================================================================
+
+    @Test
+    void getAllowedMethodsForInLibrary_shouldReturnGetAndOptions_whenUserIsAuthorized() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(true);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForInLibrary(userId);
+
+        // Assert
+        assertTrue(result.containsAll(Set.of(HttpMethod.GET, HttpMethod.OPTIONS)));
+    }
+
+    @Test
+    void getAllowedMethodsForInLibrary_shouldReturnOptionsOnly_whenPolicyDenied() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForInLibrary(userId);
+
+        // Assert
+        assertTrue(result.contains(HttpMethod.OPTIONS));
+        assertFalse(result.contains(HttpMethod.GET));
+    }
+
+    @Test
+    void getAllowedMethodsForInLibrary_shouldAlwaysIncludeOptions() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+
+        // Act
+        Set<HttpMethod> result = service.getAllowedMethodsForInLibrary(userId);
+
+        // Assert
+        assertTrue(result.contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void getAllowedMethodsForInLibrary_shouldThrowEntityNotFoundException_whenUserNotFound() {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(EntityNotFoundException.class, () ->
+                service.getAllowedMethodsForInLibrary(userId));
+    }
+
+    @Test
+    void getAllowedMethodsForInLibrary_shouldThrowNullPointerException_whenUserIdIsNull() {
+        assertThrows(NullPointerException.class, () ->
+                service.getAllowedMethodsForInLibrary(null));
+    }
+
+    // =========================================================================
     // findPublicationsNotInLibrary
     // =========================================================================
 

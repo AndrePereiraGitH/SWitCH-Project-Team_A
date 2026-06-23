@@ -530,12 +530,30 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /in-library} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code GET} is included only if the requesting user
+     * is authorized to retrieve their publication samples assigned to a library.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
+     */
     @RequestMapping(value = "/in-library", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsInLibrary() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsInLibrary(@RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = publicationSampleService.getAllowedMethodsForInLibrary(id);
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**
