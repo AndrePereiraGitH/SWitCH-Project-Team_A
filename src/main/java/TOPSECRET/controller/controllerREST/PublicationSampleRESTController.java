@@ -612,12 +612,34 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /not-in-library} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code GET} is included only if the requesting user
+     * is authorized to retrieve their publication samples not assigned to any library.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
+     */
     @RequestMapping(value = "/not-in-library", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsNotInLibrary() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsNotInLibrary(@RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canFindPublicationsNotInLibrary(id)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**
@@ -661,12 +683,34 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /available-in-library} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code GET} is included only if the requesting user
+     * is authorized to retrieve their available publication samples from their library.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
+     */
     @RequestMapping(value = "/available-in-library", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsAvailableInLibrary() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsAvailableInLibrary(@RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canFindAvailableInLibrary(id)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**
@@ -715,12 +759,38 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /{collectionId}/available} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code GET} is included only if the requesting user
+     * is authorized to retrieve publication samples eligible for the specified collection and owns it.</p>
+     *
+     * @param collectionId the unique identifier of the target collection
+     * @param userId       the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user or collection is not found, or HTTP 400 if any identifier is invalid
+     */
     @RequestMapping(value = "/{collectionId}/available", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsAvailableForCollection() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsAvailableForCollection(
+            @PathVariable String collectionId,
+            @RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+            CollectionOfPublicationsId cpId = PublicationSampleMapper.toCollectionOfPublicationsId(collectionId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canFindAvailableForCollection(id, cpId)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException | InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
 
@@ -773,12 +843,34 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /{collectionId}/shared-publications} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code GET} is included only if the requesting user
+     * is authorized to retrieve publications from public collections.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
+     */
     @RequestMapping(value = "/{collectionId}/shared-publications", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsPublicationSampleInSharedCollection() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsPublicationSampleInSharedCollection(@RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canFindPublicationsInPublicCollection(id)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     // =========================================================================
@@ -825,12 +917,34 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /{publicationSampleId}/library} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code PATCH} is included only if the requesting user
+     * is authorized to add a publication sample to their library.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
+     */
     @RequestMapping(value = "/{publicationSampleId}/library", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsLibrary() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.PATCH,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsLibrary(@RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canAddPublicationToLibrary(id)) {
+                allowed.add(HttpMethod.PATCH);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**
@@ -876,12 +990,34 @@ public class PublicationSampleRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods allowed on the {@code /{publicationSampleId}/collection} resource for the given user.
+     *
+     * <p>{@code OPTIONS} is always included. {@code PATCH} is included only if the requesting user
+     * is authorized to assign a publication sample to a collection.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
+     */
     @RequestMapping(value = "/{publicationSampleId}/collection", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsCollection() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.PATCH,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsCollection(@RequestParam String userId) {
+        try {
+            UserId id = PublicationSampleMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (publicationSampleService.canAssignPublicationToCollection(id)) {
+                allowed.add(HttpMethod.PATCH);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     // =========================================================================
