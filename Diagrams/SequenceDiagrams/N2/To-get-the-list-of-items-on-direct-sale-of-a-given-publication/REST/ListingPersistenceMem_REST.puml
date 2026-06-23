@@ -1,0 +1,32 @@
+@startuml
+autonumber
+hide footbox
+title Listing Persistence In-Memory
+
+participant ":IListing\nRepository" as LRepo
+participant ":ListingRepository\nMem" as LRepoMem
+participant "listings:\nList<Listing>" as listings
+
+ref over LRepo
+    [[1.MainDiagram.puml Back to main diagram REST]]
+end ref
+
+
+' =======================================================
+' REST path — findAllFiltered filters by sale type in memory
+' =======================================================
+
+LRepo -> LRepoMem : findAll()
+activate LRepo
+activate LRepoMem
+
+LRepoMem -> listings : copyOf()
+activate listings
+listings --> LRepoMem : listOfListings
+deactivate listings
+
+LRepoMem --> LRepo : listOfListings
+deactivate LRepoMem
+deactivate LRepo
+
+@enduml

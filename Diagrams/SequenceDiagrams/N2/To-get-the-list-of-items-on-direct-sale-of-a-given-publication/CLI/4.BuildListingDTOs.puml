@@ -1,0 +1,54 @@
+@startuml
+hide footbox
+autonumber
+title Build Listings DTOs
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nPublicationController" as Ctrl
+participant ":US023Listing\nMapper" as ListMapper
+participant ":IPublicationSample\nRepository" as PSRepo
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":IAuthor\nRepository" as AuthorRepo
+participant "listOfDSListingDTOs:\nList<US023ListingDTO>" as listOfDSListingDTOs
+participant "listingDTO:\nUS023ListingDTO" as listingDTO
+
+
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+
+
+Ctrl -> ListMapper : toDTOs(listOfDSListings)
+activate Ctrl
+activate ListMapper
+ListMapper -->> listOfDSListingDTOs ** : «create»
+loop for each listing in listOfDSListings
+    ListMapper -> PSRepo : findById(listing.publicationSampleId())
+    activate PSRepo
+    PSRepo --> ListMapper : publicationSample
+    deactivate PSRepo
+
+    ListMapper -> BDRepo : findById(publicationSample.bdId())
+    activate BDRepo
+    BDRepo --> ListMapper : bibliographicalData
+    deactivate BDRepo
+
+    ListMapper -> ListMapper : getTitle(bibliographicalData)
+
+    ListMapper -> AuthorRepo : findById(authorId)
+    activate AuthorRepo
+    AuthorRepo --> ListMapper : author
+    deactivate AuthorRepo
+    ListMapper -> ListMapper : getAuthors(bibliographicalData)
+
+    ListMapper -->> listingDTO ** : «create»
+    ListMapper -> listOfDSListingDTOs : add(listingDTO)
+end
+ListMapper --> Ctrl : listOfDSListingDTOs
+deactivate ListMapper
+
+deactivate Ctrl
+
+@enduml
