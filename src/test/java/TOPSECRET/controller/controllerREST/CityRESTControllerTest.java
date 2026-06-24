@@ -296,39 +296,87 @@ class CityRESTControllerTest {
     }
 
     // ==========================================
-    // OPTIONS /cities (Root)
-    // ==========================================
+// OPTIONS /cities (Root)
+// ==========================================
 
     @Test
-    void optionsRoot_shouldReturnOkStatus() {
+    void optionsRoot_shouldReturnOk_whenUserExists() {
+        // ARRANGE
         CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsRoot();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNull(response.getBody());
+        when(service.canCreateCity(userId)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertNull(result.getBody());
     }
 
     @Test
-    void optionsRoot_shouldAllowGet() {
+    void optionsRoot_shouldAlwaysIncludeGetAndOptions() {
+        // ARRANGE
         CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsRoot();
-        assertNotNull(response.getHeaders().getAllow());
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        when(service.canCreateCity(userId)).thenReturn(false);
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
     }
 
     @Test
-    void optionsRoot_shouldAllowPost() {
+    void optionsRoot_shouldIncludePost_whenUserCanCreateCity() {
+        // ARRANGE
         CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsRoot();
-        assertNotNull(response.getHeaders().getAllow());
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        when(service.canCreateCity(userId)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.POST));
     }
 
     @Test
-    void optionsRoot_shouldAllowOptions() {
+    void optionsRoot_shouldNotIncludePost_whenUserCannotCreateCity() {
+        // ARRANGE
         CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsRoot();
-        assertNotNull(response.getHeaders().getAllow());
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        when(service.canCreateCity(userId)).thenReturn(false);
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertFalse(result.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsRoot_shouldReturnBadRequest_whenIllegalArgument() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        when(service.canCreateCity(userId)).thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    void optionsRoot_shouldReturnInternalServerError_whenUnexpectedException() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        when(service.canCreateCity(userId)).thenThrow(new RuntimeException());
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
     }
 
     // ==========================================
@@ -365,5 +413,126 @@ class CityRESTControllerTest {
         ResponseEntity<Void> response = sut.optionsById("1");
         assertNotNull(response.getHeaders().getAllow());
         assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void getCityById_shouldReturnBadRequest_whenIdIsEmpty() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.getCityById("");
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    @Test
+    void getCityById_shouldReturnBadRequest_whenIdIsBlank() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.getCityById("   ");
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    @Test
+    void getCities_shouldReturnAllCitiesWithLinks_whenMultipleCitiesExist() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+
+        City doubleCity1 = mock(City.class);
+        City doubleCity2 = mock(City.class);
+        CityId doubleCityId1 = mock(CityId.class);
+        CityId doubleCityId2 = mock(CityId.class);
+
+        when(doubleCityId1.getCityID()).thenReturn("1");
+        when(doubleCityId2.getCityID()).thenReturn("2");
+        when(doubleCity1.id()).thenReturn(doubleCityId1);
+        when(doubleCity2.id()).thenReturn(doubleCityId2);
+        when(doubleCity1.getCityName()).thenReturn("Porto");
+        when(doubleCity2.getCityName()).thenReturn("Lisboa");
+        when(service.findAll()).thenReturn(List.of(doubleCity1, doubleCity2));
+
+        // ACT
+        ResponseEntity<List<ResponseCityDTO>> result = sut.getCities();
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertEquals(2, result.getBody().size());
+        assertTrue(result.getBody().get(0).hasLink("self"));
+        assertTrue(result.getBody().get(0).hasLink("cities"));
+        assertTrue(result.getBody().get(1).hasLink("self"));
+        assertTrue(result.getBody().get(1).hasLink("cities"));
+    }
+
+    @Test
+    void createCity_shouldReturnBadRequest_whenCountryNameIsNull() throws Exception {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        RequestCityDTO dto = mock(RequestCityDTO.class);
+        when(dto.countryName()).thenReturn(null);
+        when(dto.cityName()).thenReturn("Porto");
+        when(service.createAndSave(null, "Porto", userId)).thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.createCity(dto, userId);
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    @Test
+    void createCity_shouldReturnBadRequest_whenCityNameIsNull() throws Exception {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        RequestCityDTO dto = mock(RequestCityDTO.class);
+        when(dto.countryName()).thenReturn("Portugal");
+        when(dto.cityName()).thenReturn(null);
+        when(service.createAndSave("Portugal", null, userId)).thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<ResponseCityDTO> result = sut.createCity(dto, userId);
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+        assertNull(result.getBody());
+    }
+
+    @Test
+    void optionsRoot_shouldAllowExactlyTwoMethods_whenUserCannotCreateCity() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        when(service.canCreateCity(userId)).thenReturn(false);
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertEquals(2, result.getHeaders().getAllow().size());
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowExactlyThreeMethods_whenUserCanCreateCity() {
+        // ARRANGE
+        CityRESTController sut = new CityRESTController(service, provider);
+        when(service.canCreateCity(userId)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<Void> result = sut.optionsRoot(userId);
+
+        // ASSERT
+        assertEquals(3, result.getHeaders().getAllow().size());
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
     }
 }
