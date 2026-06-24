@@ -1,0 +1,39 @@
+@startuml
+hide footbox
+autonumber
+title Build Publications DTOs with HATEOAS Links
+
+
+participant ":BibliographicalData\nRESTController" as BDCtrl
+participant ":BibliographicalData\nMapper" as BDMapper
+
+participant ":BibliographicalData\nLinkProvider" as BDLinkProvider
+participant "listOfAllBDDTOs:\nList<BibliographicalDataDTO>" as listOfAllBDDTOs
+participant "bdDTO:\nBibliographicalDataDTO" as bdDTO
+
+
+ref over BDCtrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+
+BDCtrl -> BDMapper : toDTOs(listOfAllBD, authorNamesMap)
+activate BDCtrl
+activate BDMapper
+BDMapper -->> listOfAllBDDTOs ** : «create»
+loop for each bd in listOfAllBD
+    BDMapper -->> bdDTO ** : «create»
+    BDMapper -> listOfAllBDDTOs : add(bdDTO)
+end
+BDMapper --> BDCtrl : listOfAllBDDTOs
+deactivate BDMapper
+
+BDCtrl -> BDLinkProvider : getPublicLinksForBibliographicalData()
+activate BDLinkProvider
+BDLinkProvider --> BDCtrl : links
+deactivate BDLinkProvider
+
+BDCtrl -> BDCtrl : links.forEach(collectionModel::add)
+
+
+@enduml
