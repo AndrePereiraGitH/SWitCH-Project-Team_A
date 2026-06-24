@@ -6,7 +6,6 @@ import TOPSECRET.domain.CollectionOfPublications.ICollectionOfPublicationsReposi
 import TOPSECRET.domain.Enum.Condition;
 import TOPSECRET.domain.Enum.PublicationStatus;
 import TOPSECRET.domain.Library.ILibraryRepository;
-import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.PublicationSample.IPublicationSampleRepository;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.PublicationSample.PublicationSampleFactory;
@@ -22,7 +21,6 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Service layer responsible for managing {@link PublicationSample} aggregates.
@@ -57,7 +55,7 @@ public class PublicationSampleService {
     /**
      * Constructs a {@code PublicationSampleService} with its required dependencies.
      *
-     * @param publicationSampleRepository       the repository for publication sample persistence; must not be {@code null}
+     * @param publicationSampleRepository        the repository for publication sample persistence; must not be {@code null}
      * @param collectionOfPublicationsRepository the repository for collection lookups; must not be {@code null}
      * @param factory                            the factory used to create new publication samples; must not be {@code null}
      * @param policy                             the authorization policy governing access; must not be {@code null}
@@ -114,7 +112,9 @@ public class PublicationSampleService {
 
         PublicationSample created = factory.create(bibliographicalDataId, userId, editionId, condition);
 
-        if (publicationSampleRepository.existsById(created.id())) {
+        boolean alreadyExists = publicationSampleRepository.existsById(created.id());
+
+        if (alreadyExists) {
             throw new InstanceAlreadyExistsException("PublicationSample already exists");
         }
 
@@ -136,7 +136,9 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canCreatePublicationSample(user);
+        boolean isAuthorized = policy.canCreatePublicationSample(user);
+
+        return isAuthorized;
     }
 
     // =========================================================================
@@ -152,8 +154,10 @@ public class PublicationSampleService {
      */
     public PublicationSample findById(PublicationSampleId publicationSampleId) {
 
-        return publicationSampleRepository.findById(publicationSampleId)
+        PublicationSample publicationSample = publicationSampleRepository.findById(publicationSampleId)
                 .orElseThrow(() -> new EntityNotFoundException("PublicationSample not found"));
+
+        return publicationSample;
     }
 
     /**
@@ -163,7 +167,9 @@ public class PublicationSampleService {
      */
     public List<PublicationSample> findAll() {
 
-        return publicationSampleRepository.findAll();
+        List<PublicationSample> allPublicationSamples = publicationSampleRepository.findAll();
+
+        return allPublicationSamples;
     }
 
     // =========================================================================
@@ -180,7 +186,9 @@ public class PublicationSampleService {
     public List<PublicationSample> findByBibliographicalDataId(BibliographicalDataId bdId) {
         Objects.requireNonNull(bdId, "BibliographicalDataId cannot be null");
 
-        return publicationSampleRepository.findByBibliographicalDataId(bdId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByBibliographicalDataId(bdId);
+
+        return publicationSamples;
     }
 
     /**
@@ -193,7 +201,9 @@ public class PublicationSampleService {
     public List<PublicationSample> findByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
         Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
 
-        return publicationSampleRepository.findByBibliographicalDataIdIn(bdIds);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByBibliographicalDataIdIn(bdIds);
+
+        return publicationSamples;
     }
 
     /**
@@ -211,7 +221,9 @@ public class PublicationSampleService {
     public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
         Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
 
-        return publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+        List<PublicationSampleId> publicationSampleIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+
+        return publicationSampleIds;
     }
 
     /**
@@ -224,7 +236,9 @@ public class PublicationSampleService {
     public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
         Objects.requireNonNull(listOfEditionIds, "Edition Ids cannot be null");
 
-        return publicationSampleRepository.findByEditionIdIn(listOfEditionIds);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByEditionIdIn(listOfEditionIds);
+
+        return publicationSamples;
     }
 
     /**
@@ -242,7 +256,9 @@ public class PublicationSampleService {
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
         Objects.requireNonNull(listOfEditionIds, "Edition Ids cannot be null");
 
-        return publicationSampleRepository.findIdsByEditionIdIn(listOfEditionIds);
+        List<PublicationSampleId> publicationSampleIds = publicationSampleRepository.findIdsByEditionIdIn(listOfEditionIds);
+
+        return publicationSampleIds;
     }
 
     /**
@@ -269,11 +285,15 @@ public class PublicationSampleService {
         CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
-        if (!collectionOfPublications.getOwnerId().equals(userId)) {
+        boolean isOwner = collectionOfPublications.getOwnerId().equals(userId);
+
+        if (!isOwner) {
             throw new AccessDeniedException("Access denied");
         }
 
-        return publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+
+        return publicationSamples;
     }
 
     /**
@@ -298,7 +318,10 @@ public class PublicationSampleService {
         CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new EntityNotFoundException("Collection not found"));
 
-        return policy.canFindByCollectionOfPublicationsId(user) && collection.getOwnerId().equals(userId);
+        boolean isAuthorized = policy.canFindByCollectionOfPublicationsId(user);
+        boolean isOwner = collection.getOwnerId().equals(userId);
+
+        return isAuthorized && isOwner;
     }
 
     // =========================================================================
@@ -324,7 +347,9 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        return publicationSampleRepository.findAllByOwnerId(userId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findAllByOwnerId(userId);
+
+        return publicationSamples;
     }
 
     /**
@@ -342,7 +367,9 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canFindPublicationsOwnedByUserId(user);
+        boolean isAuthorized = policy.canFindPublicationsOwnedByUserId(user);
+
+        return isAuthorized;
     }
 
     /**
@@ -364,7 +391,9 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        return publicationSampleRepository.findPublicationsInLibrary(userId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findPublicationsInLibrary(userId);
+
+        return publicationSamples;
     }
 
     /**
@@ -372,7 +401,7 @@ public class PublicationSampleService {
      * assigned to a library.
      *
      * @param userId the ID of the requesting user; must not be {@code null}
-     * @return {@code true} if the user may retrieve their in-library publications, {@code false} otherwise
+     * @return {@code true} if the user is authorized and has a library, {@code false} otherwise
      * @throws NullPointerException    if {@code userId} is {@code null}
      * @throws EntityNotFoundException if no user is found for the given {@code userId}
      */
@@ -383,7 +412,10 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canFindPublicationsInLibrary(user);
+        boolean isAuthorized = policy.canFindPublicationsInLibrary(user);
+        boolean hasLibrary = libraryRepository.findByUserId(userId).isPresent();
+
+        return isAuthorized && hasLibrary;
     }
 
     /**
@@ -405,7 +437,9 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        return publicationSampleRepository.findPublicationsNotInLibrary(userId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findPublicationsNotInLibrary(userId);
+
+        return publicationSamples;
     }
 
     /**
@@ -424,7 +458,9 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canFindPublicationsNotInLibrary(user);
+        boolean isAuthorized = policy.canFindPublicationsNotInLibrary(user);
+
+        return isAuthorized;
     }
 
     /**
@@ -455,7 +491,9 @@ public class PublicationSampleService {
 
         List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
 
-        return publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded);
+
+        return publicationSamples;
     }
 
     /**
@@ -463,8 +501,7 @@ public class PublicationSampleService {
      * samples — those in their library that are neither sold nor listed for sale.
      *
      * @param userId the ID of the requesting user; must not be {@code null}
-     * @return {@code true} if the user may retrieve their available-in-library publications,
-     *         {@code false} otherwise
+     * @return {@code true} if the user is authorized and has a library, {@code false} otherwise
      * @throws NullPointerException    if {@code userId} is {@code null}
      * @throws EntityNotFoundException if no user is found for the given {@code userId}
      */
@@ -475,7 +512,10 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canFindByLibraryIdAndPublicationStatusNotIn(user);
+        boolean isAuthorized = policy.canFindByLibraryIdAndPublicationStatusNotIn(user);
+        boolean hasLibrary = libraryRepository.findByUserId(userId).isPresent();
+
+        return isAuthorized && hasLibrary;
     }
 
     // =========================================================================
@@ -511,19 +551,21 @@ public class PublicationSampleService {
         CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
-        if (!collectionOfPublications.getOwnerId().equals(userId)) {
+        boolean isOwner = collectionOfPublications.getOwnerId().equals(userId);
+
+        if (!isOwner) {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> allUserPublications =
-                publicationSampleRepository.findPublicationsInLibrary(userId);
+        List<PublicationSample> allUserPublications = publicationSampleRepository.findPublicationsInLibrary(userId);
 
-        List<PublicationSample> publicationsInCollection =
-                publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+        List<PublicationSample> publicationsInCollection = publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
 
-        return allUserPublications.stream()
+        List<PublicationSample> availablePublications = allUserPublications.stream()
                 .filter(p -> !publicationsInCollection.contains(p))
                 .toList();
+
+        return availablePublications;
     }
 
     /**
@@ -550,7 +592,10 @@ public class PublicationSampleService {
         CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
-        return policy.canFindAvailableForCollection(user) && collection.getOwnerId().equals(userId);
+        boolean isAuthorized = policy.canFindAvailableForCollection(user);
+        boolean isOwner = collection.getOwnerId().equals(userId);
+
+        return isAuthorized && isOwner;
     }
 
     /**
@@ -585,7 +630,9 @@ public class PublicationSampleService {
         PublicationSample publicationSample = publicationSampleRepository.findById(publicationSampleId)
                 .orElseThrow(() -> new EntityNotFoundException("PublicationSample not found"));
 
-        if (!publicationSample.isOwnedByUser(userId)) {
+        boolean isOwner = publicationSample.isOwnedByUser(userId);
+
+        if (!isOwner) {
             throw new AccessDeniedException("User does not own this publication sample");
         }
 
@@ -598,7 +645,7 @@ public class PublicationSampleService {
      * Returns whether the given user is authorized to add a publication sample to their library.
      *
      * @param userId the ID of the requesting user; must not be {@code null}
-     * @return {@code true} if the user may add a publication to their library, {@code false} otherwise
+     * @return {@code true} if the user is authorized and has a library, {@code false} otherwise
      * @throws NullPointerException    if {@code userId} is {@code null}
      * @throws EntityNotFoundException if no user is found for the given {@code userId}
      */
@@ -609,20 +656,25 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canAddPublicationToLibrary(user);
+        boolean isAuthorized = policy.canAddPublicationToLibrary(user);
+        boolean hasLibrary = libraryRepository.findByUserId(userId).isPresent();
+
+        return isAuthorized && hasLibrary;
     }
 
     /**
      * Assigns a {@link PublicationSample} to the specified collection and persists the change.
      *
-     * <p>Requires the requesting user to be authorized and to own the publication sample.</p>
+     * <p>Requires the requesting user to be authorized, to own the publication sample,
+     * and to own the target collection.</p>
      *
      * @param collectionId the identifier of the target collection; must not be {@code null}
      * @param pubSampleId  the identifier of the publication sample to assign; must not be {@code null}
      * @param userId       the identifier of the requesting user; must not be {@code null}
      * @return the updated {@link PublicationSample} with the collection assignment applied
-     * @throws EntityNotFoundException if no user or publication sample is found
-     * @throws AccessDeniedException   if the user is not authorized or does not own the publication sample
+     * @throws EntityNotFoundException if no user, publication sample, or collection is found
+     * @throws AccessDeniedException   if the user is not authorized, does not own the publication sample,
+     *                                 or does not own the target collection
      * @throws NullPointerException    if {@code collectionId} or {@code pubSampleId} is {@code null}
      */
     @Transactional
@@ -640,8 +692,19 @@ public class PublicationSampleService {
         PublicationSample publicationSample = publicationSampleRepository.findById(pubSampleId)
                 .orElseThrow(() -> new EntityNotFoundException("PublicationSample not found"));
 
-        if (!publicationSample.isOwnedByUser(userId)) {
+        boolean ownsSample = publicationSample.isOwnedByUser(userId);
+
+        if (!ownsSample) {
             throw new AccessDeniedException("User does not own this publication sample");
+        }
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Collection not found"));
+
+        boolean ownsCollection = collection.getOwnerId().equals(userId);
+
+        if (!ownsCollection) {
+            throw new AccessDeniedException("User does not own this collection");
         }
 
         publicationSample.addPublicationToCollection(collectionId);
@@ -653,7 +716,8 @@ public class PublicationSampleService {
      * Returns whether the given user is authorized to assign a publication sample to a collection.
      *
      * @param userId the ID of the requesting user; must not be {@code null}
-     * @return {@code true} if the user may assign a publication to a collection, {@code false} otherwise
+     * @return {@code true} if the user is authorized and owns at least one collection,
+     *         {@code false} otherwise
      * @throws NullPointerException    if {@code userId} is {@code null}
      * @throws EntityNotFoundException if no user is found for the given {@code userId}
      */
@@ -664,7 +728,10 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canAssignPublicationToCollection(user);
+        boolean isAuthorized = policy.canAssignPublicationToCollection(user);
+        boolean hasCollections = !collectionOfPublicationsRepository.findAllByOwnerId(userId).isEmpty();
+
+        return isAuthorized && hasCollections;
     }
 
     /**
@@ -691,18 +758,22 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (!policy.canFindByCollectionOfPublicationsId(user)) {
+        if (!policy.canFindPublicationsInPublicCollection(user)) {
             throw new AccessDeniedException("Access denied");
         }
 
         CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
-        if (!collection.isCurrentlyPublic()) {
+        boolean isPublic = collection.isCurrentlyPublic();
+
+        if (!isPublic) {
             throw new AccessDeniedException("Collection is not public");
         }
 
-        return publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+
+        return publicationSamples;
     }
 
     /**
@@ -720,6 +791,8 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return policy.canFindByCollectionOfPublicationsId(user);
+        boolean isAuthorized = policy.canFindByCollectionOfPublicationsId(user);
+
+        return isAuthorized;
     }
 }

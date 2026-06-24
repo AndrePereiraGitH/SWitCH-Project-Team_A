@@ -549,6 +549,7 @@ class PublicationSampleServiceTest {
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(collection.getOwnerId()).thenReturn(userId);
 
         assertFalse(service.canQueryByCollection(collectionId, userId));
     }
@@ -748,8 +749,10 @@ class PublicationSampleServiceTest {
 
     @Test
     void canFindPublicationsInLibrary_shouldReturnTrue_whenPolicyAllows() {
+        Library library = mock(Library.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindPublicationsInLibrary(user)).thenReturn(true);
+        when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
 
         assertTrue(service.canFindPublicationsInLibrary(userId));
     }
@@ -1150,12 +1153,15 @@ class PublicationSampleServiceTest {
     @Test
     void assignPublicationToCollection_shouldAssignCollectionAndReturnSavedSample_whenSuccessful() {
         // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
         PublicationSample saved = mock(PublicationSample.class);
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
         when(publicationSampleRepository.findById(sampleId)).thenReturn(Optional.of(sample));
         when(sample.isOwnedByUser(userId)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(collection.getOwnerId()).thenReturn(userId);
         when(publicationSampleRepository.save(sample)).thenReturn(saved);
 
         // Act
@@ -1234,7 +1240,7 @@ class PublicationSampleServiceTest {
         List<PublicationSample> samples = List.of(sample);
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(policy.canFindPublicationsInPublicCollection(user)).thenReturn(true);
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.isCurrentlyPublic()).thenReturn(true);
         when(publicationSampleRepository.findByCollectionOfPublicationsId(collectionId)).thenReturn(samples);
@@ -1252,7 +1258,7 @@ class PublicationSampleServiceTest {
         CollectionOfPublications collection = mock(CollectionOfPublications.class);
 
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(policy.canFindPublicationsInPublicCollection(user)).thenReturn(true);
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
         when(collection.isCurrentlyPublic()).thenReturn(false);
 
@@ -1275,7 +1281,7 @@ class PublicationSampleServiceTest {
     void findPublicationsInPublicCollection_shouldThrowAccessDeniedException_whenPolicyDenied() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindPublicationsInPublicCollection(user)).thenReturn(false);
 
         // Act & Assert
         assertThrows(AccessDeniedException.class, () ->
@@ -1286,7 +1292,7 @@ class PublicationSampleServiceTest {
     void findPublicationsInPublicCollection_shouldThrowInstanceNotFoundException_whenCollectionNotFound() {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(true);
+        when(policy.canFindPublicationsInPublicCollection(user)).thenReturn(true);
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -1352,15 +1358,12 @@ class PublicationSampleServiceTest {
 
     @Test
     void canFindAvailableInLibrary_shouldReturnTrue_whenPolicyAllows() {
-        // Arrange
+        Library library = mock(Library.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
+        when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
 
-        // Act
-        boolean result = service.canFindAvailableInLibrary(userId);
-
-        // Assert
-        assertTrue(result);
+        assertTrue(service.canFindAvailableInLibrary(userId));
     }
 
     @Test
@@ -1419,6 +1422,7 @@ class PublicationSampleServiceTest {
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindAvailableForCollection(user)).thenReturn(false);
         when(collectionOfPublicationsRepository.findById(collectionId)).thenReturn(Optional.of(collection));
+        when(collection.getOwnerId()).thenReturn(userId);
 
         // Act
         boolean result = service.canFindAvailableForCollection(userId, collectionId);
@@ -1483,15 +1487,12 @@ class PublicationSampleServiceTest {
 
     @Test
     void canAddPublicationToLibrary_shouldReturnTrue_whenPolicyAllows() {
-        // Arrange
+        Library library = mock(Library.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
+        when(libraryRepository.findByUserId(userId)).thenReturn(Optional.of(library));
 
-        // Act
-        boolean result = service.canAddPublicationToLibrary(userId);
-
-        // Assert
-        assertTrue(result);
+        assertTrue(service.canAddPublicationToLibrary(userId));
     }
 
     @Test
@@ -1529,15 +1530,12 @@ class PublicationSampleServiceTest {
 
     @Test
     void canAssignPublicationToCollection_shouldReturnTrue_whenPolicyAllows() {
-        // Arrange
+        CollectionOfPublications collection = mock(CollectionOfPublications.class);
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canAssignPublicationToCollection(user)).thenReturn(true);
+        when(collectionOfPublicationsRepository.findAllByOwnerId(userId)).thenReturn(List.of(collection));
 
-        // Act
-        boolean result = service.canAssignPublicationToCollection(userId);
-
-        // Assert
-        assertTrue(result);
+        assertTrue(service.canAssignPublicationToCollection(userId));
     }
 
     @Test
