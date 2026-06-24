@@ -1,0 +1,206 @@
+@startuml
+autonumber
+hide footbox
+title To put for sale a publication in my library in a direct sale (Full Diagram)
+
+actor User
+
+participant ":UI" as UI
+participant ":ToPutForSaleAPublication\nInDirectSaleController" as Ctrl
+participant ":PublicationSample\nService" as PubService
+participant ":IUser\nRepository" as UserRepo
+participant ":PublicationSample\nAuthorizationPolicy" as Policy
+participant ":ILibrary\nRepository" as LibRepo
+participant ":IPublicationSample\nRepository" as PubRepo
+participant ":US015PublicationSample\nMapper" as PSMapper
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":IAuthor\nRepository" as AuthorRepo
+participant ":IEdition\nRepository" as EditionRepo
+participant "pubDTO:\nUS015PublicationSampleDTO" as PSDTO
+participant "dtosList:\nList<US015PublicationSampleDTO>" as DTOsList
+participant ":Listing\nService" as LServ
+participant ":Listing\nAuthorizationPolicy" as ListPolicy
+participant ":IListing\nRepository" as LRepo
+participant ":Listing\nFactory" as LFactory
+participant "listing:\nListing" as listing
+
+' ==========================================
+' 1 — Find publications available for sale
+' ==========================================
+
+User -> UI : I want to put for sale\na publication in a direct sale
+activate UI
+
+UI -> Ctrl : findLibraryPublicationsAvailableForSale(userId)
+activate Ctrl
+
+Ctrl -> PubService : findByLibraryIdAndPublicationStatusNotIn(userId)
+activate PubService
+
+PubService -> UserRepo : findByID(userId)
+activate UserRepo
+UserRepo ->o] : QUERY users BY id={userId}
+UserRepo <--o] : data
+UserRepo --> PubService : user: Optional<User>
+deactivate UserRepo
+
+alt user not found
+    PubService --> Ctrl : EntityNotFoundException
+end
+
+PubService -> Policy : canFindByLibraryIdAndPublicationStatusNotIn(user)
+activate Policy
+Policy --> PubService : boolean
+deactivate Policy
+
+alt not allowed
+    PubService --> Ctrl : AccessDeniedException
+end
+
+PubService -> LibRepo : findByUserId(userId)
+activate LibRepo
+LibRepo ->o] : QUERY libraries BY id={userId}
+LibRepo <--o] : data
+LibRepo --> PubService : libraryId
+deactivate LibRepo
+
+alt library not found
+    PubService --> Ctrl : EntityNotFoundException
+end
+
+PubService -> PubRepo : findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded)
+activate PubRepo
+PubRepo ->o] : persist query
+PubRepo <--o] : data
+PubRepo --> PubService : publicationSamplesAvailable
+deactivate PubRepo
+
+PubService --> Ctrl : availablePubSamples
+deactivate PubService
+
+Ctrl -> PSMapper : toDTOs(availablePubSamples)
+activate PSMapper
+PSMapper -->> DTOsList ** : <<create>>
+
+loop for each pub in availablePubSamples
+    PSMapper -> BDRepo : findById(pub.getBibliographicalDataID())
+    activate BDRepo
+    BDRepo ->o] : persist query
+    BDRepo <--o] : data
+    BDRepo --> PSMapper : bd
+    deactivate BDRepo
+
+    alt bd not found
+        PSMapper --> Ctrl : InstanceNotFoundException
+    end
+
+    PSMapper -> EditionRepo : findById(pub.getEditionID())
+    activate EditionRepo
+    EditionRepo ->o] : persist query
+    EditionRepo <--o] : data
+    EditionRepo --> PSMapper : edition
+    deactivate EditionRepo
+
+    alt edition not found
+        PSMapper --> Ctrl : InstanceNotFoundException
+    end
+
+    loop for each authorId in bd.getAuthors()
+        PSMapper -> AuthorRepo : findById(authorId)
+        activate AuthorRepo
+        AuthorRepo ->o] : persist query
+        AuthorRepo <--o] : data
+        AuthorRepo --> PSMapper : author
+        deactivate AuthorRepo
+
+        alt author not found
+            PSMapper --> Ctrl : InstanceNotFoundException
+        end
+
+        PSMapper -> PSMapper : authorsName.add(author.getName())
+    end
+
+    PSMapper -> PSMapper : title = bd.getTitle()
+    PSMapper -> PSMapper : pubType = edition.getMediaFormat()
+    PSMapper -> PSMapper : code = edition.getCode().toString()
+
+    PSMapper -->> PSDTO ** : <<create>>(title, authorsName, code, pubType)
+    PSMapper -> DTOsList : add(pubDTO)
+end
+
+PSMapper --> Ctrl : availablePubSampleDTOs
+deactivate PSMapper
+
+Ctrl --> UI : availablePubSampleDTOs
+deactivate Ctrl
+
+UI --> User : Which publication(s)?\nChoose from the list!
+deactivate UI
+
+' ==========================================
+' 2 — Create direct sale listing
+' ==========================================
+
+User -> UI : selectedPublication(s)
+activate UI
+UI --> User : Specify title, price,\nshort description and pictures
+deactivate UI
+
+User -> UI : listingTitle, pubSampleIds,\nprice, shortDescription, pictures
+activate UI
+
+UI -> Ctrl : createDirectSaleListing(listingTitle, pubSampleIds,\nprice, shortDescription, sellerId, pictures)
+activate Ctrl
+
+Ctrl -> LServ : createAndSave(listingTitle, pubSampleIds,\nSaleType.DIRECT_SALE, price, shortDescription, sellerId, pictures)
+activate LServ
+
+LServ -> UserRepo : findByID(userId)
+activate UserRepo
+UserRepo ->o] : QUERY users by id={userId}
+UserRepo <--o] : data
+UserRepo --> LServ : Optional<User>
+deactivate UserRepo
+
+alt user not found
+    LServ --> Ctrl : EntityNotFoundException
+end
+
+LServ -> ListPolicy : canCreateListing(user)
+activate ListPolicy
+ListPolicy --> LServ : boolean
+deactivate ListPolicy
+
+alt not allowed
+    LServ --> Ctrl : AccessDeniedException
+end
+
+LServ -> LServ : verifyPublicationsOwner(pubSampleIds, userId)
+
+alt publications not owned by user
+    LServ --> Ctrl : AccessDeniedException
+end
+
+LServ -> LFactory : create(listingTitle, pubSampleIds, saleType,\nprice, shortDescription, sellerId, pictures)
+activate LFactory
+LFactory -->> listing ** : <<create>>
+LFactory --> LServ : listing
+deactivate LFactory
+
+LServ -> LRepo : save(listing)
+activate LRepo
+LRepo ->o] : persist(listing)
+LRepo <--o] : persistedListing
+LRepo --> LServ : persistedListing
+deactivate LRepo
+
+LServ --> Ctrl : listing
+deactivate LServ
+
+Ctrl --> UI : true
+deactivate Ctrl
+
+UI --> User : Publication(s) put for direct\nsale with success
+deactivate UI
+
+@enduml
