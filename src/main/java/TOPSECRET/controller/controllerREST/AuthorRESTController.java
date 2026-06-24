@@ -23,7 +23,9 @@ import jakarta.validation.Valid;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -34,10 +36,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * <p>Exposes endpoints for creating and querying authors, and coordinates the
  * interaction between DTOs, domain objects, application services, and HATEOAS links.</p>
  *
- * <p>Endpoints are grouped into two categories:</p>
+ * <p>Endpoints are grouped into three categories:</p>
  * <ul>
  *   <li><b>Public</b> — retrieval endpoints; no authentication required.</li>
  *   <li><b>Private</b> — creation endpoints; require a valid authenticated user.</li>
+ *   <li><b>OPTIONS</b> — discoverability endpoints; conditionally reflect the requesting user's permitted methods.</li>
  * </ul>
  */
 @RestController
@@ -174,36 +177,45 @@ public class AuthorRESTController {
     // =========================================================================
 
     /**
-     * Handles OPTIONS requests for the author collection endpoint ({@code /authors}).
+     * Returns the HTTP methods allowed on the authors root resource for the given user.
      *
-     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
-     * enabling CORS preflight requests and API discoverability.</p>
+     * <p>Always includes {@code GET} and {@code OPTIONS}. {@code POST} is included only if the
+     * requesting user is authorized to create authors.</p>
      *
-     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, POST, OPTIONS}
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         or HTTP 400 if the user ID is invalid
      */
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsRoot() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.POST,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsRoot(@RequestParam String userId) {
+        try {
+            UserId id = AuthorMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+            if (service.canCreateAuthor(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**
-     * Handles OPTIONS requests for the author detail endpoint ({@code /authors/{authorId}}).
+     * Returns the HTTP methods allowed on the {@code /{authorId}} resource.
      *
-     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
-     * enabling CORS preflight requests and API discoverability.</p>
+     * <p>This endpoint is public. {@code GET} and {@code OPTIONS} are always allowed.</p>
      *
-     * @param authorId the unique identifier of the author; used for URL matching
-     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS}
+     * @param authorId the unique identifier of the author
+     * @return HTTP 200 with an {@code Allow} header containing {@code GET} and {@code OPTIONS}
      */
     @RequestMapping(value = "/{authorId}", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> optionsById(@PathVariable String authorId) {
         return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
+                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
                 .build();
     }
 
@@ -214,6 +226,8 @@ public class AuthorRESTController {
     /**
      * Builds an {@link AuthorDTO} for a public endpoint, enriching it with
      * country information and public HATEOAS links only.
+     *
+     * <p>No user identity is required. Only public links and a self-link are attached.</p>
      *
      * @param author the author to convert; must not be {@code null}
      * @return the populated {@link AuthorDTO} with public links attached

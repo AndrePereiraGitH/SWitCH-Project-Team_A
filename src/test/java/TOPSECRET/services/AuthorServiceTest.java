@@ -39,6 +39,7 @@ import static org.mockito.Mockito.*;
  *   <li>User not found during author creation</li>
  *   <li>Retrieval of all authors</li>
  *   <li>Retrieval of a single author by identifier</li>
+ *   <li>Authorization check for author creation without performing it</li>
  * </ul>
  *
  * <p>All dependencies are mocked using Mockito, isolating the service
@@ -288,5 +289,54 @@ class AuthorServiceTest {
         // ACT + ASSERT
         assertThrows(NullPointerException.class,
                 () -> authorService.findById(null));
+    }
+    // =========================================================================
+// canCreateAuthor
+// =========================================================================
+
+    @Test
+    void canCreateAuthor_shouldReturnTrue_whenUserIsAuthorized() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(true);
+
+        // ACT
+        boolean result = authorService.canCreateAuthor(userId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreateAuthor_shouldReturnFalse_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateAuthor(user)).thenReturn(false);
+
+        // ACT
+        boolean result = authorService.canCreateAuthor(userId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreateAuthor_shouldThrowIllegalArgument_whenUserNotFound() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> authorService.canCreateAuthor(userId));
     }
 }
