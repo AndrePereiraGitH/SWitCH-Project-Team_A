@@ -5,6 +5,26 @@ const LinksContext = createContext(undefined);
 const BASE_URL = "http://localhost:8081";
 const CURRENT_USER_ID = "user-001";
 
+function expandTemplate(template, params = {}) {
+    let url = template;
+
+    Object.entries(params).forEach(([key, value]) => {
+        url = url.replace(`{${key}}`, encodeURIComponent(value));
+    });
+
+    url = url.replace(/\{\?([^}]+)\}/g, (_, keys) => {
+        const query = keys
+            .split(",")
+            .filter((key) => params[key] !== undefined && params[key] !== null)
+            .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+            .join("&");
+
+        return query ? `?${query}` : "";
+    });
+
+    return url;
+}
+
 export function LinksProvider({ children }) {
     const [links, setLinks] = useState({});
     const [loading, setLoading] = useState(true);
@@ -24,11 +44,46 @@ export function LinksProvider({ children }) {
                 setLoading(false);
             }
         };
+
         fetchRoot();
     }, []);
 
+    function resolve(rel, matcher) {
+        const link = links?.[rel];
+
+        if (!link) {
+            throw new Error(`Missing link rel: ${rel}`);
+        }
+
+        if (Array.isArray(link)) {
+            const matched = matcher
+                ? link.find((candidate) => matcher(candidate.href))
+                : link[0];
+
+            if (!matched?.href) {
+                throw new Error(`Missing matching link for rel: ${rel}`);
+            }
+
+            return matched.href;
+        }
+
+        if (!link.href) {
+            throw new Error(`Missing href for rel: ${rel}`);
+        }
+
+        return link.href;
+    }
+
     return (
-        <LinksContext.Provider value={{ links, loading, error }}>
+        <LinksContext.Provider
+            value={{
+                links,
+                loading,
+                error,
+                resolve,
+                expandTemplate,
+            }}
+        >
             {children}
         </LinksContext.Provider>
     );
@@ -36,6 +91,10 @@ export function LinksProvider({ children }) {
 
 export function useLinks() {
     const ctx = useContext(LinksContext);
-    if (!ctx) throw new Error("useLinks must be used within LinksProvider");
+
+    if (!ctx) {
+        throw new Error("useLinks must be used within LinksProvider");
+    }
+
     return ctx;
 }
