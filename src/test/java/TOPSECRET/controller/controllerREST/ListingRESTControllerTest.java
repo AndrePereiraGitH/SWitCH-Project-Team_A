@@ -14,6 +14,7 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingDetailsDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -1538,59 +1539,76 @@ class ListingRESTControllerTest {
     void optionsListing_shouldReturnOkStatus() throws InstanceNotFoundException {
         // Arrange
         String requesterId = "1";
-        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
-                .thenReturn(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
+        UserId requesterIdVO = mock(UserId.class);
 
-        // Act
-        ResponseEntity<?> response = controller.optionsRoot(requesterId);
+        when(listingService.canCreate(requesterIdVO)).thenReturn(true);
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
     }
 
     @Test
-    void optionsRoot_shouldReturnAllowHeaderWithSupportedMethods() throws InstanceNotFoundException {
+    void optionsRoot_shouldReturnAllowHeaderWithPost_whenUserCanCreate() throws InstanceNotFoundException {
         // Arrange
         String requesterId = "1";
-        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
-                .thenReturn(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS));
+        UserId requesterIdVO = mock(UserId.class);
 
-        // Act
-        ResponseEntity<?> response = controller.optionsRoot(requesterId);
+        when(listingService.canCreate(requesterIdVO)).thenReturn(true);
 
-        // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
     }
 
     @Test
     void optionsRoot_shouldReturnAllowHeaderWithoutPost_whenUserCannotCreate() throws InstanceNotFoundException {
         // Arrange
         String requesterId = "1";
-        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
-                .thenReturn(Set.of(HttpMethod.GET, HttpMethod.OPTIONS));
+        UserId requesterIdVO = mock(UserId.class);
 
-        // Act
-        ResponseEntity<?> response = controller.optionsRoot(requesterId);
+        when(listingService.canCreate(requesterIdVO)).thenReturn(false);
 
-        // Assert
-        assertEquals(
-                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
-                response.getHeaders().getAllow()
-        );
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
     }
 
     @Test
     void optionsRoot_shouldReturnNotFound_whenRequesterDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String requesterId = "999";
-        when(listingService.getAllowedMethodsForRoot(any(UserId.class)))
-                .thenThrow(new InstanceNotFoundException(requesterId));
+        UserId requesterIdVO = mock(UserId.class);
 
-        // Act
-        ResponseEntity<?> response = controller.optionsRoot(requesterId);
+        when(listingService.canCreate(requesterIdVO)).thenThrow(new InstanceNotFoundException(requesterId));
 
-        // Assert
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
     }
 
     @Test
@@ -1603,96 +1621,6 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void optionsById_shouldReturnOkStatus() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsById();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void optionsById_shouldReturnAllowHeaderWithSupportedMethods() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsById();
-
-        // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
-    }
-
-    @Test
-    void optionsByPublication_shouldReturnOkStatus() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsByPublication();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void optionsByPublication_shouldReturnAllowHeaderWithSupportedMethods() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsByPublication();
-
-        // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
-    }
-
-    @Test
-    void optionsDirectSaleByGenre_shouldReturnOkStatus() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsDirectSaleByGenre();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void optionsDirectSaleByGenre_shouldReturnAllowHeaderWithSupportedMethods() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsDirectSaleByGenre();
-
-        // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
-    }
-
-    @Test
-    void optionsByGenre_shouldReturnOkStatus() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsByGenre();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void optionsByGenre_shouldReturnAllowHeaderWithSupportedMethods() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsByGenre();
-
-        // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
-    }
-
-    @Test
-    void optionsDirectSaleByPublisher_shouldReturnOkStatus() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsDirectSaleByPublisher();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void optionsDirectSaleByPublisher_shouldReturnAllowHeaderWithSupportedMethods() {
-        // Act
-        ResponseEntity<Void> response = controller.optionsDirectSaleByPublisher();
-
-        // Assert
-        assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
-    }
-
-    @Test
     void optionsListingSold_shouldReturnOkStatus_whenBuyerCanMarkAsSold() throws InstanceNotFoundException {
         // Arrange
         String listingId = "listing-1";
@@ -1700,8 +1628,7 @@ class ListingRESTControllerTest {
         ListingId listingIdVO = mock(ListingId.class);
         UserId userIdVO = mock(UserId.class);
 
-        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
-                .thenReturn(Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS));
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO)).thenReturn(true);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
             mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
@@ -1723,8 +1650,7 @@ class ListingRESTControllerTest {
         ListingId listingIdVO = mock(ListingId.class);
         UserId userIdVO = mock(UserId.class);
 
-        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
-                .thenReturn(Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS));
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO)).thenReturn(true);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
             mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
@@ -1739,16 +1665,36 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void optionsListingSold_shouldReturnBadRequest_whenListingIdIsInvalid() {
+    void optionsListingSold_shouldReturnAllowHeaderWithoutPatch_whenBuyerCannotMarkAsSold() throws InstanceNotFoundException {
         // Arrange
-        String listingId = "invalid";
+        String listingId = "listing-1";
         String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
         UserId userIdVO = mock(UserId.class);
 
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO)).thenReturn(false);
+
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
             mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
-            mockedMapper.when(() -> ListingMapper.toListingId(listingId))
-                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnBadRequest_whenListingIdIsInvalid() {
+        // Arrange
+        String listingId = "";
+        String userId = "user-2";
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(mock(UserId.class));
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenThrow(new IllegalArgumentException());
 
             // Act
             ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
@@ -1766,7 +1712,7 @@ class ListingRESTControllerTest {
         ListingId listingIdVO = mock(ListingId.class);
         UserId userIdVO = mock(UserId.class);
 
-        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO))
                 .thenThrow(new InstanceNotFoundException());
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
@@ -1789,7 +1735,7 @@ class ListingRESTControllerTest {
         ListingId listingIdVO = mock(ListingId.class);
         UserId userIdVO = mock(UserId.class);
 
-        when(listingService.getAllowedMethodsForMarkListingAsSold(userIdVO, listingIdVO))
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO))
                 .thenThrow(new AccessDeniedException("denied"));
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {

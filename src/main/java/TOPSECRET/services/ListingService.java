@@ -16,16 +16,13 @@ import TOPSECRET.domain.User.User;
 import TOPSECRET.domain.ValueObjects.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Application service responsible for {@link Listing} use cases.
@@ -94,15 +91,6 @@ public class ListingService {
         return listingRepository.save(createdListing);
     }
 
-    public Set<HttpMethod> getAllowedMethodsForRoot(UserId userId) throws InstanceNotFoundException {
-
-        Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS, HttpMethod.GET));
-
-        if (canCreate(userId)) {
-            allowed.add(HttpMethod.POST);
-        }
-        return allowed;
-    }
 
     /**
      * Verifies that all publication samples belong to the given seller.
@@ -367,16 +355,6 @@ public class ListingService {
         return listingRepository.save(listing);
     }
 
-    public Set<HttpMethod> getAllowedMethodsForMarkListingAsSold(UserId userId, ListingId listingId) throws InstanceNotFoundException {
-
-        Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS));
-
-        if (canMarkListingAsSold(userId, listingId)) {
-            allowed.add(HttpMethod.PATCH);
-        }
-
-        return allowed;
-    }
 
     public boolean canMarkListingAsSold(UserId buyerId, ListingId listingId) throws InstanceNotFoundException {
         User user = userRepository.findByID(buyerId).orElseThrow(()-> new InstanceNotFoundException("User not found " + buyerId.getUserId()));

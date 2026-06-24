@@ -154,7 +154,11 @@ public class ListingRESTController {
         try {
             UserId sellerId = UserMapper.toUserId(requesterId);
 
-            Set<HttpMethod> allowed= listingService.getAllowedMethodsForRoot(sellerId);
+            Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS, HttpMethod.GET));
+
+            if (listingService.canCreate(sellerId)) {
+                allowed.add(HttpMethod.POST);
+            }
 
             return ResponseEntity.ok().allow(allowed.toArray(new HttpMethod[0])).build();
         } catch (NullPointerException e) {
@@ -202,16 +206,6 @@ public class ListingRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    /**
-     * Returns the HTTP methods supported by this endpoint.
-     *
-     * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
-     */
-    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsById() {
-        return ResponseEntity.ok().allow(HttpMethod.GET, HttpMethod.OPTIONS).build();
     }
 
     /**
@@ -294,17 +288,6 @@ public class ListingRESTController {
     }
 
     /**
-     * Returns the HTTP methods supported by this endpoint.
-     *
-     * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
-     */
-    @RequestMapping(value = "/by-publication/{bibliographicalDataId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsByPublication() {
-        return ResponseEntity.ok().allow(HttpMethod.GET, HttpMethod.OPTIONS).build();
-    }
-
-
-    /**
      * Retrieves all direct-sale listings associated with a given genre.
      *
      * <p>This endpoint finds bibliographical data for the genre, retrieves the
@@ -340,17 +323,6 @@ public class ListingRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-     * Returns the HTTP methods supported by this endpoint.
-     *
-     * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
-     */
-    @RequestMapping(value = "/direct-sale/genre/{genreId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsDirectSaleByGenre() {
-        return ResponseEntity.ok().allow(HttpMethod.GET, HttpMethod.OPTIONS).build();
-    }
-
 
     /**
      * Retrieves all listings (direct sale and auction) associated with publications
@@ -399,16 +371,6 @@ public class ListingRESTController {
         }
     }
 
-    /**
-     * Returns the HTTP methods supported by this endpoint.
-     *
-     * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
-     */
-    @RequestMapping(value = "/genre/{genreId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsByGenre() {
-        return ResponseEntity.ok().allow(HttpMethod.GET, HttpMethod.OPTIONS).build();
-    }
-
 
     /**
      * Retrieves all direct-sale listings associated with a given publisher.
@@ -450,17 +412,6 @@ public class ListingRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-     * Returns the HTTP methods supported by this endpoint.
-     *
-     * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
-     */
-    @RequestMapping(value = "/direct-sale/publisher/{publisherId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsDirectSaleByPublisher() {
-        return ResponseEntity.ok().allow(HttpMethod.GET, HttpMethod.OPTIONS).build();
-    }
-
 
     // =========================================================================
     // UPDATE / PATCH ENDPOINTS
@@ -526,7 +477,11 @@ public class ListingRESTController {
             UserId buyerId = ListingMapper.toUserId(userId);
             ListingId listId = ListingMapper.toListingId(listingId);
 
-            Set<HttpMethod> allowed = listingService.getAllowedMethodsForMarkListingAsSold(buyerId, listId);
+            Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS));
+
+            if (listingService.canMarkListingAsSold(buyerId, listId)) {
+                allowed.add(HttpMethod.PATCH);
+            }
 
             return ResponseEntity.ok().allow(allowed.toArray(new HttpMethod[0])).build();
 
