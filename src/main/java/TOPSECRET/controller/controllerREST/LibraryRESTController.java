@@ -21,12 +21,22 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.http.HttpMethod;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
+/**
+ * REST controller for managing Library resources.
+ *
+ * <p>Exposes endpoints for creating, retrieving libraries,
+ * and discovering available HTTP methods via OPTIONS.</p>
+ */
 @RestController
 @Tag(name = "Libraries", description = "Library management endpoints")
 @RequestMapping("/libraries")
@@ -41,20 +51,77 @@ public class LibraryRESTController {
         this.libService = libService;
     }
 
+
+    /**
+     * Returns the available HTTP methods for the {@code /libraries} endpoint
+     * based on the permissions of the requesting user.
+     *
+     * <p>This endpoint supports HTTP method discovery, allowing clients to determine
+     * which operations are permitted on the {@code /libraries} collection resource
+     * before attempting them. The set of allowed methods is dynamically computed
+     * based on the requesting user's role and authorization level.</p>
+     *
+     * <p>The following methods may be included in the {@code Allow} response header:</p>
+     * <ul>
+     *   <li>{@code OPTIONS} — always included.</li>
+     *   <li>{@code GET} — included if the requesting user has the {@code ADMIN} role,
+     *       as retrieving all libraries is restricted to administrators.</li>
+     *   <li>{@code POST} — included if the requesting user has the {@code NORMAL_USER} role,
+     *       as only regular users are permitted to create a library.</li>
+     * </ul>
+     *
+     * @param requestingUserId the identifier of the user performing the request;
+     *                         must not be blank
+     * @return 200 OK with a dynamically computed {@code Allow} header, or:
+     * <ul>
+     *   <li>400 Bad Request – if the user ID format is invalid</li>
+     *   <li>404 Not Found – if no user exists with the given ID</li>
+     *   <li>500 Internal Server Error – for unexpected failures</li>
+     * </ul>
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsLibraries( @NotBlank @RequestParam String requestingUserId) {
+        try {
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            Set<HttpMethod> allowed = new HashSet<>();
+            allowed.add(HttpMethod.OPTIONS);
+
+            if (libService.canGetAll(requesterId)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            if (libService.canCreate(requesterId)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok()
+                    .allow(allowed.toArray(new HttpMethod[0]))
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     /**
      * Creates and registers a new Library in the system.
      *
-     * <p>This endpoint creates a new library associated with the given user.</p>
+     * <p>Creates a library associated with the given user and returns it
+     * enriched with HATEOAS links for the owner and a self-link.</p>
      *
-     * @param requestLibraryDTO the validated request body containing the library creation data.
-     * @param userId            the identifier of the user creating the library. Must not be blank.
-     * @return a {@link ResponseEntity} containing the created {@link ResponseLibraryDTO}
-     * and HTTP 201 status if successful, or an error status:
+     * @param requestLibraryDTO validated request body containing the library name
+     * @param userId            identifier of the user creating the library
+     * @return 201 Created with the created library, or:
      * <ul>
-     *      * <li>404 Not Found – if the user does not exist</li>
-     *      * <li>409 Conflict – if a library already exists for the given user</li>  // também faltava este!
-     *      * <li>400 Bad Request – if input validation fails or arguments are invalid</li>
-     *      * <li>403 Forbidden – if the user is not allowed to create a library</li>
+     *   <li>400 Bad Request – invalid input or arguments</li>
+     *   <li>403 Forbidden – user is not allowed to create a library</li>
+     *   <li>404 Not Found – user does not exist</li>
+     *   <li>409 Conflict – library already exists for this user</li>
      * </ul>
      */
     @PostMapping
@@ -72,7 +139,7 @@ public class LibraryRESTController {
             response.add(libLinkProvider.getOwnerLinks(id));
 
             response.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibrary(library.id().toString()))
+                    .getLibrary(library.id().toString(), userId))
                     .withSelfRel());
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -95,31 +162,35 @@ public class LibraryRESTController {
     }
 
     /**
-     * Retrieves all libraries registered in the system.
+     * Returns all libraries registered in the system.
      *
-     * <p>Each returned library is enriched with a HATEOAS self-link pointing to its
-     * individual resource endpoint.</p>
+     * <p>Access is restricted to administrators only. The requesting user must have
+     * the {@code ADMIN} role to perform this operation.</p>
      *
-     * @return a {@link ResponseEntity} containing a list of {@link ResponseLibraryDTO}
-     * and HTTP 200 OK when libraries exist, or:
+     * <p>Each library is enriched with a HATEOAS self-link.</p>
+     *
+     * @param requestingUserId the identifier of the user performing the request; must not be blank
+     * @return 200 OK with list of libraries, or:
      * <ul>
-     *     <li>204 No Content – when no libraries are found</li>
-     *     <li>400 Bad Request – for invalid request parameters (rare)</li>
-     *     <li>500 Internal Server Error – for unexpected failures</li>
+     *   <li>400 Bad Request – invalid request parameters</li>
+     *   <li>403 Forbidden – requesting user does not have admin privileges</li>
+     *   <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      */
     @GetMapping
-    public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries() {
-        // TODO: add libLinkProvider.getAdminLinks(userId) when we start Spring Security
+    public ResponseEntity<List<ResponseLibraryDTO>> getAllLibraries(
+            @NotBlank @RequestParam String requestingUserId) {
 
         try {
-            List<Library> libraries = libService.findAll();
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            List<Library> libraries = libService.findAll(requesterId);
 
             List<ResponseLibraryDTO> response = libraries.stream()
                     .map(library -> {
                         ResponseLibraryDTO dto = LibraryMapper.toDTO(library);
                         dto.add(linkTo(methodOn(LibraryRESTController.class)
-                                .getLibrary(library.id().toString()))
+                                .getLibrary(library.id().toString(), requestingUserId))
                                 .withSelfRel());
                         return dto;
                     })
@@ -127,6 +198,8 @@ public class LibraryRESTController {
 
             return ResponseEntity.ok(response);
 
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -135,44 +208,161 @@ public class LibraryRESTController {
     }
 
     /**
-     * Retrieves a single Library by its unique identifier.
+     * Returns the available HTTP methods for the {@code /libraries/{libraryId}} endpoint
+     * based on the permissions of the requesting user.
      *
-     * <p>The returned resource includes HATEOAS links:</p>
+     * <p>This endpoint supports HTTP method discovery, allowing clients to determine
+     * which operations are permitted on a specific library resource before attempting
+     * them. Access to this endpoint requires that the requesting user is either the
+     * owner of the library or holds the {@code ADMIN} role.</p>
+     *
+     * <p>The following methods may be included in the {@code Allow} response header:</p>
      * <ul>
-     *     <li>self link</li>
+     *   <li>{@code OPTIONS} — always included.</li>
+     *   <li>{@code GET} — included if the requesting user is the owner of the library
+     *       or has the {@code ADMIN} role.</li>
      * </ul>
      *
-     * @param libraryId the unique identifier of the library to retrieve.
-     * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO} if found,
-     * or an error status:
+     * <p>If the requesting user does not have permission to access the specified library,
+     * a {@code 403 Forbidden} response is returned rather than disclosing the available
+     * methods.</p>
+     *
+     * @param libraryId        the unique identifier of the library resource being queried;
+     *                         must not be blank
+     * @param requestingUserId the identifier of the user performing the request;
+     *                         must not be blank
+     * @return 200 OK with a dynamically computed {@code Allow} header, or:
      * <ul>
-     *     <li>200 OK – when the library is found</li>
-     *     <li>404 Not Found – when no library exists for the given ID</li>
-     *     <li>400 Bad Request – if the ID format is invalid</li>
-     *     <li>500 Internal Server Error – for unexpected failures</li>
+     *   <li>400 Bad Request – if the library ID or user ID format is invalid</li>
+     *   <li>403 Forbidden – if the requesting user does not have permission to access
+     *       the specified library</li>
+     *   <li>404 Not Found – if the library or the requesting user does not exist</li>
+     *   <li>500 Internal Server Error – for unexpected failures</li>
+     * </ul>
+     */
+    @RequestMapping(value = "/{libraryId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsLibraryById(
+            @PathVariable String libraryId,
+            @NotBlank @RequestParam String requestingUserId) {
+        try {
+            LibraryId libId = LibraryMapper.toLibraryId(libraryId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            Library library = libService.findById(libId, requesterId);
+
+            return ResponseEntity.ok()
+                    .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                    .build();
+
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    /**
+     * Retrieves a single Library by its unique identifier.
+     *
+     * <p>The requesting user must be the owner of the library or an administrator.</p>
+     *
+     * @param libraryId        the unique identifier of the library to retrieve
+     * @param requestingUserId the identifier of the user performing the request
+     * @return 200 OK with the library, or:
+     * <ul>
+     *   <li>400 Bad Request – invalid ID format</li>
+     *   <li>403 Forbidden – requesting user does not have permission</li>
+     *   <li>404 Not Found – library does not exist</li>
+     *   <li>500 Internal Server Error – unexpected failure</li>
      * </ul>
      */
     @GetMapping("/{libraryId}")
     public ResponseEntity<ResponseLibraryDTO> getLibrary(
-            @PathVariable String libraryId) {
-
+            @PathVariable String libraryId,
+            @NotBlank @RequestParam String requestingUserId) {
 
         try {
             LibraryId libId = LibraryMapper.toLibraryId(libraryId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
 
-            Library library = libService.findById(libId);
+            Library library = libService.findById(libId, requesterId);
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibrary(libId.toString()))
+                    .getLibrary(libId.toString(), requestingUserId))
                     .withSelfRel());
 
             return ResponseEntity.ok(result);
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Returns the available HTTP methods for the {@code /libraries/by-user/{userId}} endpoint
+     * based on the permissions of the requesting user.
+     *
+     * <p>This endpoint supports HTTP method discovery, allowing clients to determine
+     * which operations are permitted when retrieving a library by its owner's identifier
+     * before attempting them. Access to this endpoint requires that the requesting user
+     * is either the owner identified by {@code userId} or holds the {@code ADMIN} role.</p>
+     *
+     * <p>The following methods may be included in the {@code Allow} response header:</p>
+     * <ul>
+     *   <li>{@code OPTIONS} — always included.</li>
+     *   <li>{@code GET} — included if the requesting user is the owner of the library
+     *       or has the {@code ADMIN} role.</li>
+     * </ul>
+     *
+     * <p>If the requesting user does not have permission to access the library belonging
+     * to the specified user, a {@code 403 Forbidden} response is returned rather than
+     * disclosing the available methods.</p>
+     *
+     * @param userId           the unique identifier of the user who owns the target library;
+     *                         must not be blank
+     * @param requestingUserId the identifier of the user performing the request;
+     *                         must not be blank
+     * @return 200 OK with a dynamically computed {@code Allow} header, or:
+     * <ul>
+     *   <li>400 Bad Request – if the user ID format is invalid</li>
+     *   <li>403 Forbidden – if the requesting user does not have permission to access
+     *       the library belonging to the specified user</li>
+     *   <li>404 Not Found – if the requesting user does not exist</li>
+     *   <li>500 Internal Server Error – for unexpected failures</li>
+     * </ul>
+     */
+    @RequestMapping(value = "/by-user/{userId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsLibraryByUser(
+            @PathVariable String userId,
+            @NotBlank @RequestParam String requestingUserId) {
+        try {
+            UserId ownerId = UserMapper.toUserId(userId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
+
+            if (!libService.canGet(requesterId, ownerId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            return ResponseEntity.ok()
+                    .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -181,7 +371,8 @@ public class LibraryRESTController {
     /**
      * Retrieves the library associated with a specific user.
      *
-     * <p>This endpoint resolves a library using the owning user's identifier.</p>
+     * <p>This endpoint resolves a library using the owning user's identifier.
+     * The requesting user must be the owner of the library or an administrator.</p>
      *
      * <p>The returned resource includes HATEOAS links:</p>
      * <ul>
@@ -189,31 +380,35 @@ public class LibraryRESTController {
      *     <li>owner links – actions available to the library owner</li>
      * </ul>
      *
-     * @param userId the unique identifier of the user whose library is to be retrieved.
+     * @param userId             the unique identifier of the user whose library is to be retrieved
+     * @param requestingUserId   the identifier of the user performing the request
      * @return a {@link ResponseEntity} containing the {@link ResponseLibraryDTO} if found,
      * or an error status:
      * <ul>
      *     <li>200 OK – when the library is found</li>
-     *     <li>404 Not Found – when no library exists for the given user</li>
      *     <li>400 Bad Request – if the user ID format is invalid</li>
+     *     <li>403 Forbidden – if the requesting user does not have permission</li>
+     *     <li>404 Not Found – when no library exists for the given user</li>
      *     <li>500 Internal Server Error – for unexpected failures</li>
      * </ul>
      */
     @GetMapping("/by-user/{userId}")
-    public ResponseEntity<ResponseLibraryDTO> getLibraryByUserId(@PathVariable String userId) {
-
+    public ResponseEntity<ResponseLibraryDTO> getLibraryByUserId(
+            @PathVariable String userId,
+            @NotBlank @RequestParam String requestingUserId) {
 
         try {
             UserId ownerId = UserMapper.toUserId(userId);
+            UserId requesterId = UserMapper.toUserId(requestingUserId);
 
-            Library library = libService.findByUserId(ownerId);
+            Library library = libService.findByUserId(ownerId, requesterId);
 
             ResponseLibraryDTO result = LibraryMapper.toDTO(library);
 
             result.add(libLinkProvider.getOwnerLinks(ownerId));
 
             result.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibraryByUserId(userId))
+                    .getLibraryByUserId(userId, requestingUserId))
                     .withSelfRel());
 
             return ResponseEntity.ok(result);
@@ -221,13 +416,14 @@ public class LibraryRESTController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
         } catch (InstanceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-
     }
 }
