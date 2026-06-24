@@ -187,4 +187,46 @@ public class TransactionService {
 
         return transactionRepository.findAllByBuyerId(buyerId);
     }
+
+    /**
+     * Checks whether the user with the given ID is allowed to create a transaction.
+     *
+     * @param userId the identifier of the user; must not be {@code null}
+     * @return {@code true} if the user has permission to create a transaction
+     * @throws EntityNotFoundException if no user exists with the given identifier
+     */
+    public boolean canCreateTransaction(UserId userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+        return policy.canCreateTransaction(user);
+    }
+
+    /**
+     * Checks whether the user with the given ID is allowed to view a transaction.
+     *
+     * @param userId the identifier of the user; must not be {@code null}
+     * @return {@code true} if the user has permission to view transactions
+     * @throws EntityNotFoundException if no user exists with the given identifier
+     */
+    public boolean canViewTransaction(UserId userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+        return policy.canViewTransaction(user);
+    }
+
+    /**
+     * Checks whether the user with the given ID is allowed to view all transactions.
+     *
+     * @param userId the identifier of the user; must not be {@code null}
+     * @return {@code true} if the user has admin permission to view all transactions
+     * @throws EntityNotFoundException if no user exists with the given identifier
+     */
+    public boolean canViewAllTransactions(UserId userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+        return policy.canViewAllTransactions(user);
+    }
 }

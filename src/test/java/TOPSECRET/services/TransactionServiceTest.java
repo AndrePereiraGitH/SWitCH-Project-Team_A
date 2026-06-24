@@ -502,4 +502,158 @@ class TransactionServiceTest {
         assertThrows(NullPointerException.class,
                 () -> sut.findAllByBuyerId(buyerIdDouble, null));
     }
+
+    // =========================================================================
+// canCreateTransaction
+// =========================================================================
+
+    @Test
+    void canCreateTransaction_shouldReturnTrue_whenUserIsAuthorized() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policy.canCreateTransaction(userDouble)).thenReturn(true);
+
+        // ACT
+        boolean result = sut.canCreateTransaction(buyerIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreateTransaction_shouldReturnFalse_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policy.canCreateTransaction(userDouble)).thenReturn(false);
+
+        // ACT
+        boolean result = sut.canCreateTransaction(buyerIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreateTransaction_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(EntityNotFoundException.class,
+                () -> sut.canCreateTransaction(buyerIdDouble));
+    }
+
+    @Test
+    void canCreateTransaction_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.canCreateTransaction(null));
+    }
+
+// =========================================================================
+// canViewTransaction
+// =========================================================================
+
+    @Test
+    void canViewTransaction_shouldReturnTrue_whenUserIsAuthorized() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewTransaction(userDouble)).thenReturn(true);
+
+        // ACT
+        boolean result = sut.canViewTransaction(buyerIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewTransaction_shouldReturnFalse_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewTransaction(userDouble)).thenReturn(false);
+
+        // ACT
+        boolean result = sut.canViewTransaction(buyerIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canViewTransaction_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(EntityNotFoundException.class,
+                () -> sut.canViewTransaction(buyerIdDouble));
+    }
+
+    @Test
+    void canViewTransaction_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.canViewTransaction(null));
+    }
+
+// =========================================================================
+// canViewAllTransactions
+// =========================================================================
+
+    @Test
+    void canViewAllTransactions_shouldReturnTrue_whenUserIsAuthorized() {
+
+        // ARRANGE
+        UserId adminId = new UserId("admin-1");
+        when(userRepository.findByID(adminId)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewAllTransactions(userDouble)).thenReturn(true);
+
+        // ACT
+        boolean result = sut.canViewAllTransactions(adminId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewAllTransactions_shouldReturnFalse_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policy.canViewAllTransactions(userDouble)).thenReturn(false);
+
+        // ACT
+        boolean result = sut.canViewAllTransactions(buyerIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canViewAllTransactions_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(EntityNotFoundException.class,
+                () -> sut.canViewAllTransactions(buyerIdDouble));
+    }
+
+    @Test
+    void canViewAllTransactions_shouldThrowNullPointerException_whenUserIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.canViewAllTransactions(null));
+    }
 }
