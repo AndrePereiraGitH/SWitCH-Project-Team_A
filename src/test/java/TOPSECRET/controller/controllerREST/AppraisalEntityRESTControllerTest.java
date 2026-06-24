@@ -6,12 +6,14 @@ import TOPSECRET.domain.AppraisalEntity.AppraisalEntityFactory;
 import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.appraisalEntity.response.ResponseAppraisalEntityDTO;
 import TOPSECRET.dto.appraisalEntity.request.RequestAppraisalEntityDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.AppraisalEntityService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpMethod;
@@ -21,6 +23,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -461,41 +464,114 @@ class AppraisalEntityRESTControllerTest {
     }
 
     // OPTIONS
-
     @Test
     void optionsRoot_shouldReturnOkStatus() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsRoot();
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapperMock = mockStatic(UserMapper.class)) {
+            UserId id = mock(UserId.class);
+            userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(id);
+            when(service.canCreateAppraisalEntity(id)).thenReturn(true);
 
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+            // ACT
+            ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
     }
 
     @Test
     void optionsRoot_shouldAllowGet() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsRoot();
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapperMock = mockStatic(UserMapper.class)) {
+            UserId id = mock(UserId.class);
+            userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(id);
+            when(service.canCreateAppraisalEntity(id)).thenReturn(true);
 
-        // ASSERT
-        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
-    }
+            // ACT
+            ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
 
-    @Test
-    void optionsRoot_shouldAllowPost() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsRoot();
-
-        // ASSERT
-        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+            // ASSERT
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        }
     }
 
     @Test
     void optionsRoot_shouldAllowOptions() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsRoot();
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapperMock = mockStatic(UserMapper.class)) {
+            UserId id = mock(UserId.class);
+            userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(id);
+            when(service.canCreateAppraisalEntity(id)).thenReturn(true);
 
-        // ASSERT
-        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+            // ACT
+            ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+            // ASSERT
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldAllowPost_whenUserCanCreateAppraisalEntity() {
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapperMock = mockStatic(UserMapper.class)) {
+            UserId id = mock(UserId.class);
+            userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(id);
+            when(service.canCreateAppraisalEntity(id)).thenReturn(true);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+            // ASSERT
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldNotAllowPost_whenUserCannotCreateAppraisalEntity() {
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapperMock = mockStatic(UserMapper.class)) {
+            UserId id = mock(UserId.class);
+            userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(id);
+            when(service.canCreateAppraisalEntity(id)).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+            // ASSERT
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldReturnNotFound_whenUserNotFound() {
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapperMock = mockStatic(UserMapper.class)) {
+            UserId id = mock(UserId.class);
+            userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(id);
+            when(service.canCreateAppraisalEntity(id)).thenThrow(new NoSuchElementException("not found"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldReturnBadRequest_whenUserIdIsInvalid() {
+        // ARRANGE
+        try (MockedStatic<UserMapper> userMapperMock = mockStatic(UserMapper.class)) {
+            userMapperMock.when(() -> UserMapper.toUserId("invalid")).thenThrow(new IllegalArgumentException());
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsRoot("invalid");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
     }
 
     @Test

@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.security.access.AccessDeniedException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -145,20 +144,33 @@ public class AppraisalEntityRESTController {
     }
 
     /**
-     * Handles OPTIONS requests for the appraisal entity collection endpoint ({@code /appraisal-entities}).
+     * Returns the HTTP methods allowed on the appraisal entities root resource for the given user.
      *
-     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
-     * enabling CORS preflight requests and API discoverability.</p>
+     * <p>Always includes {@code GET} and {@code OPTIONS}. {@code POST} is included only if the
+     * requesting user is authorized to register a new AppraisalEntity.</p>
      *
-     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, POST, OPTIONS}
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         HTTP 404 if the user is not found, or HTTP 400 if the user ID is invalid
      */
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsRoot() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.POST,
-                        HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
+    public ResponseEntity<Void> optionsRoot(@RequestParam String userId) {
+        try {
+            UserId id = UserMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+            if (service.canCreateAppraisalEntity(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**
