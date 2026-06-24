@@ -10,13 +10,16 @@ import TOPSECRET.services.TransactionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -45,7 +48,7 @@ public class TransactionRESTController {
      */
     public TransactionRESTController(TransactionService transactionService,
                                      TransactionLinkProvider transactionLinkProvider) {
-        this.transactionService      = transactionService;
+        this.transactionService = transactionService;
         this.transactionLinkProvider = transactionLinkProvider;
     }
 
@@ -59,10 +62,10 @@ public class TransactionRESTController {
      * @param dto         the request body containing all transaction information
      * @param requesterId the identifier of the user making the request
      * @return {@code 201 CREATED} with the created transaction DTO,
-     *         {@code 403 FORBIDDEN} if the user does not have permission,
-     *         {@code 404 NOT FOUND} if the buyer does not exist,
-     *         {@code 400 BAD REQUEST} if the request contains invalid data,
-     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     * {@code 403 FORBIDDEN} if the user does not have permission,
+     * {@code 404 NOT FOUND} if the buyer does not exist,
+     * {@code 400 BAD REQUEST} if the request contains invalid data,
+     * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @PostMapping("")
     public ResponseEntity<TransactionResponseDTO> createTransaction(@RequestBody TransactionRequestDTO dto,
@@ -98,10 +101,10 @@ public class TransactionRESTController {
      * @param id          the unique identifier of the transaction
      * @param requesterId the identifier of the user requesting access
      * @return {@code 200 OK} with the transaction DTO and HATEOAS links,
-     *         {@code 403 FORBIDDEN} if the requester is neither the buyer nor an admin,
-     *         {@code 404 NOT FOUND} if no transaction exists with the given identifier,
-     *         {@code 400 BAD REQUEST} if any identifier is invalid,
-     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     * {@code 403 FORBIDDEN} if the requester is neither the buyer nor an admin,
+     * {@code 404 NOT FOUND} if no transaction exists with the given identifier,
+     * {@code 400 BAD REQUEST} if any identifier is invalid,
+     * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/{id}")
     public ResponseEntity<TransactionResponseDTO> findById(@PathVariable String id,
@@ -130,10 +133,10 @@ public class TransactionRESTController {
      *
      * @param requesterId the identifier of the user requesting access
      * @return {@code 200 OK} with the list of all transaction DTOs,
-     *         {@code 403 FORBIDDEN} if the requester is not an admin,
-     *         {@code 404 NOT FOUND} if the requester does not exist,
-     *         {@code 400 BAD REQUEST} if the identifier is invalid,
-     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     * {@code 403 FORBIDDEN} if the requester is not an admin,
+     * {@code 404 NOT FOUND} if the requester does not exist,
+     * {@code 400 BAD REQUEST} if the identifier is invalid,
+     * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("")
     public ResponseEntity<List<TransactionResponseDTO>> findAll(
@@ -165,10 +168,10 @@ public class TransactionRESTController {
      * @param buyerId     the identifier of the buyer whose transactions should be retrieved
      * @param requesterId the identifier of the user requesting access
      * @return {@code 200 OK} with the list of transaction DTOs,
-     *         {@code 403 FORBIDDEN} if the requester is neither the buyer nor an admin,
-     *         {@code 404 NOT FOUND} if the requester does not exist,
-     *         {@code 400 BAD REQUEST} if any identifier is invalid,
-     *         or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     * {@code 403 FORBIDDEN} if the requester is neither the buyer nor an admin,
+     * {@code 404 NOT FOUND} if the requester does not exist,
+     * {@code 400 BAD REQUEST} if any identifier is invalid,
+     * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/buyer/{buyerId}")
     public ResponseEntity<List<TransactionResponseDTO>> findAllByBuyerId(
@@ -217,5 +220,104 @@ public class TransactionRESTController {
         }
 
         return responseDTO;
+    }
+
+    /**
+     * Returns the allowed HTTP methods for the /transactions collection endpoint.
+     *
+     * <p>POST is included only if the requesting user has permission to create a transaction.
+     * GET (all transactions) is included only for admins. OPTIONS is always included.</p>
+     *
+     * @param requesterId the identifier of the requesting user
+     * @return {@code 200 OK} with the Allow header,
+     * {@code 404 NOT FOUND} if the user does not exist,
+     * {@code 400 BAD REQUEST} if the identifier is invalid,
+     * {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsTransactions(@RequestParam String requesterId) {
+        try {
+            UserId id = TransactionMapper.toUserId(requesterId);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (transactionService.canCreateTransaction(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+            if (transactionService.canViewAllTransactions(id)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Returns the allowed HTTP methods for the /transactions/{id} endpoint.
+     *
+     * <p>GET is included if the requesting user has permission to view transactions.
+     * OPTIONS is always included.</p>
+     *
+     * @param requesterId the identifier of the requesting user
+     * @return {@code 200 OK} with the Allow header,
+     * {@code 404 NOT FOUND} if the user does not exist,
+     * {@code 400 BAD REQUEST} if the identifier is invalid,
+     * {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsTransactionById(@RequestParam String requesterId) {
+        try {
+            UserId id = TransactionMapper.toUserId(requesterId);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (transactionService.canViewTransaction(id)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Returns the allowed HTTP methods for the /transactions/buyer/{buyerId} endpoint.
+     *
+     * <p>GET is included if the requesting user has permission to view transactions.
+     * OPTIONS is always included.</p>
+     *
+     * @param requesterId the identifier of the requesting user
+     * @return {@code 200 OK} with the Allow header,
+     * {@code 404 NOT FOUND} if the user does not exist,
+     * {@code 400 BAD REQUEST} if the identifier is invalid,
+     * {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     */
+    @RequestMapping(value = "/buyer/{buyerId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsTransactionsByBuyer(@RequestParam String requesterId) {
+        try {
+            UserId id = TransactionMapper.toUserId(requesterId);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (transactionService.canViewTransaction(id)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
