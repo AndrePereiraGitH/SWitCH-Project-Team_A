@@ -18,7 +18,7 @@ component "MiteLovers" <<System>> {
   port " " as pAPI
 
 
-  component "db_scripts" as db
+  component "db" as db
 
 
   component "backend" as Backend  {

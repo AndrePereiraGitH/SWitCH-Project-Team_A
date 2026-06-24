@@ -1,0 +1,66 @@
+@startuml
+autonumber
+hide footbox
+title Find Publications in Library
+
+participant ":PublicationSampleService" as Service
+participant ":UserRepositoryJPAImpl" as UserRepo
+participant ":IUserRepositoryJPA" as UserJPA
+participant ":UserAssembler" as UserAssembler
+participant "user: User" as user
+participant ":PublicationSampleAuthorizationPolicy" as Policy
+participant ":PublicationSampleRepositoryJpaImpl" as PubRepo
+participant ":IPublicationSampleRepositoryJpa" as PubJPA
+participant ":PublicationSampleAssembler" as PubAssembler
+participant "pbSample: PublicationSample" as pbSample
+participant "pbSampleList: List<PublicationSample>" as pbSampleList
+
+note over Service #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
+
+Service -> UserRepo : findByID(id)
+activate UserRepo
+UserRepo -> UserJPA : findById(id)
+activate UserJPA
+UserJPA ->o] : SELECT * FROM users WHERE id = ?
+UserJPA <--o] : userDM: Optional<UserDM>
+UserJPA --> UserRepo : userDM
+deactivate UserJPA
+UserRepo -> UserAssembler : toDomain(userDM)
+activate UserAssembler
+UserAssembler -->> user ** : <<create>>
+UserAssembler --> UserRepo : user
+deactivate UserAssembler
+UserRepo --> Service : user: Optional<User>
+deactivate UserRepo
+
+Service -> Policy : canFindPublicationsInLibrary(user)
+activate Policy
+Policy --> Service : boolean
+deactivate Policy
+
+Service -> PubRepo : findPublicationsInLibrary(id)
+activate PubRepo
+PubRepo -> PubJPA : findAllByOwnerId(id)
+activate PubJPA
+PubJPA ->o] : SELECT * FROM publication_sample WHERE owner_id = ?
+PubJPA <--o] : allPublicationsOwnedByUserDM: List<PublicationSampleDM>
+PubJPA --> PubRepo : allPublicationsOwnedByUserDM: List<PublicationSampleDM>
+deactivate PubJPA
+PubRepo -->> pbSampleList ** : <<create>>
+loop for each dm in allPublicationsOwnedByUserDM
+    PubRepo -> PubAssembler : toDomain(dm)
+    activate PubAssembler
+    PubAssembler -->> pbSample ** : <<create>>
+    PubAssembler --> PubRepo : pbSample
+    deactivate PubAssembler
+    PubRepo -> PubRepo : filter(PublicationSample::isInUserLibrary)
+    PubRepo -> pbSampleList : add(pbSample)
+end
+PubRepo --> Service : pbSampleList
+deactivate PubRepo
+
+@enduml

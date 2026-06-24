@@ -1,16 +1,10 @@
 @startuml
 autonumber
 hide footbox
-title As a User, I want to get the list of publications in my library
+title Build Response
 
 participant ":PublicationSampleRESTController" as Ctrl
 participant ":PublicationSampleMapper" as Mapper
-participant ":PublicationSampleService" as Service
-participant ":IUserRepository" as UserRepo
-participant "user: Optional<User>" as user
-participant ":PublicationSampleAuthorizationPolicy" as Policy
-participant ":IPublicationSampleRepository" as PubRepo
-participant "pbSampleList: List<PublicationSample>" as pbSampleList
 participant ":BibliographicalDataService" as BDService
 participant "bd: BibliographicalData" as bd
 participant ":EditionService" as EditionService
@@ -25,55 +19,11 @@ participant ":PublicationSampleLinkProvider" as LinkProvider
 participant "result: PublicationDTO" as result
 participant "publicationDTOS: List<PublicationDTO>" as ListDTO
 
-[o-> Ctrl : OPTIONS /publicationSamples/in-library
-activate Ctrl
-[o<-- Ctrl : 200 OK\n Allow: GET, OPTIONS
-deactivate Ctrl
-
-[o-> Ctrl : GET /publicationSamples/in-library?userId={userId}
-activate Ctrl
-
-Ctrl -> Mapper : toUserId(userId)
-activate Mapper
-Mapper --> Ctrl : id: UserId
-deactivate Mapper
-
-Ctrl -> Service : findPublicationsInLibrary(id)
-activate Service
-
-Service -> UserRepo : findByID(id)
-activate UserRepo
-UserRepo ->o] : SELECT * FROM users WHERE id = ?
-UserRepo <--o] : data
-UserRepo -->> user ** : <<create>>
-UserRepo --> Service : user
-deactivate UserRepo
-
-alt user not found
-    Service --> Ctrl : EntityNotFoundException
-    [o<-- Ctrl : 404 Not Found
-end
-
-Service -> Policy : canFindPublicationsInLibrary(user)
-activate Policy
-Policy --> Service : boolean
-deactivate Policy
-
-alt not allowed
-    Service --> Ctrl : AccessDeniedException
-    [o<-- Ctrl : 403 Forbidden
-end
-
-Service -> PubRepo : findPublicationsInLibrary(id)
-activate PubRepo
-PubRepo ->o] : SELECT * FROM publication_sample WHERE library_id = ?
-PubRepo <--o] : data
-PubRepo -->> pbSampleList ** : <<create>>
-PubRepo --> Service : pbSampleList
-deactivate PubRepo
-
-Service --> Ctrl : pbSampleList
-deactivate Service
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
 
 Ctrl -->> ListDTO ** : <<create>>
 
@@ -134,8 +84,5 @@ loop for each pbSample in pbSampleList
     Ctrl -> Ctrl : publicationDTOS.add(result)
 
 end
-
-[o<-- Ctrl : 200 OK\n body: publicationDTOS
-deactivate Ctrl
 
 @enduml

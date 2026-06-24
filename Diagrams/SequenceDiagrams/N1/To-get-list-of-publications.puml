@@ -1,14 +1,14 @@
 @startuml
-
 autonumber
 hide footbox
-title Get the list of publications in my library
+title Process View - Level 1: Get the list of publications in my library
 
+actor "User" as User
 participant ":MiteLovers" as System
 
-[o-> System : list publications in my library
+User -> System : I want to see the list of publications in my library
 activate System
-[o<-- System : list of publications
+System --> User : list of publications in my library
 deactivate System
 
 @enduml

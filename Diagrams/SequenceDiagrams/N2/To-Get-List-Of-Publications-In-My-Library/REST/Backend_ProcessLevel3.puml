@@ -1,0 +1,227 @@
+@startuml
+autonumber
+hide footbox
+title Process View - Level 3: Get the list of publications in my library
+
+participant "Router" as Router
+participant ":PublicationSampleRESTController" as Ctrl
+participant ":PublicationSampleMapper" as Mapper
+participant ":PublicationSampleService" as Service
+participant ":UserRepositoryJPAImpl" as UserRepo
+participant ":IUserRepositoryJPA" as UserJPA
+participant ":UserAssembler" as UserAssembler
+participant "user: User" as user
+participant ":PublicationSampleAuthorizationPolicy" as Policy
+participant ":LibraryRepositoryJpaImpl" as LibRepo
+participant ":ILibraryRepositoryJpa" as LibJPA
+participant ":LibraryAssembler" as LibraryAssembler
+participant "library: Library" as library
+participant ":PublicationSampleRepositoryJpaImpl" as PubRepo
+participant ":IPublicationSampleRepositoryJpa" as PubJPA
+participant ":PublicationSampleAssembler" as PubAssembler
+participant "pbSample: PublicationSample" as pbSample
+participant "pbSampleList: List<PublicationSample>" as pbSampleList
+participant ":BibliographicalDataService" as BDService
+participant "bd: BibliographicalData" as bd
+participant ":EditionService" as EditionService
+participant "edition: Edition" as edition
+participant ":AuthorService" as AuthorService
+participant "authors: List<Author>" as authors
+participant ":GenreService" as GenreService
+participant "genres: List<Genre>" as genres
+participant ":UserService" as UserService
+participant "owner: User" as owner
+participant ":PublicationSampleLinkProvider" as LinkProvider
+participant "result: PublicationDTO" as result
+participant "publicationDTOS: List<PublicationDTO>" as ListDTO
+
+' =========================================================================
+' OPTIONS
+' =========================================================================
+
+[o-> Router : OPTIONS /publicationSamples/in-library?userId={userId}
+activate Router
+Router -> Ctrl : OPTIONS /publicationSamples/in-library?userId={userId}
+activate Ctrl
+
+Ctrl -> Mapper : toUserId(userId)
+activate Mapper
+Mapper --> Ctrl : id: UserId
+deactivate Mapper
+
+Ctrl -> Service : canFindPublicationsInLibrary(id)
+activate Service
+
+Service -> UserRepo : findByID(id)
+activate UserRepo
+UserRepo -> UserJPA : findById(id)
+activate UserJPA
+UserJPA ->o] : SELECT * FROM users WHERE id = ?
+UserJPA <--o] : userDM: Optional<UserDM>
+UserJPA --> UserRepo : userDM
+deactivate UserJPA
+UserRepo -> UserAssembler : toDomain(userDM)
+activate UserAssembler
+UserAssembler -->> user ** : <<create>>
+UserAssembler --> UserRepo : user
+deactivate UserAssembler
+UserRepo --> Service : user: Optional<User>
+deactivate UserRepo
+
+Service -> Policy : canFindPublicationsInLibrary(user)
+activate Policy
+Policy --> Service : isAuthorized: boolean
+deactivate Policy
+
+Service -> LibRepo : findByUserId(id)
+activate LibRepo
+LibRepo -> LibJPA : findByUserId(id)
+activate LibJPA
+LibJPA ->o] : SELECT * FROM library WHERE user_id = ?
+LibJPA <--o] : libraryDM: Optional<LibraryDM>
+LibJPA --> LibRepo : libraryDM
+deactivate LibJPA
+LibRepo -> LibraryAssembler : toDomain(libraryDM)
+activate LibraryAssembler
+LibraryAssembler -->> library ** : <<create>>
+LibraryAssembler --> LibRepo : library
+deactivate LibraryAssembler
+LibRepo --> Service : Optional<Library>
+deactivate LibRepo
+
+Service --> Ctrl : isAuthorized && hasLibrary: boolean
+deactivate Service
+
+Ctrl --> Router : 200 OK\n Allow: GET, OPTIONS
+deactivate Ctrl
+[o<-- Router : 200 OK\n Allow: GET, OPTIONS
+deactivate Router
+
+' =========================================================================
+' GET
+' =========================================================================
+
+[o-> Router : GET /publicationSamples/in-library?userId={userId}
+activate Router
+Router -> Ctrl : GET /publicationSamples/in-library?userId={userId}
+activate Ctrl
+
+Ctrl -> Mapper : toUserId(userId)
+activate Mapper
+Mapper --> Ctrl : id: UserId
+deactivate Mapper
+
+Ctrl -> Service : findPublicationsInLibrary(id)
+activate Service
+
+Service -> UserRepo : findByID(id)
+activate UserRepo
+UserRepo -> UserJPA : findById(id)
+activate UserJPA
+UserJPA ->o] : SELECT * FROM users WHERE id = ?
+UserJPA <--o] : userDM: Optional<UserDM>
+UserJPA --> UserRepo : userDM
+deactivate UserJPA
+UserRepo -> UserAssembler : toDomain(userDM)
+activate UserAssembler
+UserAssembler -->> user ** : <<create>>
+UserAssembler --> UserRepo : user
+deactivate UserAssembler
+UserRepo --> Service : user: Optional<User>
+deactivate UserRepo
+
+Service -> Policy : canFindPublicationsInLibrary(user)
+activate Policy
+Policy --> Service : boolean
+deactivate Policy
+
+Service -> PubRepo : findPublicationsInLibrary(id)
+activate PubRepo
+PubRepo -> PubJPA : findAllByOwnerId(id)
+activate PubJPA
+PubJPA ->o] : SELECT * FROM publication_sample WHERE owner_id = ?
+PubJPA <--o] : allPublicationsOwnedByUserDM: List<PublicationSampleDM>
+PubJPA --> PubRepo : allPublicationsOwnedByUserDM: List<PublicationSampleDM>
+deactivate PubJPA
+PubRepo -->> pbSampleList ** : <<create>>
+loop for each dm in allPublicationsOwnedByUserDM
+    PubRepo -> PubAssembler : toDomain(dm)
+    activate PubAssembler
+    PubAssembler -->> pbSample ** : <<create>>
+    PubAssembler --> PubRepo : pbSample
+    deactivate PubAssembler
+    PubRepo -> PubRepo : filter(PublicationSample::isInUserLibrary)
+    PubRepo -> pbSampleList : add(pbSample)
+end
+PubRepo --> Service : pbSampleList
+deactivate PubRepo
+
+Service --> Ctrl : pbSampleList
+deactivate Service
+
+Ctrl -->> ListDTO ** : <<create>>
+
+loop for each pbSample in pbSampleList
+
+    Ctrl -> BDService : findById(pbSample.getBibliographicalDataID())
+    activate BDService
+    BDService -->> bd ** : <<create>>
+    BDService --> Ctrl : bd
+    deactivate BDService
+
+    Ctrl -> EditionService : findById(pbSample.getEditionID())
+    activate EditionService
+    EditionService -->> edition ** : <<create>>
+    EditionService --> Ctrl : edition
+    deactivate EditionService
+
+    Ctrl -> AuthorService : findById(authorId) [for each author in bd]
+    activate AuthorService
+    AuthorService -->> authors ** : <<create>>
+    AuthorService --> Ctrl : authors
+    deactivate AuthorService
+
+    Ctrl -> GenreService : findById(genreId) [for each genre in bd]
+    activate GenreService
+    GenreService -->> genres ** : <<create>>
+    GenreService --> Ctrl : genres
+    deactivate GenreService
+
+    Ctrl -> UserService : findByID(pbSample.getOwnerID())
+    activate UserService
+    UserService -->> owner ** : <<create>>
+    UserService --> Ctrl : owner
+    deactivate UserService
+
+    Ctrl -> Mapper : toPublicationDTO(pbSample, bd, edition, authors, genres, owner)
+    activate Mapper
+    Mapper -->> result ** : <<create>>
+    Mapper --> Ctrl : result
+    deactivate Mapper
+
+    Ctrl -> Ctrl : links.add(linkTo(methodOn(Ctrl).findById(pbSample.id().getID())).withSelfRel())
+
+    Ctrl -> LinkProvider : getPublicLinks()
+    activate LinkProvider
+    LinkProvider --> Ctrl : publicLinks
+    deactivate LinkProvider
+
+    Ctrl -> Ctrl : links.addAll(publicLinks)
+
+    Ctrl -> LinkProvider : getLibraryLinks(id)
+    activate LinkProvider
+    LinkProvider --> Ctrl : libraryLinks
+    deactivate LinkProvider
+
+    Ctrl -> Ctrl : links.addAll(libraryLinks)
+    Ctrl -> Ctrl : links.forEach(result::add)
+    Ctrl -> Ctrl : publicationDTOS.add(result)
+
+end
+
+Ctrl --> Router : 200 OK\n body: publicationDTOS
+deactivate Ctrl
+[o<-- Router : 200 OK\n body: publicationDTOS
+deactivate Router
+
+@enduml
