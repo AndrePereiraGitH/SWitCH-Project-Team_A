@@ -1,0 +1,46 @@
+@startuml
+hide footbox
+autonumber
+title Find All Publications
+
+
+participant ":BibliographicalData\nRESTController" as BDCtrl
+participant ":BibliographicalData\nMapper" as BDMapper
+participant ":IBibliographicalData\nService" as BDService
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":BibliographicalData\nLinkProvider" as BDLinkProvider
+participant "listOfAllBDDTOs:\nList<BibliographicalDataDTO>" as listOfAllBDDTOs
+participant "bdDTO:\nBibliographicalDataDTO" as bdDTO
+
+
+ref over BDCtrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+
+BDCtrl -> BDService : findAll()
+activate BDCtrl
+activate BDService
+
+BDService -> BDRepo : findAll()
+activate BDRepo
+
+BDRepo ->o] : SELECT * FROM bibliographical_data
+ref over BDRepo
+[[../PublicationsPersistenceJPA.puml Publications Persistence JPA]]
+[[../PublicationsPersistenceMem.puml Publications Persistence Mem]]
+end ref
+BDRepo <-o] : data
+
+BDRepo --> BDService : listOfAllBD
+deactivate BDRepo
+
+BDService --> BDCtrl : listOfAllBD
+deactivate BDService
+
+BDCtrl -> BDService : buildAuthorNamesMap(listOfAllBD)
+activate BDService
+BDService --> BDCtrl : authorNamesMap
+deactivate BDService
+
+@enduml

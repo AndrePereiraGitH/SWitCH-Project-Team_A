@@ -1,0 +1,39 @@
+@startuml
+autonumber
+hide footbox
+title Build Listing DTO with HATEOAS Links
+
+participant ":Listing\nRESTController" as ListCtrl
+participant ":Listing\nMapper" as ListMapper
+participant "listingDTO:\nListingDTO" as listingDTO
+participant ":Listing\nLinkProvider" as ListLink
+
+
+ref over ListCtrl
+    [[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+ListCtrl -> ListMapper : toListingDTO(persistedListing)
+activate ListCtrl
+activate ListMapper
+ListMapper -->> listingDTO ** : <<create>>
+ListMapper --> ListCtrl : listingDTO
+deactivate ListMapper
+
+ListCtrl -> ListCtrl : links.add(linkTo(methodOn(ListCtrl).findById(persistedListing.id().getID())).withSelfRel())
+
+ListCtrl -> ListLink : getPublicLinks()
+activate ListLink
+ListLink --> ListCtrl : publicLinks
+deactivate ListLink
+ListCtrl -> ListCtrl : links.addAll(publicLinks)
+
+ListCtrl -> ListLink : getListingLinks(persistedListing.id())
+activate ListLink
+ListLink --> ListCtrl : listingLinks
+deactivate ListLink
+ListCtrl -> ListCtrl : links.addAll(listingLinks)
+
+ListCtrl -> ListCtrl : links.forEach(listingDTO::add)
+
+@enduml

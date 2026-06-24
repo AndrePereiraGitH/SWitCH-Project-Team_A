@@ -1,0 +1,73 @@
+@startuml
+autonumber
+hide footbox
+title Build Publication Sample DTOs
+
+participant ":ToPutForSaleAPublication\nInDirectSaleController" as Ctrl
+participant ":US015PublicationSample\nMapper" as PSMapper
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":IAuthor\nRepository" as AuthorRepo
+participant ":IEdition\nRepository" as EditionRepo
+participant "pubDTO:\nUS015PublicationSampleDTO" as PSDTO
+participant "dtosList:\nList<US015PublicationSampleDTO>" as DTOsList
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+Ctrl -> PSMapper : toDTOs(availablePubSamples)
+activate Ctrl
+activate PSMapper
+PSMapper -->> DTOsList ** : <<create>>
+
+loop for each pub in availablePubSamples
+    PSMapper -> BDRepo : findById(pub.getBibliographicalDataID())
+    activate BDRepo
+    BDRepo ->o] : persist query
+
+    BDRepo <--o] : data
+    BDRepo --> PSMapper : bd
+    deactivate BDRepo
+
+    alt bd not found
+        PSMapper --> Ctrl: InstanceNotFoundException
+    end
+
+    PSMapper -> EditionRepo : findById(pub.getEditionID())
+    activate EditionRepo
+    EditionRepo ->o] : persist query
+    EditionRepo <--o] : data
+    EditionRepo --> PSMapper : edition
+    deactivate EditionRepo
+
+    alt edition not found
+        PSMapper --> Ctrl: InstanceNotFoundException
+    end
+
+    loop for each authorId in bd.getAuthors()
+        PSMapper -> AuthorRepo : findById(authorId)
+        activate AuthorRepo
+        AuthorRepo ->o] : persist query
+        AuthorRepo <--o] : data
+        AuthorRepo --> PSMapper : author
+        deactivate AuthorRepo
+
+        alt author not found
+            PSMapper --> Ctrl: InstanceNotFoundException
+        end
+
+        PSMapper -> PSMapper : authorsName.add(author.getName())
+    end
+
+    PSMapper -> PSMapper : title = bd.getTitle()
+    PSMapper -> PSMapper : pubType = edition.getMediaFormat()
+    PSMapper -> PSMapper : code = edition.getCode().toString()
+
+    PSMapper -->> PSDTO ** : <<create>>(title, authorsName, code, pubType)
+    PSMapper -> DTOsList : add(pubDTO)
+end
+
+PSMapper --> Ctrl : availablePubSampleDTOs
+deactivate PSMapper
+
+@enduml
