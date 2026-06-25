@@ -32,6 +32,26 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit tests for {@link AuthorRESTController}.
+ *
+ * <p>Verifies the behaviour of each endpoint, including:</p>
+ * <ul>
+ *     <li>{@code createAuthor} — returns {@code 201 Created} on success,
+ *         {@code 400 Bad Request} for invalid input,
+ *         {@code 403 Forbidden} when the user lacks permission,
+ *         {@code 409 Conflict} when the author already exists,
+ *         {@code 500 Internal Server Error} for unexpected errors;</li>
+ *     <li>{@code findAll} — returns {@code 200 OK} with all authors,
+ *         an empty list when none exist,
+ *         {@code 400 Bad Request} for invalid arguments,
+ *         {@code 500 Internal Server Error} for unexpected errors;</li>
+ *     <li>{@code findById} — returns {@code 200 OK} when the author exists,
+ *         {@code 404 Not Found} when the identifier format is invalid or the
+ *         author does not exist,
+ *         {@code 500 Internal Server Error} for unexpected errors.</li>
+ * </ul>
+ */
 @ExtendWith(MockitoExtension.class)
 class AuthorRESTControllerTest {
 
@@ -453,7 +473,7 @@ class AuthorRESTControllerTest {
     // =========================================================
 
     @Test
-    void shouldReturnBadRequestWhenAuthorIdIsInvalid() {
+    void shouldReturnNotFoundWhenAuthorIdFormatIsInvalid() {
 
         // ARRANGE
         String rawId = "invalid";
@@ -467,7 +487,28 @@ class AuthorRESTControllerTest {
             ResponseEntity<AuthorDTO> response = controller.findById(rawId);
 
             // ASSERT
-            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenAuthorDoesNotExist() {
+
+        // ARRANGE
+        String rawId = "author-999";
+        AuthorId authorId = mock(AuthorId.class);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+
+            mapper.when(() -> AuthorMapper.toAuthorId(rawId)).thenReturn(authorId);
+            when(service.findById(authorId))
+                    .thenThrow(new IllegalArgumentException("Author not found"));
+
+            // ACT
+            ResponseEntity<AuthorDTO> response = controller.findById(rawId);
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         }
     }
 

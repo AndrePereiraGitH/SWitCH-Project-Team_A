@@ -1,0 +1,10 @@
+# Backend dockerignore files
+
+.git
+.github
+.idea
+target
+*.md
+frontend
+Diagrams
+SprintReview

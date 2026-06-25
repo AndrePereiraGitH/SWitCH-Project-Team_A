@@ -110,6 +110,7 @@ public class ListingMapper {
         return new ListingDetailsDTO(
                 getListingId(listing),
                 listing.getListingTitle(),
+                getAuthorIds(authors),
                 getAuthorNames(authors),
                 getGenreTypes(genres),
                 getPrice(listing),
@@ -119,6 +120,7 @@ public class ListingMapper {
                 getFirstPicture(listing),
                 listing.getShortDescription(),
                 getSellerId(listing),
+                getPublisherId(publisher),
                 getPublisherName(publisher),
                 getEditionCode(edition),
                 getEditionYear(edition),
@@ -128,6 +130,32 @@ public class ListingMapper {
                 getBuyerName(buyer),
                 getListingStatus(listing)
         );
+    }
+
+    /**
+     * Retrieves the publisher identifier.
+     *
+     * <p>If no publisher is provided, the value {@code "N/A"} is returned.</p>
+     *
+     * @param publisher the publisher
+     * @return the publisher identifier, or {@code "N/A"} if unavailable
+     */
+    private static String getPublisherId(Publisher publisher) {
+        if (publisher == null) {
+            return NOT_AVAILABLE;
+        }
+
+        return publisher.id().getId();
+    }
+
+    /**
+     * Retrieves the identifiers of the provided authors.
+     *
+     * @param authors the authors whose identifiers should be extracted
+     * @return a list containing the author identifiers
+     */
+    private static List<String> getAuthorIds(List<Author> authors) {
+        return authors.stream().map(Author::id).map(AuthorId::getId).toList();
     }
 
 
@@ -306,6 +334,12 @@ public class ListingMapper {
     }
 
 
+    /**
+     * Retrieves the identifiers of the provided bibliographical data records.
+     *
+     * @param bds the bibliographical data records
+     * @return a list containing the bibliographical data identifiers as strings
+     */
     private static List<String> getBibliographicalDataIds(List<BibliographicalData> bds) {
         return bds.stream()
                 .map(BibliographicalData::id)

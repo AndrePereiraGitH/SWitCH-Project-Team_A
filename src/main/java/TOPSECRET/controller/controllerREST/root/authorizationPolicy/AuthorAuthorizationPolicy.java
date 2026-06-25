@@ -9,13 +9,14 @@ import org.springframework.stereotype.Component;
  * for operations related to {@link TOPSECRET.domain.Author.Author}.
  *
  * <p>Ensures that only users with the appropriate roles are permitted to perform
- * specific actions such as creating or retrieving authors.</p>
+ * specific actions such as creating an author.</p>
  *
- * <p>Policies are grouped into two categories:</p>
+ * <p>Currently, this class governs a single category:</p>
  * <ul>
  *   <li><b>Persistence</b> — creation of authors.</li>
- *   <li><b>Lookup</b> — retrieval of authors (public; no policy required).</li>
  * </ul>
+ *
+ * <p>Retrieval of authors is public and does not require authorization.</p>
  */
 @Component
 public class AuthorAuthorizationPolicy {
