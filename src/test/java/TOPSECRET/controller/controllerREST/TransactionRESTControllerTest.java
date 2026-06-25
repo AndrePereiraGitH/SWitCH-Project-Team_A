@@ -804,10 +804,11 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any())).thenReturn(true);
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class))).thenReturn(true);
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionById("buyer-1");
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "buyer-1");
 
             // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -823,10 +824,11 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any())).thenReturn(false);
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class))).thenReturn(false);
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionById("user-1");
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "user-1");
 
             // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -842,11 +844,12 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any()))
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class)))
                     .thenThrow(new EntityNotFoundException("User not found"));
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionById("unknown-id");
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "unknown-id");
 
             // ASSERT
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -862,7 +865,7 @@ class TransactionRESTControllerTest {
                     .thenThrow(new IllegalArgumentException("Invalid UUID"));
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionById("not-a-uuid");
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "not-a-uuid");
 
             // ASSERT
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -875,11 +878,12 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any()))
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class)))
                     .thenThrow(new RuntimeException("Unexpected"));
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionById("any-id");
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "any-id");
 
             // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -896,10 +900,10 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any())).thenReturn(true);
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class))).thenReturn(true);
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1");
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "buyer-1");
 
             // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -915,10 +919,10 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any())).thenReturn(false);
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class))).thenReturn(false);
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("user-1");
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "user-1");
 
             // ASSERT
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -934,11 +938,11 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any()))
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class)))
                     .thenThrow(new EntityNotFoundException("User not found"));
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("unknown-id");
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "unknown-id");
 
             // ASSERT
             assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -954,7 +958,7 @@ class TransactionRESTControllerTest {
                     .thenThrow(new IllegalArgumentException("Invalid UUID"));
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("not-a-uuid");
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "not-a-uuid");
 
             // ASSERT
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -967,11 +971,11 @@ class TransactionRESTControllerTest {
         // ARRANGE
         try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
             mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
-            when(transactionService.canViewTransaction(any()))
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class)))
                     .thenThrow(new RuntimeException("Unexpected"));
 
             // ACT
-            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("any-id");
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "any-id");
 
             // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());

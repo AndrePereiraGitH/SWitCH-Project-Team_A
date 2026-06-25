@@ -270,12 +270,14 @@ public class TransactionRESTController {
      * {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsTransactionById(@RequestParam String requesterId) {
+    public ResponseEntity<Void> optionsTransactionById(@PathVariable String id,
+                                                       @RequestParam String requesterId) {
         try {
-            UserId id = TransactionMapper.toUserId(requesterId);
+            UserId requester = TransactionMapper.toUserId(requesterId);
+            TransactionID transactionId = TransactionMapper.toTransactionId(id);
             Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
 
-            if (transactionService.canViewTransaction(id)) {
+            if (transactionService.canViewTransaction(requester, transactionId)) {
                 allowed.add(HttpMethod.GET);
             }
 
@@ -302,12 +304,14 @@ public class TransactionRESTController {
      * {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @RequestMapping(value = "/buyer/{buyerId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsTransactionsByBuyer(@RequestParam String requesterId) {
+    public ResponseEntity<Void> optionsTransactionsByBuyer(@PathVariable String buyerId,
+                                                           @RequestParam String requesterId) {
         try {
-            UserId id = TransactionMapper.toUserId(requesterId);
+            UserId requester = TransactionMapper.toUserId(requesterId);
+            UserId buyer = TransactionMapper.toUserId(buyerId);
             Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
 
-            if (transactionService.canViewTransaction(id)) {
+            if (transactionService.canViewTransactionsByBuyer(requester, buyer)) {
                 allowed.add(HttpMethod.GET);
             }
 
