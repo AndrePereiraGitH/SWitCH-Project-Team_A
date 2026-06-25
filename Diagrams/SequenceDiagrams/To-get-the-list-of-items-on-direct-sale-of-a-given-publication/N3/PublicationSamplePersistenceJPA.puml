@@ -1,0 +1,45 @@
+@startuml
+autonumber
+hide footbox
+title PublicationSample Persistence JPA
+
+participant ":IPublicationSample\nRepository" as PSRepo
+participant ":PublicationSampleRepository\nJPAImpl" as PSRepoImpl
+participant ":IPublicationSample\nRepositoryJpa" as PSRepoJpa
+participant "listOfPubSampleDM:\nList<PublicationSampleDM>" as listOfPubSampleDM
+
+database "Database" as db
+
+ref over PSRepo
+    [[REST/1.MainDiagram.puml Back to main diagram REST]]
+    [[CLI/1.MainDiagram.puml Back to main diagram CLI]]
+end ref
+
+
+PSRepo -> PSRepoImpl : findIdsByBibliographicalDataIdIn(bdIds)
+activate PSRepo
+activate PSRepoImpl
+
+PSRepoImpl -> PSRepoJpa : findAllByBdIdIn(bdIds)
+activate PSRepoJpa
+PSRepoJpa -> db : SELECT * FROM publication_sample\nWHERE bibliographical_data_id IN {bdIds}
+activate db
+db --> PSRepoJpa : data
+deactivate db
+PSRepoJpa -->> listOfPubSampleDM ** : <<create>>
+PSRepoJpa --> PSRepoImpl : listOfPubSampleDM
+deactivate PSRepoJpa
+
+loop for each pubSampleDM in listOfPubSampleDM
+    PSRepoImpl -> listOfPubSampleDM : getPubSampleId()
+    activate listOfPubSampleDM
+    listOfPubSampleDM --> PSRepoImpl : pubSampleId
+    deactivate listOfPubSampleDM
+    PSRepoImpl -> listOfPubSampleDM : add(pubSampleId)
+end
+
+PSRepoImpl --> PSRepo : listOfPubSampleId
+deactivate PSRepoImpl
+deactivate PSRepo
+
+@enduml

@@ -1,0 +1,127 @@
+@startuml
+autonumber
+hide footbox
+title Find publications in user's library available for sale (backend)
+
+participant ":PublicationSample\nRESTController" as PSCtrl
+participant ":Publication\nSampleMapper" as PSMapper
+participant ":PublicationSample\nService" as PubService
+participant ":IUserRepository" as UserRepo
+participant "user:\nOptional<User>" as user
+participant ":PublicationSample\nAuthorizationPolicy" as PubPolicy
+participant ":IPublicationSample\nRepository" as PubRepo
+participant "pbSampleList:\nList<PublicationSample>" as PSList
+participant "publicationDTOS:\nList<PublicationSampleDTOs>" as PSListDTOs
+participant "pbSampleDTO:\nPublicationSampleDTO" as PSDTO
+participant ":PublicationSample\nLinkProvider" as PSLink
+participant ":IBibliographical\nDataService" as BDService
+participant ":IEdition\nService" as EditionService
+participant ":IAuthor\nService" as AuthorService
+participant ":IGenre\nService" as GenreService
+participant ":IUser\nService" as UserService
+
+database "db" as db
+
+ref over PSCtrl
+    [[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+PSCtrl -> PSMapper : toUserId(userId)
+activate PSCtrl
+activate PSMapper
+PSMapper --> PSCtrl : id: UserId
+deactivate PSMapper
+
+PSCtrl -> PubService : findAvailableForSale(id)
+activate PubService
+
+PubService -> UserRepo : findByID(id)
+activate UserRepo
+UserRepo -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> UserRepo : data
+deactivate db
+UserRepo -->> user ** : <<create>>
+UserRepo --> PubService : user
+deactivate UserRepo
+
+alt user not found
+    PubService --> PSCtrl : EntityNotFoundException
+end
+
+PubService -> PubPolicy : canFindAvailableForSale(user)
+activate PubPolicy
+PubPolicy --> PubService : boolean
+deactivate PubPolicy
+
+alt not allowed
+    PubService --> PSCtrl : AccessDeniedException
+end
+
+PubService -> PubRepo : findAvailableForSaleByUserId(id)
+activate PubRepo
+PubRepo -> db : SELECT * FROM publication_sample\n WHERE owner_id = ? AND status NOT IN ('FOR_SALE', 'SOLD')
+activate db
+db --> PubRepo : data
+deactivate db
+PubRepo -->> PSList ** : <<create>>
+PubRepo --> PubService : pbSampleList
+deactivate PubRepo
+
+PubService --> PSCtrl : pbSampleList
+deactivate PubService
+
+PSCtrl -->> PSListDTOs ** : <<create>>
+
+loop for each pbSample in pbSampleList
+    PSCtrl -> BDService : findById(pbSample.getBibliographicalDataId())
+    activate BDService
+    BDService --> PSCtrl : bd
+    deactivate BDService
+
+    PSCtrl -> EditionService : findById(pbSample.getEditionId())
+    activate EditionService
+    EditionService --> PSCtrl : edition
+    deactivate EditionService
+
+    PSCtrl -> AuthorService : findById(authorId) //for each author in bd//
+    activate AuthorService
+    AuthorService --> PSCtrl : authors
+    deactivate AuthorService
+
+    PSCtrl -> GenreService : findById(genreId) //for each genre in bd//
+    activate GenreService
+    GenreService --> PSCtrl : genres
+    deactivate GenreService
+
+    PSCtrl -> UserService : findByID(pbSample.getOwnerId())
+    activate UserService
+    UserService --> PSCtrl : owner
+    deactivate UserService
+
+    PSCtrl -> PSMapper : toPublicationSampleDTO(pbSample, bd, edition, authors, genres, owner)
+    activate PSMapper
+    PSMapper -->> PSDTO ** : <<create>>
+    PSMapper --> PSCtrl : pbSampleDTO
+    deactivate PSMapper
+
+    PSCtrl -> PSCtrl : links.add(linkTo(methodOn(PSCtrl).findById(pbSample.id().getID())).withSelfRel())
+
+    PSCtrl -> PSLink : getPublicLinks()
+    activate PSLink
+    PSLink --> PSCtrl : publicLinks
+    deactivate PSLink
+    PSCtrl -> PSCtrl : links.addAll(publicLinks)
+
+    PSCtrl -> PSLink : getDirectSaleLinks(id)
+    activate PSLink
+    PSLink --> PSCtrl : directSaleLinks
+    deactivate PSLink
+    PSCtrl -> PSCtrl : links.addAll(directSaleLinks)
+
+    PSCtrl -> PSCtrl : links.forEach(pbSampleDTO::add)
+    PSCtrl -> PSCtrl : publicationDTOS.add(pbSampleDTO)
+end
+deactivate PSCtrl
+
+@enduml

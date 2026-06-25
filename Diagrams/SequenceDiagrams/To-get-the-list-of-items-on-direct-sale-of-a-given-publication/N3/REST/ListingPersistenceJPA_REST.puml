@@ -1,0 +1,104 @@
+@startuml
+autonumber
+hide footbox
+title Listing Persistence JPA
+
+participant ":IListing\nRepository" as LRepo
+participant ":ListingRepository\nJPAImpl" as LRepoImpl
+participant ":IListing\nRepositoryJpa" as LRepoJpa
+participant "listOfListingDM:\nList<ListingDM>" as listOfListingDM
+participant ":Listing\nAssembler" as LAss
+participant ":Listing\nFactory" as LFactory
+participant "listing:\nListing" as listing
+
+database "Database" as db
+
+ref over LRepo
+    [[1.MainDiagram.puml Back to main diagram REST]]
+end ref
+
+
+' =======================================================
+' REST path — findAllFiltered filters by sale type in memory
+' =======================================================
+
+LRepo -> LRepoImpl : findAll()
+activate LRepo
+activate LRepoImpl
+
+LRepoImpl -> LRepoJpa : findAll()
+activate LRepoJpa
+LRepoJpa -> db : SELECT * FROM listings
+activate db
+db --> LRepoJpa : data
+deactivate db
+LRepoJpa -->> listOfListingDM ** : <<create>>
+LRepoJpa --> LRepoImpl : listOfListingDM
+deactivate LRepoJpa
+
+loop for each listingDM in listOfListingDM
+    LRepoImpl -> LAss : toDomain(listingDM)
+    activate LAss
+
+    LAss -> listOfListingDM : getListingId()
+    activate listOfListingDM
+    listOfListingDM --> LAss : listingId
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getListingTitle()
+    activate listOfListingDM
+    listOfListingDM --> LAss : listingTitle
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getItemsId()
+    activate listOfListingDM
+    listOfListingDM --> LAss : itemsId
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getSaleType()
+    activate listOfListingDM
+    listOfListingDM --> LAss : saleType
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getPrice()
+    activate listOfListingDM
+    listOfListingDM --> LAss : price
+    deactivate listOfListingDM
+    LAss -> LAss : convertPriceToDomain(price)
+    LAss -> listOfListingDM : getShortDescription()
+    activate listOfListingDM
+    listOfListingDM --> LAss : shortDescription
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getSellerId()
+    activate listOfListingDM
+    listOfListingDM --> LAss : sellerId
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getBuyerId()
+    activate listOfListingDM
+    listOfListingDM --> LAss : buyerId
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getPictures()
+    activate listOfListingDM
+    listOfListingDM --> LAss : pictures
+    deactivate listOfListingDM
+    LAss -> LAss : convertPicturesToDomain(pictures)
+    LAss -> listOfListingDM : getPublicationDate()
+    activate listOfListingDM
+    listOfListingDM --> LAss : publicationDate
+    deactivate listOfListingDM
+    LAss -> listOfListingDM : getListingStatus()
+    activate listOfListingDM
+    listOfListingDM --> LAss : listingStatus
+    deactivate listOfListingDM
+
+    LAss -> LFactory : create(listingId, listingTitle, itemsId,\nsaleType, price, shortDescription,\nsellerId, buyerId, pictures,\npublicationDate, listingStatus)
+    activate LFactory
+    LFactory -->> listing ** : <<create>>
+    LFactory --> LAss : listing
+    deactivate LFactory
+
+    LAss --> LRepoImpl : listing
+    deactivate LAss
+end
+
+LRepoImpl --> LRepo : listOfListings
+deactivate LRepoImpl
+deactivate LRepo
+
+@enduml

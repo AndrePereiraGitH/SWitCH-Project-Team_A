@@ -1,0 +1,37 @@
+@startuml
+autonumber
+hide footbox
+title User Persistence In-Memory
+
+participant ":IUser\nRepository" as UserRepo
+participant ":UserRepository\nMem" as UserRepoMem
+participant "userList:\nList<User>" as userList
+
+
+ref over UserRepo
+    [[REST/1.MainDiagram.puml Back to main diagram REST]]
+    [[CLI/1.MainDiagram.puml Back to main diagram CLI]]
+end ref
+
+
+UserRepo -> UserRepoMem : findByID(userId)
+activate UserRepo
+activate UserRepoMem
+
+loop for each user in _userList
+    UserRepoMem -> userList : user.id().equals(userId)
+    activate userList
+    userList --> UserRepoMem : boolean
+    deactivate userList
+    alt match found
+        UserRepoMem --> UserRepo : Optional.of(user)
+    end
+    alt match not found
+        UserRepoMem --> UserRepo : Optional.empty()
+    end
+end
+
+deactivate UserRepoMem
+deactivate UserRepo
+
+@enduml

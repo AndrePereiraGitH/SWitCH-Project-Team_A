@@ -1,0 +1,53 @@
+@startuml
+autonumber
+hide footbox
+title Map input strings to Value Objects
+
+participant ":Listing\nRESTController" as ListCtrl
+participant ":Listing\nMapper" as ListMapper
+participant "pbSampleIds:\nList<PublicationSampleId" as pbSampleIds
+participant "pictures:\nList<Pictures" as pictures
+
+
+
+ref over ListCtrl
+    [[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+
+ListCtrl -> ListMapper : toUserId(userId)
+activate ListCtrl
+activate ListMapper
+ListMapper --> ListCtrl : userId: UserId
+deactivate ListMapper
+
+ListCtrl --> pbSampleIds **: «create»
+loop for each selectedPublicationId in selectedPublicationIds
+    ListCtrl -> ListMapper : toPublicationId(selectedPublicationId)
+    activate ListMapper
+    ListMapper --> ListCtrl : pbSampleId
+    deactivate ListMapper
+    ListCtrl -> pbSampleIds: add(pbSampleId)
+end
+
+ListCtrl -> ListMapper : toSaleType(saleType)
+activate ListMapper
+ListMapper --> ListCtrl : saleType: SaleType
+deactivate ListMapper
+
+ListCtrl -> ListMapper : toPrice(price)
+activate ListMapper
+ListMapper --> ListCtrl : price: Price
+deactivate ListMapper
+
+ListCtrl --> pictures **: «create»
+loop for each picture in pictures
+    ListCtrl -> ListMapper : toPicture(picture)
+    activate ListMapper
+    ListMapper --> ListCtrl : picture
+    deactivate ListMapper
+    ListCtrl -> pictures: add(picture)
+end
+deactivate ListCtrl
+
+@enduml
