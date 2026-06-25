@@ -1,0 +1,78 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given author (Main Diagram)
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nAuthorController" as Ctrl
+participant ":US025Listing\nMapper" as ListMapper
+participant ":Author\nService" as AService
+participant ":IAuthor\nRepository" as ARepo
+participant ":IListing\nService" as ListService
+participant ":IListing\nRepository" as LRepo
+
+' -------------------
+' 1 — Get all authors
+' -------------------
+
+[o-> Ctrl : findAllAuthors()
+activate Ctrl
+
+ref over Ctrl
+[[2.GetAllAuthors.puml Get all authors]]
+end ref
+
+ref over Ctrl
+[[3.BuildAuthorDTOs.puml Build author DTOs]]
+end ref
+
+[o<-- Ctrl : listOfAllAuthorDTOs
+deactivate Ctrl
+
+' -----------------------------------------------
+' 2 — Get listings on direct sale of given author
+' -----------------------------------------------
+
+[o-> Ctrl : findListOfItemsOnDirectSale(authorId)
+activate Ctrl
+
+Ctrl -> AService : findIdsByAuthorIdIn(authorId)
+activate AService
+AService -> ARepo : findIdsByAuthorIdIn(bdId)
+activate ARepo
+
+ARepo ->o] : SELECT id FROM publication_sample\nWHERE author_id = {authorId}
+ARepo <--o] : data
+
+ARepo --> AService : listOfPubSampleIds
+deactivate ARepo
+AService--> Ctrl : listOfPubSampleIds
+deactivate AService
+
+Ctrl -> ListService : findAllDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate ListService
+
+ListService -> LRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate LRepo
+
+LRepo ->o] : SELECT * FROM listings\nWHERE items_id IN {listOfPubSampleIds}
+LRepo <--o] : data
+
+LRepo --> ListService : listOfDSListings
+deactivate LRepo
+
+ListService --> Ctrl : listOfDSListings
+deactivate ListService
+
+Ctrl -> ListMapper : toDTOs(listOfDSListings)
+activate ListMapper
+
+ref over ListMapper
+[[4.BuildListingDTOs.puml Build listings DTOs]]
+end ref
+
+ListMapper --> Ctrl : listOfDSListingDTOs
+deactivate ListMapper
+[o<-- Ctrl : listOfDSListingDTOs
+deactivate Ctrl
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+hide footbox
+autonumber
+title Build Author DTOs
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nAuthorController" as Ctrl
+participant ":US025AuthorMapper" as AuthorMapper
+participant "listOfAllAuthorDTOs:\nList<US025AuthorDTO>" as listOfAllAuthorDTOs
+participant "authorDTO:\nUS025AuthorDTO" as authorDTO
+participant ":IAuthor\nRepository" as AuthorRepo
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+Ctrl -> AuthorMapper : toDTOs(listOfAllAuthors)
+activate Ctrl
+activate AuthorMapper
+AuthorMapper -->> listOfAllAuthorDTOs ** : «create»
+loop for each author in listOfAllAuthors
+    AuthorMapper -> AuthorRepo : findById(authorId)
+    activate AuthorRepo
+    AuthorRepo --> AuthorMapper : author
+        deactivate AuthorRepo
+    AuthorMapper -> AuthorMapper: author.id().toString()
+    AuthorMapper -> AuthorMapper: author.getName();
+    AuthorMapper -->> authorDTO ** : «create»
+    AuthorMapper -> listOfAllAuthorDTOs : add(authorDTO)
+end
+AuthorMapper --> Ctrl : listOfAllAuthorDTOs
+deactivate AuthorMapper
+
+deactivate Ctrl
+@enduml

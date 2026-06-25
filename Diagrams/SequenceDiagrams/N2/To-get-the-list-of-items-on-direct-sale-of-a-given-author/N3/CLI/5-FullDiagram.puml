@@ -1,0 +1,124 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given author (Full Diagram)
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nAuthorController" as Ctrl
+participant ":US025AuthoMapper" as AuthorMapper
+participant ":AuthorService" as AuthorService
+participant ":IAuthorRepository" as AuthorRepo
+participant "listOfAllAuthorDTOs:\nList<US025AuthorDTO>" as listOfAllAuthorDTOs
+participant "authorDTO:\nUS025AuthorDTO" as authorDTO
+
+participant ":US025Listing\nMapper" as ListMapper
+participant ":PublicationSample\nService" as PSService
+participant ":IPublicationSample\nRepository" as PSRepo
+participant ":IListing\nService" as ListService
+participant ":IListing\nRepository" as LRepo
+participant "listOfDSListingDTOs:\nList<US025ListingDTO>" as listOfDSListingDTOs
+participant "listingDTO:\nUS025ListingDTO" as listingDTO
+
+' -------------------
+' 1 — Get all authors
+' -------------------
+
+[o-> Ctrl : findAllAuthors()
+activate Ctrl
+
+Ctrl -> AuthorService : findAll()
+activate AuthorService
+AuthorService -> AuthorRepo : findAll()
+activate AuthorRepo
+
+AuthorRepo ->o] : SELECT * FROM author
+AuthorRepo <-o] : data
+
+AuthorRepo --> AuthorService : listOfAllAuthor
+deactivate AuthorRepo
+AuthorService --> Ctrl : listOfAllAuthor
+deactivate AuthorService
+
+Ctrl -> AuthorMapper : toDTOs(listOfAllAuthor)
+activate AuthorMapper
+AuthorMapper -->> listOfAllAuthorDTOs ** : «create»
+loop for each bd in listOfAllAuthor
+    AuthorMapper -> AuthorRepo : findById(authorId)
+    activate AuthorRepo
+    AuthorRepo --> AuthorMapper : author
+        deactivate AuthorRepo
+    AuthorMapper -> AuthorMapper: author.id().toString()
+    AuthorMapper -> AuthorMapper: author.getName();
+    AuthorMapper -->> authorDTO ** : «create»
+    AuthorMapper -> listOfAllAuthorDTOs : add(authorDTO)
+end
+AuthorMapper --> Ctrl : listOfAllAuthorDTOs
+deactivate AuthorMapper
+
+[o<-- Ctrl : listOfAllAuthorDTOs
+deactivate Ctrl
+
+' -------------------------------------------------
+' 2 — Get listings on direct sale of a given author
+' -------------------------------------------------
+
+[o-> Ctrl : findListOfItemsOnDirectSale(authorId)
+activate Ctrl
+
+Ctrl -> PSService : findIdsByAuthorIdIn(authorId)
+activate PSService
+PSService -> PSRepo : findIdsByAuthorIdIn(authorId)
+activate PSRepo
+
+PSRepo ->o] : SELECT id FROM publication_sample\nWHERE author_id = {authorId}
+PSRepo <--o] : data
+
+PSRepo --> PSService : listOfPubSampleIds
+deactivate PSRepo
+PSService--> Ctrl : listOfPubSampleIds
+deactivate PSService
+
+Ctrl -> ListService : findAllDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate ListService
+
+ListService -> LRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate LRepo
+
+LRepo ->o] : SELECT * FROM listings\nWHERE items_id IN {listOfPubSampleIds}
+LRepo <--o] : data
+
+LRepo --> ListService : listOfDSListings
+deactivate LRepo
+
+ListService --> Ctrl : listOfDSListings
+deactivate ListService
+
+Ctrl -> ListMapper : toDTOs(listOfDSListings)
+activate ListMapper
+ListMapper -->> listOfDSListingDTOs ** : «create»
+loop for each listing in listOfDSListings
+    ListMapper -> PSRepo : findById(listing.publicationSampleId())
+    activate PSRepo
+    PSRepo --> ListMapper : publicationSample
+    deactivate PSRepo
+
+    ListMapper -> AuthorRepo : findById(publicationSample.bdId())
+    activate AuthorRepo
+    AuthorRepo --> ListMapper : bibliographicalData
+    deactivate AuthorRepo
+
+    ListMapper -> ListMapper : getTitle(bibliographicalData)
+
+    ListMapper -> AuthorRepo : findById(authorId)
+    activate AuthorRepo
+    AuthorRepo --> ListMapper : author
+    deactivate AuthorRepo
+    ListMapper -> ListMapper : getAuthors(bibliographicalData)
+
+    ListMapper -->> listingDTO ** : «create»
+    ListMapper -> listOfDSListingDTOs : add(listingDTO)
+end
+ListMapper --> Ctrl : listOfDSListingDTOs
+deactivate ListMapper
+[o<-- Ctrl : listOfDSListingDTOs
+deactivate Ctrl
+@enduml
