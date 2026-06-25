@@ -100,4 +100,19 @@ public class GenreService {
 
         return genre;
     }
+
+    /**
+     * Checks whether the given user is authorized to create a new Genre.
+     *
+     * <p>Only administrators are authorized to create genres.</p>
+     *
+     * @param userId the ID of the user to check
+     * @return {@code true} if the user is authorized to create a Genre, {@code false} otherwise
+     * @throws IllegalArgumentException if no user exists with the given ID
+     */
+    public boolean canCreateGenre(UserId userId) {
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+        return policy.canCreateGenre(user);
+    }
 }
