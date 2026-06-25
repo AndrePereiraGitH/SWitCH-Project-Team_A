@@ -1,6 +1,6 @@
 @startuml
 title As a User, I want to get the list of publications in my library
-
+skinparam linetype ortho
 interface IUserRepositoryJPA {
     + findById(id: UserId): Optional<UserDM>
 }
