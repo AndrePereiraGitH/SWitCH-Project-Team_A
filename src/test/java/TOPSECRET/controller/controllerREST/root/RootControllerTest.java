@@ -22,9 +22,10 @@ import static org.mockito.Mockito.*;
  *
  * <p>Verifies the behaviour of the API root entry point across three scenarios:</p>
  * <ul>
- *   <li><b>200 OK</b> — valid requests that successfully assemble and return the root model.</li>
- *   <li><b>400 Bad Request</b> — invalid or missing user identifiers, and unresolvable users.</li>
- *   <li><b>500 Internal Server Error</b> — unexpected failures thrown by link providers.</li>
+ * <li><b>200 OK</b> — valid requests that successfully assemble and return the root model,
+ * as well as anonymous requests (null/empty userId) returning a self-link only.</li>
+ * <li><b>400 Bad Request</b> — invalid/unresolvable users throwing exceptions.</li>
+ * <li><b>500 Internal Server Error</b> — unexpected failures thrown by link providers.</li>
  * </ul>
  *
  * <p>All tests are pure unit tests using Mockito. No Spring context is loaded.</p>
@@ -111,16 +112,13 @@ class RootControllerTest {
 
         // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertTrue(response.getBody().hasLink("self"));
         assertEquals(1, response.getBody().getLinks().toList().size());
     }
 
-    // =========================================================================
-    // 400 Bad Request
-    // =========================================================================
-
     @Test
-    void getRoot_nullUserId_returns400() {
+    void getRoot_nullUserId_returns200WithSelfLinkOnly() {
         // Arrange
         RootController controller = new RootController(List.of(providerA, providerB));
 
@@ -128,11 +126,14 @@ class RootControllerTest {
         ResponseEntity<RepresentationModel<?>> response = controller.getRoot(null);
 
         // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLink("self"));
+        assertEquals(1, response.getBody().getLinks().toList().size());
     }
 
     @Test
-    void getRoot_emptyUserId_returns400() {
+    void getRoot_emptyUserId_returns200WithSelfLinkOnly() {
         // Arrange
         RootController controller = new RootController(List.of(providerA, providerB));
 
@@ -140,8 +141,15 @@ class RootControllerTest {
         ResponseEntity<RepresentationModel<?>> response = controller.getRoot("");
 
         // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().hasLink("self"));
+        assertEquals(1, response.getBody().getLinks().toList().size());
     }
+
+    // =========================================================================
+    // 400 Bad Request
+    // =========================================================================
 
     @Test
     void getRoot_providerThrowsInstanceNotFoundException_returns400()
