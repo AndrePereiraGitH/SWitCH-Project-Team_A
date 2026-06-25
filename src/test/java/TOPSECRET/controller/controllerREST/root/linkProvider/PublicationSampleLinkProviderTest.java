@@ -115,11 +115,10 @@ class PublicationSampleLinkProviderTest {
     }
 
     @Test
-    void getPublicLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
+    void getPublicLinks_shouldNotRequireUserId() {
 
         // Act & Assert
-        assertThrows(NullPointerException.class, () ->
-                provider.getOwnerLinks(null));
+        assertDoesNotThrow(() -> provider.getPublicLinks());
     }
 
     // =========================================================================
@@ -132,6 +131,7 @@ class PublicationSampleLinkProviderTest {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreatePublicationSample(user)).thenReturn(true);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
 
         // Act
         List<Link> links = provider.getOwnerLinks(userId);
@@ -146,6 +146,7 @@ class PublicationSampleLinkProviderTest {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
 
         // Act
         List<Link> links = provider.getOwnerLinks(userId);
@@ -155,17 +156,63 @@ class PublicationSampleLinkProviderTest {
     }
 
     @Test
+    void getOwnerLinks_shouldIncludeFindNotInLibraryLink_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getOwnerLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
+    }
+
+    @Test
+    void getOwnerLinks_shouldNotIncludeFindNotInLibraryLink_whenNotAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getOwnerLinks(userId);
+
+        // Assert
+        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
+    }
+
+    @Test
     void getOwnerLinks_shouldReturnEmptyList_whenNoPolicyGranted() throws InstanceNotFoundException {
 
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
 
         // Act
         List<Link> links = provider.getOwnerLinks(userId);
 
         // Assert
         assertTrue(links.isEmpty());
+    }
+
+    @Test
+    void getOwnerLinks_shouldReturnBothLinks_whenAllPoliciesGranted() throws InstanceNotFoundException {
+
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(true);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
+
+        // Act
+        List<Link> links = provider.getOwnerLinks(userId);
+
+        // Assert
+        assertEquals(2, links.size());
     }
 
     @Test
@@ -217,34 +264,6 @@ class PublicationSampleLinkProviderTest {
 
         // Assert
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-in-library")));
-    }
-
-    @Test
-    void getLibraryLinks_shouldIncludeFindNotInLibraryLink_whenAuthorized() throws InstanceNotFoundException {
-
-        // Arrange
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
-
-        // Act
-        List<Link> links = provider.getLibraryLinks(userId);
-
-        // Assert
-        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
-    }
-
-    @Test
-    void getLibraryLinks_shouldNotIncludeFindNotInLibraryLink_whenNotAuthorized() throws InstanceNotFoundException {
-
-        // Arrange
-        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
-        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
-
-        // Act
-        List<Link> links = provider.getLibraryLinks(userId);
-
-        // Assert
-        assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
     }
 
     @Test
@@ -309,7 +328,6 @@ class PublicationSampleLinkProviderTest {
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
-        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(false);
         when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
         when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
 
@@ -321,12 +339,11 @@ class PublicationSampleLinkProviderTest {
     }
 
     @Test
-    void getLibraryLinks_shouldReturnAllFourLinks_whenAllPoliciesGranted() throws InstanceNotFoundException {
+    void getLibraryLinks_shouldReturnAllThreeLinks_whenAllPoliciesGranted() throws InstanceNotFoundException {
 
         // Arrange
         when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
         when(policy.canFindPublicationsInLibrary(user)).thenReturn(true);
-        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
         when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(true);
         when(policy.canAddPublicationToLibrary(user)).thenReturn(true);
 
@@ -334,7 +351,7 @@ class PublicationSampleLinkProviderTest {
         List<Link> links = provider.getLibraryLinks(userId);
 
         // Assert
-        assertEquals(4, links.size());
+        assertEquals(3, links.size());
     }
 
     @Test
@@ -650,6 +667,26 @@ class PublicationSampleLinkProviderTest {
         assertFalse(links.stream().anyMatch(l -> l.getRel().value().equals("create-publication-sample")));
     }
 
+    @Test
+    void getLinks_whenCanFindNotInLibrary_containsFindNotInLibrary() throws InstanceNotFoundException {
+        // Arrange
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreatePublicationSample(user)).thenReturn(false);
+        when(policy.canFindPublicationsInLibrary(user)).thenReturn(false);
+        when(policy.canFindPublicationsNotInLibrary(user)).thenReturn(true);
+        when(policy.canFindByLibraryIdAndPublicationStatusNotIn(user)).thenReturn(false);
+        when(policy.canAddPublicationToLibrary(user)).thenReturn(false);
+        when(policy.canFindByCollectionOfPublicationsId(user)).thenReturn(false);
+        when(policy.canFindAvailableForCollection(user)).thenReturn(false);
+        when(policy.canAssignPublicationToCollection(user)).thenReturn(false);
+
+        // Act
+        List<Link> links = provider.getLinks(userId);
+
+        // Assert
+        assertTrue(links.stream().anyMatch(l -> l.getRel().value().equals("find-not-in-library")));
+    }
+
     // =========================================================================
     // Library links — conditional
     // =========================================================================
@@ -743,7 +780,7 @@ class PublicationSampleLinkProviderTest {
     }
 
     // =========================================================================
-    // User not found
+    // User not found / null userId
     // =========================================================================
 
 
@@ -754,5 +791,11 @@ class PublicationSampleLinkProviderTest {
 
         // Act & Assert
         assertThrows(InstanceNotFoundException.class, () -> provider.getLinks(userId));
+    }
+
+    @Test
+    void getLinks_shouldThrowNullPointerException_whenUserIdIsNull() {
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> provider.getLinks(null));
     }
 }
