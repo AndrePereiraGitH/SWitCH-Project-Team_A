@@ -86,23 +86,6 @@ public class CityRESTController {
     }
 
     /**
-     * Handles OPTIONS requests for the city detail endpoint ({@code /cities/{id}}).
-     *
-     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
-     * enabling CORS preflight requests and API discoverability.</p>
-     *
-     * @param id the unique identifier of the city; used for URL matching
-     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS}
-     */
-    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsById(@PathVariable String id) {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
-
-    /**
      * Creates and stores a new City.
      *
      * <p>The request DTO is converted before delegating the
