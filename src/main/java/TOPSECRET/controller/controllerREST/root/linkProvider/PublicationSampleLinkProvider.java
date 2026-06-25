@@ -101,9 +101,10 @@ public class PublicationSampleLinkProvider implements RootLinkProvider {
      * Generates a list of owner-scoped HATEOAS navigation links based on the
      * requesting user's permissions.
      *
-     * <p>The following link is conditionally included:</p>
+     * <p>The following links are conditionally included:</p>
      * <ul>
      *   <li>{@code create-publication-sample} — create a new publication sample.</li>
+     *   <li>{@code find-not-in-library} — retrieve publications not assigned to any library.</li>
      * </ul>
      *
      * @param userId the identifier of the requesting user; must not be {@code null}
@@ -124,6 +125,12 @@ public class PublicationSampleLinkProvider implements RootLinkProvider {
                     .withRel("create-publication-sample"));
         }
 
+        if (policy.canFindPublicationsNotInLibrary(user)) {
+            links.add(linkTo(methodOn(PublicationSampleRESTController.class)
+                    .findPublicationsNotInLibrary(null))
+                    .withRel("find-not-in-library"));
+        }
+
         return links;
     }
 
@@ -134,7 +141,6 @@ public class PublicationSampleLinkProvider implements RootLinkProvider {
      * <p>The following links are conditionally included:</p>
      * <ul>
      *   <li>{@code find-in-library} — retrieve user publications assigned to a library.</li>
-     *   <li>{@code find-not-in-library} — retrieve user publications not assigned to any library.</li>
      *   <li>{@code find-available-in-library} — retrieve available publications in the user's library.</li>
      *   <li>{@code add-to-library} — assign a publication sample to the user's library.</li>
      * </ul>
@@ -157,11 +163,6 @@ public class PublicationSampleLinkProvider implements RootLinkProvider {
                     .withRel("find-in-library"));
         }
 
-        if (policy.canFindPublicationsNotInLibrary(user)) {
-            links.add(linkTo(methodOn(PublicationSampleRESTController.class)
-                    .findPublicationsNotInLibrary(null))
-                    .withRel("find-not-in-library"));
-        }
 
         if (policy.canFindByLibraryIdAndPublicationStatusNotIn(user)) {
             links.add(linkTo(methodOn(PublicationSampleRESTController.class)
@@ -227,6 +228,11 @@ public class PublicationSampleLinkProvider implements RootLinkProvider {
      *
      * <p>Aggregates links from all four groups in order:
      * public, library, owner, and collection.</p>
+     *
+     * @param userId the identifier of the requesting user; must not be {@code null}
+     * @return the aggregated list of {@link Link} instances; never {@code null}
+     * @throws NullPointerException      if {@code userId} is {@code null}
+     * @throws InstanceNotFoundException if no user is found for the given {@code userId}
      */
     @Override
     public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {

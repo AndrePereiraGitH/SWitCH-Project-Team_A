@@ -108,7 +108,7 @@ public class ToPutForSaleAPublicationInDirectSaleController {
      * @throws IllegalArgumentException if any of the required parameters are {@code null} or invalid
      */
     public boolean createDirectSaleListing(String listingTitle, List<PublicationSampleId> pubSampleIds,
-                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures){
+                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) throws InstanceNotFoundException {
 
         if (listingTitle == null || listingTitle.isBlank())
             throw new IllegalArgumentException("Listing title cannot be null or blank.");

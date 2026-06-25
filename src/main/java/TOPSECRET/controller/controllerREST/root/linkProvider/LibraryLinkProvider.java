@@ -72,11 +72,11 @@ public class LibraryLinkProvider implements RootLinkProvider {
         }
         if (authPolicy.canGetLibrary(user, userId)) {
             links.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibrary(null))
+                    .getLibrary(null, null))
                     .withRel("get-library"));
 
             links.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getLibraryByUserId(userId.toString()))
+                    .getLibraryByUserId(userId.toString(), null))
                     .withRel("get-library-by-user"));
         }
         return links;
@@ -104,7 +104,7 @@ public class LibraryLinkProvider implements RootLinkProvider {
 
         if (authPolicy.canGetAllLibrary(user)) {
             links.add(linkTo(methodOn(LibraryRESTController.class)
-                    .getAllLibraries())
+                    .getAllLibraries(null))
                     .withRel("get-all-libraries"));
         }
         return links;

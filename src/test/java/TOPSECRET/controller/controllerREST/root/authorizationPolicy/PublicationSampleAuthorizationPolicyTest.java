@@ -22,15 +22,16 @@ import static org.mockito.Mockito.when;
  *
  * <p>Tests are organized into the following sections:</p>
  * <ul>
- *   <li><b>canCreatePublicationSample</b> — creation authorization.</li>
- *   <li><b>canFindByCollectionOfPublicationsId</b> — collection lookup authorization.</li>
- *   <li><b>canFindPublicationsOwnedByUserId</b> — owner lookup authorization.</li>
- *   <li><b>canFindPublicationsInLibrary</b> — library-assigned lookup authorization.</li>
- *   <li><b>canFindPublicationsNotInLibrary</b> — non-library lookup authorization.</li>
- *   <li><b>canFindByLibraryIdAndPublicationStatusNotIn</b> — status-filtered lookup authorization.</li>
- *   <li><b>canFindAvailableForCollection</b> — collection eligibility lookup authorization.</li>
- *   <li><b>canAddPublicationToLibrary</b> — library assignment authorization.</li>
- *   <li><b>canAssignPublicationToCollection</b> — collection assignment authorization.</li>
+ * <li><b>canCreatePublicationSample</b> — creation authorization.</li>
+ * <li><b>canFindByCollectionOfPublicationsId</b> — collection lookup authorization.</li>
+ * <li><b>canFindPublicationsOwnedByUserId</b> — owner lookup authorization.</li>
+ * <li><b>canFindPublicationsInLibrary</b> — library-assigned lookup authorization.</li>
+ * <li><b>canFindPublicationsNotInLibrary</b> — non-library lookup authorization.</li>
+ * <li><b>canFindByLibraryIdAndPublicationStatusNotIn</b> — status-filtered lookup authorization.</li>
+ * <li><b>canFindAvailableForCollection</b> — collection eligibility lookup authorization.</li>
+ * <li><b>canAddPublicationToLibrary</b> — library assignment authorization.</li>
+ * <li><b>canAssignPublicationToCollection</b> — collection assignment authorization.</li>
+ * <li><b>canFindPublicationsInPublicCollection</b> — public collection lookup authorization.</li>
  * </ul>
  */
 @ExtendWith(MockitoExtension.class)
@@ -292,6 +293,46 @@ class PublicationSampleAuthorizationPolicyTest {
 
         // Act
         boolean result = policy.canAssignPublicationToCollection(unauthorizedUser);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    // =========================================================================
+    // canFindPublicationsInPublicCollection
+    // =========================================================================
+
+    @Test
+    void canFindPublicationsInPublicCollection_shouldReturnTrue_whenUserIsNormalUser() {
+        // Arrange
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // Act
+        boolean result = policy.canFindPublicationsInPublicCollection(authorizedUser);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindPublicationsInPublicCollection_shouldReturnTrue_whenUserIsAdmin() {
+        // Arrange
+        when(authorizedUser.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        // Act
+        boolean result = policy.canFindPublicationsInPublicCollection(authorizedUser);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindPublicationsInPublicCollection_shouldReturnFalse_whenUserIsNotNormalUserOrAdmin() {
+        // Arrange
+        when(unauthorizedUser.getUserRoles()).thenReturn(Set.of());
+
+        // Act
+        boolean result = policy.canFindPublicationsInPublicCollection(unauthorizedUser);
 
         // Assert
         assertFalse(result);
