@@ -27,9 +27,11 @@ project-root/
 │   ├── Dockerfile               # Frontend image: Node build → nginx-unprivileged runtime
 │   ├── .dockerignore
 │   └── nginx.conf
+├── h2/
+│   └── Dockerfile               # H2 image: oscarfonts/h2 base + netcat-openbsd for healthcheck
 ├── Dockerfile                   # Backend image: Maven build → Temurin JRE runtime
 ├── .dockerignore
-├── docker-compose.yml           # Hardened runtime config for both services (US074, US075)
+├── docker-compose.yml           # Hardened runtime config for all services (US074, US075)
 ├── checkstyle.xml              # Checkstyle rules
 ├── lint                        # Lint script (Unix)
 ├── lint.bat                    # Lint script (Windows)
@@ -373,7 +375,7 @@ All artifacts are accessible from the **Actions → [run] → Artifacts** sectio
 
 ## Docker Images (US072)
 
-Both services are built as multi-stage Docker images, so build-time tooling (Maven, npm) never ships inside the final runtime image.
+All three services are built as Docker images. The backend and frontend use multi-stage builds so build-time tooling (Maven, npm) never ships inside the final runtime image.
 
 ### Backend — `Dockerfile`
 
@@ -401,6 +403,28 @@ Key practices:
 - `VITE_API_BASE_URL` is passed in as a build `ARG`/`ENV` rather than hardcoded, defaulting to `http://localhost:5173` if not supplied.
 - The final image exposes only port `5173`.
 
+### H2 Database — `h2/Dockerfile`
+
+| Stage | Base Image | Purpose |
+|---|---|---|
+| (single stage) | `oscarfonts/h2:2.2.224` | Runs the H2 TCP server; installs `netcat-openbsd` for the healthcheck |
+
+```dockerfile
+FROM oscarfonts/h2:2.2.224
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+```
+
+Key practices:
+- Base image is **pinned to a specific version tag** (`2.2.224`), not `latest`.
+- `netcat-openbsd` is installed solely to support the `nc -z localhost 9092` healthcheck used by Docker Compose. The package cache is removed in the same layer (`rm -rf /var/lib/apt/lists/*`) to keep the image small.
+- `--no-install-recommends` prevents unnecessary packages from being pulled in.
+- The image is tagged `mite-lovers-h2:${GIT_COMMIT:-latest}` in `docker-compose.yml`, consistent with the backend and frontend image tagging strategy (US076).
+
+The `h2` service builds from `./h2/Dockerfile` rather than pulling `oscarfonts/h2` directly, which means the H2 image is built and scanned by the CI `container-image-scan` job alongside the backend and frontend images, giving full Trivy coverage across all three services.
+
 ### `.dockerignore`
 
 | File | Excludes |
@@ -414,29 +438,29 @@ Excluding these paths keeps each build context small, keeps documentation/diagra
 
 ## Container Runtime Hardening & Compose Configuration (US074, US075, US076)
 
-`docker-compose.yml` defines the runtime configuration for both services, following least-privilege and resource-bounding principles.
+`docker-compose.yml` defines the runtime configuration for all three services, following least-privilege and resource-bounding principles.
 
 ### Hardened runtime settings (US074)
 
-| Setting | Backend | Frontend | Effect |
-|---|---|---|---|
-| `security_opt: no-new-privileges:true` | ✅ | ✅ | Prevents the container from gaining additional privileges (e.g. via setuid binaries) |
-| `cap_drop: ALL` | ✅ | ✅ | Drops all Linux capabilities — neither service needs any of them |
-| `read_only: true` | ✅ | — | Root filesystem mounted read-only; paired with a `tmpfs` mount at `/tmp` since the JVM still needs a writable temp directory |
-| `deploy.resources.limits` | 1.0 CPU / 512M | 0.5 CPU / 128M | Bounds the blast radius of a compromised or runaway container |
-| `restart: unless-stopped` | ✅ | ✅ | Restarts automatically on crash, but not after a deliberate stop |
+| Setting | Backend | Frontend | H2 | Effect |
+|---|---|---|---|---|
+| `security_opt: no-new-privileges:true` | ✅ | ✅ | ✅ | Prevents the container from gaining additional privileges (e.g. via setuid binaries) |
+| `cap_drop: ALL` | ✅ | ✅ | ✅ | Drops all Linux capabilities — no service needs any of them |
+| `read_only: true` | ✅ | — | — | Root filesystem mounted read-only; paired with a `tmpfs` mount at `/tmp` since the JVM still needs a writable temp directory |
+| `deploy.resources.limits` | 1.0 CPU / 512M | 0.5 CPU / 128M | 0.5 CPU / 256M | Bounds the blast radius of a compromised or runaway container |
+| `restart: unless-stopped` | ✅ | ✅ | ✅ | Restarts automatically on crash, but not after a deliberate stop |
 
 > The frontend does not set `read_only: true`. Nginx typically needs a writable path for PID files/caches unless those are also redirected to `tmpfs`; if full read-only enforcement is wanted for the frontend too, add equivalent `tmpfs` mounts (e.g. `/var/cache/nginx`, `/var/run`) the way the backend does for `/tmp`.
 
 ### Least-privilege Compose configuration (US075)
 
-- **Ports:** only the ports the application needs are published — `8081` (backend) and `5173` (frontend). No host volume mounts are defined.
-- **Health checks:** the backend polls `/actuator/health` and the frontend polls its own root path, both every 30s; the frontend's `depends_on: backend: condition: service_healthy` means it won't start serving traffic until the backend reports healthy, not merely running.
-- **Environment variables:** `SPRING_PROFILES_ACTIVE=prod` is the backend's only runtime environment variable; the frontend's API base URL is supplied as a **build-time** argument (`VITE_API_BASE_URL`), not a runtime one, since the Vite output is static.
+- **Ports:** only the ports each service needs are published — `8081` (backend), `5173` (frontend), and `127.0.0.1:9092` (H2, bound to loopback only so it is not reachable from outside the host).
+- **Health checks:** the backend polls `/actuator/health`, the frontend polls its own root path, and H2 uses `nc -z localhost 9092`, all on defined intervals; `depends_on: condition: service_healthy` ensures services only start once their dependencies are ready.
+- **Environment variables:** `SPRING_PROFILES_ACTIVE=prod` activates the production Spring profile on the backend; `DB_USERNAME` and `DB_PASSWORD` are injected at runtime from the host environment (`.env` file); the frontend's API base URL is supplied as a **build-time** argument (`VITE_API_BASE_URL`), not a runtime one, since the Vite output is static.
 
 ### Image versioning & traceability (US076)
 
-Both services are tagged `${GIT_COMMIT:-latest}` in `docker-compose.yml`, and the `push-to-registry` CI job tags published images with both `:latest` and `:${{ github.sha }}`. Combined with the `1.0-<short-sha>` JAR versioning in `publish-artifact`, this gives three coordinated traceability points back to the source commit: the JAR, the local Compose image tag, and the registry image tag.
+All three services are tagged `${GIT_COMMIT:-latest}` in `docker-compose.yml`, and the `push-to-registry` CI job tags published images with both `:latest` and `:${{ github.sha }}`. Combined with the `1.0-<short-sha>` JAR versioning in `publish-artifact`, this gives three coordinated traceability points back to the source commit: the JAR, the local Compose image tag, and the registry image tag.
 
 ---
 
@@ -553,10 +577,10 @@ Every PR must follow the project PR template, which includes:
 - **Changes Made** — bullet list of the main changes
 - **Checklist** — code guidelines, self-review, tests, documentation
 - **Security Review Checklist** — a structured set of items reviewers must confirm before approving (US069):
-  - **Input Validation** — user input is validated appropriately; invalid input is handled safely
-  - **Authentication** — marked not applicable, or confirmation that authentication-related changes were reviewed
-  - **Secrets** — confirmation that no credentials, passwords, or API keys were committed
-  - **Logging** — logs do not contain sensitive information; error messages do not expose implementation details
+    - **Input Validation** — user input is validated appropriately; invalid input is handled safely
+    - **Authentication** — marked not applicable, or confirmation that authentication-related changes were reviewed
+    - **Secrets** — confirmation that no credentials, passwords, or API keys were committed
+    - **Logging** — logs do not contain sensitive information; error messages do not expose implementation details
 - **Notes / Known Issues** — anything reviewers should be aware of
 - **Reviewer Notes** — specific areas where feedback is requested
 
@@ -630,8 +654,8 @@ A closing retrospective on the Sprint 7 DevSecOps work: what was implemented, wh
 | Dependency CVE scanning | US053, US071 (partial) | Hard gate via OWASP Dependency-Check |
 | Severity-tagged findings posted to PRs | US056 | Semgrep, OWASP, and Trivy all post PR comments |
 | Security code review checklist in PR template | US069 | Input Validation, Secrets, Logging items; Authentication marked N/A |
-| Hardened Dockerfiles (pinned images, multi-stage builds, non-root users, `.dockerignore`) | US072 | Both backend and frontend images |
-| Hardened container runtime (`cap_drop: ALL`, `no-new-privileges`, resource limits, healthchecks) | US074, US075 | `docker-compose.yml` |
+| Hardened Dockerfiles (pinned images, multi-stage builds, non-root users, `.dockerignore`) | US072 | Backend and frontend images; H2 image pinned and minimised |
+| Hardened container runtime (`cap_drop: ALL`, `no-new-privileges`, resource limits, healthchecks) | US074, US075 | `docker-compose.yml` — applied to all three services |
 | Image versioning & traceability (`:latest` + `:sha` tags, JAR SHA versioning) | US076 | |
 | Container image vulnerability scanning | US073 | Implemented, but as a **soft gate** — see below |
 | Registry publishing restricted to `main` (`push-to-registry`) | US073, US076 | Prevents unmerged PRs from overwriting `:latest` on Docker Hub; `pr-validation`'s gate condition was adjusted to tolerate the resulting skip on other branches |
@@ -708,6 +732,7 @@ The non-functional requirements defined by US046–US057 remain in force in Spri
 | Eclipse Temurin JRE (backend runtime) | 17.0.14_7 (Alpine) |
 | Node.js (frontend image build stage) | 20.14.0 (Alpine) |
 | nginx-unprivileged (frontend runtime) | 1.27 (Alpine) |
+| H2 (database image base) | oscarfonts/h2:2.2.224 |
 | JUnit Jupiter | 5.10.2 |
 | Mockito | 5.10.0 |
 | GitHub Actions runner | ubuntu-latest |
