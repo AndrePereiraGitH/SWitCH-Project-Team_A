@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,6 +23,7 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -670,6 +672,310 @@ class TransactionRESTControllerTest {
             // ACT
             ResponseEntity<List<TransactionResponseDTO>> response =
                     sut.findAllByBuyerId("buyer-1", "buyer-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+// =========================================================================
+    // optionsTransactions  (OPTIONS /transactions)
+    // =========================================================================
+
+    @Test
+    void optionsTransactions_shouldReturnOkWithPostAndOptions_whenUserCanCreate() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canCreateTransaction(any())).thenReturn(true);
+            when(transactionService.canViewAllTransactions(any())).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactions("buyer-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.POST));
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsTransactions_shouldReturnOkWithGetAndOptions_whenUserCanViewAll() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canCreateTransaction(any())).thenReturn(false);
+            when(transactionService.canViewAllTransactions(any())).thenReturn(true);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactions("admin-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.GET));
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.POST));
+        }
+    }
+
+    @Test
+    void optionsTransactions_shouldReturnOkWithOnlyOptions_whenUserCanDoNeither() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canCreateTransaction(any())).thenReturn(false);
+            when(transactionService.canViewAllTransactions(any())).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactions("user-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.POST));
+            assertFalse(allowed.contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsTransactions_shouldReturn404_whenUserNotFound() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canCreateTransaction(any()))
+                    .thenThrow(new EntityNotFoundException("User not found"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactions("unknown-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsTransactions_shouldReturn400_whenUserIdIsInvalid() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException("Invalid UUID"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactions("not-a-uuid");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsTransactions_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canCreateTransaction(any()))
+                    .thenThrow(new RuntimeException("Unexpected"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactions("any-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================================
+    // optionsTransactionById  (OPTIONS /transactions/{id})
+    // =========================================================================
+
+    @Test
+    void optionsTransactionById_shouldReturnOkWithGetAndOptions_whenUserCanView() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class))).thenReturn(true);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "buyer-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.GET));
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void optionsTransactionById_shouldReturnOkWithOnlyOptions_whenUserCannotView() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class))).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "user-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsTransactionById_shouldReturn404_whenUserNotFound() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class)))
+                    .thenThrow(new EntityNotFoundException("User not found"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "unknown-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsTransactionById_shouldReturn400_whenUserIdIsInvalid() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException("Invalid UUID"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "not-a-uuid");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsTransactionById_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            mapper.when(() -> TransactionMapper.toTransactionId(any())).thenReturn(mock(TransactionID.class));
+            when(transactionService.canViewTransaction(any(UserId.class), any(TransactionID.class)))
+                    .thenThrow(new RuntimeException("Unexpected"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionById("tx-1", "any-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================================
+    // optionsTransactionsByBuyer  (OPTIONS /transactions/buyer/{buyerId})
+    // =========================================================================
+
+    @Test
+    void optionsTransactionsByBuyer_shouldReturnOkWithGetAndOptions_whenUserCanView() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class))).thenReturn(true);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "buyer-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.GET));
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void optionsTransactionsByBuyer_shouldReturnOkWithOnlyOptions_whenUserCannotView() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class))).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "user-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsTransactionsByBuyer_shouldReturn404_whenUserNotFound() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class)))
+                    .thenThrow(new EntityNotFoundException("User not found"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "unknown-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsTransactionsByBuyer_shouldReturn400_whenUserIdIsInvalid() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException("Invalid UUID"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "not-a-uuid");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsTransactionsByBuyer_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+
+        // ARRANGE
+        try (MockedStatic<TransactionMapper> mapper = mockStatic(TransactionMapper.class)) {
+            mapper.when(() -> TransactionMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(transactionService.canViewTransactionsByBuyer(any(UserId.class), any(UserId.class)))
+                    .thenThrow(new RuntimeException("Unexpected"));
+
+            // ACT
+            ResponseEntity<Void> response = sut.optionsTransactionsByBuyer("buyer-1", "any-id");
 
             // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
