@@ -1,0 +1,51 @@
+@startuml
+autonumber
+hide footbox
+title Auction Persistence Mem
+
+participant ":IAuction\nRepository" as ARepo
+participant ":AuctionRepository\nMem" as ARepoMem
+participant "_auctionsMap:\nMap<AuctionId, Auction>" as auctionsMap
+
+ref over ARepo
+    [[MainDiagram.puml Back to main diagram]]
+end ref
+
+
+' =======================================================
+' findById
+' =======================================================
+
+ARepo -> ARepoMem : findById(auctionId)
+activate ARepo
+activate ARepoMem
+
+ARepoMem -> auctionsMap : get(auctionId)
+activate auctionsMap
+auctionsMap --> ARepoMem : auction
+deactivate auctionsMap
+
+ARepoMem --> ARepo : auction
+deactivate ARepoMem
+deactivate ARepo
+
+
+' =======================================================
+' update
+' =======================================================
+
+ARepo -> ARepoMem : update(auction)
+activate ARepo
+activate ARepoMem
+
+ARepoMem -> auctionsMap : put(auction.id(), auction)
+activate auctionsMap
+auctionsMap --> ARepoMem : auction
+deactivate auctionsMap
+
+ARepoMem --> ARepo : auction
+
+deactivate ARepoMem
+deactivate ARepo
+
+@enduml

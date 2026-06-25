@@ -1,0 +1,55 @@
+@startuml
+autonumber
+hide footbox
+title To place a bid on an auction
+
+actor Buyer
+participant "Frontend" as FE
+participant "Backend" as BE
+database "Database" as db
+
+Buyer -> FE : I want to bid on this auction
+activate FE
+
+FE --> Buyer : Specify the bid value
+deactivate FE
+
+Buyer -> FE : value
+activate FE
+
+FE -> BE : OPTIONS /auctions/{auctionId}/bids?userId={bidderId}
+
+activate BE
+BE --> FE : 200 OK\nAllow: OPTIONS [OPTIONS, POST]
+deactivate BE
+
+FE -> BE : POST /auctions/{auctionId}/bids?bidderId={bidderId}\nbody: {value}
+activate BE
+
+BE -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> BE : data
+deactivate db
+
+BE -> db : SELECT * FROM auctions WHERE id = ?
+activate db
+db --> BE : data
+deactivate db
+
+BE -> db : SELECT * FROM listings WHERE id = ?
+activate db
+db --> BE : data
+deactivate db
+
+BE -> db : UPDATE auctions\nSET bid_history = ..., current_highest_bid = ...\nWHERE id = ?
+activate db
+db --> BE : ok
+deactivate db
+
+BE --> FE : 204 No Content
+deactivate BE
+
+FE --> Buyer : Your bid was placed successfully
+deactivate FE
+
+@enduml

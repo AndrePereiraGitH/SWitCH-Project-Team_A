@@ -1,0 +1,20 @@
+@startuml
+autonumber
+hide footbox
+title To place a bid on an auction
+
+actor Buyer
+participant ":System" as System
+
+Buyer -> System : I want to place a bid\non this auction
+activate System
+System --> Buyer : Provide the value of your bid
+deactivate System
+
+Buyer -> System : value
+activate System
+
+System --> Buyer : Your bid was placed successfully
+deactivate System
+
+@enduml
