@@ -113,4 +113,29 @@ public class PublisherService {
                 .orElseThrow(() -> new EntityNotFoundException("Publisher not found"));
     }
 
+    /**
+     * Determines whether the requesting user is authorized to create a new publisher.
+     *
+     * <p>This method is intended to support HTTP OPTIONS discovery on the
+     * {@code /publishers} endpoint, allowing clients to determine in advance
+     * whether a POST operation would be permitted for the given user.</p>
+     *
+     * <p>Only users with the {@code ADMIN} role are authorized to create publishers.
+     * Regular users are restricted to read-only access.</p>
+     *
+     * <p>This method only checks role-based authorization and does not perform
+     * any validation on the publisher data itself.</p>
+     *
+     * @param requestingUserId the identifier of the user whose permissions are being checked;
+     *                         must not be {@code null}
+     * @return {@code true} if the user has the {@code ADMIN} role and is therefore
+     *         authorized to create a publisher, {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists with the given {@code requestingUserId}
+     */
+    public boolean canCreate(UserId requestingUserId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(requestingUserId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found: " + requestingUserId));
+        return authPolicy.canCreatePublisher(user);
+    }
+
 }
