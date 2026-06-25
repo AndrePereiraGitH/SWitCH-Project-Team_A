@@ -21,6 +21,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -49,7 +50,10 @@ import static org.mockito.Mockito.*;
  *     <li>{@code findById} — returns {@code 200 OK} when the author exists,
  *         {@code 404 Not Found} when the identifier format is invalid or the
  *         author does not exist,
- *         {@code 500 Internal Server Error} for unexpected errors.</li>
+ *         {@code 500 Internal Server Error} for unexpected errors;</li>
+ *     <li>{@code optionsRoot} — conditionally includes {@code POST} based on user authorization,
+ *         returns {@code 400 Bad Request} for an invalid user ID;</li>
+ *     <li>{@code optionsById} — always returns {@code GET} and {@code OPTIONS}.</li>
  * </ul>
  */
 @ExtendWith(MockitoExtension.class)
@@ -530,6 +534,91 @@ class AuthorRESTControllerTest {
             // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         }
+    }
+
+    // =========================================================
+    // OPTIONS ROOT
+    // =========================================================
+
+    @Test
+    void shouldIncludePostInAllowWhenUserCanCreateAuthor() {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        when(service.canCreateAuthor(userId)).thenReturn(true);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsRoot(userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void shouldNotIncludePostInAllowWhenUserCannotCreateAuthor() {
+
+        // ARRANGE
+        String userIdStr = "user-001";
+        UserId userId = mock(UserId.class);
+
+        when(service.canCreateAuthor(userId)).thenReturn(false);
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr)).thenReturn(userId);
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsRoot(userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void shouldReturnBadRequestForOptionsRootWhenUserIdIsInvalid() {
+
+        // ARRANGE
+        String userIdStr = "invalid";
+
+        try (MockedStatic<AuthorMapper> mapper = mockStatic(AuthorMapper.class)) {
+            mapper.when(() -> AuthorMapper.toUserId(userIdStr))
+                    .thenThrow(new IllegalArgumentException("Invalid user ID"));
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsRoot(userIdStr);
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    // =========================================================
+    // OPTIONS BY ID
+    // =========================================================
+
+    @Test
+    void shouldReturnGetAndOptionsAllowedForOptionsByAuthorId() {
+
+        // ACT
+        ResponseEntity<Void> response = controller.optionsById("any-author-id");
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
     }
 
     // =========================================================

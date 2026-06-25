@@ -163,4 +163,48 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
     }
 
+    /**
+     * Checks whether the user with the given ID is allowed to register a new user.
+     *
+     * @param requesterId the identifier of the requesting user; must not be {@code null}
+     * @return {@code true} if the user has permission to register users
+     * @throws NoSuchElementException if no user exists with the given identifier
+     */
+    public boolean canRegisterUser(UserId requesterId) {
+        Objects.requireNonNull(requesterId, "requesterId cannot be null");
+        User user = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new NoSuchElementException("User not found: " + requesterId));
+        return policy.canRegisterUser(user);
+    }
+
+    /**
+     * Checks whether the user with the given ID is allowed to list all users.
+     *
+     * @param requesterId the identifier of the requesting user; must not be {@code null}
+     * @return {@code true} if the user has permission to list all users
+     * @throws NoSuchElementException if no user exists with the given identifier
+     */
+    public boolean canFindAllUsers(UserId requesterId) {
+        Objects.requireNonNull(requesterId, "requesterId cannot be null");
+        User user = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new NoSuchElementException("User not found: " + requesterId));
+        return policy.canFindAllUsers(user);
+    }
+
+    /**
+     * Checks whether the requesting user is allowed to view the target user's data.
+     *
+     * @param requesterId  the identifier of the requesting user; must not be {@code null}
+     * @param targetUserId the identifier of the target user; must not be {@code null}
+     * @return {@code true} if the requester is the target user or has admin permission
+     * @throws NoSuchElementException if no user exists with the given requester identifier
+     */
+    public boolean canFindUserById(UserId requesterId, UserId targetUserId) {
+        Objects.requireNonNull(requesterId, "requesterId cannot be null");
+        Objects.requireNonNull(targetUserId, "targetUserId cannot be null");
+        User user = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new NoSuchElementException("User not found: " + requesterId));
+        return policy.canFindUserById(user, targetUserId);
+    }
+
 }

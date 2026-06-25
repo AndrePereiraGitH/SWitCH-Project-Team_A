@@ -15,11 +15,14 @@ import TOPSECRET.dto.author.AuthorMapper;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingDetailsDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +31,9 @@ import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -55,10 +60,10 @@ public class ListingRESTController {
     private final ListingLinkProvider listingLinkProvider;
     private final PublisherService publisherService;
     private final UserService userService;
+    private final ListingMapper listingMapper;
 
     private enum LinkContext {
-        AUTHENTICATED_USER,
-        PUBLIC
+        AUTHENTICATED_USER, PUBLIC
     }
 
     // =========================================================================
@@ -68,14 +73,14 @@ public class ListingRESTController {
     /**
      * Creates a new {@code ListingRESTController}.
      *
-     * @param biblioDataService the service used to retrieve bibliographical data
-     * @param publicationService the service used to retrieve publication samples
-     * @param listingService the service used to manage listings
-     * @param editionService the service used to manage editions
+     * @param biblioDataService   the service used to retrieve bibliographical data
+     * @param publicationService  the service used to retrieve publication samples
+     * @param listingService      the service used to manage listings
+     * @param editionService      the service used to manage editions
      * @param listingLinkProvider the provider used to generate listing HATEOAS links
      */
     @Autowired
-    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService, UserService userService) {
+    public ListingRESTController(BibliographicalDataService biblioDataService, PublicationSampleService publicationService, ListingService listingService, EditionService editionService, AuthorService authorService, GenreService genreService, ListingLinkProvider listingLinkProvider, PublisherService publisherService, UserService userService, ListingMapper listingMapper) {
         this.biblioDataService = biblioDataService;
         this.publicationService = publicationService;
         this.listingService = listingService;
@@ -85,6 +90,7 @@ public class ListingRESTController {
         this.listingLinkProvider = listingLinkProvider;
         this.publisherService = publisherService;
         this.userService = userService;
+        this.listingMapper = listingMapper;
     }
 
     // =========================================================================
@@ -99,7 +105,7 @@ public class ListingRESTController {
      * bibliographical data, and returns the created listing as a response DTO.</p>
      *
      * @param listingRequestDTO the request body containing the listing information
-     * @param userId the identifier of the user creating the listing
+     * @param userId            the identifier of the user creating the listing
      * @return {@code 201 CREATED} with the created listing,
      * {@code 403 FORBIDDEN} if the user is not allowed to create it,
      * {@code 400 BAD REQUEST} if the request contains invalid data,
@@ -120,15 +126,7 @@ public class ListingRESTController {
             Price price = ListingMapper.toPrice(listingRequestDTO.getPrice());
             List<Picture> pictures = listingRequestDTO.getPictures() == null ? List.of() : listingRequestDTO.getPictures().stream().map(ListingMapper::toPicture).toList();
 
-            Listing listing = listingService.createAndSave(
-                    listingRequestDTO.getListingTitle(),
-                    itemsId,
-                    saleType,
-                    price,
-                    listingRequestDTO.getShortDescription(),
-                    userIdVO,
-                    pictures
-            );
+            Listing listing = listingService.createAndSave(listingRequestDTO.getListingTitle(), itemsId, saleType, price, listingRequestDTO.getShortDescription(), userIdVO, pictures);
 
             ListingDetailsDTO dto = convertIntoListingDetailsDTO(listing, LinkContext.AUTHENTICATED_USER, userIdVO);
 
@@ -144,6 +142,33 @@ public class ListingRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods supported by this endpoint.
+     *
+     * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsRoot(
+            @NotBlank @RequestParam String requesterId) throws InstanceNotFoundException {
+
+        try {
+            UserId sellerId = UserMapper.toUserId(requesterId);
+
+            Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS, HttpMethod.GET));
+
+            if (listingService.canCreate(sellerId)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(new HttpMethod[0])).build();
+        } catch (NullPointerException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
     // =========================================================================
     // READ / GET ENDPOINTS
     // =========================================================================
@@ -162,9 +187,7 @@ public class ListingRESTController {
      * or {@code 500 INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ListingDetailsDTO> findById(
-            @PathVariable String id
-    ) {
+    public ResponseEntity<ListingDetailsDTO> findById(@PathVariable String id) {
         try {
             ListingId listingId = ListingMapper.toListingId(id);
 
@@ -198,22 +221,10 @@ public class ListingRESTController {
      * or {@code 500_INTERNAL_SERVER_ERROR} for unexpected errors
      */
     @GetMapping("")
-    public ResponseEntity<List<ListingDetailsDTO>> findAll(
-            @RequestParam(required = false) String genreId,
-            @RequestParam(required = false) String authorId,
-            @RequestParam(required = false) String publisherId,
-            @RequestParam(required = false) String saleType,
-            @RequestParam(required = false) String bibliographicalDataId
-    ) {
+    public ResponseEntity<List<ListingDetailsDTO>> findAll(@RequestParam(required = false) String genreId, @RequestParam(required = false) String authorId, @RequestParam(required = false) String publisherId, @RequestParam(required = false) String saleType, @RequestParam(required = false) String bibliographicalDataId) {
 
         try {
-            List<Listing> filteredListings = listingService.findAllFiltered(
-                    genreId != null ? ListingMapper.toGenreId(genreId) : null,
-                    authorId != null ? AuthorMapper.toAuthorId(authorId) : null,
-                    publisherId != null ? ListingMapper.toPublisherId(publisherId) : null,
-                    saleType != null ? ListingMapper.toSaleType(saleType) : null,
-                    bibliographicalDataId != null ? ListingMapper.toBibliographicalDataId(bibliographicalDataId) : null
-            );
+            List<Listing> filteredListings = listingService.findAllFiltered(genreId != null ? ListingMapper.toGenreId(genreId) : null, authorId != null ? AuthorMapper.toAuthorId(authorId) : null, publisherId != null ? ListingMapper.toPublisherId(publisherId) : null, saleType != null ? ListingMapper.toSaleType(saleType) : null, bibliographicalDataId != null ? ListingMapper.toBibliographicalDataId(bibliographicalDataId) : null);
 
             List<ListingDetailsDTO> allDTO = new ArrayList<>();
 
@@ -231,6 +242,7 @@ public class ListingRESTController {
 
     }
 
+
     /**
      * Retrieves all listings (direct sale and auction) associated with the given
      * bibliographical data identifier.
@@ -242,18 +254,17 @@ public class ListingRESTController {
      * <p>No authentication is required — this endpoint is publicly accessible.</p>
      *
      * @param bibliographicalDataId the unique identifier of the bibliographical data
-     * (publication) used to filter listings; must not be
-     * {@code null} or blank
+     *                              (publication) used to filter listings; must not be
+     *                              {@code null} or blank
      * @return {@code 200 OK} with the list of matching {@link ListingDetailsDTO} objects,
      * {@code 400 BAD REQUEST} if the identifier is invalid,
      * {@code 404 NOT FOUND} if no related data is found,
      * or {@code 500 INTERNAL SERVER ERROR} for unexpected errors
      */
     @GetMapping("/by-publication/{bibliographicalDataId}")
-    public ResponseEntity<List<ListingDetailsDTO>> findListingsByPublication
-    (@PathVariable String bibliographicalDataId) {
+    public ResponseEntity<List<ListingDetailsDTO>> findListingsByPublication(@PathVariable String bibliographicalDataId) {
 
-        try{
+        try {
             BibliographicalDataId bdId = ListingMapper.toBibliographicalDataId(bibliographicalDataId);
 
             List<PublicationSampleId> allPublicationIdsWithSpecificBdId = publicationService.findIdsByBibliographicalDataIdIn(List.of(bdId));
@@ -313,7 +324,6 @@ public class ListingRESTController {
         }
     }
 
-
     /**
      * Retrieves all listings (direct sale and auction) associated with publications
      * of the given genre.
@@ -325,7 +335,7 @@ public class ListingRESTController {
      * <p>No authentication is required — this endpoint is publicly accessible.</p>
      *
      * @param genreId the identifier of the genre used to filter listings; must not be
-     * {@code null} or blank
+     *                {@code null} or blank
      * @return {@code 200 OK} with the list of matching {@link ListingDetailsDTO} objects,
      * {@code 400 BAD REQUEST} if the identifier is invalid,
      * {@code 404 NOT FOUND} if no related data is found,
@@ -338,8 +348,7 @@ public class ListingRESTController {
             GenreId genId = ListingMapper.toGenreId(genreId);
 
             List<BibliographicalDataId> genreBiblioData = biblioDataService.findAllByGenreId(genId);
-            List<PublicationSampleId> genrePublicationSamples =
-                    publicationService.findIdsByBibliographicalDataIdIn(genreBiblioData);
+            List<PublicationSampleId> genrePublicationSamples = publicationService.findIdsByBibliographicalDataIdIn(genreBiblioData);
 
             if (genrePublicationSamples.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(List.of());
@@ -413,7 +422,7 @@ public class ListingRESTController {
      *
      * <p>Updates the listing's status to {@code SOLD} and propagates the status
      * change to all associated publication samples.</p>
-     *
+     * <p>
      * authentication is integrated, rather than supplied as a request parameter.</p>
      *
      * @param listingId the identifier of the listing to mark as sold
@@ -456,6 +465,38 @@ public class ListingRESTController {
         }
     }
 
+    /**
+     * Returns the HTTP methods supported by this endpoint.
+     *
+     * @return {@code 200 OK} with the allowed HTTP methods in the {@code Allow} header
+     */
+    @RequestMapping(value = "/{listingId}/sold", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsListingSold(@PathVariable String listingId, @RequestParam String userId) {
+
+        try {
+            UserId buyerId = ListingMapper.toUserId(userId);
+            ListingId listId = ListingMapper.toListingId(listingId);
+
+            Set<HttpMethod> allowed = new HashSet<>(Set.of(HttpMethod.OPTIONS));
+
+            if (listingService.canMarkListingAsSold(buyerId, listId)) {
+                allowed.add(HttpMethod.PATCH);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(new HttpMethod[0])).build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+    }
+
     // =========================================================================
     // PRIVATE HELPER METHODS - DATA EXTRACTION
     // =========================================================================
@@ -471,9 +512,7 @@ public class ListingRESTController {
         List<BibliographicalData> bibliographicalDatas = new ArrayList<>();
 
         for (PublicationSample pubSample : pubSamples) {
-            BibliographicalData bd = biblioDataService.findById(
-                    pubSample.getBibliographicalDataID()
-            );
+            BibliographicalData bd = biblioDataService.findById(pubSample.getBibliographicalDataID());
             bibliographicalDatas.add(bd);
         }
         return bibliographicalDatas;
@@ -503,11 +542,7 @@ public class ListingRESTController {
      * @return a list containing the distinct publishers associated with the editions
      */
     private List<Publisher> getPublishers(List<Edition> editions) {
-        return editions.stream()
-                .map(Edition::getPublisherID)
-                .distinct()
-                .map(publisherService::findById)
-                .toList();
+        return editions.stream().map(Edition::getPublisherID).distinct().map(publisherService::findById).toList();
     }
 
     /**
@@ -517,9 +552,7 @@ public class ListingRESTController {
      * @return a list containing the editions associated with the publication samples
      */
     private List<Edition> getEditions(List<PublicationSample> pubSamples) {
-        return  pubSamples.stream()
-                .map(pub -> editionService.findById(pub.getEditionID()))
-                .toList();
+        return pubSamples.stream().map(pub -> editionService.findById(pub.getEditionID())).toList();
     }
 
     /**
@@ -530,11 +563,7 @@ public class ListingRESTController {
      */
     private List<Genre> getGenres(List<BibliographicalData> bibliographicalDatas) {
 
-        return bibliographicalDatas.stream()
-                .flatMap(bd -> bd.getGenres().stream())
-                .distinct()
-                .map(genreService::findById)
-                .toList();
+        return bibliographicalDatas.stream().flatMap(bd -> bd.getGenres().stream()).distinct().map(genreService::findById).toList();
     }
 
     /**
@@ -545,11 +574,7 @@ public class ListingRESTController {
      */
     private List<Author> getAuthors(List<BibliographicalData> bibliographicalDatas) {
 
-        return bibliographicalDatas.stream()
-                .flatMap(bd -> bd.getAuthors().stream())
-                .distinct()
-                .map(authorService::findById)
-                .toList();
+        return bibliographicalDatas.stream().flatMap(bd -> bd.getAuthors().stream()).distinct().map(authorService::findById).toList();
     }
 
 
@@ -573,9 +598,9 @@ public class ListingRESTController {
      *
      * @param listing the listing to convert
      * @param context the link context that determines whether authenticated-user
-     *                 and auction links are added
+     *                and auction links are added
      * @param userId  the requesting user's identifier, required only when using
-     *                 {@link LinkContext#AUTHENTICATED_USER}
+     *                {@link LinkContext#AUTHENTICATED_USER}
      * @return the listing details DTO with the corresponding HATEOAS links
      * @throws InstanceNotFoundException if related listing data cannot be found
      */
@@ -593,16 +618,7 @@ public class ListingRESTController {
             buyer = getBuyer(listing.getBuyerId());
         }
 
-        ListingDetailsDTO dto = ListingMapper.toListingDetailsDTO(
-                listing,
-                pubSamples,
-                bibliographicalDatas,
-                editions,
-                authors,
-                genres,
-                publishers,
-                buyer
-        );
+        ListingDetailsDTO dto = ListingMapper.toListingDetailsDTO(listing, pubSamples, bibliographicalDatas, editions, authors, genres, publishers, buyer);
 
         List<Link> links = new ArrayList<>(listingLinkProvider.getPublicLinks());
 
@@ -614,9 +630,7 @@ public class ListingRESTController {
             }
         }
 
-        links.add(linkTo(methodOn(ListingRESTController.class)
-                .findById(listing.id().getId()))
-                .withSelfRel());
+        links.add(linkTo(methodOn(ListingRESTController.class).findById(listing.id().getId())).withSelfRel());
 
         links.forEach(dto::add);
 

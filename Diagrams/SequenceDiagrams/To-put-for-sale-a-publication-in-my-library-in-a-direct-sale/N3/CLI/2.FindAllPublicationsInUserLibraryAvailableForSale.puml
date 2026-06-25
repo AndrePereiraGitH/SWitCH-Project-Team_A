@@ -1,0 +1,62 @@
+@startuml
+autonumber
+hide footbox
+title Find Available Publications For Sale
+
+participant ":ToPutForSaleAPublication\nInDirectSaleController" as Ctrl
+participant ":PublicationSample\nService" as PubService
+participant ":IUser\nRepository" as UserRepo
+participant ":PublicationSample\nAuthorizationPolicy" as Policy
+participant ":ILibrary\nRepository" as LibRepo
+participant ":IPublicationSample\nRepository" as PubRepo
+
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+Ctrl -> PubService: findByLibraryIdAndPublicationStatusNotIn(userId)
+activate Ctrl
+activate PubService
+PubService -> UserRepo : findByID(userId)
+activate UserRepo
+UserRepo ->o] : QUERY users BY id={userId}
+UserRepo <--o] : data
+UserRepo --> PubService : user: Optional<User>
+deactivate UserRepo
+
+alt user not found
+    PubService --> Ctrl: EntityNotFoundException
+end
+
+PubService -> Policy : canFindByLibraryIdAndPublicationStatusNotIn(user)
+activate Policy
+Policy --> PubService : boolean
+deactivate Policy
+
+alt not allowed
+    PubService --> Ctrl: AccessDeniedException
+end
+
+PubService -> LibRepo : findByUserId(userId)
+activate LibRepo
+LibRepo ->o] : QUERY libraries BY id={userId}
+LibRepo <--o] : data
+LibRepo --> PubService : libraryId
+deactivate LibRepo
+
+alt library not found
+    PubService --> Ctrl: EntityNotFoundException
+end
+
+PubService -> PubRepo : findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded)
+activate PubRepo
+PubRepo ->o] : persist query
+PubRepo <--o] : data
+PubRepo --> PubService : publicationSamplesAvailable
+deactivate PubRepo
+PubService --> Ctrl : publicationSamplesAvailable
+deactivate PubService
+deactivate Ctrl
+
+@enduml

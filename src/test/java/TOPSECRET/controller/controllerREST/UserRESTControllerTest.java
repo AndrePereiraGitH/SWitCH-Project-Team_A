@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,6 +25,7 @@ import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceAlreadyExistsException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,6 +51,10 @@ class UserRESTControllerTest {
     @InjectMocks
     private UserRESTController controller;
 
+    // =========================================================================
+    // registerUser
+    // =========================================================================
+
     @Test
     void registerUser_shouldReturnCreated_whenValidRequest() throws Exception {
 
@@ -61,13 +67,9 @@ class UserRESTControllerTest {
 
         when(requestDouble.username()).thenReturn("newuser");
         when(requestDouble.role()).thenReturn("NORMAL_USER");
-
         when(createdUserDouble.id()).thenReturn(createdUserIdDouble);
         when(createdUserIdDouble.getUserId()).thenReturn("user-001");
-
-        when(userService.createAndSave(any(), any(), any(), any()))
-                .thenReturn(createdUserDouble);
-
+        when(userService.createAndSave(any(), any(), any(), any())).thenReturn(createdUserDouble);
         when(userLinkProvider.getLinksForUserResource(any(UserId.class), any(UserId.class)))
                 .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
 
@@ -103,7 +105,6 @@ class UserRESTControllerTest {
             mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new IllegalArgumentException());
 
@@ -131,7 +132,6 @@ class UserRESTControllerTest {
             mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new InstanceAlreadyExistsException());
 
@@ -159,7 +159,6 @@ class UserRESTControllerTest {
             mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new AccessDeniedException("denied"));
 
@@ -187,7 +186,6 @@ class UserRESTControllerTest {
             mapperMock.when(() -> UserMapper.toUserId(any())).thenReturn(requesterIdDouble);
             mapperMock.when(() -> UserMapper.toProfile(any())).thenReturn(mock(Profile.class));
             mapperMock.when(() -> UserMapper.toRole(any())).thenReturn(UserRole.NORMAL_USER);
-
             when(userService.createAndSave(any(), any(), any(), any()))
                     .thenThrow(new RuntimeException());
 
@@ -201,6 +199,10 @@ class UserRESTControllerTest {
         }
     }
 
+    // =========================================================================
+    // getAllUsers
+    // =========================================================================
+
     @Test
     void getAllUsers_shouldReturnOk_whenUsersExist() throws Exception {
 
@@ -211,10 +213,8 @@ class UserRESTControllerTest {
         ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
         when(userService.findAll(requesterIdDouble)).thenReturn(List.of(userDouble));
-
         when(userDouble.id()).thenReturn(userIdDouble);
         when(userIdDouble.getUserId()).thenReturn("user-001");
-
         when(userLinkProvider.getLinksForUserResource(any(UserId.class), any(UserId.class)))
                 .thenReturn(List.of());
 
@@ -230,6 +230,37 @@ class UserRESTControllerTest {
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertNotNull(response.getBody());
             assertEquals(1, response.getBody().size());
+        }
+    }
+
+    @Test
+    void getAllUsers_shouldAddProviderLinksToEachDto_whenLinkProviderReturnsLinks() throws Exception {
+
+        // ARRANGE
+        User userDouble = mock(User.class);
+        UserId requesterIdDouble = mock(UserId.class);
+        UserId userIdDouble = mock(UserId.class);
+        ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
+        Link link = Link.of("http://localhost/users/id").withRel("get-user");
+
+        when(userService.findAll(requesterIdDouble)).thenReturn(List.of(userDouble));
+        when(userDouble.id()).thenReturn(userIdDouble);
+        when(userIdDouble.getUserId()).thenReturn("user-001");
+        when(userLinkProvider.getLinksForUserResource(any(UserId.class), any(UserId.class)))
+                .thenReturn(List.of(link));
+
+        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId("admin-001")).thenReturn(requesterIdDouble);
+            mapperMock.when(() -> UserMapper.toDTO(userDouble)).thenReturn(responseDTO);
+
+            // ACT
+            ResponseEntity<List<ResponseUserDTO>> response =
+                    controller.getAllUsers("admin-001");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertNotNull(response.getBody());
+            assertTrue(response.getBody().get(0).hasLink("get-user"));
         }
     }
 
@@ -256,6 +287,56 @@ class UserRESTControllerTest {
     }
 
     @Test
+    void getAllUsers_shouldReturnBadRequest_whenIllegalArgumentException() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapperMock = mockStatic(UserMapper.class)) {
+            mapperMock.when(() -> UserMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException("Invalid ID"));
+
+            // ACT
+            ResponseEntity<List<ResponseUserDTO>> response =
+                    controller.getAllUsers("invalid-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void getAllUsers_shouldReturnForbidden_whenAccessIsDenied() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.findAll(any())).thenThrow(new AccessDeniedException("forbidden"));
+
+            // ACT
+            ResponseEntity<List<ResponseUserDTO>> response = controller.getAllUsers("user-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void getAllUsers_shouldReturnNotFound_whenUserDoesNotExist() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.findAll(any())).thenThrow(new NoSuchElementException("not found"));
+
+            // ACT
+            ResponseEntity<List<ResponseUserDTO>> response = controller.getAllUsers("unknown");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
     void getAllUsers_shouldReturnInternalServerError_whenUnexpectedException() {
 
         // Arrange
@@ -276,6 +357,10 @@ class UserRESTControllerTest {
         }
     }
 
+    // =========================================================================
+    // getUser
+    // =========================================================================
+
     @Test
     void getUser_shouldReturnOk_whenUserExists() throws Exception {
 
@@ -285,9 +370,7 @@ class UserRESTControllerTest {
         UserId targetUserIdDouble = mock(UserId.class);
         ResponseUserDTO responseDTO = new ResponseUserDTO("id", "user", "name", "email", "ADMIN");
 
-        when(userService.findByIDNew(targetUserIdDouble, requesterIdDouble))
-                .thenReturn(userDouble);
-
+        when(userService.findByIDNew(targetUserIdDouble, requesterIdDouble)).thenReturn(userDouble);
         when(userLinkProvider.getLinksForUserResource(requesterIdDouble, targetUserIdDouble))
                 .thenReturn(List.of(Link.of("http://localhost/users").withRel("get-user")));
 
@@ -323,6 +406,22 @@ class UserRESTControllerTest {
             // Assert
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
             assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void getUser_shouldReturnForbidden_whenAccessIsDenied() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.findByIDNew(any(), any())).thenThrow(new AccessDeniedException("forbidden"));
+
+            // ACT
+            ResponseEntity<ResponseUserDTO> response = controller.getUser("user-1", "other-user");
+
+            // ASSERT
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
     }
 
@@ -371,6 +470,215 @@ class UserRESTControllerTest {
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
             assertNull(response.getBody());
+        }
+    }
+
+    // =========================================================================
+    // optionsUsers  (OPTIONS /users)
+    // =========================================================================
+
+    @Test
+    void optionsUsers_shouldReturnOkWithPostAndOptions_whenUserCanRegister() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canRegisterUser(any())).thenReturn(true);
+            when(userService.canFindAllUsers(any())).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUsers("admin-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.POST));
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsUsers_shouldReturnOkWithGetAndOptions_whenUserCanFindAll() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canRegisterUser(any())).thenReturn(false);
+            when(userService.canFindAllUsers(any())).thenReturn(true);
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUsers("admin-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.GET));
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.POST));
+        }
+    }
+
+    @Test
+    void optionsUsers_shouldReturnOkWithOnlyOptions_whenUserCanDoNeither() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canRegisterUser(any())).thenReturn(false);
+            when(userService.canFindAllUsers(any())).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUsers("user-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.POST));
+            assertFalse(allowed.contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsUsers_shouldReturn404_whenUserNotFound() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canRegisterUser(any()))
+                    .thenThrow(new NoSuchElementException("User not found"));
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUsers("unknown-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsUsers_shouldReturn400_whenUserIdIsInvalid() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException("Invalid UUID"));
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUsers("not-a-uuid");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsUsers_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canRegisterUser(any()))
+                    .thenThrow(new RuntimeException("Unexpected"));
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUsers("any-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================================
+    // optionsUserById  (OPTIONS /users/{id})
+    // =========================================================================
+
+    @Test
+    void optionsUserById_shouldReturnOkWithGetAndOptions_whenUserCanView() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canFindUserById(any(), any())).thenReturn(true);
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUserById("user-1", "admin-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.GET));
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void optionsUserById_shouldReturnOkWithOnlyOptions_whenUserCannotView() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canFindUserById(any(), any())).thenReturn(false);
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUserById("user-1", "other-user");
+
+            // ASSERT
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Set<HttpMethod> allowed = response.getHeaders().getAllow();
+            assertTrue(allowed.contains(HttpMethod.OPTIONS));
+            assertFalse(allowed.contains(HttpMethod.GET));
+        }
+    }
+
+    @Test
+    void optionsUserById_shouldReturn404_whenRequesterNotFound() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canFindUserById(any(), any()))
+                    .thenThrow(new NoSuchElementException("User not found"));
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUserById("user-1", "unknown-id");
+
+            // ASSERT
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsUserById_shouldReturn400_whenUserIdIsInvalid() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any()))
+                    .thenThrow(new IllegalArgumentException("Invalid UUID"));
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUserById("not-a-uuid", "admin-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsUserById_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
+
+        // ARRANGE
+        try (MockedStatic<UserMapper> mapper = mockStatic(UserMapper.class)) {
+            mapper.when(() -> UserMapper.toUserId(any())).thenReturn(mock(UserId.class));
+            when(userService.canFindUserById(any(), any()))
+                    .thenThrow(new RuntimeException("Unexpected"));
+
+            // ACT
+            ResponseEntity<Void> response = controller.optionsUserById("user-1", "admin-1");
+
+            // ASSERT
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         }
     }
 }

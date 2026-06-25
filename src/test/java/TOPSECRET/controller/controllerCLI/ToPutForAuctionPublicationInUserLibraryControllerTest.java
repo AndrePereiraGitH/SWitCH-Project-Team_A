@@ -220,7 +220,7 @@ class ToPutForAuctionPublicationInUserLibraryControllerTest {
     }
 
     @Test
-    void createAuctionListing_shouldThrow_whenListingAlreadyExists() {
+    void createAuctionListing_shouldThrow_whenListingAlreadyExists() throws InstanceNotFoundException {
 
         // arrange
         LocalDateTime initialDate = LocalDateTime.of(2026, 4, 8, 10, 0);

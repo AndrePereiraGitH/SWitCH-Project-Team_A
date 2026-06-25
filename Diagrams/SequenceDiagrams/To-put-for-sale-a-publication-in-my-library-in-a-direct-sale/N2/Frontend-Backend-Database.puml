@@ -1,0 +1,72 @@
+@startuml
+autonumber
+hide footbox
+title To put for sale a publication in my library in a direct sale
+
+actor User
+participant "Frontend" as FE
+participant "Backend" as BE
+database "Database" as db
+
+' ==========================================
+' 1 — Find available publications for sale
+' ==========================================
+
+User -> FE : I want to put for sale\na publication in a direct sale
+activate FE
+
+FE -> BE : OPTIONS /publicationSamples/available-for-sale
+activate BE
+BE --> FE : 200 OK\nAllow: GET, OPTIONS
+deactivate BE
+
+FE -> BE : GET /publicationSamples/available-for-sale?userId={userId}
+activate BE
+BE -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> BE : data
+deactivate db
+BE -> db : SELECT * FROM publication_sample\nWHERE owner_id = ? AND status NOT IN ('FOR_SALE', 'SOLD')
+activate db
+db --> BE : data
+deactivate db
+BE --> FE : 200 OK\nbody: publicationDTOS
+deactivate BE
+
+FE --> User : Which publication(s)?\nChoose from the list!
+deactivate FE
+
+' ==========================================
+' 2 — Create direct sale listing
+' ==========================================
+
+User -> FE : Selected publication(s)
+activate FE
+FE --> User : Specify title, price,\nshort description and pictures
+deactivate FE
+
+User -> FE : title, price, short description, pictures
+activate FE
+
+FE -> BE : OPTIONS /listings
+activate BE
+BE --> FE : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate BE
+
+FE -> BE : POST /listings\nbody: {title, selectedPublicationIds,\nsaleType, price, shortDescription, userId, pictures}
+activate BE
+BE -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> BE : data
+deactivate db
+BE -> db : INSERT INTO listings ...
+activate db
+db --> BE : data
+deactivate db
+BE --> FE : 201 Created\nbody: listingDTO
+deactivate BE
+
+FE --> User : Publication(s) put for direct\nsale with success
+deactivate FE
+
+@enduml
