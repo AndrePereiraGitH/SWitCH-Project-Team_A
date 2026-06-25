@@ -1,0 +1,34 @@
+@startuml
+autonumber
+hide footbox
+title Listing Persistence In-Memory
+
+participant ":IListing\nRepository" as LRepo
+participant ":ListingRepository\nMem" as LRepoMem
+participant "listings:\nList<Listing>" as listings
+
+ref over LRepo
+    [[REST/1.MainDiagram.puml Back to main diagram REST]]
+    [[CLI/1.MainDiagram.puml Back to main diagram CLI]]
+end ref
+
+LRepo -> LRepoMem : save(listing)
+activate LRepo
+activate LRepoMem
+
+LRepoMem -> LRepoMem : existsById(listing)
+
+alt listing already exists
+    LRepoMem --> LRepo : IllegalArgumentException
+end
+
+LRepoMem -> listings : add(listing)
+activate listings
+listings --> LRepoMem : ok
+deactivate listings
+
+LRepoMem --> LRepo : listing
+deactivate LRepoMem
+deactivate LRepo
+
+@enduml

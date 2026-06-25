@@ -1,0 +1,129 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given publication (Full Diagram)
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nPublicationController" as Ctrl
+participant ":US023Bibliographical\nDataMapper" as BDMapper
+participant ":BibliographicalData\nService" as BDService
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant "listOfAllBDDTOs:\nList<US023Bibliographical\nDataDTO>" as listOfAllBDDTOs
+participant "bdDTO:\nUS023Bibliographical\nDataDTO" as bdDTO
+participant ":IAuthor\nRepository" as AuthorRepo
+
+participant ":US023Listing\nMapper" as ListMapper
+participant ":PublicationSample\nService" as PSService
+participant ":IPublicationSample\nRepository" as PSRepo
+participant ":IListing\nService" as ListService
+participant ":IListing\nRepository" as LRepo
+participant "listOfDSListingDTOs:\nList<US023ListingDTO>" as listOfDSListingDTOs
+participant "listingDTO:\nUS023ListingDTO" as listingDTO
+
+
+' ==========================================
+' 1 — Get all bibliographical data
+' ==========================================
+
+[o-> Ctrl : findAllBibliographicalData()
+activate Ctrl
+
+Ctrl -> BDService : findAll()
+activate BDService
+BDService -> BDRepo : findAll()
+activate BDRepo
+
+BDRepo ->o] : SELECT * FROM bibliographical_data
+BDRepo <-o] : data
+
+BDRepo --> BDService : listOfAllBD
+deactivate BDRepo
+BDService --> Ctrl : listOfAllBD
+deactivate BDService
+
+Ctrl -> BDMapper : toDTOs(listOfAllBD)
+activate BDMapper
+BDMapper -->> listOfAllBDDTOs ** : «create»
+loop for each bd in listOfAllBD
+    BDMapper -> AuthorRepo : findById(authorId)
+    activate AuthorRepo
+    AuthorRepo --> BDMapper : author
+        deactivate AuthorRepo
+    BDMapper -> BDMapper: bd.id().toString()
+    BDMapper -> BDMapper: bd.getTitle();
+    BDMapper -->> bdDTO ** : «create»
+    BDMapper -> listOfAllBDDTOs : add(bdDTO)
+end
+BDMapper --> Ctrl : listOfAllBDDTOs
+deactivate BDMapper
+
+[o<-- Ctrl : listOfAllBDDTOs
+deactivate Ctrl
+
+
+' =======================================================
+' 2 — Get listings on direct sale for a given publication
+' =======================================================
+
+[o-> Ctrl : findListOfItemsOnDirectSale(bdId)
+activate Ctrl
+
+Ctrl -> PSService : findIdsByBibliographicalDataIdIn(bdId)
+activate PSService
+PSService -> PSRepo : findIdsByBibliographicalDataIdIn(bdId)
+activate PSRepo
+
+PSRepo ->o] : SELECT id FROM publication_sample\nWHERE bibliographical_data_id = {bdId}
+PSRepo <--o] : data
+
+PSRepo --> PSService : listOfPubSampleIds
+deactivate PSRepo
+PSService--> Ctrl : listOfPubSampleIds
+deactivate PSService
+
+Ctrl -> ListService : findAllDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate ListService
+
+ListService -> LRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate LRepo
+
+LRepo ->o] : SELECT * FROM listings\nWHERE items_id IN {listOfPubSampleIds}
+LRepo <--o] : data
+
+LRepo --> ListService : listOfDSListings
+deactivate LRepo
+
+ListService --> Ctrl : listOfDSListings
+deactivate ListService
+
+Ctrl -> ListMapper : toDTOs(listOfDSListings)
+activate ListMapper
+ListMapper -->> listOfDSListingDTOs ** : «create»
+loop for each listing in listOfDSListings
+    ListMapper -> PSRepo : findById(listing.publicationSampleId())
+    activate PSRepo
+    PSRepo --> ListMapper : publicationSample
+    deactivate PSRepo
+
+    ListMapper -> BDRepo : findById(publicationSample.bdId())
+    activate BDRepo
+    BDRepo --> ListMapper : bibliographicalData
+    deactivate BDRepo
+
+    ListMapper -> ListMapper : getTitle(bibliographicalData)
+
+    ListMapper -> AuthorRepo : findById(authorId)
+    activate AuthorRepo
+    AuthorRepo --> ListMapper : author
+    deactivate AuthorRepo
+    ListMapper -> ListMapper : getAuthors(bibliographicalData)
+
+    ListMapper -->> listingDTO ** : «create»
+    ListMapper -> listOfDSListingDTOs : add(listingDTO)
+end
+ListMapper --> Ctrl : listOfDSListingDTOs
+deactivate ListMapper
+[o<-- Ctrl : listOfDSListingDTOs
+deactivate Ctrl
+
+@enduml

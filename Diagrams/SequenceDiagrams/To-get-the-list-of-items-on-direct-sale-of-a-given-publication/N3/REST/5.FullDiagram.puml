@@ -1,0 +1,165 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given publication (Full Diagram)
+
+
+participant ":Router" as Router
+participant ":BibliographicalData\nRESTController" as BDCtrl
+participant ":BibliographicalData\nMapper" as BDMapper
+participant ":IBibliographicalData\nService" as BDService
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":BibliographicalData\nLinkProvider" as BDLinkProvider
+participant "listOfAllBDDTOs:\nList<BibliographicalDataDTO>" as listOfAllBDDTOs
+participant "bdDTO:\nBibliographicalDataDTO" as bdDTO
+
+participant ":ListingREST\nController" as ListCtrl
+participant ":Listing\nMapper" as ListMapper
+participant ":IListing\nService" as ListService
+participant ":IPublicationSample\nRepository" as PSRepo
+participant ":IListing\nRepository" as LRepo
+participant ":Listing\nLinkProvider" as ListLinkProvider
+
+
+' ==========================================
+' 1 — Get all bibliographical data
+' ==========================================
+
+[o-> Router : OPTIONS /bibliographicalDatas
+activate Router
+Router -> BDCtrl : optionsRoot()
+activate BDCtrl
+BDCtrl --> Router : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate BDCtrl
+[o<-- Router : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate Router
+
+[o-> Router : GET /bibliographicalDatas
+activate Router
+Router -> BDCtrl : getAllBibliographicalData()
+activate BDCtrl
+
+BDCtrl -> BDService : findAll()
+activate BDService
+
+BDService -> BDRepo : findAll()
+activate BDRepo
+
+BDRepo ->o] : SELECT * FROM bibliographical_data
+BDRepo <-o] : data
+
+BDRepo --> BDService : listOfAllBD
+deactivate BDRepo
+
+BDService --> BDCtrl : listOfAllBD
+deactivate BDService
+
+BDCtrl -> BDService : buildAuthorNamesMap(listOfAllBD)
+activate BDService
+BDService --> BDCtrl : authorNamesMap
+deactivate BDService
+
+BDCtrl -> BDMapper : toDTOs(listOfAllBD, authorNamesMap)
+activate BDMapper
+BDMapper -->> listOfAllBDDTOs ** : «create»
+loop for each bd in listOfAllBD
+    BDMapper -->> bdDTO ** : «create»
+    BDMapper -> listOfAllBDDTOs : add(bdDTO)
+end
+BDMapper --> BDCtrl : listOfAllBDDTOs
+deactivate BDMapper
+
+BDCtrl -> BDLinkProvider : getPublicLinksForBibliographicalData()
+activate BDLinkProvider
+BDLinkProvider --> BDCtrl : links
+deactivate BDLinkProvider
+
+BDCtrl -> BDCtrl : links.forEach(collectionModel::add)
+
+BDCtrl --> Router : 200 OK\nbody: listOfAllBDDTOs
+deactivate BDCtrl
+[o<-- Router : 200 OK\nbody: listOfAllBDDTOs
+deactivate Router
+
+
+' =======================================================
+' 2 — Get listings on direct sale for a given publication
+' =======================================================
+
+[o-> Router : OPTIONS /listings
+activate Router
+Router -> ListCtrl : optionsListings()
+activate ListCtrl
+ListCtrl --> Router : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate ListCtrl
+[o<-- Router : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate Router
+
+[o-> Router : GET /listings?bibliographicalDataId={bdId}&saleType=DIRECT_SALE
+activate Router
+
+Router -> ListCtrl : findAll(null, null, null, "DIRECT_SALE", bdId)
+activate ListCtrl
+
+ListCtrl -> ListMapper : toSaleType("DIRECT_SALE")
+activate ListMapper
+ListMapper --> ListCtrl : saleType: SaleType
+deactivate ListMapper
+
+ListCtrl -> ListMapper : toBibliographicalDataId(bdId)
+activate ListMapper
+ListMapper --> ListCtrl : bdId: BibliographicalDataId
+deactivate ListMapper
+
+ListCtrl -> ListService : findAllFiltered(null, null, null, saleType, bdId)
+activate ListService
+
+' Section 3 — Get all listings
+ListService -> LRepo : findAll()
+activate LRepo
+LRepo ->o] : SELECT * FROM listings
+LRepo <--o] : data
+LRepo --> ListService : allListings
+deactivate LRepo
+
+' Section 4 — Resolve PublicationSample IDs for that BibliographicalData ID
+ListService -> PSRepo : findIdsByBibliographicalDataIdIn([bdId])
+activate PSRepo
+
+PSRepo ->o] : SELECT id FROM publication_sample\nWHERE bibliographical_data_id IN {bdId}
+PSRepo <--o] : data
+
+PSRepo --> ListService : listOfPubSampleIds
+deactivate PSRepo
+
+ListService -> ListService : filterByPublicationSampleIds(allListings, listOfPubSampleIds)
+
+' Section 5 — Filter the remaining listings by sale type
+ListService -> ListService : listings.stream()\n.filter(l -> l.getSaleType().equals(saleType))
+
+ListService --> ListCtrl : listOfDSListings
+deactivate ListService
+
+' Section 6 — Build DTOs with HATEOAS links
+loop for each listing in listOfDSListings
+    ListCtrl -> ListCtrl : convertIntoListingDetailsDTO(listing, PUBLIC, null)
+    ListCtrl -> ListMapper : toListingDetailsDTO(listing, pubSamples,\nbiblioDatas, editions, authors, genres,\npublishers, buyer)
+    activate ListMapper
+    ListMapper --> ListCtrl : listingDetailsDTO
+    deactivate ListMapper
+
+    ListCtrl -> ListLinkProvider : getPublicLinks()
+    activate ListLinkProvider
+    ListLinkProvider --> ListCtrl : links
+    deactivate ListLinkProvider
+
+    ListCtrl -> ListCtrl : links.add(linkTo(methodOn(ListCtrl)\n.findById(listing.id())).withSelfRel())
+    ListCtrl -> ListCtrl : links.forEach(listingDetailsDTO::add)
+end
+
+ListCtrl --> Router : 200 OK\nbody: listOfListingDetailsDTOs
+deactivate ListCtrl
+[o<-- Router : 200 OK\nbody: listOfListingDetailsDTOs
+deactivate Router
+
+@enduml

@@ -1,7 +1,6 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.Library.ILibraryRepository;
 import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
@@ -13,11 +12,8 @@ import TOPSECRET.services.PublicationSampleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -44,7 +40,6 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     // ====================== Set Up ================================
     // ==============================================================
 
-    private ILibraryRepository libraryRepoDouble;
     private PublicationSampleService pubSampleServiceDouble;
     private US015PublicationSampleMapper mapperDouble;
     private ListingService listingServiceDouble;
@@ -61,7 +56,6 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     void setup() {
 
         // Repos & Services
-        libraryRepoDouble = mock(ILibraryRepository.class);
         pubSampleServiceDouble = mock(PublicationSampleService.class);
         listingServiceDouble = mock(ListingService.class);
 
@@ -92,9 +86,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
 
     // ── Helper ────────────────────────────────────────────────────
     private ToPutForSaleAPublicationInDirectSaleController buildController() {
-        return new ToPutForSaleAPublicationInDirectSaleController(
-                libraryRepoDouble, pubSampleServiceDouble,
-                listingServiceDouble, mapperDouble);
+        return new ToPutForSaleAPublicationInDirectSaleController(pubSampleServiceDouble, listingServiceDouble, mapperDouble);
     }
 
     // ==============================================================
@@ -102,23 +94,12 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     // ==============================================================
 
     @Test
-    void constructor_ShouldThrowExceptionWhenLibraryRepoIsNull() {
-        // Arrange (Handled by @BeforeEach)
-
-        // Act + Assert
-        assertThrows(IllegalArgumentException.class, () ->
-                new ToPutForSaleAPublicationInDirectSaleController(null, pubSampleServiceDouble,
-                        listingServiceDouble, mapperDouble));
-    }
-
-    @Test
     void constructor_ShouldThrowExceptionWhenPubSampleServiceIsNull() {
         // Arrange (Handled by @BeforeEach)
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new ToPutForSaleAPublicationInDirectSaleController(libraryRepoDouble, null,
-                        listingServiceDouble, mapperDouble));
+                new ToPutForSaleAPublicationInDirectSaleController(null, listingServiceDouble, mapperDouble));
     }
 
     @Test
@@ -127,8 +108,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new ToPutForSaleAPublicationInDirectSaleController(libraryRepoDouble, pubSampleServiceDouble,
-                        null, mapperDouble));
+                new ToPutForSaleAPublicationInDirectSaleController(pubSampleServiceDouble, null, mapperDouble));
     }
 
     @Test
@@ -137,8 +117,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
 
         // Act + Assert
         assertThrows(IllegalArgumentException.class, () ->
-                new ToPutForSaleAPublicationInDirectSaleController(libraryRepoDouble, pubSampleServiceDouble,
-                        listingServiceDouble, null));
+                new ToPutForSaleAPublicationInDirectSaleController(pubSampleServiceDouble, listingServiceDouble, null));
     }
 
 
@@ -161,7 +140,6 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.findByUserId(userIdDouble)).thenReturn(Optional.of(libraryDouble));
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double, pubSample2Double);
         when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn( userIdDouble))
@@ -187,8 +165,6 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.findByUserId(userIdDouble)).thenReturn(Optional.of(libraryDouble));
-
         when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))
                 .thenReturn(List.of());
 
@@ -208,7 +184,6 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         // Arrange
         LibraryId libraryIdDouble = mock(LibraryId.class);
         when(libraryDouble.id()).thenReturn(libraryIdDouble);
-        when(libraryRepoDouble.findByUserId(userIdDouble)).thenReturn(Optional.of(libraryDouble));
 
         List<PublicationSample> pubSamples = List.of(pubSample1Double);
         when(pubSampleServiceDouble.findByLibraryIdAndPublicationStatusNotIn(userIdDouble))
@@ -298,7 +273,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     }
 
     @Test
-    void createDirectSaleListing_ShouldReturnListingCreatedByListingService() throws InstanceAlreadyExistsException, AccessDeniedException {
+    void createDirectSaleListing_ShouldReturnTrueWhenListingIsCreated() {
         // Arrange
         Listing expectedListing = mock(Listing.class);
         when(listingServiceDouble.createAndSave("title", List.of(pubSampleId1Double), SaleType.DIRECT_SALE,
@@ -308,11 +283,10 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
         ToPutForSaleAPublicationInDirectSaleController controller = buildController();
 
         // Act
-        Listing result = controller.createDirectSaleListing("title", List.of(pubSampleId1Double),
+        Boolean result = controller.createDirectSaleListing("title", List.of(pubSampleId1Double),
                 priceDouble, "short description", userIdDouble, picturesDouble);
 
         // Assert
-        assertNotNull(result);
-        assertSame(expectedListing, result);
+        assertTrue(result);
     }
 }
