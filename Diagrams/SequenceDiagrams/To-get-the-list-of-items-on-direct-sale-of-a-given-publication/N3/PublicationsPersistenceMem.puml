@@ -1,0 +1,28 @@
+@startuml
+autonumber
+hide footbox
+title Bibliographical Data Persistence In-Memory
+
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":BibliographicalData\nRepositoryMem" as BDRepoMem
+participant "_bdList:\nList<BibliographicalData>" as bdList
+
+ref over BDRepo
+    [[REST/2.GetAllPublications.puml Back to Get All Publications Diagram REST]]
+    [[CLI/2.GetAllPublications.puml Back to Get All Publications Diagram CLI]]
+end ref
+
+BDRepo -> BDRepoMem : findAll()
+activate BDRepo
+activate BDRepoMem
+
+BDRepoMem -> bdList : copyOf()
+activate bdList
+bdList --> BDRepoMem : listOfBD
+deactivate bdList
+
+BDRepoMem --> BDRepo : listOfBD
+deactivate BDRepoMem
+deactivate BDRepo
+
+@enduml

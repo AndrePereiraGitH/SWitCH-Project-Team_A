@@ -18,6 +18,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,6 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -530,5 +532,115 @@ class BibliographicalDataRESTControllerTest {
         // Assert
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNull(response.getBody());
+    }
+
+    // ================================================================
+    // ======================= Options Tests ==========================
+    // ================================================================
+
+    @Test
+    void optionsBibliographicalData_shouldReturnPublicMethods_whenRequesterIsAnonymous() {
+        // Act
+        ResponseEntity<?> response = controller.optionsBibliographicalData(null);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(
+                Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                response.getHeaders().getAllow()
+        );
+        verifyNoInteractions(service);
+    }
+
+    @Test
+    void optionsBibliographicalData_shouldIncludePost_whenRequesterCanCreate()
+            throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "user-1";
+        UserId userId = mock(UserId.class);
+
+        when(service.canCreate(userId)).thenReturn(true);
+
+        try (MockedStatic<BibliographicalDataMapper> mockedMapper =
+                     mockStatic(BibliographicalDataMapper.class)) {
+            mockedMapper.when(() -> BibliographicalDataMapper.toUserId(requesterId))
+                    .thenReturn(userId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsBibliographicalData(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(
+                    Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS),
+                    response.getHeaders().getAllow()
+            );
+        }
+    }
+
+    @Test
+    void optionsBibliographicalData_shouldNotIncludePost_whenRequesterCannotCreate()
+            throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "user-1";
+        UserId userId = mock(UserId.class);
+
+        when(service.canCreate(userId)).thenReturn(false);
+
+        try (MockedStatic<BibliographicalDataMapper> mockedMapper =
+                     mockStatic(BibliographicalDataMapper.class)) {
+            mockedMapper.when(() -> BibliographicalDataMapper.toUserId(requesterId))
+                    .thenReturn(userId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsBibliographicalData(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertEquals(
+                    Set.of(HttpMethod.GET, HttpMethod.OPTIONS),
+                    response.getHeaders().getAllow()
+            );
+        }
+    }
+
+    @Test
+    void optionsBibliographicalData_shouldReturnBadRequest_whenRequesterIdIsInvalid() {
+        // Arrange
+        String requesterId = "";
+
+        try (MockedStatic<BibliographicalDataMapper> mockedMapper =
+                     mockStatic(BibliographicalDataMapper.class)) {
+            mockedMapper.when(() -> BibliographicalDataMapper.toUserId(requesterId))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<?> response = controller.optionsBibliographicalData(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsBibliographicalData_shouldReturnNotFound_whenRequesterDoesNotExist()
+            throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "missing-user";
+        UserId userId = mock(UserId.class);
+
+        when(service.canCreate(userId)).thenThrow(new InstanceNotFoundException("User not found"));
+
+        try (MockedStatic<BibliographicalDataMapper> mockedMapper =
+                     mockStatic(BibliographicalDataMapper.class)) {
+            mockedMapper.when(() -> BibliographicalDataMapper.toUserId(requesterId))
+                    .thenReturn(userId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsBibliographicalData(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
     }
 }

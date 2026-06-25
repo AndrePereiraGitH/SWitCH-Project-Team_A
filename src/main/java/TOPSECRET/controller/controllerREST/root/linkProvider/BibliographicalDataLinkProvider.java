@@ -1,6 +1,7 @@
 package TOPSECRET.controller.controllerREST.root.linkProvider;
 
 import TOPSECRET.controller.controllerREST.BibliographicalDataRESTController;
+import TOPSECRET.controller.controllerREST.root.RootLinkProvider;
 import TOPSECRET.controller.controllerREST.root.authorizationPolicy.BibliographicalDataAuthorizationPolicy;
 import TOPSECRET.domain.User.IUserRepository;
 import TOPSECRET.domain.ValueObjects.UserId;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
 import org.springframework.stereotype.Component;
 
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * </ul>
  */
 @Component
-public class BibliographicalDataLinkProvider {
+public class BibliographicalDataLinkProvider implements RootLinkProvider {
 
     private final BibliographicalDataAuthorizationPolicy authorizationPolicy;
     private final IUserRepository userRepo;
@@ -102,5 +104,18 @@ public class BibliographicalDataLinkProvider {
                 .withRel("get-bibliographical-data-by-id"));
 
         return links;
+    }
+
+    /**
+     * Aggregates and returns all HATEOAS links (registered and public)
+     * available for the specified user.
+     *
+     * @param userId the identifier of the user requesting the links
+     * @return a comprehensive list of all applicable HATEOAS links for the user
+     * @throws InstanceNotFoundException if no user exists with the given identifier
+     */
+    @Override
+    public List<Link> getLinks(UserId userId) throws InstanceNotFoundException {
+        return getRegisteredUserLinksForBibliographicalData(userId);
     }
 }

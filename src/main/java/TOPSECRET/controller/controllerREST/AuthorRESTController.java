@@ -12,6 +12,7 @@ import TOPSECRET.services.AuthorService;
 import TOPSECRET.services.CountryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,7 +23,9 @@ import jakarta.validation.Valid;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -33,10 +36,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
  * <p>Exposes endpoints for creating and querying authors, and coordinates the
  * interaction between DTOs, domain objects, application services, and HATEOAS links.</p>
  *
- * <p>Endpoints are grouped into two categories:</p>
+ * <p>Endpoints are grouped into three categories:</p>
  * <ul>
  *   <li><b>Public</b> — retrieval endpoints; no authentication required.</li>
  *   <li><b>Private</b> — creation endpoints; require a valid authenticated user.</li>
+ *   <li><b>OPTIONS</b> — discoverability endpoints; conditionally reflect the requesting user's permitted methods.</li>
  * </ul>
  */
 @RestController
@@ -166,6 +170,53 @@ public class AuthorRESTController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    // =========================================================================
+    // OPTIONS
+    // =========================================================================
+
+    /**
+     * Returns the HTTP methods allowed on the authors root resource for the given user.
+     *
+     * <p>Always includes {@code GET} and {@code OPTIONS}. {@code POST} is included only if the
+     * requesting user is authorized to create authors.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         or HTTP 400 if the user ID is invalid
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot(@RequestParam String userId) {
+        try {
+            UserId id = AuthorMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+            if (service.canCreateAuthor(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    /**
+     * Returns the HTTP methods allowed on the {@code /{authorId}} resource.
+     *
+     * <p>This endpoint is public. {@code GET} and {@code OPTIONS} are always allowed.</p>
+     *
+     * @param authorId the unique identifier of the author
+     * @return HTTP 200 with an {@code Allow} header containing {@code GET} and {@code OPTIONS}
+     */
+    @RequestMapping(value = "/{authorId}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsById(@PathVariable String authorId) {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
+                .build();
     }
 
     // =========================================================================

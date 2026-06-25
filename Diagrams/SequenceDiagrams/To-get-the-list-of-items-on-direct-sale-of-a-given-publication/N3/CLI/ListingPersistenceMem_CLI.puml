@@ -1,0 +1,46 @@
+@startuml
+autonumber
+hide footbox
+title Listing Persistence In-Memory
+
+participant ":IListing\nRepository" as LRepo
+participant ":ListingRepository\nMem" as LRepoMem
+participant "listOfDSListings:\nList<Listing>" as listings
+
+ref over LRepo
+    [[1.MainDiagram.puml Back to main diagram CLI]]
+end ref
+
+' =======================================================
+' CLI path — findAllByDirectSaleAndPublicationSampleIdIn filters by sale type in repository
+' =======================================================
+
+LRepo -> LRepoMem : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate LRepo
+activate LRepoMem
+
+LRepoMem -->> listings **: «create»
+loop for each listing in listings
+    LRepoMem -> listings : isListingLinkedToADirectSale()
+    activate listings
+    listings --> LRepoMem : isDirectSale
+    deactivate listings
+
+    alt isDirectSale
+        loop for each pubSampleId in listOfPubSampleIds
+            LRepoMem -> listings : containsPubSampleId(pubSampleId)
+            activate listings
+            listings --> LRepoMem : matches
+            deactivate listings
+            alt matches
+                LRepoMem -> listings : add(listing)
+            end
+        end
+    end
+end
+
+LRepoMem --> LRepo : listOfDSListings
+deactivate LRepoMem
+deactivate LRepo
+
+@enduml
