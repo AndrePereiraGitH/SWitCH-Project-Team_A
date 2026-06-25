@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Trash2, CheckCircle, CreditCard, MapPin, Mail } from "lucide-react";
 import { useCart } from "../components/CartContext";
 import { usePurchases } from "../components/PurchasesContext";
+import { useTransactions } from "../components/TransactionsContext";
 
 const emptyShipping = { street: "", number: "", zipCode: "", city: "" };
 const emptyPayment = { cardHolderName: "", cardNumber: "", expiryMonth: "", expiryYear: "" };
@@ -17,22 +18,49 @@ export function Cart() {
     const navigate = useNavigate();
     const { items, removeFromCart, clearCart } = useCart();
     const { addPurchase } = usePurchases();
+    const CURRENT_USER_ID = "user-001";
+    const { createTransaction, markListingAsSold, getCities } = useTransactions();
+
+    const [cities, setCities] = useState([]);
+
+    useEffect(() => {
+        async function loadCities() {
+            try {
+                const data = await getCities();
+                setCities(data);
+            } catch (error) {
+                console.error("Error loading cities:", error);
+            }
+        }
+        loadCities();
+    }, []);
 
     const [step, setStep] = useState("idle");
     const [shipping, setShipping] = useState(emptyShipping);
     const [payment, setPayment] = useState(emptyPayment);
     const [shippingErrors, setShippingErrors] = useState({});
     const [paymentErrors, setPaymentErrors] = useState({});
-    const [purchaseTotal, setPurchaseTotal] = useState(0);
+    const [confirmedTotal, setConfirmedTotal] = useState(0);
 
     const total = items.reduce((sum, item) => sum + item.price, 0);
+
+    function findCityId(cityName) {
+        const match = cities.find(
+            c => c.cityName.trim().toLowerCase() === cityName.trim().toLowerCase()
+        );
+        return match ? match.cityId : null;
+    }
 
     function validateShipping() {
         const errors = {};
         if (!shipping.street.trim()) errors.street = "Street is required";
         if (!shipping.number.trim()) errors.number = "Number is required";
         if (!shipping.zipCode.trim()) errors.zipCode = "Zip code is required";
-        if (!shipping.city.trim()) errors.city = "City is required";
+        if (!shipping.city.trim()) {
+            errors.city = "City is required";
+        } else if (!findCityId(shipping.city)) {
+            errors.city = "City not recognized. Please check the spelling.";
+        }
         setShippingErrors(errors);
         return Object.keys(errors).length === 0;
     }
@@ -53,15 +81,41 @@ export function Cart() {
         if (validateShipping()) setStep("payment");
     }
 
-    function handlePaymentConfirm() {
-        if (validatePayment()) {
-            const confirmedTotal = total;
-            
-            setPurchaseTotal(confirmedTotal);
-            
-            addPurchase(items, shipping, maskCardNumber(payment.cardNumber), confirmedTotal);
+    async function handlePaymentConfirm() {
+        if (!validatePayment()) return;
+
+        try {
+            const payload = {
+                buyerId: CURRENT_USER_ID,
+                price: total.toFixed(2),
+                transactionDate: new Date().toISOString().slice(0, 19),
+                street: shipping.street,
+                number: shipping.number,
+                zipCode: shipping.zipCode,
+                cityId: findCityId(shipping.city),
+                cardHolderName: payment.cardHolderName,
+                maskedCardNumber: maskCardNumber(payment.cardNumber),
+                expiryMonth: payment.expiryMonth,
+                expiryYear: payment.expiryYear,
+                listingIds: items.map(item => item.id),
+            };
+
+            await createTransaction(payload);
+
+            for (const item of items) {
+                try {
+                    await markListingAsSold(item.id);
+                } catch (err) {
+                    console.error(`Failed to mark listing ${item.id} as sold:`, err);
+                }
+            }
+
+            setConfirmedTotal(total);
             clearCart();
             setStep("success");
+        } catch (e) {
+            console.error("[Cart] transaction failed:", e);
+            alert("Purchase failed. Check backend console.");
         }
     }
 
@@ -391,7 +445,7 @@ export function Cart() {
                                         </div>
                                         <div className="flex justify-between font-bold text-foreground border-t-2 border-border pt-2 mt-2">
                                             <span>Total charged</span>
-                                            <span className="text-primary">€{purchaseTotal.toFixed(2)}</span>
+                                            <span className="text-primary">€{confirmedTotal.toFixed(2)}</span>
                                         </div>
                                     </div>
 

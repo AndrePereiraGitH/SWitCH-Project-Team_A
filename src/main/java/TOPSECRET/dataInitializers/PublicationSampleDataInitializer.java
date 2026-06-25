@@ -43,7 +43,13 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
         publicationSampleRepository.save(buildFairConditionBookSample());
         publicationSampleRepository.save(buildSecondLordOfTheRingsSample());
 
-        log.info("[PublicationSampleDataInitializer] Done — {} publication samples seeded.", 5);
+        // Extra samples for user-001 to test sorting
+        publicationSampleRepository.save(buildDomQuixoteForUser001());
+        publicationSampleRepository.save(buildOsLusiadasForUser001());
+        publicationSampleRepository.save(buildFoundationForUser001());
+        publicationSampleRepository.save(buildMagazineForUser001());
+
+        log.info("[PublicationSampleDataInitializer] Done — {} publication samples seeded.", 9);
     }
 
     /**
@@ -122,6 +128,67 @@ public class PublicationSampleDataInitializer implements ApplicationRunner {
                 PublicationStatus.READ,
                 new EditionId("edition-001"),
                 Condition.VERY_GOOD,
+                new LibraryId("library-001"),
+                null);
+    }
+
+    /**
+     * Dom Quixote (AUTH3, ISBN-10 "0-13-110362-8") for user-001.
+     */
+    private PublicationSample buildDomQuixoteForUser001() {
+        return publicationSampleFactory.create(
+                new PublicationSampleId("pub-sample-006"),
+                new BibliographicalDataId("bd-002"),
+                new UserId("user-001"),
+                PublicationStatus.READ,
+                new EditionId("edition-002"),
+                Condition.LIKE_NEW,
+                new LibraryId("library-001"),
+                null);
+    }
+
+    /**
+     * Os Lusíadas (AUTH3, ISBN-10) for user-001.
+     */
+    private PublicationSample buildOsLusiadasForUser001() {
+        return publicationSampleFactory.create(
+                new PublicationSampleId("pub-sample-007"),
+                new BibliographicalDataId("bd-003"),
+                new UserId("user-001"),
+                PublicationStatus.READING,
+                new EditionId("edition-002"),
+                Condition.GOOD,
+                new LibraryId("library-001"),
+                null);
+    }
+
+    /**
+     * Foundation (AUTH2, ISBN-13 "978-0-13-468599-1") for user-001.
+     */
+    private PublicationSample buildFoundationForUser001() {
+        return publicationSampleFactory.create(
+                new PublicationSampleId("pub-sample-008"),
+                new BibliographicalDataId("bd-004"),
+                new UserId("user-001"),
+                PublicationStatus.READ,
+                new EditionId("edition-001"),
+                Condition.NEW,
+                new LibraryId("library-001"),
+                null);
+    }
+
+    /**
+     * A magazine (ISSN "0027-9358") for user-001.
+     * Uses bd-003 (Os Lusíadas) as bibliographical data — replace with a magazine BD if you have one.
+     */
+    private PublicationSample buildMagazineForUser001() {
+        return publicationSampleFactory.create(
+                new PublicationSampleId("pub-sample-009"),
+                new BibliographicalDataId("bd-003"),
+                new UserId("user-001"),
+                PublicationStatus.READ,
+                new EditionId("edition-003"),
+                Condition.ACCEPTABLE,
                 new LibraryId("library-001"),
                 null);
     }

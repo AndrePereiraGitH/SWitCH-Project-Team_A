@@ -6,6 +6,19 @@ import { useCart } from "../components/CartContext";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
+const mockGetCities = vi.fn();
+const mockCreateTransaction = vi.hoisted(() => vi.fn());
+const mockMarkListingAsSold = vi.hoisted(() => vi.fn());
+
+vi.mock("../components/TransactionsContext", () => ({
+    useTransactions: () => ({
+        createTransaction: mockCreateTransaction,
+        markListingAsSold: mockMarkListingAsSold,
+        getCities: mockGetCities,
+    }),
+    TransactionsProvider: ({ children }) => children,
+}));
+
 const mockNavigate = vi.fn();
 vi.mock("react-router-dom", async (importOriginal) => {
     const actual = await importOriginal();
@@ -15,14 +28,42 @@ vi.mock("react-router-dom", async (importOriginal) => {
     };
 });
 
-const mockAddPurchase = vi.fn();
-vi.mock("../components/PurchasesContext", () => ({
-    usePurchases: () => ({ addPurchase: mockAddPurchase }),
-    PurchasesProvider: ({ children }) => children,
-}));
-
 beforeEach(() => {
     vi.clearAllMocks();
+
+    mockGetCities.mockResolvedValue([
+        {
+            cityId: "porto",
+            cityName: "Porto",
+            countryName: "Portugal",
+        },
+        {
+            cityId: "lisbon",
+            cityName: "Lisbon",
+            countryName: "Portugal",
+        },
+    ]);
+
+    mockMarkListingAsSold.mockResolvedValue({ listingId: "listing-123", publicationStatus: "SOLD" });
+    mockCreateTransaction.mockResolvedValue({});
+    mockMarkListingAsSold.mockResolvedValue({});
+
+    mockCreateTransaction.mockResolvedValue({
+        transactionId: "transaction-001",
+        buyerId: "user-001",
+        price: "10",
+        transactionDate: new Date().toISOString(),
+        street: "Rua de Cedofeita",
+        number: "123",
+        zipCode: "4050-180",
+        cityId: "porto",
+        cardHolderName: "David Silva",
+        maskedCardNumber: "**** **** **** 3456",
+        expiryMonth: "09",
+        expiryYear: "2027",
+        status: "COMPLETED",
+        listingIds: ["listing-123"],
+    });
 });
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -35,7 +76,7 @@ function CartWithItem() {
     const { addToCart } = useCart();
     return (
         <div>
-            <button onClick={() => addToCart({ id: "1", title: "Book A", price: 10 })}>
+            <button onClick={() => addToCart({ id: "listing-123", title: "Book A", price: 10 })}>
                 Add Item
             </button>
             <Cart />
@@ -299,9 +340,17 @@ describe("Cart — Success Step", () => {
         expect(screen.getByText("View My Purchases")).toBeInTheDocument();
     });
 
-    test("calls addPurchase on confirm", async () => {
+    test("calls createTransaction on confirm", async () => {
         await renderAtSuccess();
-        expect(mockAddPurchase).toHaveBeenCalledTimes(1);
+
+        expect(mockCreateTransaction).toHaveBeenCalledTimes(1);
+    });
+
+    test("calls markListingAsSold for each item on confirm", async () => {
+        await renderAtSuccess();
+
+        expect(mockMarkListingAsSold).toHaveBeenCalledTimes(1);
+        expect(mockMarkListingAsSold).toHaveBeenCalledWith("listing-123");
     });
 
     test("View My Purchases navigates to /my-purchases", async () => {
@@ -322,7 +371,28 @@ describe("Cart — Success Step", () => {
 
     test("shows total charged in success recap", async () => {
         await renderAtSuccess();
-        expect(screen.getByText(/0\.00/)).toBeInTheDocument();
+        expect(screen.getByText(/10\.00/)).toBeInTheDocument();
+    });
+
+    test("sends correct transaction payload", async () => {
+        await renderAtSuccess();
+
+        expect(mockCreateTransaction).toHaveBeenCalledWith({
+            buyerId: "user-001",
+            price: "10.00",
+            transactionDate: expect.stringMatching(
+                /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/
+            ),
+            street: "Rua de Cedofeita",
+            number: "123",
+            zipCode: "4050-180",
+            cityId: "porto",
+            cardHolderName: "David Silva",
+            maskedCardNumber: "**** **** **** 3456",
+            expiryMonth: "09",
+            expiryYear: "2027",
+            listingIds: ["listing-123"],
+        });
     });
 
 });

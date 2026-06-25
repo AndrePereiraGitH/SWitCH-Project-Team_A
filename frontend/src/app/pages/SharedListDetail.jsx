@@ -41,7 +41,7 @@ export function SharedListDetail() {
             try {
                 setLoading(true);
                 const data = await api.get(
-                    `/publicationSamples/${listId}/publication-sample?userId=${CURRENT_USER_ID}`
+                    `/publicationSamples/${listId}/shared-publications?userId=${CURRENT_USER_ID}`
                 );
                 setPublications(data ?? []);
             } catch (err) {
