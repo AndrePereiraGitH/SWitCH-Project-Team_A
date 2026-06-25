@@ -1,0 +1,84 @@
+@startuml
+autonumber
+hide footbox
+title Bibliographical Data Persistence JPA
+
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":BibliographicalData\nRepositoryJPAImpl" as BDRepoImpl
+participant ":IBibliographicalData\nRepositoryJpa" as BDRepoJpa
+participant "listOfBDDM:\nList<BibliographicalDataDM>" as listOfBDDM
+participant ":Bibliographical\nDataAssembler" as BDAss
+participant ":Bibliographical\nDataFactory" as BDFactory
+participant "bd:\nBibliographicalData" as bd
+
+database "Database" as db
+
+ref over BDRepo
+    [[REST/2.GetAllPublications.puml Back to Get All Publications Diagram REST]]
+    [[CLI/2.GetAllPublications.puml Back to Get All Publications Diagram CLI]]
+end ref
+
+
+BDRepo -> BDRepoImpl : findAll()
+activate BDRepo
+activate BDRepoImpl
+
+BDRepoImpl -> BDRepoJpa : findAll()
+activate BDRepoJpa
+BDRepoJpa -> db : SELECT * FROM bibliographical_data
+activate db
+db --> BDRepoJpa : data
+deactivate db
+BDRepoJpa -->> listOfBDDM ** : <<create>>
+BDRepoJpa --> BDRepoImpl : listOfBDDM
+deactivate BDRepoJpa
+
+loop for each bdDM in listOfBDDM
+    BDRepoImpl -> BDAss : toDomain(bdDM)
+    activate BDAss
+
+    BDAss -> listOfBDDM : getId()
+    activate listOfBDDM
+    listOfBDDM --> BDAss : id
+    deactivate listOfBDDM
+    BDAss -> listOfBDDM : getTitle()
+    activate listOfBDDM
+    listOfBDDM --> BDAss : title
+    deactivate listOfBDDM
+    BDAss -> listOfBDDM : getAuthorIds()
+    activate listOfBDDM
+    listOfBDDM --> BDAss : authorIds
+    deactivate listOfBDDM
+    BDAss -> listOfBDDM : getOriginalLanguage()
+    activate listOfBDDM
+    listOfBDDM --> BDAss : originalLanguage
+    deactivate listOfBDDM
+    BDAss -> BDAss : convertLanguageToDomain(originalLanguage)
+    BDAss -> listOfBDDM : getPublicationDate()
+    activate listOfBDDM
+    listOfBDDM --> BDAss : publicationDate
+    deactivate listOfBDDM
+    BDAss -> listOfBDDM : getGenreIds()
+    activate listOfBDDM
+    listOfBDDM --> BDAss : genreIds
+    deactivate listOfBDDM
+    BDAss -> listOfBDDM : getChunksOfText()
+    activate listOfBDDM
+    listOfBDDM --> BDAss : chunksOfText
+    deactivate listOfBDDM
+
+    BDAss -> BDFactory : create(id, title, authorIds,\noriginalLanguage, publicationDate,\ngenreIds, chunksOfText)
+    activate BDFactory
+    BDFactory -->> bd ** : <<create>>
+    BDFactory --> BDAss : bd
+    deactivate BDFactory
+
+    BDAss --> BDRepoImpl : bd
+    deactivate BDAss
+end
+
+BDRepoImpl --> BDRepo : listOfBD
+deactivate BDRepoImpl
+deactivate BDRepo
+
+@enduml

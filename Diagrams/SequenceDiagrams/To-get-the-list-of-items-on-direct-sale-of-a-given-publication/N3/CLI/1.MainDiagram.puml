@@ -1,0 +1,88 @@
+@startuml
+hide footbox
+autonumber
+title To get the list of items on direct sale of a given publication (Main Diagram)
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nPublicationController" as Ctrl
+participant ":US023Listing\nMapper" as ListMapper
+participant ":PublicationSample\nService" as PSService
+participant ":IPublicationSample\nRepository" as PSRepo
+participant ":IListing\nService" as ListService
+participant ":IListing\nRepository" as LRepo
+
+' ==========================================
+' 1 — Get all bibliographical data
+' ==========================================
+
+[o-> Ctrl : findAllBibliographicalData()
+activate Ctrl
+
+ref over Ctrl
+[[2.GetAllPublications.puml Get all publications]]
+end ref
+
+ref over Ctrl
+[[3.BuildPublicationDTOs.puml Build publications DTOs]]
+end ref
+
+[o<-- Ctrl : listOfAllBDDTOs
+deactivate Ctrl
+
+
+' =======================================================
+' 2 — Get listings on direct sale for a given publication
+' =======================================================
+
+[o-> Ctrl : findListOfItemsOnDirectSale(bdId)
+activate Ctrl
+
+Ctrl -> PSService : findIdsByBibliographicalDataIdIn(bdId)
+activate PSService
+PSService -> PSRepo : findIdsByBibliographicalDataIdIn(bdId)
+activate PSRepo
+
+PSRepo ->o] : SELECT id FROM publication_sample\nWHERE bibliographical_data_id = {bdId}
+ref over PSRepo
+[[../PublicationSamplePersistenceJPA.puml PublicationSample Persistence JPA]]
+[[../PublicationSamplePersistenceMem.puml PublicationSample Persistence Mem]]
+end ref
+PSRepo <--o] : data
+
+PSRepo --> PSService : listOfPubSampleIds
+deactivate PSRepo
+PSService--> Ctrl : listOfPubSampleIds
+deactivate PSService
+
+Ctrl -> ListService : findAllDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate ListService
+
+ListService -> LRepo : findAllByDirectSaleAndPublicationSampleIdIn(listOfPubSampleIds)
+activate LRepo
+
+LRepo ->o] : SELECT * FROM listings\nWHERE items_id IN {listOfPubSampleIds}
+ref over LRepo
+[[ListingPersistenceJPA_CLI.puml Listing Persistence JPA]]
+[[ListingPersistenceMem_CLI.puml Listing Persistence Mem]]
+end ref
+LRepo <--o] : data
+
+LRepo --> ListService : listOfDSListings
+deactivate LRepo
+
+ListService --> Ctrl : listOfDSListings
+deactivate ListService
+
+Ctrl -> ListMapper : toDTOs(listOfDSListings)
+activate ListMapper
+
+ref over ListMapper
+[[4.BuildListingDTOs.puml Build listings DTOs]]
+end ref
+
+ListMapper --> Ctrl : listOfDSListingDTOs
+deactivate ListMapper
+[o<-- Ctrl : listOfDSListingDTOs
+deactivate Ctrl
+
+@enduml

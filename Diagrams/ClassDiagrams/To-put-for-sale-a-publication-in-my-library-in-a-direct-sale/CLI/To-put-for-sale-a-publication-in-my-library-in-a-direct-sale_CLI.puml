@@ -1,0 +1,237 @@
+@startuml
+title To put for sale a publication in my library in a direct sale (CLI)
+
+skinparam linetype ortho
+
+package "infrastructure/ persistence" {
+    package "user" {
+        interface IUserRepositoryJPA {
+            + findById(String userId): Optional<UserDM>
+        }
+        class UserDM {
+            - userId: String
+            - name: String
+            - email: String
+            - role: String
+        }
+    }
+    package "library" {
+        interface ILibraryRepositoryJPA {
+            + findByUserId(String userId): Optional<LibraryDM>
+        }
+        class LibraryDM {
+            - libraryId: String
+            - libraryName: String
+            - userId: String
+        }
+    }
+    package "publicationsample" {
+        interface IPublicationSampleRepositoryJPA {
+            + findByLibraryIdAndPublicationStatusNotIn(String libraryId,\nList<String> excluded): List<PublicationSampleDM>
+        }
+        class PublicationSampleDM {
+            - publicationSampleId: String
+            - bibliographicalDataId: String
+            - ownerId: String
+            - publicationStatus: String
+            - editionId: String
+            - condition: String
+            - libraryId: String
+        }
+    }
+    package "listing" {
+        interface IListingRepositoryJPA {
+            + save(ListingDM listingDM): ListingDM
+        }
+        class ListingDM {
+            - listingId: String
+            - listingTitle: String
+            - publicationSampleIds: String
+            - saleType: String
+            - price: String
+            - shortDescription: String
+            - sellerId: String
+            - pictures: String
+        }
+    }
+}
+
+package "adapters" {
+    class ToPutForSaleAPublicationInDirectSaleController {
+        + findLibraryPublicationsAvailableForSale(UserId userId): List<US015PublicationSampleDTO>
+        + createDirectSaleListing(String title, List<PublicationSampleId> pubSampleIds,\nPrice price, String shortDescription, UserId sellerId, List<Picture> pictures): boolean
+    }
+    class US015PublicationSampleMapper {
+        + toDTO(PublicationSample pubSample): US015PublicationSampleDTO
+        + toDTOs(List<PublicationSample> publications): List<US015PublicationSampleDTO>
+    }
+    record US015PublicationSampleDTO {
+        - pubTitle: String
+        - authorsName: List<String>
+        - code: String
+        - publicationType: String
+    }
+    package "user" {
+        class UserRepositoryJPAImpl {
+            + findByID(UserId userId): Optional<User>
+        }
+        class UserAssembler {
+            + toDomain(UserDM userDM): User
+        }
+    }
+    package "library" {
+        class LibraryRepositoryJPAImpl {
+            + findByUserId(UserId userId): Optional<Library>
+        }
+        class LibraryAssembler {
+            + toDomain(LibraryDM libraryDM): Library
+        }
+    }
+    package "publicationsample" {
+        class PublicationSampleRepositoryJPAImpl {
+            + findByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId,\nList<PublicationStatus> excluded): List<PublicationSample>
+        }
+        class PublicationSampleAssembler {
+            + toDomain(PublicationSampleDM pubSampleDM): PublicationSample
+        }
+    }
+    package "listing" {
+        class ListingRepositoryJPAImpl {
+            + save(ListingDM listingDM): ListingDM
+        }
+        class ListingAssembler {
+            + toDM(Listing listing): ListingDM
+            + toDomain(ListingDM listingDM): Listing
+        }
+    }
+}
+
+package "application" {
+    class PublicationSampleService {
+        + findByLibraryIdAndPublicationStatusNotIn(UserId userId): List<PublicationSample>
+    }
+    class ListingService {
+        + createAndSave(String title, List<PublicationSampleId> selectedPublicationIds,\nSaleType saleType, Price price, String shortDescription,\nUserId userId, List<Picture> pictures): Listing
+    }
+    class PublicationSampleAuthorizationPolicy {
+        + canFindByLibraryIdAndPublicationStatusNotIn(User user): boolean
+    }
+    class ListingAuthorizationPolicy {
+        + canCreateListing(User user): boolean
+    }
+}
+
+package "domain" {
+    package "user" {
+        interface IUserRepository {
+            + findByID(UserId userId): Optional<User>
+        }
+        class UserFactory {
+            + create(UserId userId, String name, String email, String role): User
+        }
+        class User {
+            - userId: UserId
+            - name: String
+            - email: String
+            - role: String
+        }
+    }
+    package "library" {
+        interface ILibraryRepository {
+            + findByUserId(UserId userId): Optional<Library>
+        }
+        class LibraryFactory {
+            + create(LibraryId libraryId, String libraryName, UserId userId): Library
+        }
+        class Library {
+            - id: LibraryId
+            - libraryName: String
+            - userId: UserId
+        }
+    }
+    package "publicationsample" {
+        interface IPublicationSampleRepository {
+            + findByLibraryIdAndPublicationStatusNotIn(LibraryId libraryId,\nList<PublicationStatus> excluded): List<PublicationSample>
+        }
+        class PublicationSampleFactory {
+            + create(PublicationSampleId pubSampleId, BibliographicalDataId bdId,\nUserId userId, PublicationStatus pubStatus,\nEditionId editionId, Condition condition): PublicationSample
+        }
+        class PublicationSample {
+            - publicationSampleId: PublicationSampleId
+            - bibliographicalDataId: BibliographicalDataId
+            - ownerId: UserId
+            - publicationStatus: PublicationStatus
+            - editionId: EditionId
+            - condition: Condition
+            - libraryId: LibraryId
+        }
+    }
+    package "listing" {
+        interface IListingRepository {
+            + save(Listing listing): Listing
+        }
+        class ListingFactory {
+            + create(String title, List<PublicationSampleId> selectedPublicationIds,\nSaleType saleType, Price price, String shortDescription,\nUserId userId, List<Picture> pictures): Listing
+        }
+        class Listing {
+            - listingId: ListingId
+            - listingTitle: String
+            - publicationSampleIds: List<PublicationSampleId>
+            - saleType: SaleType
+            - price: Price
+            - shortDescription: String
+            - sellerId: UserId
+            - pictures: List<Picture>
+        }
+    }
+}
+
+' --- Adapters ---
+ToPutForSaleAPublicationInDirectSaleController --> PublicationSampleService : "uses"
+ToPutForSaleAPublicationInDirectSaleController --> ListingService : "uses"
+ToPutForSaleAPublicationInDirectSaleController --> US015PublicationSampleMapper : "uses"
+US015PublicationSampleMapper ..> US015PublicationSampleDTO : "creates"
+
+' --- Application ---
+PublicationSampleService --> IUserRepository : "uses"
+PublicationSampleService --> PublicationSampleAuthorizationPolicy : "uses"
+PublicationSampleService --> ILibraryRepository : "uses"
+PublicationSampleService --> IPublicationSampleRepository : "uses"
+ListingService --> IUserRepository : "uses"
+ListingService --> ListingAuthorizationPolicy : "uses"
+ListingService --> ListingFactory : "uses"
+ListingService --> IListingRepository : "uses"
+
+' --- User persistence ---
+UserRepositoryJPAImpl ..|> IUserRepository : "implements"
+UserRepositoryJPAImpl ..> IUserRepositoryJPA : "uses"
+UserRepositoryJPAImpl ..> UserAssembler : "uses"
+UserAssembler --> UserFactory : "uses"
+UserAssembler ..> UserDM : "receives"
+UserFactory ..> User : "creates"
+
+' --- Library persistence ---
+LibraryRepositoryJPAImpl ..|> ILibraryRepository : "implements"
+LibraryRepositoryJPAImpl ..> ILibraryRepositoryJPA : "uses"
+LibraryRepositoryJPAImpl ..> LibraryAssembler : "uses"
+LibraryAssembler --> LibraryFactory : "uses"
+LibraryAssembler ..> LibraryDM : "receives"
+LibraryFactory ..> Library : "creates"
+
+' --- PublicationSample persistence ---
+PublicationSampleRepositoryJPAImpl ..|> IPublicationSampleRepository : "implements"
+PublicationSampleRepositoryJPAImpl ..> IPublicationSampleRepositoryJPA : "uses"
+PublicationSampleRepositoryJPAImpl ..> PublicationSampleAssembler : "uses"
+PublicationSampleAssembler --> PublicationSampleFactory : "uses"
+PublicationSampleAssembler ..> PublicationSampleDM : "receives"
+PublicationSampleFactory ..> PublicationSample : "creates"
+
+' --- Listing persistence ---
+ListingRepositoryJPAImpl ..|> IListingRepository : "implements"
+ListingRepositoryJPAImpl ..> IListingRepositoryJPA : "uses"
+ListingRepositoryJPAImpl ..> ListingAssembler : "uses"
+ListingAssembler --> ListingFactory : "uses"
+ListingAssembler ..> ListingDM : "receives"
+ListingFactory ..> Listing : "creates"
+
+@enduml

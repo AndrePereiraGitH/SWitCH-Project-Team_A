@@ -1,0 +1,38 @@
+@startuml
+hide footbox
+autonumber
+title Build Publications DTOs
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nPublicationController" as Ctrl
+participant ":US023Bibliographical\nDataMapper" as BDMapper
+participant "listOfAllBDDTOs:\nList<US023Bibliographical\nDataDTO>" as listOfAllBDDTOs
+participant "bdDTO:\nUS023Bibliographical\nDataDTO" as bdDTO
+participant ":IAuthor\nRepository" as AuthorRepo
+
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+
+Ctrl -> BDMapper : toDTOs(listOfAllBD)
+activate Ctrl
+activate BDMapper
+BDMapper -->> listOfAllBDDTOs ** : «create»
+loop for each bd in listOfAllBD
+    BDMapper -> AuthorRepo : findById(authorId)
+    activate AuthorRepo
+    AuthorRepo --> BDMapper : author
+        deactivate AuthorRepo
+    BDMapper -> BDMapper: bd.id().toString()
+    BDMapper -> BDMapper: bd.getTitle();
+    BDMapper -->> bdDTO ** : «create»
+    BDMapper -> listOfAllBDDTOs : add(bdDTO)
+end
+BDMapper --> Ctrl : listOfAllBDDTOs
+deactivate BDMapper
+
+deactivate Ctrl
+
+@enduml
