@@ -273,7 +273,7 @@ class ToPutForSaleAPublicationInDirectSaleControllerTest {
     }
 
     @Test
-    void createDirectSaleListing_ShouldReturnTrueWhenListingIsCreated() {
+    void createDirectSaleListing_ShouldReturnTrueWhenListingIsCreated() throws InstanceNotFoundException {
         // Arrange
         Listing expectedListing = mock(Listing.class);
         when(listingServiceDouble.createAndSave("title", List.of(pubSampleId1Double), SaleType.DIRECT_SALE,

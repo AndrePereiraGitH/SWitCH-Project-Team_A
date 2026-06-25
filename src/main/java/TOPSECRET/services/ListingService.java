@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -75,13 +76,11 @@ public class ListingService {
                                  String shortDescription,
                                  UserId sellerId,
                                  List<Picture> pictures
-                                 ) throws AccessDeniedException {
+                                 ) throws AccessDeniedException, InstanceNotFoundException {
 
-        User user = userRepository.findByID(sellerId).orElseThrow(() -> new EntityNotFoundException("User not found id = " + sellerId));
-
-        if (!policy.canCreateListing(user)) {
-            throw new AccessDeniedException("You do not have permissions to create Listing");
-        }
+        if (!canCreate(sellerId)) {
+            throw new AccessDeniedException("User does not have permission to create a listing");
+        };
 
         if (!verifyPublicationsOwner(itemsId, sellerId)) {
             throw new AccessDeniedException("You just have permissions to sell your own Publications");
@@ -91,6 +90,7 @@ public class ListingService {
 
         return listingRepository.save(createdListing);
     }
+
 
     /**
      * Verifies that all publication samples belong to the given seller.
@@ -204,7 +204,7 @@ public class ListingService {
     }
 
     /**
-     * Filters the provided listings by the given publication sample identifiers.
+     * Filters the provided listings  by the given publication sample identifiers.
      *
      * <p>A listing is included in the result when at least one of its publication
      * sample identifiers matches one of the provided identifiers.</p>
@@ -332,28 +332,16 @@ public class ListingService {
      * @throws NullPointerException    if {@code listingId} or {@code buyerId} is {@code null}
      */
     @Transactional
-    public Listing markListingAsSold(ListingId listingId, UserId buyerId) {
+    public Listing markListingAsSold(ListingId listingId, UserId buyerId) throws InstanceNotFoundException {
 
         Objects.requireNonNull(listingId, "listingId cannot be null");
         Objects.requireNonNull(buyerId, "buyerId cannot be null");
 
         Listing listing = listingRepository.findById(listingId).orElseThrow(EntityNotFoundException::new);
 
-        if (listing.getListingStatus() == ListingStatus.SOLD) {
-            throw new IllegalStateException("Listing is already sold");
-        }
-
-        if (listing.getSellerId().equals(buyerId)) {
-            throw new AccessDeniedException("You cannot buy your own listing");
-        }
-
-        User user = userRepository.findByID(buyerId).orElseThrow(EntityNotFoundException::new);
-
-        if (!policy.canBuyListing(user)) {
-            throw new AccessDeniedException("You do not have permissions to buy this listing");
-        }
-
-        listing.markListingAsSold(buyerId);
+       if (canMarkListingAsSold(buyerId, listingId)) {
+           listing.markListingAsSold(buyerId);
+       }
 
         List<PublicationSampleId> itemIds = listing.getItemsId();
 
@@ -365,6 +353,33 @@ public class ListingService {
         }
 
         return listingRepository.save(listing);
+    }
+
+
+    public boolean canMarkListingAsSold(UserId buyerId, ListingId listingId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(buyerId).orElseThrow(()-> new InstanceNotFoundException("User not found " + buyerId.getUserId()));
+        Listing listing = listingRepository.findById(listingId).orElseThrow(() -> new InstanceNotFoundException("Listing not found: " + listingId));
+
+        if (listing.getListingStatus() == ListingStatus.SOLD) {
+            throw new IllegalStateException("Listing is already sold");
+        }
+
+        if (listing.getSellerId().equals(buyerId)) {
+            throw new AccessDeniedException("You cannot buy your own listing");
+        }
+
+        if (!policy.canBuyListing(user)) {
+            throw new AccessDeniedException("You do not have permissions to buy this listing");
+        }
+
+        return true;
+
+    }
+
+
+    public boolean canCreate(UserId userId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(userId).orElseThrow(() -> new InstanceNotFoundException("User not found: " + userId.getUserId()));
+        return policy.canCreateListing(user);
     }
 
 
