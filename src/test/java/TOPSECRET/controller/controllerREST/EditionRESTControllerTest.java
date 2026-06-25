@@ -814,19 +814,52 @@ class EditionRESTControllerTest {
 // =========================================================
 
     @Test
-    void shouldReturnAllowedMethodsForEditionsCollection() {
+    void shouldReturnAllowedMethodsForEditionsCollection() throws Exception {
 
-        // ACT
-        ResponseEntity<Void> response = controller.optionsEditions();
+        UserId userId = mock(UserId.class);
 
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
 
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+            mapper.when(() -> EditionMapper.toUserId("user-1"))
+                    .thenReturn(userId);
 
-        assertEquals(3, response.getHeaders().getAllow().size());
+            when(service.canCreateEdition(userId))
+                    .thenReturn(true);
+
+            ResponseEntity<Void> response =
+                    controller.optionsEditions("user-1");
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void shouldNotExposePostWhenUserCannotCreateEdition() throws Exception {
+
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
+
+            mapper.when(() -> EditionMapper.toUserId("user-1"))
+                    .thenReturn(userId);
+
+            when(service.canCreateEdition(userId))
+                    .thenReturn(false);
+
+            ResponseEntity<Void> response =
+                    controller.optionsEditions("user-1");
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
     }
     // =========================================================
 // OPTIONS — SINGLE RESOURCE

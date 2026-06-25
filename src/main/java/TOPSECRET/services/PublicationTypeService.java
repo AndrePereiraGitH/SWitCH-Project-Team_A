@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -127,5 +128,14 @@ public class PublicationTypeService {
 
         return repository.findByMediaFormat(mediaFormat).orElseThrow(() ->
                 new IllegalArgumentException("PublicationType not found"));
+    }
+
+    public boolean canCreatePublicationType(UserId userId)
+            throws InstanceNotFoundException {
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found"));
+
+        return policy.canCreatePublicationType(user);
     }
 }

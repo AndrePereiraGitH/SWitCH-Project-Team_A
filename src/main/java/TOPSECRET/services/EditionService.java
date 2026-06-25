@@ -11,6 +11,7 @@ import TOPSECRET.domain.ValueObjects.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import javax.management.InstanceNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -164,6 +165,15 @@ public class EditionService {
     public List<Edition> findByPublisherId(PublisherID publisherID) {
         Objects.requireNonNull(publisherID, "PublisherId cannot be null");
         return editionRepository.findByPublisherId(publisherID);
+    }
+
+    public boolean canCreateEdition(UserId userId)
+            throws InstanceNotFoundException {
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found"));
+
+        return policy.canCreateEdition(user);
     }
 
 

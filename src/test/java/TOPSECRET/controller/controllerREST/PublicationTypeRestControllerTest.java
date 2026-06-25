@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -723,20 +724,56 @@ class PublicationTypeRestControllerTest {
     }
 
     @Test
-    void shouldReturnAllowedMethodsForPublicationTypesCollection() {
+    void shouldReturnAllowedMethodsForPublicationTypesCollection() throws InstanceNotFoundException {
 
-        // ACT
-        ResponseEntity<Void> response =
-                controller.optionsPublicationTypes();
+        String userIdStr = "user-1";
+        UserId userId = mock(UserId.class);
 
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        try (MockedStatic<PublicationTypeMapper> mapper =
+                     mockStatic(PublicationTypeMapper.class)) {
 
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr))
+                    .thenReturn(userId);
 
-        assertEquals(3, response.getHeaders().getAllow().size());
+            when(service.canCreatePublicationType(userId))
+                    .thenReturn(true);
+
+            ResponseEntity<Void> response =
+                    controller.optionsPublicationTypes(userIdStr);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void shouldNotExposePostWhenUserCannotCreatePublicationType() throws InstanceNotFoundException {
+
+        String userIdStr = "user-1";
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<PublicationTypeMapper> mapper =
+                     mockStatic(PublicationTypeMapper.class)) {
+
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr))
+                    .thenReturn(userId);
+
+            when(service.canCreatePublicationType(userId))
+                    .thenReturn(false);
+
+            ResponseEntity<Void> response =
+                    controller.optionsPublicationTypes(userIdStr);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
     }
 
     @Test
