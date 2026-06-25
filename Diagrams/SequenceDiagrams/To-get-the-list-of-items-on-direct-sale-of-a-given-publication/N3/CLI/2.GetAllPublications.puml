@@ -1,0 +1,37 @@
+@startuml
+hide footbox
+autonumber
+title Get All Publications In The System
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nPublicationController" as Ctrl
+participant ":BibliographicalData\nService" as BDService
+participant ":IBibliographicalData\nRepository" as BDRepo
+participant ":IAuthor\nRepository" as AuthorRepo
+
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+Ctrl -> BDService : findAll()
+activate Ctrl
+activate BDService
+BDService -> BDRepo : findAll()
+activate BDRepo
+
+BDRepo ->o] : SELECT * FROM bibliographical_data
+ref over BDRepo
+[[../PublicationsPersistenceJPA.puml Publications Persistence JPA]]
+[[../PublicationsPersistenceMem.puml Publications Persistence Mem]]
+end ref
+BDRepo <--o] : data
+
+BDRepo --> BDService : listOfAllBD
+deactivate BDRepo
+BDService --> Ctrl : listOfAllBD
+deactivate BDService
+
+deactivate Ctrl
+
+@enduml

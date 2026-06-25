@@ -14,6 +14,7 @@ import TOPSECRET.domain.ValueObjects.*;
 import TOPSECRET.dto.listing.ListingMapper;
 import TOPSECRET.dto.listing.request.ListingRequestDTO;
 import TOPSECRET.dto.listing.response.ListingDetailsDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,14 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceNotFoundException;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -213,7 +216,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void createListing_shouldReturnForbidden_whenServiceThrowsAccessDeniedException() {
+    void createListing_shouldReturnForbidden_whenServiceThrowsAccessDeniedException() throws InstanceNotFoundException {
         // Arrange
         String userId = "user-1";
         ListingRequestDTO request = validCreateRequestWithoutPictures();
@@ -253,7 +256,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void createListing_shouldReturnNotFound_whenRelatedDataDoesNotExist() {
+    void createListing_shouldReturnNotFound_whenRelatedDataDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String userId = "user-1";
         ListingRequestDTO request = validCreateRequestWithoutPictures();
@@ -473,7 +476,7 @@ class ListingRESTControllerTest {
         Listing listing = fullListingGraphDouble();
         ListingDetailsDTO dto = mock(ListingDetailsDTO.class);
 
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of(listing));
         publicLinks(dto);
 
         try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
@@ -490,7 +493,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnOkStatus_whenNoListingsExist() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of());
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of());
 
         // Act
         ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
@@ -502,7 +505,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnEmptyBody_whenNoListingsExist() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of());
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of());
 
         // Act
         ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
@@ -517,7 +520,7 @@ class ListingRESTControllerTest {
         Listing listing = mock(Listing.class);
         PublicationSampleId publicationSampleId = mock(PublicationSampleId.class);
 
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenReturn(List.of(listing));
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenReturn(List.of(listing));
         when(listing.getItemsId()).thenReturn(List.of(publicationSampleId));
         when(publicationService.findById(publicationSampleId))
                 .thenThrow(new EntityNotFoundException());
@@ -532,7 +535,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnInternalServerError_whenUnexpectedExceptionOccurs() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null)).thenThrow(new RuntimeException());
+        when(listingService.findAllFiltered(null, null, null, null, null)).thenThrow(new RuntimeException());
 
         // Act
         ResponseEntity<List<ListingDetailsDTO>> response = controller.findAll(null, null, null, null, null);
@@ -544,7 +547,7 @@ class ListingRESTControllerTest {
     @Test
     void findAll_shouldReturnBadRequest_whenIllegalArgumentExceptionOccurs() {
         // Arrange
-        when(listingService.findAllFiltered(null, null,null,null, null))
+        when(listingService.findAllFiltered(null, null, null, null, null))
                 .thenThrow(new IllegalArgumentException());
 
         // Act
@@ -1413,7 +1416,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnForbidden_whenBuyerIsSeller() {
+    void markListingAsSold_shouldReturnForbidden_whenBuyerIsSeller() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1436,7 +1439,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnForbidden_whenPolicyDenied() {
+    void markListingAsSold_shouldReturnForbidden_whenPolicyDenied() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1459,7 +1462,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnNotFound_whenListingDoesNotExist() {
+    void markListingAsSold_shouldReturnNotFound_whenListingDoesNotExist() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1482,7 +1485,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnConflict_whenListingAlreadySold() {
+    void markListingAsSold_shouldReturnConflict_whenListingAlreadySold() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1505,7 +1508,7 @@ class ListingRESTControllerTest {
     }
 
     @Test
-    void markListingAsSold_shouldReturnInternalServerError_onUnexpectedException() {
+    void markListingAsSold_shouldReturnInternalServerError_onUnexpectedException() throws InstanceNotFoundException {
         // Arrange
         String listingIdStr = "listing-1";
         String buyerIdStr = "user-2";
@@ -1524,6 +1527,226 @@ class ListingRESTControllerTest {
 
             // Assert
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+
+    // =========================================================================
+    // TESTS: OPTIONS
+    // =========================================================================
+
+    @Test
+    void optionsListing_shouldReturnOkStatus() throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "1";
+        UserId requesterIdVO = mock(UserId.class);
+
+        when(listingService.canCreate(requesterIdVO)).thenReturn(true);
+
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldReturnAllowHeaderWithPost_whenUserCanCreate() throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "1";
+        UserId requesterIdVO = mock(UserId.class);
+
+        when(listingService.canCreate(requesterIdVO)).thenReturn(true);
+
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldReturnAllowHeaderWithoutPost_whenUserCannotCreate() throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "1";
+        UserId requesterIdVO = mock(UserId.class);
+
+        when(listingService.canCreate(requesterIdVO)).thenReturn(false);
+
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldReturnNotFound_whenRequesterDoesNotExist() throws InstanceNotFoundException {
+        // Arrange
+        String requesterId = "999";
+        UserId requesterIdVO = mock(UserId.class);
+
+        when(listingService.canCreate(requesterIdVO)).thenThrow(new InstanceNotFoundException(requesterId));
+
+        try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
+            mockedMapper.when(() -> UserMapper.toUserId(requesterId)).thenReturn(requesterIdVO);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsRoot(requesterId);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsRoot_shouldReturnBadRequest_whenRequesterIdIsNull() throws InstanceNotFoundException {
+        // Act
+        ResponseEntity<?> response = controller.optionsRoot(null);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnOkStatus_whenBuyerCanMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
+
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO)).thenReturn(true);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnAllowHeaderWithPatch_whenBuyerCanMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
+
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO)).thenReturn(true);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.PATCH, HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnAllowHeaderWithoutPatch_whenBuyerCannotMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
+
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO)).thenReturn(false);
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(Set.of(HttpMethod.OPTIONS), response.getHeaders().getAllow());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnBadRequest_whenListingIdIsInvalid() {
+        // Arrange
+        String listingId = "";
+        String userId = "user-2";
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(mock(UserId.class));
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnNotFound_whenListingOrUserDoesNotExist() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
+
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO))
+                .thenThrow(new InstanceNotFoundException());
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        }
+    }
+
+    @Test
+    void optionsListingSold_shouldReturnForbidden_whenBuyerCannotMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        String listingId = "listing-1";
+        String userId = "user-2";
+        ListingId listingIdVO = mock(ListingId.class);
+        UserId userIdVO = mock(UserId.class);
+
+        when(listingService.canMarkListingAsSold(userIdVO, listingIdVO))
+                .thenThrow(new AccessDeniedException("denied"));
+
+        try (MockedStatic<ListingMapper> mockedMapper = mockStatic(ListingMapper.class)) {
+            mockedMapper.when(() -> ListingMapper.toListingId(listingId)).thenReturn(listingIdVO);
+            mockedMapper.when(() -> ListingMapper.toUserId(userId)).thenReturn(userIdVO);
+
+            // Act
+            ResponseEntity<Void> response = controller.optionsListingSold(listingId, userId);
+
+            // Assert
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
     }
 

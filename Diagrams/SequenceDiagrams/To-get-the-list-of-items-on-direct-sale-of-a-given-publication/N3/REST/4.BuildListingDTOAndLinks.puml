@@ -1,0 +1,34 @@
+@startuml
+hide footbox
+autonumber
+title Build Listing DTO with HATEOAS Links
+
+
+participant ":ListingREST\nController" as ListCtrl
+participant ":Listing\nMapper" as ListMapper
+participant ":Listing\nLinkProvider" as ListLinkProvider
+
+
+
+ref over ListCtrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+activate ListCtrl
+loop for each listing in listOfDSListings
+    ListCtrl -> ListCtrl : convertIntoListingDetailsDTO(listing, PUBLIC, null)
+    ListCtrl -> ListMapper : toListingDetailsDTO(listing, pubSamples,\nbiblioDatas, editions, authors, genres,\npublishers, buyer)
+    activate ListMapper
+    ListMapper --> ListCtrl : listingDetailsDTO
+    deactivate ListMapper
+
+    ListCtrl -> ListLinkProvider : getPublicLinks()
+    activate ListLinkProvider
+    ListLinkProvider --> ListCtrl : links
+    deactivate ListLinkProvider
+
+    ListCtrl -> ListCtrl : links.add(linkTo(methodOn(ListCtrl)\n.findById(listing.id())).withSelfRel())
+    ListCtrl -> ListCtrl : links.forEach(listingDetailsDTO::add)
+end
+
+@enduml
