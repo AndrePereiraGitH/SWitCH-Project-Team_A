@@ -131,4 +131,23 @@ public class CountryService {
                 .orElseThrow(() ->
                         new NoSuchElementException("Country not found with ID: " + id));
     }
+
+    /**
+     * Determines whether the given user is authorized to register a country.
+     *
+     * <p>Resolves the user from the repository and delegates the permission
+     * check to {@link CountryAuthorizationPolicy}.</p>
+     *
+     * @param userId the identifier of the user to check; must not be {@code null}
+     * @return {@code true} if the user has permission to register a country;
+     *         {@code false} otherwise
+     * @throws IllegalArgumentException if no user is found for the given {@code userId}
+     */
+    public boolean canRegisterCountry(UserId userId) {
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "User not found with id: " + userId));
+
+        return policy.canRegisterCountry(user);
+    }
 }
