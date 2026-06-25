@@ -1,0 +1,19 @@
+@startuml
+
+hide footbox
+autonumber
+title To add a publication genre to the genre list
+
+actor Administrator
+participant ":System" as System
+
+Administrator -> System : I want to add a new genre to the official list
+activate System
+Administrator <-- System : What is the genre name?
+deactivate System
+Administrator -> System : genreName
+activate System
+System --> Administrator : Genre successfully added!
+deactivate System
+
+@enduml

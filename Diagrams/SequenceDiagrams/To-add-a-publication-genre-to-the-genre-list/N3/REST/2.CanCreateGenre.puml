@@ -1,0 +1,48 @@
+@startuml
+hide footbox
+autonumber
+title Can Create Genre
+
+participant ":GenreService" as Service
+participant ":IUserRepository" as UserRepo
+participant ":IUserRepositoryJPA" as UserJPA
+database "DB" as DB
+participant ":GenreAuthorizationPolicy" as Policy
+
+note over Service #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
+
+Service -> UserRepo : findByID(userId)
+activate UserRepo
+
+UserRepo -> UserJPA : findById(userId)
+activate UserJPA
+
+UserJPA -> DB : SELECT * FROM users WHERE id = ?
+activate DB
+DB --> UserJPA : data
+deactivate DB
+
+UserJPA --> UserRepo : Optional<UserDM>
+deactivate UserJPA
+
+UserRepo --> Service : Optional<User>
+deactivate UserRepo
+
+alt user not found
+    Service --> Service : throw IllegalArgumentException
+end
+
+Service -> Policy : canCreateGenre(user)
+activate Policy
+Policy --> Service : boolean
+deactivate Policy
+
+alt not allowed
+    Service --> Service : throw AccessDeniedException
+end
+
+@enduml

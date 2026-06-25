@@ -1,0 +1,30 @@
+@startuml
+hide footbox
+autonumber
+title Build Response
+
+participant ":GenreRESTController" as Ctrl
+participant ":GenreMapper" as Mapper
+participant "response:GenreResponseDTO" as Response
+participant ":GenreLinkProvider" as LinkProvider
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -> Mapper : toDTO(genre)
+activate Mapper
+Mapper -->> Response ** : <<create>>
+Mapper --> Ctrl : response
+deactivate Mapper
+
+Ctrl -> LinkProvider : getLinks(userId)
+activate LinkProvider
+LinkProvider --> Ctrl : links
+deactivate LinkProvider
+
+Ctrl -> Ctrl : links.forEach(response::add)
+
+@enduml

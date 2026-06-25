@@ -1,0 +1,33 @@
+@startuml
+hide footbox
+autonumber
+title To add a publication genre (Process View Level 2)
+
+participant ":UI\n[Frontend]" as UI
+participant ":GenreRESTController\n[Backend]" as Backend
+database "DB\n[Database]" as DB
+
+== POST /genres ==
+
+UI -> Backend : POST /genres?userId={userId}\n body: { genreName }
+activate Backend
+
+Backend -> DB : SELECT * FROM users WHERE id = ?
+activate DB
+DB --> Backend : userData
+deactivate DB
+
+Backend -> DB : SELECT * FROM genres WHERE genre_type = ?
+activate DB
+DB --> Backend : result
+deactivate DB
+
+Backend -> DB : INSERT INTO genres ...
+activate DB
+DB --> Backend : savedData
+deactivate DB
+
+Backend --> UI : 201 Created\n body: GenreResponseDTO
+deactivate Backend
+
+@enduml
