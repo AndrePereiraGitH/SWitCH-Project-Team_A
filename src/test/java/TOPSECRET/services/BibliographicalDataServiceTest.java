@@ -488,4 +488,48 @@ class BibliographicalDataServiceTest {
         // Assert
         assertEquals(titles, result);
     }
+
+    // =============================================================
+    // ==================== canCreate Tests ========================
+    // =============================================================
+
+    @Test
+    void canCreate_shouldReturnTrue_whenUserIsAuthorized() throws InstanceNotFoundException {
+        // Arrange
+        User user = mock(User.class);
+
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateBibliographicalData(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canCreate(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreate_shouldReturnFalse_whenUserIsNotAuthorized() throws InstanceNotFoundException {
+        // Arrange
+        User user = mock(User.class);
+
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(authPolicy.canCreateBibliographicalData(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canCreate(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreate_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+        // Arrange
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class, () -> service.canCreate(userId));
+        verifyNoInteractions(authPolicy);
+    }
 }
