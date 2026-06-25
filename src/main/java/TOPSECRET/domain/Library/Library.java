@@ -120,20 +120,22 @@ public class Library implements AggregateRoot<LibraryId> {
     }
 
     /**
-     * Determines whether this {@code Library} has the same identity as another object.
+     * Determines whether this {@code Library} has the same attributes as another object.
      *
-     * <p>Two libraries share the same identity if and only if their {@link LibraryId}
-     * values are equal. This method is part of the {@link AggregateRoot} contract
-     * and is semantically equivalent to {@link #equals(Object)} for this aggregate.</p>
+     * <p>Two libraries are considered the same in terms of value if their
+     * {@code _libraryName} and {@code _userId} attributes are equal.
+     * This method is part of the {@link AggregateRoot} contract and complements
+     * {@link #equals(Object)}, which compares identity by {@link LibraryId}.</p>
      *
-     * @param object the object to compare identity with
-     * @return {@code true} if {@code object} is a {@code Library} with an equal {@link LibraryId};
-     * {@code false} otherwise
+     * @param object the object to compare attributes with
+     * @return {@code true} if {@code object} is a {@code Library} with equal
+     *         {@code libraryName} and {@code userId}; {@code false} otherwise
      */
     @Override
     public boolean sameAs(Object object) {
         if (object instanceof Library other) {
-            return this._libraryName.equals(other._libraryName);
+            return this._libraryName.equals(other._libraryName)
+                    && this._userId.equals(other._userId);
         }
         return false;
     }

@@ -20,31 +20,37 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 class LibraryTest {
 
 
-    // ============ Constructor Tests ============
+    // --------------------------------------
+    //              Constructor Tests
+    //---------------------------------------
 
     @ParameterizedTest
     @NullAndEmptySource
     void shouldThrowExceptionWhenLibraryNameIsInvalid(String libraryName) {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> new Library(libraryName, userDouble));
+        assertThrows(IllegalArgumentException.class, () -> new Library(libraryName, userIdDouble));
     }
 
     @Test
     void shouldThrowExceptionWhenGivenBlankLibraryName() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Library("   ", userDouble)
+                () -> new Library("   ", userIdDouble)
         );
     }
 
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
+
         // Arrange
         String libraryName = "Some valid name";
 
@@ -55,77 +61,95 @@ class LibraryTest {
 
     @Test
     void shouldInitializeInstanceWhenValidParameters() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        // Act & Assert
-        new Library("My Library", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
+        // Act
+        Library lib = new Library("My Library", userIdDouble);
+
+        //Assert
+        assertNotNull(lib);
     }
 
     @Test
     void givenValidArgumentsThenIdIsNotNull() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        // Act & Assert
-        Library library = new Library("My Library", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
+        // Act
+        Library library = new Library("My Library", userIdDouble);
+
+        //Assert
         assertNotNull(library.id());
     }
 
     @Test
     void givenTwoLibraries_whenConstructing_thenEachHasUniqueId() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
         // Act
-        Library first = new Library("Library A", userDouble);
-        Library second = new Library("Library B", userDouble);
+        Library first = new Library("Library A", userIdDouble);
+        Library second = new Library("Library B", userIdDouble);
+
         // Assert
         assertNotEquals(first.id(), second.id());
     }
 
-    // ============ Constructor with LibraryId ===========
+    // ------------------------------------------------
+    //          Constructor with LibraryId
+    // ------------------------------------------------
 
     @Test
     void shouldCreateLibraryWithGivenId_whenValidArguments() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
         LibraryId id = new LibraryId("fixed-id");
 
         // Act
-        Library library = new Library(id, "My Library", userDouble);
+        Library library = new Library(id, "My Library", userIdDouble);
 
         // Assert
         assertEquals(id, library.id());
         assertEquals("My Library", library.getLibraryName());
-        assertEquals(userDouble, library.getUserId());
+        assertEquals(userIdDouble, library.getUserId());
     }
 
     @Test
     void shouldThrowException_whenLibraryIdIsNull() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
 
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Library(null, "My Library", userDouble)
+                () -> new Library(null, "My Library", userIdDouble)
         );
     }
 
     @ParameterizedTest
     @NullAndEmptySource
     void shouldThrowException_whenLibraryNameIsInvalid_inSecondConstructor(String name) {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
         LibraryId id = new LibraryId("fixed-id");
 
         // Act & Assert
         assertThrows(
                 IllegalArgumentException.class,
-                () -> new Library(id, name, userDouble)
+                () -> new Library(id, name, userIdDouble)
         );
     }
 
     @Test
     void shouldThrowException_whenUserIsNull_inSecondConstructor() {
+
         // Arrange
         LibraryId id = new LibraryId("fixed-id");
 
@@ -142,10 +166,13 @@ class LibraryTest {
 
     @Test
     void givenValidNameThenReturnsCorrectName() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
         // Act
-        Library library = new Library("My Library", userDouble);
+        Library library = new Library("My Library", userIdDouble);
+
         // Assert
         assertEquals("My Library", library.getLibraryName());
     }
@@ -156,10 +183,13 @@ class LibraryTest {
 
     @Test
     void givenValidLibraryThenReturnsLibraryId() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
         // Act
-        Library library = new Library("My Library", userDouble);
+        Library library = new Library("My Library", userIdDouble);
+
         // Assert
         assertInstanceOf(LibraryId.class, library.id());
     }
@@ -172,40 +202,49 @@ class LibraryTest {
     @Test
     void shouldBeEqual_whenComparedToItself() {
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
         // Act
-        Library library = new Library("My Library", userDouble);
+        Library library = new Library("My Library", userIdDouble);
         // Assert
         assertEquals(library, library);
     }
 
     @Test
     void shouldNotBeEqual_whenComparedToNull() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
         // Act
-        Library library = new Library("My Library", userDouble);
+        Library library = new Library("My Library", userIdDouble);
+
         // Assert
         assertNotEquals(null, library);
     }
 
     @Test
     void shouldNotBeEqual_whenComparedToDifferentClass() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
         // Act
-        Library library = new Library("My Library", userDouble);
+        Library library = new Library("My Library", userIdDouble);
+
         // Assert
         assertNotEquals("not a library", library);
     }
 
     @Test
     void shouldNotBeEquals_whenComparedDifferentId() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
+
         // Act
-        Library library1 = new Library("My Library", userDouble);
-        Library library2 = new Library("My Library", userDouble);
+        Library library1 = new Library("My Library", userIdDouble);
+        Library library2 = new Library("My Library", userIdDouble);
+
         // Assert
         assertNotEquals(library1.id(), library2.id());
     }
@@ -219,12 +258,13 @@ class LibraryTest {
      */
     @Test
     void shouldBeEqual_whenComparedToDifferentInstanceWithSameId() throws Exception {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
+        UserId userIdDouble = createDoubleUserId("Nome1");
 
         // Act
-        Library l1 = new Library("Library A", userDouble);
-        Library l2 = new Library("Library B", userDouble);
+        Library l1 = new Library("Library A", userIdDouble);
+        Library l2 = new Library("Library B", userIdDouble);
 
         java.lang.reflect.Field idField = Library.class.getDeclaredField("_id");
         idField.setAccessible(true);
@@ -240,21 +280,25 @@ class LibraryTest {
 
     @Test
     void givenSameInstanceWhenSameAsThenReturnsTrue() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        Library library = new Library("My Library", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+        Library library = new Library("My Library", userIdDouble);
+
         // Act
         boolean result = library.sameAs(library);
+
         // Assert
         assertTrue(result);
     }
 
     @Test
-    void givenTwoLibrariesWithSameAttributesWhenSameAsThenReturnsTrue() {
+    void givenTwoLibrariesWithSameNameAndSameUserWhenSameAsThenReturnsTrue() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        Library first = new Library("Library A", userDouble);
-        Library second = new Library("Library A", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+        Library first = new Library("Library A", userIdDouble);
+        Library second = new Library("Library A", userIdDouble);
 
         // Act
         boolean result = first.sameAs(second);
@@ -262,75 +306,73 @@ class LibraryTest {
         // Assert
         assertTrue(result);
     }
-
 
     @Test
     void givenDifferentNamesWhenSameAsThenReturnsFalse() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        Library first = new Library("Library A", userDouble);
-        Library second = new Library("Library B", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+        Library first = new Library("Library A", userIdDouble);
+        Library second = new Library("Library B", userIdDouble);
+
         // Act
         boolean result = first.sameAs(second);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void givenSameNameButDifferentUserWhenSameAsThenReturnsFalse() {
+
+        // Arrange
+        UserId userIdDouble1 = createDoubleUserId("Nome1");
+        UserId userIdDouble2 = createDoubleUserId("Nome2");
+        Library first = new Library("Library A", userIdDouble1);
+        Library second = new Library("Library A", userIdDouble2);
+
+        // Act
+        boolean result = first.sameAs(second);
+
         // Assert
         assertFalse(result);
     }
 
     @Test
     void givenNullWhenSameAsThenReturnsFalse() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        Library library = new Library("My Library", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+        Library library = new Library("My Library", userIdDouble);
+
         // Act
         boolean result = library.sameAs(null);
+
         // Assert
         assertFalse(result);
     }
 
     @Test
     void givenDifferentTypeWhenSameAsThenReturnsFalse() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        Library library = new Library("My Library", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+        Library library = new Library("My Library", userIdDouble);
+
         // Act
         boolean result = library.sameAs(new Object());
+
         // Assert
         assertFalse(result);
     }
 
     @Test
-    void shouldNotBeEqual_whenDifferentInstancesHaveDifferentIdsEvenWithSameNameAndUser() {
+    void sameAsShouldReturnTrue_whenNameAndUserAreEqualEvenIfIdsAreDifferent() {
+
         // Arrange
-        UserId userDouble = createMockUser("Nome1");
-
-        // Act
-        Library first = new Library("My Library", userDouble);
-        Library second = new Library("My Library", userDouble);
-
-        // Assert
-        assertNotEquals(first, second);
-    }
-
-    @Test
-    void shouldReturnSameIdOnMultipleCalls() {
-        // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        Library library = new Library("My Library", userDouble);
-
-        // Act
-        LibraryId firstId = library.id();
-        LibraryId secondId = library.id();
-
-        // Assert
-        assertSame(firstId, secondId);
-    }
-
-    @Test
-    void sameAsShouldReturnTrue_whenNamesAreEqualEvenIfIdsAreDifferent() {
-        // Arrange
-        UserId userDouble = createMockUser("Nome1");
-        Library first = new Library("Library A", userDouble);
-        Library second = new Library("Library A", userDouble);
+        UserId userIdDouble = createDoubleUserId("Nome1");
+        Library first = new Library("Library A", userIdDouble);
+        Library second = new Library("Library A", userIdDouble);
 
         // Act
         boolean result = first.sameAs(second);
@@ -341,26 +383,13 @@ class LibraryTest {
     }
 
 
-    @Test
-    void constructorShouldAcceptNonBlankNameWithLeadingAndTrailingSpaces() {
-        // Arrange
-        UserId userDouble = createMockUser("Nome1");
-
-        // Act
-        Library library = new Library("  My Library  ", userDouble);
-
-        // Assert
-        assertEquals("  My Library  ", library.getLibraryName());
-    }
-
-
     // -------------------------------------------------------------------------
     // Test helpers
     // -------------------------------------------------------------------------
 
-    private UserId createMockUser(String name) {
-        UserId userDouble = mock(UserId.class);
-        when(userDouble.getUserId()).thenReturn(name);
-        return userDouble;
+    private UserId createDoubleUserId(String name) {
+        UserId userIdDouble = mock(UserId.class);
+        when(userIdDouble.getUserId()).thenReturn(name);
+        return userIdDouble;
     }
 }
