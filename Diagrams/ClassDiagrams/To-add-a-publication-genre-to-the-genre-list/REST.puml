@@ -1,0 +1,166 @@
+@startuml
+title To add a publication genre (REST)
+
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam nodesep 80
+skinparam ranksep 100
+
+<style>
+classDiagram {
+  padding : 8
+}
+</style>
+
+top to bottom direction
+
+' ── UI Layer ───────────────────────────────────────────────
+package "UI" {
+    class UI {
+    }
+}
+
+' ── Application Layer ──────────────────────────────────────
+package "Application" {
+    class GenreRESTController {
+        + createGenre(dto: GenreRequestDTO, userId: UserId): ResponseEntity<GenreResponseDTO>
+        + getGenres(): ResponseEntity<List<GenreResponseDTO>>
+    }
+
+    class GenreService {
+        + createAndSave(genreType: String, userId: UserId): Genre
+        + findAll(): List<Genre>
+    }
+
+    class GenreMapper {
+        + {static} toDTO(genre: Genre): GenreResponseDTO
+        + {static} toDTOs(genres: List<Genre>): List<GenreResponseDTO>
+    }
+
+    class GenreLinkProvider {
+        + getLinks(userId: UserId): List<Link>
+    }
+
+    class GenreRequestDTO {
+        - genreName: String
+    }
+
+    class GenreResponseDTO {
+        - id: String
+        - genreType: String
+    }
+}
+
+' ── Domain Layer ───────────────────────────────────────────
+package "Domain" {
+    interface IUserRepository {
+        + findByID(userId: UserId): Optional<User>
+    }
+
+    interface IGenreRepository {
+        + save(genre: Genre): Genre
+        + findByTitle(title: String): Optional<Genre>
+        + findAll(): List<Genre>
+        + findById(genreId: GenreId): Optional<Genre>
+    }
+
+    class GenreAuthorizationPolicy {
+        + canCreateGenre(user: User): boolean
+    }
+
+    class GenreFactory {
+        + create(genreType: String): Genre
+        + create(genreId: GenreId, genreType: String): Genre
+    }
+
+    class Genre {
+        - id: GenreId
+        - genreType: String
+        + id(): GenreId
+        + getGenreType(): String
+    }
+
+    class User {
+        - id: UserId
+    }
+}
+
+' ── Infrastructure Layer ───────────────────────────────────
+package "Infrastructure" {
+    class GenreRepositoryJpaImpl {
+    }
+
+    class UserRepositoryJpaImpl {
+    }
+
+    interface IGenreRepositoryJpa {
+        + findByGenreType(genreType: String): Optional<GenreDM>
+        + save(genreDM: GenreDM): GenreDM
+    }
+
+    interface IUserRepositoryJpa {
+        + findById(userId: UserId): Optional<UserDM>
+    }
+
+    class GenreAssembler {
+        + toDM(genre: Genre): GenreDM
+        + toDomain(dm: GenreDM): Genre
+    }
+
+    class GenreDM {
+        - id: GenreId
+        - genreType: String
+        + getId(): GenreId
+        + getGenreType(): String
+    }
+
+    class UserDM {
+        - id: UserId
+        + getId(): UserId
+    }
+
+    Rectangle Database {
+    }
+}
+
+' ── Relationships ──────────────────────────────────────────
+UI "1" ..> "1" GenreRESTController : uses
+
+GenreRESTController "1" ..> "1" GenreService : uses
+GenreRESTController "1" ..> "1" GenreMapper : uses
+GenreRESTController "1" ..> "1" GenreLinkProvider : uses
+GenreRESTController ..> GenreRequestDTO : receives
+GenreRESTController ..> GenreResponseDTO : returns
+
+GenreService "1" ..> "1" IUserRepository : uses
+GenreService "1" ..> "1" GenreAuthorizationPolicy : uses
+GenreService "1" ..> "1" GenreFactory : uses
+GenreService "1" ..> "1" IGenreRepository : uses
+
+GenreMapper ..> Genre : maps
+GenreMapper ..> GenreResponseDTO : creates
+
+GenreLinkProvider "1" ..> "1" GenreAuthorizationPolicy : uses
+GenreLinkProvider "1" ..> "1" IUserRepository : uses
+
+IUserRepository <|.. UserRepositoryJpaImpl : implements
+IUserRepositoryJpa <.. UserRepositoryJpaImpl : uses
+
+IGenreRepository <|.. GenreRepositoryJpaImpl : implements
+IGenreRepositoryJpa <.. GenreRepositoryJpaImpl : uses
+
+GenreRepositoryJpaImpl "1" ..> "1" GenreAssembler : uses
+GenreRepositoryJpaImpl "1" ..> "1" GenreFactory : uses
+
+GenreAssembler "1" ..> "1" GenreDM : creates
+GenreAssembler "1" ..> "1" Genre : creates
+GenreAssembler "1" ..> "1" GenreFactory : uses
+
+GenreFactory "1" ..> "1" Genre : creates
+
+IUserRepositoryJpa "1" ..> "0..1" UserDM : retrieves
+IUserRepositoryJpa "1" ...> "1" Database : queries
+IGenreRepositoryJpa "1" ..> "0..*" GenreDM : retrieves
+IGenreRepositoryJpa "1" ...> "1" Database : queries
+
+@enduml
