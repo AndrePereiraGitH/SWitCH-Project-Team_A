@@ -573,40 +573,4 @@ class AppraisalEntityRESTControllerTest {
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         }
     }
-
-    @Test
-    void optionsById_shouldReturnOkStatus() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    void optionsById_shouldAllowGet() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
-
-        // ASSERT
-        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
-    }
-
-    @Test
-    void optionsById_shouldAllowOptions() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
-
-        // ASSERT
-        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
-    }
-
-    @Test
-    void optionsById_shouldNotAllowPost() {
-        // ACT
-        ResponseEntity<Void> response = sut.optionsById(VALID_APPRAISAL_ENTITY_ID);
-
-        // ASSERT
-        assertFalse(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
-    }
 }

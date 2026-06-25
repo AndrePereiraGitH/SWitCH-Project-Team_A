@@ -211,22 +211,5 @@ public class AppraisalEntityRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-     * Handles OPTIONS requests for the appraisal entity detail endpoint ({@code /appraisal-entities/{appraisalEntityId}}).
-     *
-     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response header,
-     * enabling CORS preflight requests and API discoverability.</p>
-     *
-     * @param appraisalEntityId the unique identifier of the appraisal entity; used for URL matching
-     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS}
-     */
-    @RequestMapping(value = "/{appraisalEntityId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsById(@PathVariable String appraisalEntityId) {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
 }
 
