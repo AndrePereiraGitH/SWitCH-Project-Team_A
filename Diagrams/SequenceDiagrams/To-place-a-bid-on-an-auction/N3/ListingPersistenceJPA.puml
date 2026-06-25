@@ -1,0 +1,108 @@
+@startuml
+autonumber
+hide footbox
+title Listing Persistence JPA
+
+participant ":IListing\nRepository" as LRepo
+participant ":ListingRepository\nJPAImpl" as LRepoImpl
+participant ":IListing\nRepositoryJpa" as LRepoJpa
+participant ":Listing\nAssembler" as LAss
+participant "listingDM:\nListingDM" as listingDM
+participant ":Listing\nFactory" as LFactory
+participant "listing:\nListing" as listing
+
+database "Database" as db
+
+ref over LRepo
+    [[MainDiagram.puml Back to main diagram]]
+end ref
+
+
+LRepo -> LRepoImpl : findById(listingId)
+activate LRepo
+activate LRepoImpl
+
+LRepoImpl -> LRepoJpa : findById(listingId)
+activate LRepoJpa
+LRepoJpa -> db : SELECT * FROM listings WHERE listing_id = {listingId}
+activate db
+db --> LRepoJpa : data
+deactivate db
+LRepoJpa -->> listingDM ** : <<create>>
+LRepoJpa --> LRepoImpl : listingDM
+deactivate LRepoJpa
+
+alt listingDM is present
+    LRepoImpl -> LAss : toDomain(listingDM)
+    activate LAss
+
+    LAss -> listingDM : getListingId()
+    activate listingDM
+    listingDM --> LAss : listingId
+    deactivate listingDM
+
+    LAss -> listingDM : getListingTitle()
+    activate listingDM
+    listingDM --> LAss : listingTitle
+    deactivate listingDM
+
+    LAss -> listingDM : getItemsId()
+    activate listingDM
+    listingDM --> LAss : itemsId
+    deactivate listingDM
+
+    LAss -> listingDM : getSaleType()
+    activate listingDM
+    listingDM --> LAss : saleType
+    deactivate listingDM
+
+    LAss -> listingDM : getPrice()
+    activate listingDM
+    listingDM --> LAss : price
+    deactivate listingDM
+
+    LAss -> listingDM : getShortDescription()
+    activate listingDM
+    listingDM --> LAss : shortDescription
+    deactivate listingDM
+
+    LAss -> listingDM : getSellerId()
+    activate listingDM
+    listingDM --> LAss : sellerId
+    deactivate listingDM
+
+    LAss -> listingDM : getBuyerId()
+    activate listingDM
+    listingDM --> LAss : buyerId
+    deactivate listingDM
+
+    LAss -> listingDM : getPictures()
+    activate listingDM
+    listingDM --> LAss : pictures
+    deactivate listingDM
+
+    LAss -> listingDM : getPublicationDate()
+    activate listingDM
+    listingDM --> LAss : publicationDate
+    deactivate listingDM
+
+    LAss -> listingDM : getListingStatus()
+    activate listingDM
+    listingDM --> LAss : listingStatus
+    deactivate listingDM
+
+    LAss -> LFactory : create(listingId, listingTitle, itemsId,\nsaleType, price, shortDescription, sellerId,\nbuyerId, pictures, publicationDate, listingStatus)
+    activate LFactory
+    LFactory -->> listing ** : <<create>>
+    LFactory --> LAss : listing
+    deactivate LFactory
+
+    LAss --> LRepoImpl : listing
+    deactivate LAss
+end
+
+LRepoImpl --> LRepo : listing
+deactivate LRepoImpl
+deactivate LRepo
+
+@enduml

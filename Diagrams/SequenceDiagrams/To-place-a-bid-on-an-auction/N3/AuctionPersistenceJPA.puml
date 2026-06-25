@@ -1,0 +1,167 @@
+@startuml
+autonumber
+hide footbox
+title Auction Persistence JPA
+
+participant ":IAuction\nRepository" as ARepo
+participant ":AuctionRepository\nJPAImpl" as ARepoImpl
+participant ":IAuction\nRepositoryJPA" as ARepoJpa
+participant ":Auction\nAssembler" as AAss
+participant "auctionDM:\nAuctionDM" as auctionDM
+participant ":Auction\nFactory" as AFactory
+participant "auction:\nAuction" as auction
+participant "bidHistoryDM:\nList<BidDM" as bidHistoryDM
+
+database "Database" as db
+
+ref over ARepo
+    [[MainDiagram.puml Back to main diagram ]]
+end ref
+
+
+' =======================================================
+' findById
+' =======================================================
+
+ARepo -> ARepoImpl : findById(auctionId)
+activate ARepo
+activate ARepoImpl
+
+ARepoImpl -> ARepoJpa : findById(auctionId)
+activate ARepoJpa
+ARepoJpa -> db : SELECT * FROM auctions WHERE auction_id = ?
+activate db
+db --> ARepoJpa : data
+deactivate db
+ARepoJpa -->> auctionDM ** : <<create>>
+ARepoJpa --> ARepoImpl : auctionDM
+deactivate ARepoJpa
+
+ARepoImpl -> AAss : toDomain(auctionDM)
+activate AAss
+
+AAss -> auctionDM : getAuctionId()
+activate auctionDM
+auctionDM --> AAss : auctionId
+deactivate auctionDM
+AAss -> auctionDM : getListingId()
+activate auctionDM
+auctionDM --> AAss : listingId
+deactivate auctionDM
+AAss -> auctionDM : getAuctionStartDateTime()
+activate auctionDM
+auctionDM --> AAss : startDateTime
+deactivate auctionDM
+AAss -> auctionDM : getAuctionEndDateTime()
+activate auctionDM
+auctionDM --> AAss : endDateTime
+deactivate auctionDM
+AAss -> auctionDM : getInitialPrice()
+activate auctionDM
+auctionDM --> AAss : initialPrice
+deactivate auctionDM
+AAss -> auctionDM : getBuyoutPrice()
+activate auctionDM
+auctionDM --> AAss : buyoutPrice
+deactivate auctionDM
+
+AAss -> AFactory : create(auctionId, listingId, startDateTime,\nendDateTime, initialPrice, buyoutPrice)
+activate AFactory
+AFactory -->> auction ** : <<create>>
+AFactory --> AAss : auction
+deactivate AFactory
+
+AAss -->> bidHistoryDM **: «create»
+AAss -> auctionDM : getBidHistory()
+activate auctionDM
+auctionDM --> AAss : bidHistoryDM
+deactivate auctionDM
+
+loop for each bidDM in bidHistoryDM
+     AAss -> bidHistoryDM : getBidderId()
+     activate bidHistoryDM
+     bidHistoryDM --> AAss : bidderId
+     deactivate bidHistoryDM
+
+     AAss -> bidHistoryDM : getValue()
+     activate bidHistoryDM
+     bidHistoryDM --> AAss : value
+     deactivate bidHistoryDM
+
+     AAss -> bidHistoryDM : getTimeOfBid()
+     activate bidHistoryDM
+     bidHistoryDM --> AAss : timeOfBid
+     deactivate bidHistoryDM
+
+     AAss -> auction : rehydrateBid(bidderId, value, timeOfBid)
+     activate auction
+     auction --> AAss : ok
+     deactivate auction
+end
+
+AAss -> auctionDM : getAuctionStatus()
+activate auctionDM
+auctionDM --> AAss : auctionStatus
+deactivate auctionDM
+AAss -> auctionDM : getClosedAt()
+activate auctionDM
+auctionDM --> AAss : closedAt
+deactivate auctionDM
+
+AAss -> auction : rehydrateState(bidHistory, auctionStatus, closedAt)
+activate auction
+auction --> AAss : ok
+deactivate auction
+
+AAss --> ARepoImpl : auction
+deactivate AAss
+
+ARepoImpl --> ARepo : auction
+deactivate ARepoImpl
+deactivate ARepo
+
+
+' =======================================================
+' update
+' =======================================================
+
+ARepo -> ARepoImpl : update(auction)
+activate ARepo
+activate ARepoImpl
+
+ARepoImpl -> ARepoJpa : existsById(auction.id())
+activate ARepoJpa
+ARepoJpa -> db : SELECT * FROM auctions WHERE auction_id = ?
+activate db
+db --> ARepoJpa : data
+deactivate db
+ARepoJpa --> ARepoImpl : true
+deactivate ARepoJpa
+
+
+ARepoImpl -> AAss : toDM(auction)
+activate AAss
+AAss -->> auctionDM ** : <<create>>
+AAss --> ARepoImpl : auctionDM
+deactivate AAss
+
+ARepoImpl -> ARepoJpa : save(auctionDM)
+activate ARepoJpa
+ARepoJpa -> db : UPDATE auctions \nUPDATE bids ...\nWHERE auction_id ={auction.id())
+activate db
+db --> ARepoJpa : data
+deactivate db
+ARepoJpa --> ARepoImpl : updatedAuctionDM
+deactivate ARepoJpa
+
+ARepoImpl -> AAss : toDomain(updatedAuctionDM)
+activate AAss
+AAss --> ARepoImpl : updatedAuction
+deactivate AAss
+
+ARepoImpl --> ARepo : updatedAuction
+
+deactivate ARepoImpl
+deactivate ARepo
+
+@enduml

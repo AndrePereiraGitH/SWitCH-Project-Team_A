@@ -1,0 +1,134 @@
+@startuml
+hide footbox
+autonumber
+title To place a bid on an auction (Main diagram)
+
+
+participant ":Router" as Router
+participant ":Auction\nRESTController" as AuctionCtrl
+participant ":Auction\nMapper" as AuctionMapper
+participant ":IAuction\nService" as AuctionService
+participant ":IUser\nRepository" as UserRepo
+participant ":Auction\nAuthorizationPolicy" as Policy
+participant ":IAuction\nRepository" as AuctionRepo
+participant ":IListing\nRepository" as ListingRepo
+participant "auction:\nAuction" as Auction
+participant "bid:\nBid" as Bid
+
+
+[o-> Router : OPTIONS /auctions/{auctionId}/bids
+activate Router
+Router -> AuctionCtrl : optionsBids(userId, auctionId)
+activate AuctionCtrl
+
+AuctionCtrl -> AuctionMapper : toUserId(userId)
+activate AuctionMapper
+AuctionMapper --> AuctionCtrl : bidderUserId
+deactivate AuctionMapper
+
+AuctionCtrl -> AuctionService : canPlaceBid(bidderUserId)
+activate AuctionService
+AuctionService -> UserRepo : findByID(bidderUserId)
+activate UserRepo
+UserRepo --> AuctionService : user
+deactivate UserRepo
+AuctionService -> Policy : canPlaceBid(user)
+activate Policy
+Policy --> AuctionService : true
+deactivate Policy
+AuctionService --> AuctionCtrl : true
+deactivate AuctionService
+
+AuctionCtrl --> Router : 200 OK\nAllow: OPTIONS, POST
+deactivate AuctionCtrl
+[o<-- Router : 200 OK\nAllow: OPTIONS, POST
+deactivate Router
+
+
+[o-> Router : POST /auctions/{auctionId}/bids?bidderId={bidderId}\nbody: {value}
+activate Router
+
+Router -> AuctionCtrl : placeBid(auctionId, requestDTO, bidderId)
+activate AuctionCtrl
+
+AuctionCtrl -> AuctionMapper : toAuctionId(auctionId)
+activate AuctionMapper
+AuctionMapper --> AuctionCtrl : id: AuctionId
+deactivate AuctionMapper
+
+AuctionCtrl -> AuctionMapper : toUserId(bidderId)
+activate AuctionMapper
+AuctionMapper --> AuctionCtrl : bidderUserId: UserId
+deactivate AuctionMapper
+
+AuctionCtrl -> AuctionMapper : toPrice(requestDTO.value().toString())
+activate AuctionMapper
+AuctionMapper --> AuctionCtrl : value: Price
+deactivate AuctionMapper
+
+AuctionCtrl -> AuctionService : placeBid(id, bidderUserId, value)
+activate AuctionService
+
+AuctionService -> UserRepo : findByID(bidderUserId)
+activate UserRepo
+UserRepo --> AuctionService : user
+deactivate UserRepo
+
+AuctionService -> Policy : canPlaceBid(user)
+activate Policy
+Policy --> AuctionService : true
+deactivate Policy
+
+AuctionService -> AuctionRepo : findById(id)
+activate AuctionRepo
+AuctionRepo ->o] : SELECT * FROM auctions WHERE id = {auctionId}
+ref over AuctionRepo
+    [[AuctionPersistenceJPA.puml Auction Persistence JPA]]
+    [[AuctionPersistenceMem.puml Auction Persistence Mem]]
+end ref
+AuctionRepo <--o] : data
+AuctionRepo --> AuctionService : auction
+deactivate AuctionRepo
+
+AuctionService -> ListingRepo : findById(auction.getListingId())
+activate ListingRepo
+ListingRepo ->o] : SELECT * FROM listings WHERE id = {listingId}
+ref over ListingRepo
+    [[ListingPersistenceJPA.puml Listing Persistence JPA]]
+    [[ListingPersistenceMem.puml Listing Persistence Mem]]
+end ref
+ListingRepo <--o] : data
+ListingRepo --> AuctionService : listing
+deactivate ListingRepo
+
+AuctionService -> Auction : placeBid(bidderId, value)
+activate Auction
+
+Auction -> Auction : closeIfExpired()
+Auction -> Auction : refreshStatus()
+Auction -->> Bid ** : «create»
+Auction -> Auction : _bidHistory.add(bid)
+
+Auction --> AuctionService : bid
+deactivate Auction
+
+AuctionService -> AuctionRepo : update(auction)
+activate AuctionRepo
+AuctionRepo ->o] : UPDATE auctions WHERE id = {auctionId}
+ref over AuctionRepo
+    [[AuctionPersistenceJPA.puml Auction Persistence JPA]]
+    [[AuctionPersistenceMem.puml Auction Persistence Mem]]
+end ref
+AuctionRepo <--o] : data
+AuctionRepo --> AuctionService : auction
+deactivate AuctionRepo
+
+AuctionService --> AuctionCtrl : bid
+deactivate AuctionService
+
+AuctionCtrl --> Router : 204 No Content
+deactivate AuctionCtrl
+[o<-- Router : 204 No Content
+deactivate Router
+
+@enduml
