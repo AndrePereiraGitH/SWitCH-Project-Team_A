@@ -236,4 +236,118 @@ class CityServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> sut.findById(null));
     }
+
+    // ---------------
+    // canCreateCity
+    // ---------------
+
+    @Test
+    void canCreateCity_shouldReturnTrue_whenUserIsAuthorized() {
+        // Arrange
+        CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
+        UserId doubleUserId = mock(UserId.class);
+        User doubleUser = mock(User.class);
+
+        when(doubleUserRepository.findByID(doubleUserId)).thenReturn(Optional.of(doubleUser));
+        when(doubleCityAuthorizationPolicy.canCreateCity(doubleUser)).thenReturn(true);
+
+        // Act
+        boolean result = sut.canCreateCity(doubleUserId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreateCity_shouldReturnFalse_whenUserIsNotAuthorized() {
+        // Arrange
+        CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
+        UserId doubleUserId = mock(UserId.class);
+        User doubleUser = mock(User.class);
+
+        when(doubleUserRepository.findByID(doubleUserId)).thenReturn(Optional.of(doubleUser));
+        when(doubleCityAuthorizationPolicy.canCreateCity(doubleUser)).thenReturn(false);
+
+        // Act
+        boolean result = sut.canCreateCity(doubleUserId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreateCity_shouldThrow_whenUserNotFound() {
+        // Arrange
+        CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
+        UserId doubleUserId = mock(UserId.class);
+
+        when(doubleUserRepository.findByID(doubleUserId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> sut.canCreateCity(doubleUserId));
+    }
+
+    @Test
+    void createAndSave_shouldThrow_whenRepositoryFailsOnSave() {
+        // Arrange
+        CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
+        UserId doubleUserId = mock(UserId.class);
+        User doubleUser = mock(User.class);
+        CountryId doubleCountryId = mock(CountryId.class);
+        City doubleCity = mock(City.class);
+
+        when(doubleUserRepository.findByID(doubleUserId)).thenReturn(Optional.of(doubleUser));
+        when(doubleCityAuthorizationPolicy.canCreateCity(doubleUser)).thenReturn(true);
+        when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(doubleCountryId));
+        when(doubleCityRepository.existsByCountryIdAndCityName(doubleCountryId, "Braga")).thenReturn(false);
+        when(doubleCityFactory.create(doubleCountryId, "Braga")).thenReturn(doubleCity);
+        when(doubleCityRepository.save(doubleCity)).thenThrow(new RuntimeException("Database error"));
+
+        // Act + Assert
+        assertThrows(RuntimeException.class,
+                () -> sut.createAndSave("Portugal", "Braga", doubleUserId));
+    }
+
+    @Test
+    void createAndSave_shouldThrow_whenRepositoryFailsOnExistsCheck() {
+        // Arrange
+        CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
+        UserId doubleUserId = mock(UserId.class);
+        User doubleUser = mock(User.class);
+        CountryId doubleCountryId = mock(CountryId.class);
+
+        when(doubleUserRepository.findByID(doubleUserId)).thenReturn(Optional.of(doubleUser));
+        when(doubleCityAuthorizationPolicy.canCreateCity(doubleUser)).thenReturn(true);
+        when(doubleCountryRepository.findIdByName("Portugal")).thenReturn(Optional.of(doubleCountryId));
+        when(doubleCityRepository.existsByCountryIdAndCityName(doubleCountryId, "Braga"))
+                .thenThrow(new RuntimeException("Database error"));
+
+        // Act + Assert
+        assertThrows(RuntimeException.class,
+                () -> sut.createAndSave("Portugal", "Braga", doubleUserId));
+    }
+
+    @Test
+    void findById_shouldThrow_whenRepositoryThrowsUnexpectedException() {
+        // Arrange
+        CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
+        CityId doubleCityId = mock(CityId.class);
+        when(doubleCityRepository.findById(doubleCityId)).thenThrow(new RuntimeException("Database error"));
+
+        // Act + Assert
+        assertThrows(RuntimeException.class,
+                () -> sut.findById(doubleCityId));
+    }
+
+    @Test
+    void findAll_shouldThrow_whenRepositoryThrowsUnexpectedException() {
+        // Arrange
+        CityService sut = new CityService(doubleCityFactory, doubleCityRepository, doubleCountryRepository, doubleCityAuthorizationPolicy, doubleUserRepository);
+        when(doubleCityRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+
+        // Act + Assert
+        assertThrows(RuntimeException.class,
+                () -> sut.findAll());
+    }
 }

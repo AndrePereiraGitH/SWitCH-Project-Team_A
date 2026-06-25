@@ -24,6 +24,11 @@ import java.util.Objects;
  * Delegates creation of {@link Author} aggregates to {@link AuthorFactory} and ensures
  * their persistence through {@link IAuthorRepository}. Authorization is enforced via
  * {@link AuthorAuthorizationPolicy} before any state-changing operation.</p>
+ *
+ * <p>Each operation that requires authorization is paired with a corresponding
+ * {@code can*} method that exposes the authorization decision for use by the REST layer
+ * (e.g. to populate {@code Allow} headers on OPTIONS responses) without coupling the
+ * transport layer to HTTP concepts.</p>
  */
 @Service
 public class AuthorService {
@@ -80,6 +85,19 @@ public class AuthorService {
         return authorRepo.save(author);
     }
 
+    /**
+     * Returns whether the given user is authorized to create an author.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user may create an author, {@code false} otherwise
+     * @throws IllegalArgumentException if no user is found for the given {@code userId}
+     */
+    public boolean canCreateAuthor(UserId userId) {
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        return policy.canCreateAuthor(user);
+    }
 
     /**
      * Retrieves all {@link Author} instances persisted in the repository.

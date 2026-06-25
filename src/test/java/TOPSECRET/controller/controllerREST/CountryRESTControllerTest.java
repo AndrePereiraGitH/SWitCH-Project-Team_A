@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -357,6 +358,100 @@ class CountryRESTControllerTest {
                 controller.findById("PORTUGAL");
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    // -------------------------------------------------------------------------
+    // Options()
+    // -------------------------------------------------------------------------
+
+    @Test
+    void options_adminUser_returnsOk() {
+
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(true);
+
+        // Act
+        ResponseEntity<Void> result = controller.options("adminUser");
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void options_adminUser_allowsPost() {
+
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(true);
+
+        // Act
+        ResponseEntity<Void> result = controller.options("adminUser");
+
+        // Assert
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertEquals(3, result.getHeaders().getAllow().size());
+    }
+
+    @Test
+    void options_nonAdminUser_returnsOk() {
+
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(false);
+
+        // Act
+        ResponseEntity<Void> result = controller.options("normalUser");
+
+        // Assert
+        assertEquals(HttpStatus.OK, result.getStatusCode());
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void options_nonAdminUser_doesNotAllowPost() {
+
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(false);
+
+        // Act
+        ResponseEntity<Void> result = controller.options("normalUser");
+
+        // Assert
+        assertFalse(result.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertEquals(2, result.getHeaders().getAllow().size());
+    }
+
+    @Test
+    void options_invalidUserId_returnsBadRequest() {
+
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenThrow(new IllegalArgumentException("invalid"));
+
+        // Act
+        ResponseEntity<Void> result = controller.options("invalid");
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    void options_unexpectedException_returnsInternalServerError() {
+
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenThrow(new RuntimeException("boom"));
+
+        // Act
+        ResponseEntity<Void> result = controller.options("adminUser");
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
     }
 
 }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -245,7 +246,7 @@ class AuctionRESTControllerTest {
     // =================================================================================================================
 
     @Test
-    void getAuctions_shouldReturn200_whenNoFilterProvided() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenNoFilterProvided() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -262,7 +263,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenre() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByGenre() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -277,7 +278,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByGenreSortedByDeadline() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -292,7 +293,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByAuthor() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByAuthor() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -308,7 +309,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByPublisher() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByPublisher() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -324,7 +325,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByBibliographicalData() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -427,7 +428,7 @@ class AuctionRESTControllerTest {
     }
 
     @Test
-    void getAuctions_shouldReturn200_whenFilteredByListingId() throws InstanceNotFoundException {
+    void getAuctions_shouldReturn200_whenFilteredByListingId() {
         // Arrange
         setupAuctionDouble();
         when(auctionServiceDouble.findAuctions(any(), any(), any(), any(), any(), any(Boolean.class)))
@@ -523,12 +524,157 @@ class AuctionRESTControllerTest {
         assertFalse(response.getBody().getLinks().isEmpty());
     }
 
+    // =================================================================================================================
+    // =========== Options =============================================================================================
+    // =================================================================================================================
+
+    @Test
+    void optionsRoot_shouldReturnGetAndOptions_whenUserIdIsNull() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot(null);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(HttpMethod.GET, HttpMethod.OPTIONS), response.getHeaders().getAllow().stream().toList());
+    }
+
+    @Test
+    void optionsRoot_shouldIncludePost_whenUserCanCreateAuction() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canCreateAuction(any())).thenReturn(true);
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(
+                List.of(HttpMethod.GET, HttpMethod.OPTIONS, HttpMethod.POST)));
+    }
+
+    @Test
+    void optionsRoot_shouldNotIncludePost_whenUserCannotCreateAuction() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canCreateAuction(any())).thenReturn(false);
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsRoot_shouldReturn404_whenUserDoesNotExist() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canCreateAuction(any()))
+                .thenThrow(new InstanceNotFoundException("User id " + userId + " not found."));
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot(userId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void optionsRoot_shouldReturn400_whenUserIdIsInvalid() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot("");
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void optionsRoot_shouldReturn500_whenUnexpectedErrorOccurs() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canCreateAuction(any())).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsRoot(userId);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    void optionsBids_shouldReturnOnlyOptions_whenUserIdIsNull() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsBids(null, auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(List.of(HttpMethod.OPTIONS), response.getHeaders().getAllow().stream().toList());
+    }
+
+    @Test
+    void optionsBids_shouldIncludePost_whenUserCanPlaceBid() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canPlaceBid(any())).thenReturn(true);
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsBids(userId, auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().containsAll(List.of(HttpMethod.OPTIONS, HttpMethod.POST)));
+    }
+
+    @Test
+    void optionsBids_shouldNotIncludePost_whenUserCannotPlaceBid() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canPlaceBid(any())).thenReturn(false);
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsBids(userId, auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsBids_shouldReturn404_whenUserDoesNotExist() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canPlaceBid(any()))
+                .thenThrow(new InstanceNotFoundException("User id " + userId + " not found."));
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsBids(userId, auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    void optionsBids_shouldReturn400_whenUserIdIsInvalid() {
+        // Act
+        ResponseEntity<Void> response = controller.optionsBids("", auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void optionsBids_shouldReturn500_whenUnexpectedErrorOccurs() throws Exception {
+        // Arrange
+        when(auctionServiceDouble.canPlaceBid(any())).thenThrow(new RuntimeException("Unexpected error"));
+
+        // Act
+        ResponseEntity<Void> response = controller.optionsBids(userId, auctionId);
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
 
     // =================================================================================================================
     // ============= Private Helper ====================================================================================
     // =================================================================================================================
 
-    private void setupAuctionDouble() throws InstanceNotFoundException {
+    private void setupAuctionDouble() {
         when(auctionDouble.id()).thenReturn(auctionIdDouble);
         when(auctionDouble.getListingId()).thenReturn(listingIdDouble);
         when(auctionDouble.getAuctionStatus()).thenReturn(AuctionStatus.ACTIVE);
