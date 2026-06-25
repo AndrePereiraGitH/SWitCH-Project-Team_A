@@ -4,10 +4,24 @@ import { AddToListModal } from "./AddToListModal";
 
 // ── Mocks ─────────────────────────────────────────────────────────────
 
+/** Spy for {@link useLists.addPublicationToList}. Resolves by default. */
 const mockAddPublicationToList = vi.fn();
+
+/** Spy for {@link usePublications.refresh}. Resolves by default. */
 const mockRefresh = vi.fn();
 
+/**
+ * Mutable backing array for the lists returned by {@link useLists}.
+ * Reset to a standard two-list fixture in {@link beforeEach}.
+ * @type {Array<{collectionId: string, collectionName: string}>}
+ */
 let mockListsData = [];
+
+/**
+ * Mutable backing array for the publications returned by {@link usePublications}.
+ * Reset to a single in-library, unassigned publication in {@link beforeEach}.
+ * @type {Array<{id: string, libraryId: string|null, collectionId: string|null}>}
+ */
 let mockPublicationsData = [];
 
 vi.mock("./ListsContext", () => ({
@@ -26,6 +40,10 @@ vi.mock("./PublicationsContext", () => ({
 
 // ── Setup ─────────────────────────────────────────────────────────────
 
+/**
+ * Default props used across all tests.
+ * Individual tests can override any prop via {@link renderModal}.
+ */
 const defaultProps = {
     isOpen: true,
     onClose: vi.fn(),
@@ -33,19 +51,30 @@ const defaultProps = {
     publicationId: "pub-1",
 };
 
+/**
+ * Renders {@link AddToListModal} with {@link defaultProps} merged with any
+ * additional props supplied by the caller.
+ *
+ * @param {Partial<typeof defaultProps>} [props={}] - Props to override.
+ * @returns {import("@testing-library/react").RenderResult}
+ */
 function renderModal(props = {}) {
     return render(<AddToListModal {...defaultProps} {...props} />);
 }
+
+// ── Test suite ────────────────────────────────────────────────────────
 
 describe("AddToListModal", () => {
     beforeEach(() => {
         vi.clearAllMocks();
 
+        // Standard fixture: two lists available.
         mockListsData = [
             { collectionId: "1", collectionName: "Favourites" },
             { collectionId: "2", collectionName: "To Read" },
         ];
 
+        // Standard fixture: publication is in the library and not yet in any list.
         mockPublicationsData = [
             { id: "pub-1", title: "The Lord of the Rings", libraryId: "lib-1", collectionId: null }
         ];
@@ -63,19 +92,19 @@ describe("AddToListModal", () => {
     });
 
     test("shows warning if publication is not in the library", () => {
-        // Set libraryId to null to simulate a book not in the library
+        // libraryId: null — the publication has not been added to the library yet.
         mockPublicationsData = [{ id: "pub-1", libraryId: null, collectionId: null }];
         renderModal();
 
         expect(
             screen.getByText("Add this publication to your library first before adding it to a list.")
         ).toBeInTheDocument();
-        // Ensure lists are NOT rendered
+        // List rows must not be rendered while the library guard is active.
         expect(screen.queryByText("Favourites")).not.toBeInTheDocument();
     });
 
     test("shows warning if publication is already in a list", () => {
-        // Set collectionId to simulate a book already in a list
+        // collectionId: "1" — the publication is already assigned to a list.
         mockPublicationsData = [{ id: "pub-1", libraryId: "lib-1", collectionId: "1" }];
         renderModal();
 
@@ -97,10 +126,10 @@ describe("AddToListModal", () => {
     });
 
     test("does not call addPublicationToList if already in a list and another list is clicked", () => {
+        // Publication is in collection "1"; clicking "To Read" (collection "2") must be a no-op.
         mockPublicationsData = [{ id: "pub-1", libraryId: "lib-1", collectionId: "1" }];
         renderModal();
 
-        // Clicking "To Read" (collection 2) should be disabled
         fireEvent.click(screen.getByText("To Read"));
 
         expect(mockAddPublicationToList).not.toHaveBeenCalled();
@@ -109,17 +138,16 @@ describe("AddToListModal", () => {
     test("calls addPublicationToList and shows success state when clicking a list", async () => {
         renderModal();
 
-        // Click "Favourites" list
         fireEvent.click(screen.getByText("Favourites"));
 
-        // API calls should be made
+        // The service call must receive the correct collectionId and publicationId.
         expect(mockAddPublicationToList).toHaveBeenCalledWith("1", "pub-1");
 
         await waitFor(() => {
             expect(mockRefresh).toHaveBeenCalled();
         });
 
-        // Success UI should appear
+        // The success screen replaces the list UI after the async flow completes.
         expect(await screen.findByText("Added to List!")).toBeInTheDocument();
     });
 
@@ -129,11 +157,10 @@ describe("AddToListModal", () => {
 
         fireEvent.click(screen.getByText("Favourites"));
 
-        // Wait for success screen to render
+        // Confirm the success screen is visible before waiting for auto-close.
         expect(await screen.findByText("Added to List!")).toBeInTheDocument();
 
-        // Wait for onClose to be called automatically
-        // We set timeout to 2500ms to safely cover the component's internal 1500ms delay
+        // The component's internal delay is 1500 ms; allow 2500 ms for safety.
         await waitFor(() => {
             expect(onCloseMock).toHaveBeenCalledTimes(1);
         }, { timeout: 2500 });
@@ -152,7 +179,7 @@ describe("AddToListModal", () => {
         const onCloseMock = vi.fn();
         renderModal({ onClose: onCloseMock });
 
-        // Target the button containing the X icon
+        // The close button is identified by its aria-label to avoid coupling to icon internals.
         fireEvent.click(screen.getByLabelText("Close"));
 
         expect(onCloseMock).toHaveBeenCalledTimes(1);

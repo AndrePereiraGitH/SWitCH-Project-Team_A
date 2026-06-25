@@ -1,4 +1,20 @@
-import {Book, Clock, Euro} from "lucide-react";
+import {Clock, Euro} from "lucide-react";
+
+const PLACEHOLDER_COVER = "https://placehold.co/400x400/e0e7ff/6366f1?text=No+Cover";
+
+const coversByKeyword = [
+    { keyword: "lord of the rings", isbn: "9780544003415" },
+    { keyword: "foundation",        isbn: "9780553293357" },
+    { keyword: "dom quixote",       isbn: "9780060934347" },
+];
+
+function getCoverUrl(title) {
+    if (!title) return PLACEHOLDER_COVER;
+    const lowerTitle = title.toLowerCase();
+    const match = coversByKeyword.find(c => lowerTitle.includes(c.keyword));
+    if (!match) return PLACEHOLDER_COVER;
+    return `https://covers.openlibrary.org/b/isbn/${match.isbn}-M.jpg`;
+}
 
 export function BookCard({title, author, genre, price, condition, isAuction, auctionEndDate, isSold = false}) {
     return (
@@ -6,8 +22,12 @@ export function BookCard({title, author, genre, price, condition, isAuction, auc
             className={`bg-white border-2 rounded-2xl overflow-hidden transition-all duration-300 group h-full flex flex-col relative ${isSold ? "border-gray-300 opacity-75" : "border-border hover:shadow-2xl hover:border-primary hover:-translate-y-2"}`}>
             <div
                 className="aspect-square bg-gradient-to-br from-blue-100 via-blue-50 to-cyan-50 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5"></div>
-                <Book className="w-20 h-20 text-primary/40 relative z-10"/>
+                <img
+                    src={getCoverUrl(title)}
+                    alt={title}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.src = PLACEHOLDER_COVER; }}
+                />
                 {isSold && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-20">
     <span

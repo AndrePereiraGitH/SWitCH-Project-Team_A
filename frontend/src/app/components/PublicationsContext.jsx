@@ -1,29 +1,35 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useLinks } from "./LinksContext";
 
 const PublicationsContext = createContext(undefined);
 
-const BASE_URL = "http://localhost:8081";
-const CURRENT_USER_ID = "user-001"; // TODO: replace with real auth
+const CURRENT_USER_ID = "user-001";
 
-// Helper: "LIKE_NEW" → "Like New"
 function prettifyCondition(c) {
     if (!c) return "";
     return c.split("_").map(w => w[0] + w.slice(1).toLowerCase()).join(" ");
 }
 
 export function PublicationsProvider({ children }) {
+    const { links: rootLinks, loading: linksLoading, expandTemplate } = useLinks();
+
     const [publications, setPublications] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
     const refresh = async () => {
+        const link = rootLinks?.["find-in-library"]?.href;
+        if (!link) {
+            console.warn("[PublicationsContext] no find-in-library link available");
+            return;
+        }
+
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(
-                `${BASE_URL}/publicationSamples/my-publications?userId=${CURRENT_USER_ID}`
-            );
-            if (!res.ok) throw new Error(`GET my-publications failed: ${res.status}`);
+            const url = expandTemplate(link, { userId: CURRENT_USER_ID, requestingUserId: CURRENT_USER_ID });
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`GET publications failed: ${res.status}`);
 
             const pubs = await res.json();
 
@@ -45,10 +51,10 @@ export function PublicationsProvider({ children }) {
     };
 
     useEffect(() => {
-        refresh();
-    }, []);
-
-    // ── Helpers ─────────────────────────────────────────────────────
+        if (!linksLoading) {
+            refresh();
+        }
+    }, [linksLoading, rootLinks]);
 
     const createBibliographicalData = async ({
                                                  title,
@@ -58,21 +64,22 @@ export function PublicationsProvider({ children }) {
                                                  publicationDate,
                                                  chunksOfText,
                                              }) => {
-        const res = await fetch(
-            `${BASE_URL}/bibliographicalDatas?userId=${CURRENT_USER_ID}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    title,
-                    authorName: authorNames,
-                    originalLanguage,
-                    publicationDate,
-                    genreName: genreNames,
-                    chunksOfText: chunksOfText ?? null,
-                }),
-            }
-        );
+        const link = rootLinks?.["create-bibliographical-data"]?.href;
+        if (!link) throw new Error("create-bibliographical-data link not available");
+
+        const url = expandTemplate(link, { userId: CURRENT_USER_ID, requestingUserId: CURRENT_USER_ID });
+        const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                title,
+                authorName: authorNames,
+                originalLanguage,
+                publicationDate,
+                genreName: genreNames,
+                chunksOfText: chunksOfText ?? null,
+            }),
+        });
         if (!res.ok) {
             const body = await res.text();
             throw new Error(`BD creation failed (${res.status}): ${body}`);
@@ -81,14 +88,15 @@ export function PublicationsProvider({ children }) {
     };
 
     const createEdition = async (editionPayload) => {
-        const res = await fetch(
-            `${BASE_URL}/editions?userId=${CURRENT_USER_ID}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(editionPayload),
-            }
-        );
+        const link = rootLinks?.["create-edition"]?.href;
+        if (!link) throw new Error("create-edition link not available");
+
+        const url = expandTemplate(link, { userId: CURRENT_USER_ID, requestingUserId: CURRENT_USER_ID });
+        const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(editionPayload),
+        });
         if (!res.ok) {
             const body = await res.text();
             throw new Error(`Edition creation failed (${res.status}): ${body}`);
@@ -101,18 +109,19 @@ export function PublicationsProvider({ children }) {
                                                editionId,
                                                condition,
                                            }) => {
-        const res = await fetch(
-            `${BASE_URL}/publicationSamples?userId=${CURRENT_USER_ID}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    bibliographicalDataId,
-                    editionId,
-                    condition,
-                }),
-            }
-        );
+        const link = rootLinks?.["create-publication-sample"]?.href;
+        if (!link) throw new Error("create-publication-sample link not available");
+
+        const url = expandTemplate(link, { userId: CURRENT_USER_ID, requestingUserId: CURRENT_USER_ID });
+        const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                bibliographicalDataId,
+                editionId,
+                condition,
+            }),
+        });
         if (!res.ok) {
             const body = await res.text();
             throw new Error(`PublicationSample failed (${res.status}): ${body}`);
@@ -121,10 +130,18 @@ export function PublicationsProvider({ children }) {
     };
 
     const addToLibrary = async (publicationSampleId) => {
-        const res = await fetch(
-            `${BASE_URL}/publicationSamples/${publicationSampleId}/library?userId=${CURRENT_USER_ID}`,
-            { method: "PATCH", headers: { "Content-Type": "application/json" } }
-        );
+        const link = rootLinks?.["add-to-library"]?.href;
+        if (!link) throw new Error("add-to-library link not available");
+
+        const url = expandTemplate(link, {
+            publicationSampleId,
+            userId: CURRENT_USER_ID,
+            requestingUserId: CURRENT_USER_ID,
+        });
+        const res = await fetch(url, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+        });
         if (!res.ok) {
             const body = await res.text();
             throw new Error(`Add to library failed (${res.status}): ${body}`);
@@ -145,12 +162,9 @@ export function PublicationsProvider({ children }) {
         return updated;
     };
 
-    // ── Orchestration ──────────────────────────────────────────────
-
     const addPublication = async (form) => {
         console.log("[addPublication] starting orchestration with:", form);
 
-        // 1. BD — IDs sent in *Names fields (backend bug workaround, see TODO)
         const bd = await createBibliographicalData({
             title: form.title,
             authorNames: form.authorNames,
@@ -161,7 +175,6 @@ export function PublicationsProvider({ children }) {
         });
         console.log("[addPublication] BD created:", bd);
 
-        // 2. Edition
         const edition = await createEdition({
             editionNumber: form.editionNumber,
             isbn10: form.isbn10 || null,
@@ -178,7 +191,6 @@ export function PublicationsProvider({ children }) {
         });
         console.log("[addPublication] Edition created:", edition);
 
-        // 3. PublicationSample
         const sample = await createPublicationSample({
             bibliographicalDataId: bd.bdId,
             editionId: edition.editionId,
@@ -209,6 +221,7 @@ export function PublicationsProvider({ children }) {
     };
 
     const getPublicationsForSale = () => publications.filter((p) => p.forSale);
+
     const getAllPublications = () => publications;
 
     return (
