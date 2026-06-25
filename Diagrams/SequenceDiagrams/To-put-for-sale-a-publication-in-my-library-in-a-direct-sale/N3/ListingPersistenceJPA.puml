@@ -1,0 +1,89 @@
+@startuml
+autonumber
+hide footbox
+title Listing Persistence JPA
+
+participant ":IListing\nRepository" as LRepo
+participant ":ListingRepository\nJPAImpl" as LRepoImpl
+participant ":Listing\nAssembler" as LAss
+participant "listingDM:\nListingDM" as LDM
+participant ":IListing\nRepositoryJpa" as LRepoJpa
+participant "persistedListingDM:\nListingDM" as persLDM
+participant ":Listing\nFactory" as LFactory
+participant "persistedListing:\nListing" as persListing
+
+database "Database" as db
+
+ref over LRepo
+    [[REST/1.MainDiagram.puml Back to main diagram REST]]
+    [[CLI/1.MainDiagram.puml Back to main diagram CLI]]
+end ref
+
+
+LRepo -> LRepoImpl : save(listing)
+activate LRepo
+activate LRepoImpl
+
+LRepoImpl -> LAss : toDM(listing)
+activate LAss
+LAss -->> LDM ** : <<create>>
+LAss --> LRepoImpl : listingDM
+deactivate LAss
+
+LRepoImpl -> LRepoJpa : save(listingDM)
+activate LRepoJpa
+LRepoJpa -> db : INSERT INTO listings ...
+activate db
+db --> LRepoJpa : data
+deactivate db
+LRepoJpa -->> persLDM ** : <<create>>
+LRepoJpa --> LRepoImpl : persistedListingDM
+deactivate LRepoJpa
+
+LRepoImpl -> LAss : toDomain(persistedListingDM)
+activate LAss
+LAss -> persLDM : getId()
+activate persLDM
+persLDM --> LAss : listingId
+deactivate persLDM
+LAss -> persLDM : getListingTitle()
+activate persLDM
+persLDM --> LAss : listingTitle
+deactivate persLDM
+LAss -> persLDM : getItemsId()
+activate persLDM
+persLDM --> LAss : itemsId
+deactivate persLDM
+LAss -> persLDM : getSaleType()
+activate persLDM
+persLDM --> LAss : saleType
+deactivate persLDM
+LAss -> persLDM : getPrice()
+activate persLDM
+persLDM --> LAss : price
+deactivate persLDM
+LAss -> persLDM : getShortDescription()
+activate persLDM
+persLDM --> LAss : shortDescription
+deactivate persLDM
+LAss -> persLDM : getSellerId()
+activate persLDM
+persLDM --> LAss : sellerId
+deactivate persLDM
+LAss -> persLDM : getPictures()
+activate persLDM
+persLDM --> LAss : pictures
+deactivate persLDM
+LAss -> LFactory : create(listingId, listingTitle, itemsId,\nsaleType, price, shortDescription, sellerId, pictures)
+activate LFactory
+LFactory -->> persListing ** : <<create>>
+LFactory --> LAss : persistedListing
+deactivate LFactory
+LAss --> LRepoImpl : persistedListing
+deactivate LAss
+
+LRepoImpl --> LRepo : persistedListing
+deactivate LRepoImpl
+deactivate LRepo
+
+@enduml
