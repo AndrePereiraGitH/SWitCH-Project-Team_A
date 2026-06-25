@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -277,5 +278,61 @@ class PublicationTypeServiceTest {
         // ASSERT
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldReturnTrueWhenUserCanCreatePublicationType() throws Exception {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(policy.canCreatePublicationType(user))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canCreatePublicationType(userId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserCannotCreatePublicationType() throws Exception {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(policy.canCreatePublicationType(user))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canCreatePublicationType(userId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldThrowInstanceNotFoundExceptionWhenUserDoesNotExist() {
+
+        // ARRANGE
+        UserId userId = mock(UserId.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canCreatePublicationType(userId)
+        );
     }
 }

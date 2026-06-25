@@ -21,6 +21,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -805,6 +806,59 @@ class EditionRESTControllerTest {
 
             // ASSERT
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+    }
+
+    // =========================================================
+// OPTIONS — COLLECTION
+// =========================================================
+
+    @Test
+    void shouldReturnAllowedMethodsForEditionsCollection() throws Exception {
+
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
+
+            mapper.when(() -> EditionMapper.toUserId("user-1"))
+                    .thenReturn(userId);
+
+            when(service.canCreateEdition(userId))
+                    .thenReturn(true);
+
+            ResponseEntity<Void> response =
+                    controller.optionsEditions("user-1");
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void shouldNotExposePostWhenUserCannotCreateEdition() throws Exception {
+
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<EditionMapper> mapper = mockStatic(EditionMapper.class)) {
+
+            mapper.when(() -> EditionMapper.toUserId("user-1"))
+                    .thenReturn(userId);
+
+            when(service.canCreateEdition(userId))
+                    .thenReturn(false);
+
+            ResponseEntity<Void> response =
+                    controller.optionsEditions("user-1");
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
         }
     }
 

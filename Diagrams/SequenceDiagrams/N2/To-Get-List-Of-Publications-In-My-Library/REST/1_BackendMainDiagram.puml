@@ -1,0 +1,59 @@
+@startuml
+autonumber
+hide footbox
+title As a User, I want to get the list of publications in my library (Main)
+
+participant ":PublicationSampleRESTController" as Ctrl
+participant ":PublicationSampleMapper" as Mapper
+participant ":PublicationSampleService" as Service
+participant "publicationDTOS: List<PublicationDTO>" as ListDTO
+
+[o-> Ctrl : OPTIONS /publicationSamples/in-library?userId={userId}
+activate Ctrl
+
+Ctrl -> Mapper : toUserId(userId)
+activate Mapper
+Mapper --> Ctrl : id: UserId
+deactivate Mapper
+
+Ctrl -> Service : canFindPublicationsInLibrary(id)
+activate Service
+
+ref over Service
+[[2_BackendCanFindPublicationsInLibrary.puml Can Find Publications in Library]]
+end ref
+
+Service --> Ctrl : isAuthorized && hasLibrary: boolean
+deactivate Service
+
+[o<-- Ctrl : 200 OK\n Allow: GET, OPTIONS
+deactivate Ctrl
+
+[o-> Ctrl : GET /publicationSamples/in-library?userId={userId}
+activate Ctrl
+
+Ctrl -> Mapper : toUserId(userId)
+activate Mapper
+Mapper --> Ctrl : id: UserId
+deactivate Mapper
+
+Ctrl -> Service : findPublicationsInLibrary(id)
+activate Service
+
+ref over Service
+[[3_BackendFindPublicationsInLibrary.puml Find Publications in Library]]
+end ref
+
+Service --> Ctrl : pbSampleList
+deactivate Service
+
+Ctrl -->> ListDTO ** : <<create>>
+
+ref over Ctrl
+[[4_BackendBuildResponse.puml Build Response]]
+end ref
+
+[o<-- Ctrl : 200 OK\n body: publicationDTOS
+deactivate Ctrl
+
+@enduml

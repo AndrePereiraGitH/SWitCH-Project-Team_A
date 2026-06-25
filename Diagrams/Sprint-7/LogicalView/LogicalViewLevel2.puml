@@ -1,0 +1,47 @@
+@startuml MiteLovers_Logical_View_L2_External_API
+
+title MiteLovers Logical View - Level 2
+
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+
+interface "UI" as UI
+interface "API" as API
+
+component "MiteLovers" <<System>> {
+
+  port " " as pUI
+  port " " as pAPI
+
+  component "db" as db
+
+  component "Backend" as Backend {
+    port " " as pBackAPI
+  }
+
+  component "Frontend" as Frontend {
+    port " " as pFrontUI
+    port " " as pFrontBack
+  }
+
+  interface "Persistence API" as PersistenceAPI
+
+  db -up- PersistenceAPI
+  Backend -( PersistenceAPI
+}
+
+
+pUI -up- UI
+pAPI -up- API
+
+
+pFrontUI -- pUI
+pBackAPI -- pAPI
+
+
+pFrontBack -- pBackAPI
+
+@enduml

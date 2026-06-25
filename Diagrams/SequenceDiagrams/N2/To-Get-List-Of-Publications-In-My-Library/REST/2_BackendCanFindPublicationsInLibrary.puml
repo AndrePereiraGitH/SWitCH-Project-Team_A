@@ -1,0 +1,60 @@
+@startuml
+autonumber
+hide footbox
+title Can Find Publications in Library
+
+participant ":PublicationSampleService" as Service
+participant ":UserRepositoryJPAImpl" as UserRepo
+participant ":IUserRepositoryJPA" as UserJPA
+participant ":UserAssembler" as UserAssembler
+participant "user: User" as user
+participant ":PublicationSampleAuthorizationPolicy" as Policy
+participant ":LibraryRepositoryJpaImpl" as LibRepo
+participant ":ILibraryRepositoryJpa" as LibJPA
+participant ":LibraryAssembler" as LibraryAssembler
+participant "library: Library" as library
+
+note over Service #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
+
+Service -> UserRepo : findByID(id)
+activate UserRepo
+UserRepo -> UserJPA : findById(id)
+activate UserJPA
+UserJPA ->o] : SELECT * FROM users WHERE id = ?
+UserJPA <--o] : userDM: Optional<UserDM>
+UserJPA --> UserRepo : userDM
+deactivate UserJPA
+UserRepo -> UserAssembler : toDomain(userDM)
+activate UserAssembler
+UserAssembler -->> user ** : <<create>>
+UserAssembler --> UserRepo : user
+deactivate UserAssembler
+UserRepo --> Service : user: Optional<User>
+deactivate UserRepo
+
+Service -> Policy : canFindPublicationsInLibrary(user)
+activate Policy
+Policy --> Service : isAuthorized: boolean
+deactivate Policy
+
+Service -> LibRepo : findByUserId(id)
+activate LibRepo
+LibRepo -> LibJPA : findByUserId(id)
+activate LibJPA
+LibJPA ->o] : SELECT * FROM library WHERE user_id = ?
+LibJPA <--o] : libraryDM: Optional<LibraryDM>
+LibJPA --> LibRepo : libraryDM
+deactivate LibJPA
+LibRepo -> LibraryAssembler : toDomain(libraryDM)
+activate LibraryAssembler
+LibraryAssembler -->> library ** : <<create>>
+LibraryAssembler --> LibRepo : library
+deactivate LibraryAssembler
+LibRepo --> Service : Optional<Library>
+deactivate LibRepo
+
+@enduml

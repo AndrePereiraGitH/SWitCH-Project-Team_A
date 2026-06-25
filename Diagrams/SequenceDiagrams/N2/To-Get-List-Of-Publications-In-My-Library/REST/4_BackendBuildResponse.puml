@@ -1,0 +1,88 @@
+@startuml
+autonumber
+hide footbox
+title Build Response
+
+participant ":PublicationSampleRESTController" as Ctrl
+participant ":PublicationSampleMapper" as Mapper
+participant ":BibliographicalDataService" as BDService
+participant "bd: BibliographicalData" as bd
+participant ":EditionService" as EditionService
+participant "edition: Edition" as edition
+participant ":AuthorService" as AuthorService
+participant "authors: List<Author>" as authors
+participant ":GenreService" as GenreService
+participant "genres: List<Genre>" as genres
+participant ":UserService" as UserService
+participant "owner: User" as owner
+participant ":PublicationSampleLinkProvider" as LinkProvider
+participant "result: PublicationDTO" as result
+participant "publicationDTOS: List<PublicationDTO>" as ListDTO
+
+note over Ctrl #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
+
+Ctrl -->> ListDTO ** : <<create>>
+
+loop for each pbSample in pbSampleList
+
+    Ctrl -> BDService : findById(pbSample.getBibliographicalDataID())
+    activate BDService
+    BDService -->> bd ** : <<create>>
+    BDService --> Ctrl : bd
+    deactivate BDService
+
+    Ctrl -> EditionService : findById(pbSample.getEditionID())
+    activate EditionService
+    EditionService -->> edition ** : <<create>>
+    EditionService --> Ctrl : edition
+    deactivate EditionService
+
+    Ctrl -> AuthorService : findById(authorId) [for each author in bd]
+    activate AuthorService
+    AuthorService -->> authors ** : <<create>>
+    AuthorService --> Ctrl : authors
+    deactivate AuthorService
+
+    Ctrl -> GenreService : findById(genreId) [for each genre in bd]
+    activate GenreService
+    GenreService -->> genres ** : <<create>>
+    GenreService --> Ctrl : genres
+    deactivate GenreService
+
+    Ctrl -> UserService : findByID(pbSample.getOwnerID())
+    activate UserService
+    UserService -->> owner ** : <<create>>
+    UserService --> Ctrl : owner
+    deactivate UserService
+
+    Ctrl -> Mapper : toPublicationDTO(pbSample, bd, edition, authors, genres, owner)
+    activate Mapper
+    Mapper -->> result ** : <<create>>
+    Mapper --> Ctrl : result
+    deactivate Mapper
+
+    Ctrl -> Ctrl : links.add(linkTo(methodOn(Ctrl).findById(pbSample.id().getID())).withSelfRel())
+
+    Ctrl -> LinkProvider : getPublicLinks()
+    activate LinkProvider
+    LinkProvider --> Ctrl : publicLinks
+    deactivate LinkProvider
+
+    Ctrl -> Ctrl : links.addAll(publicLinks)
+
+    Ctrl -> LinkProvider : getLibraryLinks(id)
+    activate LinkProvider
+    LinkProvider --> Ctrl : libraryLinks
+    deactivate LinkProvider
+
+    Ctrl -> Ctrl : links.addAll(libraryLinks)
+    Ctrl -> Ctrl : links.forEach(result::add)
+    Ctrl -> Ctrl : publicationDTOS.add(result)
+
+end
+
+@enduml

@@ -12,6 +12,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -57,6 +62,50 @@ public class PublicationTypeRestController {
             PublicationTypeLinkProvider publicationTypeLinkProvider) {
         this.service = publicationTypeService;
         this.publicationTypeLinkProvider = publicationTypeLinkProvider;
+    }
+
+    /**
+     * Returns the HTTP methods supported by the publication type collection resource.
+     *
+     * <p>This endpoint allows clients to discover which operations are available
+     * on the collection of publication types. It is intended to support
+     * HATEOAS-driven navigation and runtime capability discovery.</p>
+     *
+     * <p>The following methods are currently supported:</p>
+     * <ul>
+     *     <li>{@code GET} — retrieve all publication types</li>
+     *     <li>{@code POST} — create a new publication type</li>
+     *     <li>{@code OPTIONS} — discover supported operations</li>
+     * </ul>
+     *
+     * @return a {@link ResponseEntity} with HTTP {@code 200 OK} and an
+     * {@code Allow} header containing the supported HTTP methods
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsPublicationTypes(
+            @RequestParam String userId) {
+
+        try {
+
+            UserId id = PublicationTypeMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>();
+            allowed.add(HttpMethod.GET);
+            allowed.add(HttpMethod.OPTIONS);
+
+            if (service.canCreatePublicationType(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok()
+                    .allow(allowed.toArray(HttpMethod[]::new))
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     /**

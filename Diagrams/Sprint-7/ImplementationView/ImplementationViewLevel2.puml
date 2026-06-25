@@ -1,0 +1,47 @@
+@startuml MiteLovers_Implementation_View_L2
+
+title MiteLovers Implementation View - Level 2
+
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+
+interface "UI" as UI
+interface "API" as API
+
+
+component "MiteLovers" <<System>> {
+
+  port " " as pUI
+  port " " as pAPI
+
+
+  component "db" as db
+
+
+  component "backend" as Backend  {
+    port " " as pBackAPI
+  }
+
+  component "frontend" as Frontend  {
+    port " " as pFrontUI
+    port " " as pFrontBack
+  }
+
+  interface "Persistence API" as PersistenceAPI
+
+  db -up- PersistenceAPI
+  Backend -( PersistenceAPI
+}
+
+pUI -up- UI
+pAPI -up- API
+
+pFrontUI -- pUI
+pBackAPI -- pAPI
+
+pFrontBack -- pBackAPI
+
+@enduml

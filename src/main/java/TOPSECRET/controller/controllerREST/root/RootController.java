@@ -71,27 +71,28 @@ public class RootController {
      *         with all links available to the requesting user
      */
     @GetMapping
-    public ResponseEntity<RepresentationModel<?>> getRoot(@RequestParam String userId) {
+    public ResponseEntity<RepresentationModel<?>> getRoot(
+            @RequestParam(required = false) String userId) {
 
-        try {
-            UserId id = UserMapper.toUserId(userId);
+        RepresentationModel<?> root = new RepresentationModel<>();
 
-            RepresentationModel<?> root = new RepresentationModel<>();
+        root.add(linkTo(methodOn(RootController.class)
+                .getRoot(userId))
+                .withSelfRel());
 
-            root.add(linkTo(methodOn(RootController.class)
-                    .getRoot(userId))
-                    .withSelfRel());
-
-            for (RootLinkProvider provider : providers) {
-                provider.getLinks(id).forEach(root::add);
+        if (userId != null && !userId.isBlank()) {
+            try {
+                UserId id = UserMapper.toUserId(userId);
+                for (RootLinkProvider provider : providers) {
+                    provider.getLinks(id).forEach(root::add);
+                }
+            } catch (IllegalArgumentException | NullPointerException | InstanceNotFoundException e) {
+                return ResponseEntity.badRequest().build();
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().build();
             }
-
-            return ResponseEntity.ok(root);
-
-        } catch (IllegalArgumentException | NullPointerException | InstanceNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
         }
+
+        return ResponseEntity.ok(root);
     }
 }

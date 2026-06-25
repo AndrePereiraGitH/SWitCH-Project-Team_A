@@ -1,0 +1,162 @@
+@startuml
+title As a User, I want to get the list of publications in my library
+skinparam linetype ortho
+interface IUserRepositoryJPA {
+    + findById(id: UserId): Optional<UserDM>
+}
+
+interface IPublicationSampleRepositoryJpa {
+    + findAllByOwnerId(userId: UserId): List<PublicationSampleDM>
+}
+
+interface ILibraryRepositoryJpa {
+    + findByUserId(userId: UserId): Optional<LibraryDM>
+}
+
+class UserDM {
+    + getId(): UserId
+}
+
+class PublicationSampleDM {
+    + id(): PublicationSampleId
+    + getBibliographicalDataID(): BibliographicalDataId
+    + getOwnerID(): UserId
+    + getEditionID(): EditionId
+    + getLibraryID(): LibraryId
+    + getCollecOfPubID(): CollecOfPubId
+    + getPublicationStatus(): PublicationStatus
+    + getCondition(): Condition
+}
+
+class LibraryDM {
+    + getId(): LibraryId
+    + getLibraryName(): String
+    + getUserId(): UserId
+}
+
+class PublicationSampleRESTController {
+    + findPublicationsInLibrary(userId: String): ResponseEntity<List<PublicationDTO>>
+    + optionsInLibrary(userId: String): ResponseEntity<Void>
+}
+
+class PublicationSampleMapper {
+    + toUserId(userId: String): UserId
+    + toPublicationDTO(pbSample: PublicationSample, bd: BibliographicalData, edition: Edition, authors: List<Author>, genres: List<Genre>, owner: User): PublicationDTO
+}
+
+class PublicationSampleLinkProvider {
+    + getPublicLinks(): List<Link>
+    + getLibraryLinks(userId: UserId): List<Link>
+}
+
+class PublicationDTO {
+}
+
+class UserRepositoryJpaImpl {
+}
+
+class UserAssembler {
+    + toDomain(userDM: UserDM): User
+}
+
+class PublicationSampleRepositoryJpaImpl {
+}
+
+class PublicationSampleAssembler {
+    + toDomain(publicationSampleDM: PublicationSampleDM): PublicationSample
+}
+
+class LibraryRepositoryJpaImpl {
+}
+
+class LibraryAssembler {
+    + toDomain(libraryDM: LibraryDM): Library
+}
+
+class PublicationSampleService {
+    + findPublicationsInLibrary(userId: UserId): List<PublicationSample>
+    + canFindPublicationsInLibrary(userId: UserId): boolean
+}
+
+class PublicationSample {
+    + getBibliographicalDataID(): BibliographicalDataId
+    + getEditionID(): EditionId
+    + getOwnerID(): UserId
+    + id(): PublicationSampleId
+    + isInUserLibrary(): boolean
+}
+
+class Library {
+    + id(): LibraryId
+    + getLibraryName(): String
+    + getUserId(): UserId
+}
+
+class User {
+    + id(): UserId
+}
+
+class PublicationSampleFactory {
+    + create(id: PublicationSampleId, bibliographicalDataId: BibliographicalDataId, ownerId: UserId, editionId: EditionId, libraryId: LibraryId, collecOfPubId: CollecOfPubId, publicationStatus: PublicationStatus, condition: Condition): PublicationSample
+}
+
+class LibraryFactory {
+    + create(id: LibraryId, libraryName: String, userId: UserId): Library
+}
+
+class PublicationSampleAuthorizationPolicy {
+    + canFindPublicationsInLibrary(user: User): boolean
+}
+
+interface IUserRepository {
+    + findByID(userId: UserId): Optional<User>
+}
+
+interface IPublicationSampleRepository {
+    + findPublicationsInLibrary(userId: UserId): List<PublicationSample>
+}
+
+interface ILibraryRepository {
+    + findByUserId(userId: UserId): Optional<Library>
+}
+
+' ─────────────────────────────────────────
+'  Relationships
+' ─────────────────────────────────────────
+PublicationSampleRESTController "1" ..> "1" PublicationSampleService : uses
+PublicationSampleRESTController "1" ..> "1" PublicationSampleMapper : uses
+PublicationSampleRESTController "1" ..> "1" PublicationSampleLinkProvider : uses
+PublicationSampleRESTController "1" ..> "0..*" PublicationDTO : returns
+
+PublicationSampleService "1" ..> "1" IUserRepository : uses
+PublicationSampleService "1" ..> "1" IPublicationSampleRepository : uses
+PublicationSampleService "1" ..> "1" ILibraryRepository : uses
+PublicationSampleService "1" ..> "1" PublicationSampleAuthorizationPolicy : uses
+
+PublicationSampleMapper "1" ..> "1" PublicationSample : reads
+PublicationSampleMapper "1" ..> "1" PublicationDTO : creates
+
+UserRepositoryJpaImpl "1" ..|> "1" IUserRepository : implements
+UserRepositoryJpaImpl "1" ..> "1" IUserRepositoryJPA : uses
+UserRepositoryJpaImpl "1" ..> "1" UserAssembler : uses
+IUserRepositoryJPA "1" ..> "0..1" UserDM : returns
+UserAssembler "1" ..> "1" UserDM : reads
+UserAssembler "1" ..> "1" User : creates
+
+PublicationSampleRepositoryJpaImpl "1" ..|> "1" IPublicationSampleRepository : implements
+PublicationSampleRepositoryJpaImpl "1" ..> "1" IPublicationSampleRepositoryJpa : uses
+PublicationSampleRepositoryJpaImpl "1" ..> "1" PublicationSampleAssembler : uses
+IPublicationSampleRepositoryJpa "1" ..> "0..*" PublicationSampleDM : returns
+PublicationSampleAssembler "1" ..> "1" PublicationSampleDM : reads
+PublicationSampleAssembler "1" ..> "1" PublicationSampleFactory : uses
+PublicationSampleFactory "1" ..> "1" PublicationSample : creates
+
+LibraryRepositoryJpaImpl "1" ..|> "1" ILibraryRepository : implements
+LibraryRepositoryJpaImpl "1" ..> "1" ILibraryRepositoryJpa : uses
+LibraryRepositoryJpaImpl "1" ..> "1" LibraryAssembler : uses
+ILibraryRepositoryJpa "1" ..> "0..1" LibraryDM : returns
+LibraryAssembler "1" ..> "1" LibraryDM : reads
+LibraryAssembler "1" ..> "1" LibraryFactory : uses
+LibraryFactory "1" ..> "1" Library : creates
+
+@enduml

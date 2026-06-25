@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -368,5 +369,61 @@ class EditionServiceTest {
         assertThrows(NullPointerException.class,
                 () -> service.findByPublisherId(null));
 
+    }
+
+    @Test
+    void shouldReturnTrueWhenUserCanCreateEdition() throws Exception {
+
+        //Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(policy.canCreateEdition(user))
+                .thenReturn(true);
+
+        // Act
+        boolean result = service.canCreateEdition(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserCannotCreateEdition() throws Exception {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.of(user));
+
+        when(policy.canCreateEdition(user))
+                .thenReturn(false);
+
+        // Act
+        boolean result = service.canCreateEdition(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldThrowInstanceNotFoundExceptionWhenUserDoesNotExist() {
+
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        when(userRepository.findByID(userId))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canCreateEdition(userId)
+        );
     }
 }

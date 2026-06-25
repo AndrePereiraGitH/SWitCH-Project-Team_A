@@ -1,0 +1,31 @@
+@startuml MiteLovers_Implementation_View_L1
+
+title MiteLovers Implementation View - Level 1
+
+skinparam backgroundColor transparent
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+
+interface "UI" as UI
+interface "REST API" as API
+
+
+
+component "MiteLovers" <<System>> {
+  port " " as pUI
+  port " " as pAPI
+}
+
+
+
+
+pUI -up- UI
+pAPI -up- API
+
+@enduml
