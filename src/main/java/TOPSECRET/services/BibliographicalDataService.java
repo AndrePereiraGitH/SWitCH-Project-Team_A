@@ -237,4 +237,22 @@ public class BibliographicalDataService {
     public List<String> getAllTitles() {
         return bibliographicalDataRepository.getAllTitles();
     }
+
+    /**
+     * Determines whether a user may create bibliographical data.
+     *
+     * <p>The user is resolved from the repository and then evaluated by the
+     * bibliographical data authorization policy.</p>
+     *
+     * @param userId the identifier of the user whose permission is evaluated
+     * @return {@code true} if the user may create bibliographical data;
+     *         {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists with the supplied identifier
+     */
+    public boolean canCreate(UserId userId) throws InstanceNotFoundException {
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found"));
+
+        return authPolicy.canCreateBibliographicalData(user);
+    }
 }

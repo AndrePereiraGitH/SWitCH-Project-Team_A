@@ -809,4 +809,84 @@ class AuctionServiceTest {
         // Assert
         assertTrue(result.isEmpty());
     }
+
+    // =================================================================================================================
+    // =========== canCreateAuction ====================================================================================
+    // =================================================================================================================
+
+    @Test
+    void canCreateAuction_shouldReturnTrue_whenPolicyAllows() throws Exception {
+        // Arrange
+        when(userRepoDouble.findByID(bidderIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policyDouble.canCreateAuction(userDouble)).thenReturn(true);
+
+        // Act
+        boolean result = auctionService.canCreateAuction(bidderIdDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreateAuction_shouldReturnFalse_whenPolicyDenies() throws Exception {
+        // Arrange
+        when(userRepoDouble.findByID(bidderIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policyDouble.canCreateAuction(userDouble)).thenReturn(false);
+
+        // Act
+        boolean result = auctionService.canCreateAuction(bidderIdDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreateAuction_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+        // Arrange
+        when(userRepoDouble.findByID(bidderIdDouble)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> auctionService.canCreateAuction(bidderIdDouble));
+    }
+
+    // =================================================================================================================
+    // =========== canPlaceBid =========================================================================================
+    // =================================================================================================================
+
+    @Test
+    void canPlaceBid_shouldReturnTrue_whenPolicyAllows() throws Exception {
+        // Arrange
+        when(userRepoDouble.findByID(bidderIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policyDouble.canPlaceBid(userDouble)).thenReturn(true);
+
+        // Act
+        boolean result = auctionService.canPlaceBid(bidderIdDouble);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canPlaceBid_shouldReturnFalse_whenPolicyDenies() throws Exception {
+        // Arrange
+        when(userRepoDouble.findByID(bidderIdDouble)).thenReturn(Optional.of(userDouble));
+        when(policyDouble.canPlaceBid(userDouble)).thenReturn(false);
+
+        // Act
+        boolean result = auctionService.canPlaceBid(bidderIdDouble);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canPlaceBid_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+        // Arrange
+        when(userRepoDouble.findByID(bidderIdDouble)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class,
+                () -> auctionService.canPlaceBid(bidderIdDouble));
+    }
 }

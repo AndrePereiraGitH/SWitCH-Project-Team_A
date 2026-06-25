@@ -20,9 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import org.springframework.security.access.AccessDeniedException;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -118,7 +118,7 @@ class ListingServiceTest {
     // =========================================================================
 
     @Test
-    void createAndSave_shouldReturnSavedListing_whenUserCanCreateAndOwnsPublications() {
+    void createAndSave_shouldReturnSavedListing_whenUserCanCreateAndOwnsPublications() throws InstanceNotFoundException {
         // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
@@ -168,7 +168,7 @@ class ListingServiceTest {
     }
 
     @Test
-    void createAndSave_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+    void createAndSave_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
         // Arrange
         String title = "Listing title";
         SaleType saleType = SaleType.DIRECT_SALE;
@@ -182,7 +182,7 @@ class ListingServiceTest {
 
         // Act + Assert
         assertThrows(
-                EntityNotFoundException.class,
+                InstanceNotFoundException.class,
                 () -> service.createAndSave(
                         title,
                         List.of(publicationSampleId),
@@ -782,7 +782,7 @@ class ListingServiceTest {
     // =========================================================================
 
     @Test
-    void markListingAsSold_shouldReturnSavedListing_whenSuccessful() {
+    void markListingAsSold_shouldReturnSavedListing_whenSuccessful() throws InstanceNotFoundException {
         // Arrange
         UserId buyerId = mock(UserId.class);
         UserId sellerId = mock(UserId.class);
@@ -790,6 +790,7 @@ class ListingServiceTest {
         Listing listing = mock(Listing.class);
         PublicationSample item = mock(PublicationSample.class);
         Listing saved = mock(Listing.class);
+
 
         when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
         when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
@@ -824,9 +825,11 @@ class ListingServiceTest {
     void markListingAsSold_shouldThrowIllegalStateException_whenListingAlreadySold() {
         // Arrange
         UserId buyerId = mock(UserId.class);
+        User buyer = mock(User.class);
         Listing listing = mock(Listing.class);
 
         when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
         when(listing.getListingStatus()).thenReturn(ListingStatus.SOLD);
 
         // Act + Assert
@@ -838,9 +841,11 @@ class ListingServiceTest {
     void markListingAsSold_shouldThrowAccessDeniedException_whenBuyerIsSeller() {
         // Arrange
         UserId buyerId = mock(UserId.class);
+        User buyer = mock(User.class);
         Listing listing = mock(Listing.class);
 
         when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
         when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
         when(listing.getSellerId()).thenReturn(buyerId);
 
@@ -850,19 +855,18 @@ class ListingServiceTest {
     }
 
     @Test
-    void markListingAsSold_shouldThrowEntityNotFoundException_whenBuyerNotFound() {
+    void markListingAsSold_shouldThrowInstanceNotFoundException_whenBuyerNotFound() {
         // Arrange
         UserId buyerId = mock(UserId.class);
         UserId sellerId = mock(UserId.class);
         Listing listing = mock(Listing.class);
 
         when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
-        when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
-        when(listing.getSellerId()).thenReturn(sellerId);
         when(userRepository.findByID(buyerId)).thenReturn(Optional.empty());
+        when(buyerId.getUserId()).thenReturn("buyer-1");
 
         // Act + Assert
-        assertThrows(EntityNotFoundException.class, () ->
+        assertThrows(InstanceNotFoundException.class, () ->
                 service.markListingAsSold(listingId, buyerId));
     }
 
@@ -921,5 +925,161 @@ class ListingServiceTest {
         // Act + Assert
         assertThrows(NullPointerException.class, () ->
                 service.markListingAsSold(listingId, null));
+    }
+
+
+    // =========================================================================
+    // canMarkListingAsSold()
+    // =========================================================================
+
+    @Test
+    void canMarkListingAsSold_shouldReturnTrue_whenBuyerCanMarkAsSold() throws InstanceNotFoundException {
+        // Arrange
+        UserId buyerId = mock(UserId.class);
+        UserId sellerId = mock(UserId.class);
+        User buyer = mock(User.class);
+        Listing listing = mock(Listing.class);
+
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
+        when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
+        when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
+        when(listing.getSellerId()).thenReturn(sellerId);
+        when(policy.canBuyListing(buyer)).thenReturn(true);
+
+        // Act
+        boolean result = service.canMarkListingAsSold(buyerId, listingId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canMarkListingAsSold_shouldThrowInstanceNotFoundException_whenBuyerDoesNotExist() {
+        // Arrange
+        UserId buyerId = mock(UserId.class);
+
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.empty());
+        when(buyerId.getUserId()).thenReturn("buyer-1");
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class, () ->
+                service.canMarkListingAsSold(buyerId, listingId));
+    }
+
+    @Test
+    void canMarkListingAsSold_shouldThrowInstanceNotFoundException_whenListingDoesNotExist() {
+        // Arrange
+        UserId buyerId = mock(UserId.class);
+        User buyer = mock(User.class);
+
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
+        when(listingRepository.findById(listingId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(InstanceNotFoundException.class, () ->
+                service.canMarkListingAsSold(buyerId, listingId));
+    }
+
+    @Test
+    void canMarkListingAsSold_shouldThrowIllegalStateException_whenListingAlreadySold() {
+        // Arrange
+        UserId buyerId = mock(UserId.class);
+        User buyer = mock(User.class);
+        Listing listing = mock(Listing.class);
+
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
+        when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
+        when(listing.getListingStatus()).thenReturn(ListingStatus.SOLD);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, () ->
+                service.canMarkListingAsSold(buyerId, listingId));
+    }
+
+    @Test
+    void canMarkListingAsSold_shouldThrowAccessDeniedException_whenBuyerIsSeller() {
+        // Arrange
+        UserId buyerId = mock(UserId.class);
+        User buyer = mock(User.class);
+        Listing listing = mock(Listing.class);
+
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
+        when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
+        when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
+        when(listing.getSellerId()).thenReturn(buyerId);
+
+        // Act + Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.canMarkListingAsSold(buyerId, listingId));
+    }
+
+    @Test
+    void canMarkListingAsSold_shouldThrowAccessDeniedException_whenPolicyDenies() {
+        // Arrange
+        UserId buyerId = mock(UserId.class);
+        UserId sellerId = mock(UserId.class);
+        User buyer = mock(User.class);
+        Listing listing = mock(Listing.class);
+
+        when(userRepository.findByID(buyerId)).thenReturn(Optional.of(buyer));
+        when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
+        when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
+        when(listing.getSellerId()).thenReturn(sellerId);
+        when(policy.canBuyListing(buyer)).thenReturn(false);
+
+        // Act + Assert
+        assertThrows(AccessDeniedException.class, () ->
+                service.canMarkListingAsSold(buyerId, listingId));
+    }
+
+    // =========================================================================
+// canCreate()
+// =========================================================================
+
+    @Test
+    void canCreate_shouldReturnTrue_whenUserExistsAndPolicyAllows() throws InstanceNotFoundException {
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateListing(user)).thenReturn(true);
+
+        // Act
+        boolean result = service.canCreate(userId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreate_shouldReturnFalse_whenUserExistsAndPolicyDenies() throws InstanceNotFoundException {
+        // Arrange
+        UserId userId = mock(UserId.class);
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateListing(user)).thenReturn(false);
+
+        // Act
+        boolean result = service.canCreate(userId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreate_shouldThrowInstanceNotFoundException_whenUserDoesNotExist() {
+        // Arrange
+        UserId userId = mock(UserId.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+        when(userId.getUserId()).thenReturn("123");
+
+        // Act + Assert
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canCreate(userId)
+        );
     }
 }

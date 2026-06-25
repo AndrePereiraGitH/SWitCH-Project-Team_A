@@ -7,16 +7,22 @@ import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.genre.GenreMapper;
 import TOPSECRET.dto.genre.request.GenreRequestDTO;
 import TOPSECRET.dto.genre.response.GenreResponseDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.GenreService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.security.access.AccessDeniedException;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * REST controller responsible for managing Genre resources.
@@ -65,14 +71,15 @@ public class GenreRESTController {
     @PostMapping("")
     public ResponseEntity<GenreResponseDTO> createGenre(
             @RequestBody GenreRequestDTO dto,
-            @RequestParam UserId userId) {
+            @RequestParam String userId) {
 
         try {
-            Genre genre = service.createAndSave(dto.genreName(), userId);
+            UserId id = UserMapper.toUserId(userId);
+            Genre genre = service.createAndSave(dto.genreName(), id);
 
             GenreResponseDTO result = GenreMapper.toDTO(genre);
 
-            List<Link> links = provider.getLinks(userId);
+            List<Link> links = provider.getLinks(id);
             links.forEach(result::add);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(result);
@@ -109,6 +116,34 @@ public class GenreRESTController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Returns the HTTP methods allowed on the genres root resource for the given user.
+     *
+     * <p>Always includes {@code GET} and {@code OPTIONS}. {@code POST} is included only if the
+     * requesting user is authorized to create a new Genre.</p>
+     *
+     * @param userId the ID of the user performing the request
+     * @return HTTP 200 with an {@code Allow} header reflecting the user's permitted methods,
+     *         or HTTP 400 if the user is not found or the user ID is invalid
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot(@RequestParam String userId) {
+        try {
+            UserId id = UserMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+            if (service.canCreateGenre(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

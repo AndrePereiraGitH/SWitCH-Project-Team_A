@@ -17,6 +17,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Links;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -37,6 +38,7 @@ class LibraryRESTControllerTest {
     private final String USER_ID = "user-123";
     private final UserId USER_ID_DOMAIN = new UserId(USER_ID);
     private final String LIBRARY_ID = "library-123";
+    private final String REQUESTING_USER_ID = "user-456";
 
     @Mock
     private LibraryLinkProvider libLinkProvider;
@@ -78,7 +80,7 @@ class LibraryRESTControllerTest {
         when(library.id()).thenReturn(libraryId);
 
         Link selfRel = linkTo(methodOn(LibraryRESTController.class)
-                .getLibrary(library.id().toString()))
+                .getLibrary(library.id().toString(), USER_ID))
                 .withSelfRel();
 
         Links expectedLinks = Links.of(links, selfRel);
@@ -95,7 +97,7 @@ class LibraryRESTControllerTest {
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(requestDTO, USER_ID);
 
-        // Asserts
+        // Assert
         assertEquals(CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(expectedId, response.getBody().getLibraryId());
@@ -111,14 +113,16 @@ class LibraryRESTControllerTest {
     void createLibrary_shouldReturnBadRequest_whenIllegalArgument()
             throws InstanceAlreadyExistsException {
 
+        // Arrange
         when(requestDTO.libraryName()).thenReturn("Test Library");
-
         when(libService.createAndSave(anyString(), any(UserId.class)))
                 .thenThrow(new IllegalArgumentException());
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(requestDTO, USER_ID);
 
+        // Assert
         assertEquals(BAD_REQUEST, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -131,14 +135,16 @@ class LibraryRESTControllerTest {
     void createLibrary_shouldReturnForbidden_whenAccessDenied()
             throws InstanceAlreadyExistsException {
 
+        // Arrange
         when(requestDTO.libraryName()).thenReturn("Test Library");
-
         when(libService.createAndSave(anyString(), any(UserId.class)))
                 .thenThrow(new AccessDeniedException("denied"));
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(requestDTO, USER_ID);
 
+        // Assert
         assertEquals(FORBIDDEN, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -151,14 +157,16 @@ class LibraryRESTControllerTest {
     void createLibrary_shouldReturnInternalError_whenException()
             throws InstanceAlreadyExistsException {
 
+        // Arrange
         when(requestDTO.libraryName()).thenReturn("Test Library");
-
         when(libService.createAndSave(anyString(), any(UserId.class)))
                 .thenThrow(new RuntimeException());
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(requestDTO, USER_ID);
 
+        // Assert
         assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -171,6 +179,7 @@ class LibraryRESTControllerTest {
     void createLibrary_shouldReturnNotFound_whenUserDoesNotExist()
             throws InstanceAlreadyExistsException, InstanceNotFoundException {
 
+        // Arrange
         when(requestDTO.libraryName()).thenReturn("Test Library");
         when(libService.createAndSave(anyString(), any(UserId.class)))
                 .thenReturn(library);
@@ -178,9 +187,11 @@ class LibraryRESTControllerTest {
         when(libLinkProvider.getOwnerLinks(any(UserId.class)))
                 .thenThrow(new InstanceNotFoundException("User not found"));
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(requestDTO, USER_ID);
 
+        // Assert
         assertEquals(NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -193,13 +204,16 @@ class LibraryRESTControllerTest {
     void createLibrary_shouldReturnConflict_whenLibraryAlreadyExists()
             throws InstanceAlreadyExistsException {
 
+        // Arrange
         when(requestDTO.libraryName()).thenReturn("Test Library");
         when(libService.createAndSave(anyString(), any(UserId.class)))
                 .thenThrow(new InstanceAlreadyExistsException());
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
                 controller.createLibrary(requestDTO, USER_ID);
 
+        // Assert
         assertEquals(CONFLICT, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -209,28 +223,25 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getAllLibraries_shouldReturnOk_whenExists() {
+    void getAllLibraries_shouldReturnOk_whenExists() throws InstanceNotFoundException {
 
+        // Arrange
         ResponseLibraryDTO dto = mock(ResponseLibraryDTO.class);
-
-        when(libService.findAll()).thenReturn(List.of(library));
+        when(libService.findAll(any(UserId.class))).thenReturn(List.of(library));
         when(library.id()).thenReturn(libraryId);
 
         try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(dto);
 
-            mapper.when(() -> LibraryMapper.toDTO(library))
-                    .thenReturn(dto);
-
+            // Act
             ResponseEntity<List<ResponseLibraryDTO>> response =
-                    controller.getAllLibraries();
+                    controller.getAllLibraries(REQUESTING_USER_ID);
 
+            // Assert
             assertEquals(OK, response.getStatusCode());
-
-            List<ResponseLibraryDTO> body = response.getBody();
-
-            assertNotNull(body);
-            assertEquals(1, body.size());
-            assertSame(dto, body.get(0));
+            assertNotNull(response.getBody());
+            assertEquals(1, response.getBody().size());
+            assertSame(dto, response.getBody().get(0));
         }
     }
 
@@ -239,14 +250,37 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getAllLibraries_shouldReturnOK_whenEmpty() {
+    void getAllLibraries_shouldReturnOK_whenEmpty() throws InstanceNotFoundException {
 
-        when(libService.findAll()).thenReturn(List.of());
+        // Arrange
+        when(libService.findAll(any(UserId.class))).thenReturn(List.of());
 
+        // Act
         ResponseEntity<List<ResponseLibraryDTO>> response =
-                controller.getAllLibraries();
+                controller.getAllLibraries(REQUESTING_USER_ID);
 
+        // Assert
         assertEquals(OK, response.getStatusCode());
+    }
+
+    // =========================================================
+    // GET ALL - FORBIDDEN
+    // =========================================================
+
+    @Test
+    void getAllLibraries_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findAll(any(UserId.class)))
+                .thenThrow(new AccessDeniedException("denied"));
+
+        // Act
+        ResponseEntity<List<ResponseLibraryDTO>> response =
+                controller.getAllLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(FORBIDDEN, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     // =========================================================
@@ -254,14 +288,17 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getAllLibraries_shouldReturnBadRequest_whenIllegalArgument() {
+    void getAllLibraries_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
 
-        when(libService.findAll())
+        // Arrange
+        when(libService.findAll(any(UserId.class)))
                 .thenThrow(new IllegalArgumentException());
 
+        // Act
         ResponseEntity<List<ResponseLibraryDTO>> response =
-                controller.getAllLibraries();
+                controller.getAllLibraries(REQUESTING_USER_ID);
 
+        // Assert
         assertEquals(BAD_REQUEST, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -271,41 +308,152 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getAllLibraries_shouldReturnInternalError_whenException() {
+    void getAllLibraries_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
 
-        when(libService.findAll())
+        // Arrange
+        when(libService.findAll(any(UserId.class)))
                 .thenThrow(new RuntimeException());
 
+        // Act
         ResponseEntity<List<ResponseLibraryDTO>> response =
-                controller.getAllLibraries();
+                controller.getAllLibraries(REQUESTING_USER_ID);
 
+        // Assert
         assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
     }
 
     // =========================================================
-    // GET BY ID - SUCCESS
-    // =========================================================
+// GET BY ID - SUCCESS
+// =========================================================
 
     @Test
-    void getLibrary_shouldReturnOk_whenFound()
-                                            throws InstanceNotFoundException {
+    void getLibrary_shouldReturnOk_whenFound() throws InstanceNotFoundException {
 
         // Arrange
-        when(libService.findById(any(LibraryId.class)))
-                .thenReturn(library);
+        when(libService.findById(any(LibraryId.class), any(UserId.class))).thenReturn(library);
 
         try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
-
-            mapper.when(() ->
-                    LibraryMapper.toLibraryId(LIBRARY_ID)
-            ).thenReturn(libraryId);
-
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
             mapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(responseDTO);
 
             // Act
             ResponseEntity<ResponseLibraryDTO> response =
-                    controller.getLibrary(LIBRARY_ID);
+                    controller.getLibrary(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(OK, response.getStatusCode());
+            assertEquals(responseDTO, response.getBody());
+        }
+    }
+
+// =========================================================
+// GET BY ID - FORBIDDEN
+// =========================================================
+
+    @Test
+    void getLibrary_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new AccessDeniedException("denied"));
+
+            // Act
+            ResponseEntity<ResponseLibraryDTO> response =
+                    controller.getLibrary(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(FORBIDDEN, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+// =========================================================
+// GET BY ID - NOT FOUND
+// =========================================================
+
+    @Test
+    void getLibrary_shouldReturnNotFound_whenMissing() throws InstanceNotFoundException {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new InstanceNotFoundException());
+
+            // Act
+            ResponseEntity<ResponseLibraryDTO> response =
+                    controller.getLibrary(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(NOT_FOUND, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+// =========================================================
+// GET BY ID - BAD REQUEST
+// =========================================================
+
+    @Test
+    void getLibrary_shouldReturnBadRequest_whenIdFormatIsInvalid() {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<ResponseLibraryDTO> response =
+                    controller.getLibrary(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+// =========================================================
+// GET BY ID - INTERNAL ERROR
+// =========================================================
+
+    @Test
+    void getLibrary_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                .thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<ResponseLibraryDTO> response =
+                controller.getLibrary(LIBRARY_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    // =========================================================
+    // GET BY USER ID - SUCCESS
+    // =========================================================
+
+    @Test
+    void getLibraryByUserId_shouldReturnOk_whenFound() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findByUserId(any(UserId.class), any(UserId.class))).thenReturn(library);
+
+        try (MockedStatic<LibraryMapper> libraryMapper = mockStatic(LibraryMapper.class);
+             MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
+
+            userMapper.when(() -> UserMapper.toUserId(any())).thenReturn(userId);
+            libraryMapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(responseDTO);
+
+            // Act
+            ResponseEntity<ResponseLibraryDTO> response =
+                    controller.getLibraryByUserId(USER_ID, REQUESTING_USER_ID);
 
             // Assert
             assertEquals(OK, response.getStatusCode());
@@ -314,85 +462,23 @@ class LibraryRESTControllerTest {
     }
 
     // =========================================================
-    // GET BY ID - NOT FOUND
+    // GET BY USER ID - FORBIDDEN
     // =========================================================
 
     @Test
-    void getLibrary_shouldReturnNotFound_whenMissing() throws InstanceNotFoundException {
+    void getLibraryByUserId_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
 
-        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+        // Arrange
+        when(libService.findByUserId(any(UserId.class), any(UserId.class)))
+                .thenThrow(new AccessDeniedException("denied"));
 
-            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID))
-                    .thenReturn(libraryId);
-
-            when(libService.findById(any(LibraryId.class)))
-                    .thenThrow(new InstanceNotFoundException());
-
-            ResponseEntity<ResponseLibraryDTO> response =
-                    controller.getLibrary(LIBRARY_ID);
-
-            assertEquals(NOT_FOUND, response.getStatusCode());
-            assertNull(response.getBody());
-        }
-    }
-
-    // =========================================================
-    // GET BY ID - INTERNAL ERROR
-    // =========================================================
-
-    @Test
-    void getLibrary_shouldReturnInternalError_whenException()
-                                        throws InstanceNotFoundException {
-
-        when(libService.findById(any(LibraryId.class)))
-                .thenThrow(new RuntimeException());
-
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
-                controller.getLibrary(LIBRARY_ID);
+                controller.getLibraryByUserId(USER_ID, REQUESTING_USER_ID);
 
-        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        // Assert
+        assertEquals(FORBIDDEN, response.getStatusCode());
         assertNull(response.getBody());
-    }
-    // =========================================================
-    // GET BY ID - BAD REQUEST
-    // =========================================================
-
-    @Test
-    void getLibrary_shouldReturnBadRequest_whenIdFormatIsInvalid() {
-
-        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
-
-            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID))
-                    .thenThrow(new IllegalArgumentException());
-
-            ResponseEntity<ResponseLibraryDTO> response =
-                    controller.getLibrary(LIBRARY_ID);
-
-            assertEquals(BAD_REQUEST, response.getStatusCode());
-            assertNull(response.getBody());
-        }
-    }
-    // =========================================================
-    // GET BY USER ID - SUCCESS
-    // =========================================================
-
-    @Test
-    void getLibraryByUserId_shouldReturnOk_whenFound() throws InstanceNotFoundException {
-
-        when(libService.findByUserId(any(UserId.class))).thenReturn(library);
-
-        try (MockedStatic<LibraryMapper> libraryMapper = mockStatic(LibraryMapper.class);
-             MockedStatic<UserMapper> userMapper = mockStatic(UserMapper.class)) {
-
-            userMapper.when(() -> UserMapper.toUserId(USER_ID)).thenReturn(userId);
-            libraryMapper.when(() -> LibraryMapper.toDTO(library)).thenReturn(responseDTO);
-
-            ResponseEntity<ResponseLibraryDTO> response =
-                    controller.getLibraryByUserId(USER_ID);
-
-            assertEquals(OK, response.getStatusCode());
-            assertEquals(responseDTO, response.getBody());
-        }
     }
 
     // =========================================================
@@ -400,16 +486,38 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getLibraryByUserId_shouldReturnBadRequest_whenIllegalArgument()
-                                        throws InstanceNotFoundException {
+    void getLibraryByUserId_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
 
-        when(libService.findByUserId(any(UserId.class)))
+        // Arrange
+        when(libService.findByUserId(any(UserId.class), any(UserId.class)))
                 .thenThrow(new IllegalArgumentException());
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
-                controller.getLibraryByUserId(USER_ID);
+                controller.getLibraryByUserId(USER_ID, REQUESTING_USER_ID);
 
+        // Assert
         assertEquals(BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    // =========================================================
+    // GET BY USER ID - NOT FOUND
+    // =========================================================
+
+    @Test
+    void getLibraryByUserId_shouldReturnNotFound_whenLibraryDoesNotExist() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findByUserId(any(UserId.class), any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException("Library not found"));
+
+        // Act
+        ResponseEntity<ResponseLibraryDTO> response =
+                controller.getLibraryByUserId(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
 
@@ -418,34 +526,392 @@ class LibraryRESTControllerTest {
     // =========================================================
 
     @Test
-    void getLibraryByUserId_shouldReturnInternalError_whenException()
-                                                throws InstanceNotFoundException {
+    void getLibraryByUserId_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
 
-        when(libService.findByUserId(any(UserId.class)))
+        // Arrange
+        when(libService.findByUserId(any(UserId.class), any(UserId.class)))
                 .thenThrow(new RuntimeException());
 
+        // Act
         ResponseEntity<ResponseLibraryDTO> response =
-                controller.getLibraryByUserId(USER_ID);
+                controller.getLibraryByUserId(USER_ID, REQUESTING_USER_ID);
 
+        // Assert
         assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertNull(response.getBody());
     }
+
     // =========================================================
-    // GET BY USER ID - NOT FOUND
-    // =========================================================
+// OPTIONS - /libraries
+// =========================================================
 
     @Test
-    void getLibraryByUserId_shouldReturnNotFound_whenLibraryDoesNotExist()
-            throws InstanceNotFoundException {
+    void optionsLibraries_shouldReturnGetAndPost_whenAdmin() throws InstanceNotFoundException {
 
-        when(libService.findByUserId(any(UserId.class)))
-                .thenThrow(new InstanceNotFoundException("Library not found"));
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(false);
 
-        ResponseEntity<ResponseLibraryDTO> response =
-                controller.getLibraryByUserId(USER_ID);
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
 
+        // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnPost_whenNormalUser() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(false);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.GET));
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnOnlyOptions_whenNoPermissions() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(false);
+        when(libService.canCreate(any(UserId.class))).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnNotFound_whenUserDoesNotExist() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException("User not found"));
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
         assertEquals(NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
     }
 
+    @Test
+    void optionsLibraries_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class)))
+                .thenThrow(new IllegalArgumentException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraries_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class)))
+                .thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraries_shouldNeverAllowDelete() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+    }
+
+    @Test
+    void optionsLibraries_shouldNeverAllowPut() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PUT));
+    }
+
+    @Test
+    void optionsLibraries_shouldNeverAllowPatch() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGetAll(any(UserId.class))).thenReturn(true);
+        when(libService.canCreate(any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraries(REQUESTING_USER_ID);
+
+        // Assert
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.PATCH));
+    }
+
+// =========================================================
+// OPTIONS - /libraries/{libraryId}
+// =========================================================
+
+    @Test
+    void optionsLibraryById_shouldReturnGet_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findById(any(LibraryId.class), any(UserId.class))).thenReturn(library);
+
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(OK, response.getStatusCode());
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new AccessDeniedException("denied"));
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(FORBIDDEN, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnNotFound_whenLibraryDoesNotExist() throws InstanceNotFoundException {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new InstanceNotFoundException());
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(NOT_FOUND, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnBadRequest_whenIdFormatIsInvalid() {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID))
+                    .thenThrow(new IllegalArgumentException());
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(BAD_REQUEST, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
+
+        // Arrange
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+            when(libService.findById(any(LibraryId.class), any(UserId.class)))
+                    .thenThrow(new RuntimeException());
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertNull(response.getBody());
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldNeverAllowPost() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findById(any(LibraryId.class), any(UserId.class))).thenReturn(library);
+
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
+    }
+
+    @Test
+    void optionsLibraryById_shouldNeverAllowDelete() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.findById(any(LibraryId.class), any(UserId.class))).thenReturn(library);
+
+        try (MockedStatic<LibraryMapper> mapper = mockStatic(LibraryMapper.class)) {
+            mapper.when(() -> LibraryMapper.toLibraryId(LIBRARY_ID)).thenReturn(libraryId);
+
+            // Act
+            ResponseEntity<?> response = controller.optionsLibraryById(LIBRARY_ID, REQUESTING_USER_ID);
+
+            // Assert
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+        }
+    }
+
+// =========================================================
+// OPTIONS - /libraries/by-user/{userId}
+// =========================================================
+
+    @Test
+    void optionsLibraryByUser_shouldReturnGet_whenAuthorized() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(OK, response.getStatusCode());
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnForbidden_whenAccessDenied() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(false);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(FORBIDDEN, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnNotFound_whenUserDoesNotExist() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class)))
+                .thenThrow(new InstanceNotFoundException("User not found"));
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnBadRequest_whenIllegalArgument() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class)))
+                .thenThrow(new IllegalArgumentException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(BAD_REQUEST, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldReturnInternalError_whenException() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class)))
+                .thenThrow(new RuntimeException());
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertEquals(INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldNeverAllowPost() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+    }
+
+    @Test
+    void optionsLibraryByUser_shouldNeverAllowDelete() throws InstanceNotFoundException {
+
+        // Arrange
+        when(libService.canGet(any(UserId.class), any(UserId.class))).thenReturn(true);
+
+        // Act
+        ResponseEntity<?> response = controller.optionsLibraryByUser(USER_ID, REQUESTING_USER_ID);
+
+        // Assert
+        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.DELETE));
+    }
 }

@@ -38,10 +38,36 @@ class LibraryServiceTest {
     @Mock
     private LibraryAuthorizationPolicy policyDouble;
 
+    @Mock
+    private UserId userIdDouble;
+
+    @Mock
+    private UserId requesterIdDouble;
+
+    @Mock
+    private UserId ownerIdDouble;
+
+    @Mock
+    private User userDouble;
+
+    @Mock
+    private Library libraryDouble;
+
+    @Mock
+    private Library createdLibraryDouble;
+
+    @Mock
+    private Library savedLibraryDouble;
+
+    @Mock
+    private LibraryId idDouble;
+
     @InjectMocks
     private LibraryService service;
 
-    // ----------------- createAndSave() -----------------
+    // =========================================================
+    // createAndSave()
+    // =========================================================
 
     @Test
     void givenValidLibraryNameAndUserId_whenCreateAndSave_thenReturnsLibrary()
@@ -50,27 +76,17 @@ class LibraryServiceTest {
         // ARRANGE
         String libraryName = "My Library";
 
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
-
-        Library createdLibraryDouble = mock(Library.class);
-        Library savedLibraryDouble = mock(Library.class);
-
         when(userRepositoryDouble.findByID(userIdDouble))
                 .thenReturn(Optional.of(userDouble));
-
         when(policyDouble.canCreateLibrary(userDouble))
                 .thenReturn(true);
-
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);
-
         when(libraryRepositoryDouble.save(createdLibraryDouble))
                 .thenReturn(savedLibraryDouble);
 
         // ACT
-        Library result =
-                service.createAndSave(libraryName, userIdDouble);
+        Library result = service.createAndSave(libraryName, userIdDouble);
 
         // ASSERT
         assertEquals(savedLibraryDouble, result);
@@ -81,8 +97,6 @@ class LibraryServiceTest {
 
         // ARRANGE
         String libraryName = "My Library";
-
-        UserId userIdDouble = mock(UserId.class);
 
         when(userRepositoryDouble.findByID(userIdDouble))
                 .thenReturn(Optional.empty());
@@ -100,12 +114,8 @@ class LibraryServiceTest {
         // ARRANGE
         String libraryName = "My Library";
 
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
-
         when(userRepositoryDouble.findByID(userIdDouble))
                 .thenReturn(Optional.of(userDouble));
-
         when(policyDouble.canCreateLibrary(userDouble))
                 .thenReturn(false);
 
@@ -123,20 +133,12 @@ class LibraryServiceTest {
         // ARRANGE
         String libraryName = "My Library";
 
-        UserId userIdDouble = mock(UserId.class);
-        User userDouble = mock(User.class);
-
-        Library createdLibraryDouble = mock(Library.class);
-
         when(userRepositoryDouble.findByID(userIdDouble))
                 .thenReturn(Optional.of(userDouble));
-
         when(policyDouble.canCreateLibrary(userDouble))
                 .thenReturn(true);
-
         when(libraryFactoryDouble.create(libraryName, userIdDouble))
                 .thenReturn(createdLibraryDouble);
-
         when(libraryRepositoryDouble.save(createdLibraryDouble))
                 .thenThrow(new InstanceAlreadyExistsException("exists"));
 
@@ -147,75 +149,150 @@ class LibraryServiceTest {
         );
     }
 
-// =========================================================
-// findAll()
-// =========================================================
+    // =========================================================
+    // findAll()
+    // =========================================================
 
     @Test
-    void givenLibrariesExist_whenFindAll_thenReturnsAllLibraries() {
+    void givenAdminAndLibrariesExist_whenFindAll_thenReturnsAllLibraries()
+            throws InstanceNotFoundException {
 
         // ARRANGE
-        Library libraryDouble1 = mock(Library.class);
         Library libraryDouble2 = mock(Library.class);
 
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetAllLibrary(userDouble))
+                .thenReturn(true);
         when(libraryRepositoryDouble.findAll())
-                .thenReturn(List.of(libraryDouble1, libraryDouble2));
+                .thenReturn(List.of(libraryDouble, libraryDouble2));
 
         // ACT
-        List<Library> result = service.findAll();
+        List<Library> result = service.findAll(requesterIdDouble);
 
         // ASSERT
         assertEquals(2, result.size());
     }
 
     @Test
-    void givenNoLibraries_whenFindAll_thenReturnsEmptyList() {
+    void givenAdminAndNoLibraries_whenFindAll_thenReturnsEmptyList()
+            throws InstanceNotFoundException {
 
         // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetAllLibrary(userDouble))
+                .thenReturn(true);
         when(libraryRepositoryDouble.findAll())
                 .thenReturn(List.of());
 
         // ACT
-        List<Library> result = service.findAll();
+        List<Library> result = service.findAll(requesterIdDouble);
 
         // ASSERT
         assertTrue(result.isEmpty());
     }
 
-// =========================================================
-// findById()
-// =========================================================
-
     @Test
-    void givenExistingId_whenFindById_thenReturnsLibrary() throws InstanceNotFoundException {
+    void givenUserNotFound_whenFindAll_thenThrowsInstanceNotFoundException() {
 
         // ARRANGE
-        LibraryId idDouble = mock(LibraryId.class);
-        Library libraryDouble = mock(Library.class);
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
 
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.findAll(requesterIdDouble)
+        );
+    }
+
+    @Test
+    void givenNonAdmin_whenFindAll_thenThrowsAccessDeniedException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetAllLibrary(userDouble))
+                .thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(
+                AccessDeniedException.class,
+                () -> service.findAll(requesterIdDouble)
+        );
+    }
+
+    // =========================================================
+    // findById()
+    // =========================================================
+
+    @Test
+    void givenOwnerAndExistingId_whenFindById_thenReturnsLibrary()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
         when(libraryRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getUserId()).thenReturn(ownerIdDouble);
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(true);
 
         // ACT
-        Library result = service.findById(idDouble);
+        Library result = service.findById(idDouble, requesterIdDouble);
 
         // ASSERT
         assertEquals(libraryDouble, result);
     }
 
     @Test
-    void givenNonExistingId_whenFindById_thenThrowsIllegalArgumentException() {
+    void givenNonExistingId_whenFindById_thenThrowsInstanceNotFoundException() {
 
         // ARRANGE
-        LibraryId idDouble = mock(LibraryId.class);
-
         when(libraryRepositoryDouble.findById(idDouble))
                 .thenReturn(Optional.empty());
 
         // ACT + ASSERT
         assertThrows(
                 InstanceNotFoundException.class,
-                () -> service.findById(idDouble)
+                () -> service.findById(idDouble, requesterIdDouble)
+        );
+    }
+
+    @Test
+    void givenUserNotFound_whenFindById_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(libraryRepositoryDouble.findById(idDouble))
+                .thenReturn(Optional.of(libraryDouble));
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.findById(idDouble, requesterIdDouble)
+        );
+    }
+
+    @Test
+    void givenNonOwnerNonAdmin_whenFindById_thenThrowsAccessDeniedException() {
+
+        // ARRANGE
+        when(libraryRepositoryDouble.findById(idDouble))
+                .thenReturn(Optional.of(libraryDouble));
+        when(libraryDouble.getUserId()).thenReturn(ownerIdDouble);
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(
+                AccessDeniedException.class,
+                () -> service.findById(idDouble, requesterIdDouble)
         );
     }
 
@@ -225,44 +302,78 @@ class LibraryServiceTest {
         // ACT + ASSERT
         assertThrows(
                 NullPointerException.class,
-                () -> service.findById(null)
+                () -> service.findById(null, requesterIdDouble)
         );
     }
 
-// =========================================================
-// findByUserId()
-// =========================================================
+    // =========================================================
+    // findByUserId()
+    // =========================================================
 
     @Test
-    void givenExistingUserId_whenFindByUserId_thenReturnsLibrary() throws InstanceNotFoundException {
+    void givenOwnerAndExistingUserId_whenFindByUserId_thenReturnsLibrary()
+            throws InstanceNotFoundException {
 
         // ARRANGE
-        UserId userIdDouble = mock(UserId.class);
-        Library libraryDouble = mock(Library.class);
-
-        when(libraryRepositoryDouble.findByUserId(userIdDouble))
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(true);
+        when(libraryRepositoryDouble.findByUserId(ownerIdDouble))
                 .thenReturn(Optional.of(libraryDouble));
 
         // ACT
-        Library result = service.findByUserId(userIdDouble);
+        Library result = service.findByUserId(ownerIdDouble, requesterIdDouble);
 
         // ASSERT
         assertEquals(libraryDouble, result);
     }
 
     @Test
-    void givenNonExistingUserId_whenFindByUserId_thenThrowsIllegalArgumentException() {
+    void givenNonExistingUserId_whenFindByUserId_thenThrowsInstanceNotFoundException() {
 
         // ARRANGE
-        UserId userIdDouble = mock(UserId.class);
-
-        when(libraryRepositoryDouble.findByUserId(userIdDouble))
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(true);
+        when(libraryRepositoryDouble.findByUserId(ownerIdDouble))
                 .thenReturn(Optional.empty());
 
         // ACT + ASSERT
         assertThrows(
                 InstanceNotFoundException.class,
-                () -> service.findByUserId(userIdDouble)
+                () -> service.findByUserId(ownerIdDouble, requesterIdDouble)
+        );
+    }
+
+    @Test
+    void givenRequesterNotFound_whenFindByUserId_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.findByUserId(ownerIdDouble, requesterIdDouble)
+        );
+    }
+
+    @Test
+    void givenNonOwnerNonAdmin_whenFindByUserId_thenThrowsAccessDeniedException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(
+                AccessDeniedException.class,
+                () -> service.findByUserId(ownerIdDouble, requesterIdDouble)
         );
     }
 
@@ -272,8 +383,180 @@ class LibraryServiceTest {
         // ACT + ASSERT
         assertThrows(
                 IllegalArgumentException.class,
-                () -> service.findByUserId(null)
+                () -> service.findByUserId(null, requesterIdDouble)
         );
     }
 
+    // =========================================================
+// canCreate()
+// =========================================================
+
+    @Test
+    void givenNormalUser_whenCanCreate_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canCreateLibrary(userDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canCreate(requesterIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenAdmin_whenCanCreate_thenReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canCreateLibrary(userDouble))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canCreate(requesterIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void givenUserNotFound_whenCanCreate_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canCreate(requesterIdDouble)
+        );
+    }
+
+// =========================================================
+// canGetAll()
+// =========================================================
+
+    @Test
+    void givenAdmin_whenCanGetAll_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetAllLibrary(userDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canGetAll(requesterIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenNormalUser_whenCanGetAll_thenReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetAllLibrary(userDouble))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canGetAll(requesterIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void givenUserNotFound_whenCanGetAll_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canGetAll(requesterIdDouble)
+        );
+    }
+
+// =========================================================
+// canGet()
+// =========================================================
+
+    @Test
+    void givenOwner_whenCanGet_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canGet(requesterIdDouble, ownerIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenAdmin_whenCanGet_thenReturnsTrue()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(true);
+
+        // ACT
+        boolean result = service.canGet(requesterIdDouble, ownerIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void givenNonOwnerNonAdmin_whenCanGet_thenReturnsFalse()
+            throws InstanceNotFoundException {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.of(userDouble));
+        when(policyDouble.canGetLibrary(userDouble, ownerIdDouble))
+                .thenReturn(false);
+
+        // ACT
+        boolean result = service.canGet(requesterIdDouble, ownerIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void givenUserNotFound_whenCanGet_thenThrowsInstanceNotFoundException() {
+
+        // ARRANGE
+        when(userRepositoryDouble.findByID(requesterIdDouble))
+                .thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(
+                InstanceNotFoundException.class,
+                () -> service.canGet(requesterIdDouble, ownerIdDouble)
+        );
+    }
 }

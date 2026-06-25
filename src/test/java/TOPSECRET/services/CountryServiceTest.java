@@ -265,4 +265,53 @@ class CountryServiceTest {
         assertThrows(NullPointerException.class,
                 () -> service.findById(null));
     }
+
+    // -------------------------------------------------------------------------
+    // canRegisterCountry
+    // -------------------------------------------------------------------------
+
+    @Test
+    void canRegisterCountry_adminUser_returnsTrue() {
+
+        // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
+        when(userRepository.findByID(adminUserId)).thenReturn(Optional.of(adminUser));
+        when(policy.canRegisterCountry(adminUser)).thenReturn(true);
+
+        // Act
+        boolean result = service.canRegisterCountry(adminUserId);
+
+        // Assert
+        assertTrue(result);
+    }
+
+    @Test
+    void canRegisterCountry_normalUser_returnsFalse() {
+
+        // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
+        when(userRepository.findByID(normalUserId)).thenReturn(Optional.of(normalUser));
+        when(policy.canRegisterCountry(normalUser)).thenReturn(false);
+
+        // Act
+        boolean result = service.canRegisterCountry(normalUserId);
+
+        // Assert
+        assertFalse(result);
+    }
+
+    @Test
+    void canRegisterCountry_userNotFound_throwsIllegalArgumentException() {
+
+        // Arrange
+        CountryService service = new CountryService(factory, repository, policy, userRepository);
+
+        when(userRepository.findByID(adminUserId)).thenReturn(Optional.empty());
+
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class,
+                () -> service.canRegisterCountry(adminUserId));
+    }
 }
