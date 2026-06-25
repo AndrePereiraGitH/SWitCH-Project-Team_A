@@ -1,0 +1,31 @@
+@startuml
+hide footbox
+autonumber
+title Get All Authors In The System
+
+
+participant ":ToGetTheListOfItems\nOnDirectSaleOfAGiven\nAuthorController" as Ctrl
+participant ":Author\nService" as AuthorService
+participant ":IAuthor\nRepository" as AuthorRepo
+
+
+ref over Ctrl
+[[1.MainDiagram.puml Back to main diagram]]
+end ref
+
+Ctrl -> AuthorService : findAll()
+activate Ctrl
+activate AuthorService
+AuthorService -> AuthorRepo : findAll()
+activate AuthorRepo
+
+AuthorRepo ->o] : SELECT * FROM author
+AuthorRepo <--o] : data
+
+AuthorRepo --> AuthorService : listOfAllAuthors
+deactivate AuthorRepo
+AuthorService --> Ctrl : listOfAllAuthors
+deactivate AuthorService
+
+deactivate Ctrl
+@enduml

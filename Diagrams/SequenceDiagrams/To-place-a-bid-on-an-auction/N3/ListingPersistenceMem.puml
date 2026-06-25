@@ -1,0 +1,28 @@
+@startuml
+autonumber
+hide footbox
+title Listing Persistence Mem
+
+participant ":IListing\nRepository" as LRepo
+participant ":ListingRepository\nMem" as LRepoMem
+participant "listings:\nList<Listing>" as listings
+
+ref over LRepo
+    [[MainDiagram.puml Back to main diagram]]
+end ref
+
+
+LRepo -> LRepoMem : findById(listingId)
+activate LRepo
+activate LRepoMem
+
+LRepoMem -> listings : stream()\n.filter(listing -> listing.id().equals(listingId))\n.findFirst()
+activate listings
+listings --> LRepoMem : listing
+deactivate listings
+
+LRepoMem --> LRepo : listing
+deactivate LRepoMem
+deactivate LRepo
+
+@enduml

@@ -1,0 +1,217 @@
+@startuml
+title To place a bid on an auction
+
+skinparam linetype ortho
+
+package "infrastructure/ persistence" {
+    package "auction" {
+        interface IAuctionRepositoryJPA {
+            + findById(AuctionId id): Optional<AuctionDM>
+            + existsById(AuctionId id): boolean
+            + save(AuctionDM auctionDM): AuctionDM
+        }
+        class AuctionDM {
+            - auctionId: AuctionId
+            - listingId: ListingId
+            - auctionStartDateTime: LocalDateTime
+            - auctionEndDateTime: LocalDateTime
+            - initialPrice: BigDecimal
+            - buyoutPrice: BigDecimal
+            - bidHistory: List<BidDM>
+            - winningBid: BidDM
+            - auctionStatus: AuctionStatus
+            - finalPrice: BigDecimal
+            - closedAt: LocalDateTime
+        }
+        class BidDM {
+            - bidderId: UserId
+            - value: BigDecimal
+            - timeOfBid: LocalDateTime
+        }
+    }
+    package "listing" {
+        interface IListingRepositoryJPA {
+            + findById(ListingId id): Optional<ListingDM>
+        }
+        class ListingDM {
+            - listingId: ListingId
+            - itemsId: List<PublicationSampleId>
+            - sellerId: UserId
+            - buyerId: UserId
+            - saleType: SaleType
+            - listingTitle: String
+            - pictures: List<String>
+            - price: String
+            - shortDescription: String
+            - publicationDate: LocalDate
+            - listingStatus: ListingStatus
+        }
+    }
+    package "user" {
+        interface IUserRepositoryJPA {
+            + findById(String userId): Optional<UserDM>
+        }
+        class UserDM {
+            - userId: String
+            - name: String
+            - email: String
+            - role: String
+        }
+    }
+}
+
+package "adapters" {
+    class AuctionRESTController {
+        + optionsBids(String userId, String auctionId): ResponseEntity<Void>
+        + placeBid(String auctionId, PlaceBidDTO requestDTO, String bidderId): ResponseEntity<Void>
+    }
+    class AuctionMapper <<static>> {
+        + toAuctionId(String id): AuctionId
+        + toUserId(String id): UserId
+        + toPrice(String value): Price
+    }
+    record PlaceBidDTO {
+        - value: BigDecimal
+    }
+
+    package "auction" {
+        class AuctionRepositoryJPAImpl {
+            + findById(AuctionId id): Optional<Auction>
+            + update(Auction auction): Auction
+        }
+        class AuctionAssembler {
+            + toDomain(AuctionDM auctionDM): Auction
+            + toDM(Auction auction): AuctionDM
+        }
+        class AuctionRepositoryMem {
+            - _auctionsMap: Map<AuctionId, Auction>
+            + findById(AuctionId id): Optional<Auction>
+            + update(Auction auction): Auction
+        }
+    }
+    package "listing" {
+        class ListingRepositoryJPAImpl {
+            + findById(ListingId id): Optional<Listing>
+        }
+        class ListingAssembler {
+            + toDomain(ListingDM listingDM): Listing
+        }
+        class ListingRepositoryMem {
+            - listings: List<Listing>
+            + findById(ListingId id): Optional<Listing>
+        }
+    }
+    package "user" {
+        class UserRepositoryJPAImpl {
+            + findByID(UserId userId): Optional<User>
+        }
+        class UserAssembler {
+            + toDomain(UserDM userDM): User
+        }
+    }
+}
+
+package "application" {
+    class AuctionService {
+        + placeBid(AuctionId auctionId, UserId bidderId, Price value): Bid
+        + canPlaceBid(UserId userId): boolean
+    }
+    class AuctionAuthorizationPolicy {
+        + canPlaceBid(User user): boolean
+    }
+}
+
+package "domain" {
+    package "auction" {
+        interface IAuctionRepository {
+            + findById(AuctionId id): Optional<Auction>
+            + update(Auction auction): Auction
+        }
+        class AuctionFactory {
+            + create(AuctionId auctionId, ListingId listingId,\nLocalDateTime startDateTime, LocalDateTime endDateTime,\nPrice initialPrice, Price buyoutPrice): Auction
+        }
+        class Auction {
+            - auctionId: AuctionId
+            - listingId: ListingId
+            - auctionStartDateTime: LocalDateTime
+            - auctionEndDateTime: LocalDateTime
+            - initialPrice: Price
+            - buyoutPrice: Price
+            - bidHistory: List<Bid>
+            - winningBid: Bid
+            - auctionStatus: AuctionStatus
+            - finalPrice: Price
+            - closedAt: LocalDateTime
+            + placeBid(UserId bidderId, Price value): Bid
+            + closeIfExpired(): void
+            + refreshStatus(): void
+            + rehydrateBid(UserId bidderId, Price value, LocalDateTime timeOfBid): void
+            + rehydrateState(List<Bid> bidHistory, AuctionStatus status, LocalDateTime closedAt): void
+        }
+        class Bid {
+            - bidderId: UserId
+            - value: Price
+            - timeOfBid: LocalDateTime
+        }
+    }
+    package "listing" {
+        interface IListingRepository {
+            + findById(ListingId id): Optional<Listing>
+        }
+        class Listing {
+            - listingId: ListingId
+            - sellerId: UserId
+            - saleType: SaleType
+            + getSellerId(): UserId
+        }
+    }
+    package "user" {
+        interface IUserRepository {
+            + findByID(UserId userId): Optional<User>
+        }
+        class User {
+            - userId: UserId
+            - name: String
+            - email: String
+            - role: String
+        }
+    }
+}
+
+' --- Adapters ---
+AuctionRESTController "1" --> "1" AuctionMapper : "uses"
+AuctionRESTController "1" --> "1" AuctionService : "uses"
+AuctionRESTController "1" ..> "1" PlaceBidDTO : "receives"
+
+' --- Application ---
+AuctionService "1" --> "1" IAuctionRepository : "uses"
+AuctionService "1" --> "1" IListingRepository : "uses"
+AuctionService "1" --> "1" IUserRepository : "uses"
+AuctionService "1" --> "1" AuctionAuthorizationPolicy : "uses"
+
+' --- Auction persistence ---
+AuctionRepositoryJPAImpl "1" ..|> "1" IAuctionRepository : "implements"
+AuctionRepositoryJPAImpl "1" ..> "1" IAuctionRepositoryJPA : "uses"
+AuctionRepositoryJPAImpl "1" ..> "1" AuctionAssembler : "uses"
+AuctionAssembler "1" --> "1" AuctionFactory : "uses"
+AuctionAssembler "1" ..> "1" AuctionDM : "receives"
+AuctionAssembler "1" ..> "*" BidDM : "uses"
+AuctionFactory "1" ..> "1" Auction : "creates"
+Auction "1" <-- "*" Bid : has
+AuctionRepositoryMem "1" ..|> "1" IAuctionRepository : "implements"
+
+' --- Listing persistence ---
+ListingRepositoryJPAImpl "1" ..|> "1" IListingRepository : "implements"
+ListingRepositoryJPAImpl "1" ..> "1" IListingRepositoryJPA : "uses"
+ListingRepositoryJPAImpl "1" ..> "1" ListingAssembler : "uses"
+ListingAssembler "1" ..> "1" ListingDM : "receives"
+ListingAssembler "1" ..> "1" Listing : "creates"
+ListingRepositoryMem "1" ..|> "1" IListingRepository : "implements"
+
+' --- User persistence ---
+UserRepositoryJPAImpl "1" ..|> "1" IUserRepository : "implements"
+UserRepositoryJPAImpl "1" ..> "1" IUserRepositoryJPA : "uses"
+UserRepositoryJPAImpl "1" ..> "1" UserAssembler : "uses"
+UserAssembler "1" ..> "1" UserDM : "receives"
+
+@enduml
