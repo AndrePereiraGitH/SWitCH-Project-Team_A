@@ -229,4 +229,32 @@ public class TransactionService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
         return policy.canViewAllTransactions(user);
     }
+
+    /**
+     * Checks whether the requester can view a specific transaction by ID.
+     * Returns true if the requester is an admin or the buyer of that transaction.
+     */
+    public boolean canViewTransaction(UserId requesterId, TransactionID transactionId) {
+        Objects.requireNonNull(requesterId, "requesterId cannot be null");
+        Objects.requireNonNull(transactionId, "transactionId cannot be null");
+        User user = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + requesterId));
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new EntityNotFoundException("Transaction not found: " + transactionId));
+        return policy.canViewTransaction(user, transaction);
+    }
+
+    /**
+     * Checks whether the requester can view transactions for a given buyer.
+     * Returns true if the requester is an admin or the buyer themselves.
+     */
+    public boolean canViewTransactionsByBuyer(UserId requesterId, UserId buyerId) {
+        Objects.requireNonNull(requesterId, "requesterId cannot be null");
+        Objects.requireNonNull(buyerId, "buyerId cannot be null");
+        User user = userRepository.findByID(requesterId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + requesterId));
+        boolean isAdmin = user.getUserRoles().contains(UserRole.ADMIN);
+        boolean isBuyer = requesterId.equals(buyerId);
+        return isAdmin || isBuyer;
+    }
 }

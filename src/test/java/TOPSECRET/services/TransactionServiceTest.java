@@ -656,4 +656,152 @@ class TransactionServiceTest {
         assertThrows(NullPointerException.class,
                 () -> sut.canViewAllTransactions(null));
     }
+
+    // =========================================================================
+// canViewTransaction(UserId, TransactionID)
+// =========================================================================
+
+    @Test
+    void canViewTransaction_withTransaction_shouldReturnTrue_whenPolicyAllows() {
+
+        // ARRANGE
+        Transaction transactionDouble = mock(Transaction.class);
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(transactionRepository.findById(transactionIdDouble)).thenReturn(Optional.of(transactionDouble));
+        when(policy.canViewTransaction(userDouble, transactionDouble)).thenReturn(true);
+
+        // ACT
+        boolean result = sut.canViewTransaction(buyerIdDouble, transactionIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewTransaction_withTransaction_shouldReturnFalse_whenPolicyDenies() {
+
+        // ARRANGE
+        Transaction transactionDouble = mock(Transaction.class);
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(transactionRepository.findById(transactionIdDouble)).thenReturn(Optional.of(transactionDouble));
+        when(policy.canViewTransaction(userDouble, transactionDouble)).thenReturn(false);
+
+        // ACT
+        boolean result = sut.canViewTransaction(buyerIdDouble, transactionIdDouble);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canViewTransaction_withTransaction_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(EntityNotFoundException.class,
+                () -> sut.canViewTransaction(buyerIdDouble, transactionIdDouble));
+    }
+
+    @Test
+    void canViewTransaction_withTransaction_shouldThrowEntityNotFoundException_whenTransactionDoesNotExist() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(transactionRepository.findById(transactionIdDouble)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(EntityNotFoundException.class,
+                () -> sut.canViewTransaction(buyerIdDouble, transactionIdDouble));
+    }
+
+    @Test
+    void canViewTransaction_withTransaction_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.canViewTransaction(null, transactionIdDouble));
+    }
+
+    @Test
+    void canViewTransaction_withTransaction_shouldThrowNullPointerException_whenTransactionIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.canViewTransaction(buyerIdDouble, null));
+    }
+
+// =========================================================================
+// canViewTransactionsByBuyer
+// =========================================================================
+
+    @Test
+    void canViewTransactionsByBuyer_shouldReturnTrue_whenRequesterIsAdmin() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+
+        // ACT
+        boolean result = sut.canViewTransactionsByBuyer(buyerIdDouble, requesterIdDifferentFromBuyer);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewTransactionsByBuyer_shouldReturnTrue_whenRequesterIsBuyer() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // ACT
+        boolean result = sut.canViewTransactionsByBuyer(buyerIdDouble, buyerIdDouble);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewTransactionsByBuyer_shouldReturnFalse_whenRequesterIsNeitherAdminNorBuyer() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.of(userDouble));
+        when(userDouble.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+
+        // ACT
+        boolean result = sut.canViewTransactionsByBuyer(buyerIdDouble, requesterIdDifferentFromBuyer);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canViewTransactionsByBuyer_shouldThrowEntityNotFoundException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        when(userRepository.findByID(buyerIdDouble)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(EntityNotFoundException.class,
+                () -> sut.canViewTransactionsByBuyer(buyerIdDouble, buyerIdDouble));
+    }
+
+    @Test
+    void canViewTransactionsByBuyer_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.canViewTransactionsByBuyer(null, buyerIdDouble));
+    }
+
+    @Test
+    void canViewTransactionsByBuyer_shouldThrowNullPointerException_whenBuyerIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> sut.canViewTransactionsByBuyer(buyerIdDouble, null));
+    }
 }
