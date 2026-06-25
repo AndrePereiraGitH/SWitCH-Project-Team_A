@@ -104,32 +104,6 @@ public class EditionRESTController {
         }
     }
 
-    /**
-     * Returns the HTTP methods supported by an individual edition resource.
-     *
-     * <p>This endpoint enables clients to discover which operations are available
-     * for a specific edition resource. It supports HATEOAS-driven navigation by
-     * exposing the allowed HTTP methods through the {@code Allow} header.</p>
-     *
-     * <p>The following methods are currently supported:</p>
-     * <ul>
-     *     <li>{@code GET} — retrieve an edition by its identifier</li>
-     *     <li>{@code OPTIONS} — discover supported operations</li>
-     * </ul>
-     *
-     * @return a {@link ResponseEntity} with HTTP {@code 200 OK} and an
-     * {@code Allow} header containing the supported methods for an
-     * individual edition resource
-     */
-    @RequestMapping(value = "/{editionId}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsEdition(){
-        return ResponseEntity.ok()
-                .allow(
-                        HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
-
 
     // =========================================================================
     // POST — private

@@ -861,26 +861,6 @@ class EditionRESTControllerTest {
             assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
         }
     }
-    // =========================================================
-// OPTIONS — SINGLE RESOURCE
-// =========================================================
-
-    @Test
-    void shouldReturnAllowedMethodsForSingleEdition() {
-
-        // ACT
-        ResponseEntity<Void> response = controller.optionsEdition();
-
-        // ASSERT
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
-
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
-
-        assertEquals(2, response.getHeaders().getAllow().size());
-    }
 
     // =========================================================
     // HELPERS

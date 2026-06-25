@@ -109,31 +109,6 @@ public class PublicationTypeRestController {
     }
 
     /**
-     * Returns the HTTP methods supported by an individual publication type resource.
-     *
-     * <p>This endpoint allows clients to discover which operations are available
-     * for a specific publication type resource. It is intended to support
-     * HATEOAS-driven navigation and runtime capability discovery.</p>
-     *
-     * <p>The following methods are currently supported:</p>
-     * <ul>
-     *     <li>{@code GET} — retrieve a publication type by its identifier</li>
-     *     <li>{@code OPTIONS} — discover supported operations</li>
-     * </ul>
-     *
-     * @return a {@link ResponseEntity} with HTTP {@code 200 OK} and an
-     * {@code Allow} header containing the supported HTTP methods
-     */
-    @RequestMapping(value = "/{id}/", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsPublicationType() {
-
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET,
-                        HttpMethod.OPTIONS)
-                .build();
-    }
-
-    /**
      * Creates a new {@link PublicationType} and persists it.
      *
      * <p>The response includes HATEOAS links provided by {@link PublicationTypeLinkProvider}
