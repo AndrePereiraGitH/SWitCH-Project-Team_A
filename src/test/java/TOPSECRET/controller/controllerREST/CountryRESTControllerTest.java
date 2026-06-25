@@ -365,80 +365,93 @@ class CountryRESTControllerTest {
     // -------------------------------------------------------------------------
 
     @Test
-    void shouldReturnOkStatus_whenOptionsIsRequested() {
+    void options_adminUser_returnsOk() {
 
-        // ACT
-        ResponseEntity<Void> result = controller.options();
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(true);
 
-        // ASSERT
+        // Act
+        ResponseEntity<Void> result = controller.options("adminUser");
+
+        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
-    }
-
-    @Test
-    void shouldAllowGetPostAndOptions_whenOptionsIsRequested() {
-
-        // ACT
-        ResponseEntity<Void> result = controller.options();
-
-        // ASSERT
         assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
-        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.POST));
         assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
     }
 
     @Test
-    void shouldReturnExactlyThreeAllowedMethods_whenOptionsIsRequested() {
+    void options_adminUser_allowsPost() {
 
-        // ACT
-        ResponseEntity<Void> result = controller.options();
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(true);
 
-        // ASSERT
+        // Act
+        ResponseEntity<Void> result = controller.options("adminUser");
+
+        // Assert
+        assertTrue(result.getHeaders().getAllow().contains(HttpMethod.POST));
         assertEquals(3, result.getHeaders().getAllow().size());
     }
 
-    // -------------------------------------------------------------------------
-    // Options("id")
-    // -------------------------------------------------------------------------
-
     @Test
-    void shouldReturnOkStatus_whenOptionsByIdIsRequested() {
+    void options_nonAdminUser_returnsOk() {
 
-        // ACT
-        ResponseEntity<Void> result = controller.optionsById();
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(false);
 
-        // ASSERT
+        // Act
+        ResponseEntity<Void> result = controller.options("normalUser");
+
+        // Assert
         assertEquals(HttpStatus.OK, result.getStatusCode());
-    }
-
-    @Test
-    void shouldAllowGetAndOptions_whenOptionsByIdIsRequested() {
-
-        // ACT
-        ResponseEntity<Void> result = controller.optionsById();
-
-        // ASSERT
         assertTrue(result.getHeaders().getAllow().contains(HttpMethod.GET));
         assertTrue(result.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
     }
 
     @Test
-    void shouldNotAllowPost_whenOptionsByIdIsRequested() {
+    void options_nonAdminUser_doesNotAllowPost() {
 
-        // ACT
-        ResponseEntity<Void> result = controller.optionsById();
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenReturn(false);
 
-        // ASSERT
+        // Act
+        ResponseEntity<Void> result = controller.options("normalUser");
+
+        // Assert
         assertFalse(result.getHeaders().getAllow().contains(HttpMethod.POST));
+        assertEquals(2, result.getHeaders().getAllow().size());
     }
 
     @Test
-    void shouldReturnExactlyTwoAllowedMethods_whenOptionsByIdIsRequested() {
+    void options_invalidUserId_returnsBadRequest() {
 
-        // ACT
-        ResponseEntity<Void> result = controller.optionsById();
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenThrow(new IllegalArgumentException("invalid"));
 
-        // ASSERT
-        assertEquals(2, result.getHeaders().getAllow().size());
+        // Act
+        ResponseEntity<Void> result = controller.options("invalid");
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    void options_unexpectedException_returnsInternalServerError() {
+
+        // Arrange
+        when(countryService.canRegisterCountry(any(UserId.class)))
+                .thenThrow(new RuntimeException("boom"));
+
+        // Act
+        ResponseEntity<Void> result = controller.options("adminUser");
+
+        // Assert
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
     }
 
 }

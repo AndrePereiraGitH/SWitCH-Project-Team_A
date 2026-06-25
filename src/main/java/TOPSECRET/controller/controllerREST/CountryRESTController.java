@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -72,37 +74,23 @@ public class CountryRESTController {
      *         Country collection resource
      */
     @RequestMapping(method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> options() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.POST, HttpMethod.OPTIONS)
-                .build();
-    }
+    public ResponseEntity<Void> options(@RequestParam String userId) {
+        try {
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
 
-    /**
-     * Returns the HTTP methods supported by an individual Country resource.
-     *
-     * <p>This endpoint allows clients to discover which operations are
-     * available on a specific {@code /countries/{id}} resource without
-     * invoking them.</p>
-     *
-     * <p>The response includes an {@code Allow} header indicating the
-     * supported HTTP methods:</p>
-     * <ul>
-     *     <li>{@code GET} - retrieve a country by its identifier</li>
-     *     <li>{@code OPTIONS} - discover supported operations</li>
-     * </ul>
-     *
-     * <p>This endpoint is intended to support resource discoverability
-     * and improve client navigation in accordance with REST principles.</p>
-     *
-     * @return a response containing the supported HTTP methods for an
-     *         individual Country resource
-     */
-    @RequestMapping(path = "/{id}", method = RequestMethod.OPTIONS)
-    public ResponseEntity<Void> optionsById() {
-        return ResponseEntity.ok()
-                .allow(HttpMethod.GET, HttpMethod.OPTIONS)
-                .build();
+            UserId user = CountryMapper.toUserId(userId);
+
+            if (service.canRegisterCountry(user)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**
