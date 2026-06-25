@@ -20,9 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -289,7 +287,7 @@ public class AuctionRESTController {
     @RequestMapping(value = "", method = RequestMethod.OPTIONS)
     public ResponseEntity<Void> optionsRoot(@RequestParam(required = false) String userId) {
 
-        List<HttpMethod> allowedMethods = new ArrayList<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+        Set<HttpMethod> allowedMethods = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
 
         try {
             if (userId != null) {
@@ -335,7 +333,7 @@ public class AuctionRESTController {
     public ResponseEntity<Void> optionsBids(@RequestParam(required = false) String userId,
                                             @PathVariable String auctionId) {
 
-        List<HttpMethod> allowedMethods = new ArrayList<>(List.of(HttpMethod.OPTIONS));
+        Set<HttpMethod> allowedMethods = new HashSet<>(List.of(HttpMethod.OPTIONS));
 
         try {
             if (userId != null) {
