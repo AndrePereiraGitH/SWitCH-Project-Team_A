@@ -791,6 +791,7 @@ class ListingServiceTest {
         PublicationSample item = mock(PublicationSample.class);
         Listing saved = mock(Listing.class);
 
+
         when(listingRepository.findById(listingId)).thenReturn(Optional.of(listing));
         when(listing.getListingStatus()).thenReturn(ListingStatus.ACTIVE);
         when(listing.getSellerId()).thenReturn(sellerId);
