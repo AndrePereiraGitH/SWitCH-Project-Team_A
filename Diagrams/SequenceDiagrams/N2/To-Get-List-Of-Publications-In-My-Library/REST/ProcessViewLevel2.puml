@@ -1,0 +1,57 @@
+@startuml
+autonumber
+hide footbox
+title Process View - Level 2: Get the list of publications in my library
+
+actor "User" as User
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "Database" as DB
+
+User -> FE : I want to see the list of publications in my library
+activate FE
+
+FE -> BE : OPTIONS /publicationSamples/in-library
+activate BE
+
+BE -> DB : query user
+activate DB
+DB --> BE : user data
+deactivate DB
+
+BE -> DB : query library
+activate DB
+DB --> BE : library data
+deactivate DB
+
+BE --> FE : 200 OK\nAllow: GET, OPTIONS
+deactivate BE
+
+FE -> BE : GET /publicationSamples/in-library?userId={userId}
+activate BE
+
+BE -> DB : query user
+activate DB
+DB --> BE : user data
+deactivate DB
+
+BE -> DB : query publications in library
+activate DB
+DB --> BE : publication list
+deactivate DB
+
+loop for each publication
+    BE -> DB : query bibliographical data, edition,\nauthors, genres, owner
+    activate DB
+    DB --> BE : data
+    deactivate DB
+    BE -> BE : build PublicationDTO\n+ HATEOAS links
+end
+
+BE --> FE : 200 OK\nbody: publicationDTOS\n(DTO + HATEOAS links)
+deactivate BE
+
+FE --> User : list of publications in my library
+deactivate FE
+
+@enduml

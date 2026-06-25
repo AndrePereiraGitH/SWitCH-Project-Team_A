@@ -1,0 +1,52 @@
+@startuml MiteLovers_Logical_View_L3_Backend
+
+title MiteLovers Logical View - Level 3 (Backend)
+
+skinparam backgroundColor white
+skinparam defaultFontSize 12
+skinparam component {
+  BackgroundColor #FFFFFF
+  BorderColor #5F9B96
+}
+skinparam ArrowColor #1B1B1B
+skinparam ArrowFontSize 11
+
+interface "API" as API
+interface "Database" as Database
+
+component "Backend" as Backend {
+
+
+    port " " as pAPI
+    port " " as pDB
+
+
+    component "Infrastructure" as infrastructure
+    component "Interface Adapter" as adapter
+    component "Mapper + DTO" as mapper
+    component "Service" as service
+    component "Domain" as domain
+    component "Value Objects" as vo
+
+
+    infrastructure ..> adapter
+    adapter ..> service
+    adapter ..> domain
+    adapter ..> mapper
+    service ..> domain
+
+    adapter ..> vo
+    service ..> vo
+    domain ..> vo
+
+
+    pAPI -- infrastructure
+    pDB -- infrastructure
+
+}
+
+
+API -- pAPI
+Database -- pDB
+
+@enduml
