@@ -1,0 +1,66 @@
+@startuml
+autonumber
+hide footbox
+title To get the list of items on direct sale of a given author
+
+box "Frontend" #whitesmoke
+actor User
+participant ":UI" as UI
+end box
+
+box "Backend" #aliceblue
+participant ":Author\nRESTController" as AuthorCtrl
+participant ":Listing\nRESTController" as ListCtrl
+end box
+
+box "Database" #honeydew
+database "db" as db
+end box
+
+' -------------------
+' 1 — Get all Authors
+' -------------------
+
+User -> UI : I want to see the items\non direct sale of an author
+activate UI
+UI -> AuthorCtrl : GET /authors
+activate AuthorCtrl
+AuthorCtrl -> db : SELECT * FROM author
+activate db
+db --> AuthorCtrl : data
+deactivate db
+AuthorCtrl -> db : SELECT * FROM authors\nWHERE id IN (...)
+activate db
+db --> AuthorCtrl : data
+deactivate db
+AuthorCtrl --> UI : 200 OK\nbody: listOfAllAuthorDTOs
+deactivate AuthorCtrl
+UI --> User : Which author?\nSelect one!
+deactivate UI
+
+' --------------------------------------------------
+' 2 — Get listings on direct sale for a given author
+' --------------------------------------------------
+
+User -> UI : Selected author
+activate UI
+UI -> ListCtrl : OPTIONS /listings
+activate ListCtrl
+ListCtrl --> UI : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate ListCtrl
+UI -> ListCtrl : GET /listings?authorId={authorId}&saleType=DIRECT_SALE
+activate ListCtrl
+ListCtrl -> db : SELECT * FROM listings
+activate db
+db --> ListCtrl : data
+deactivate db
+ListCtrl -> db : SELECT id FROM publication_sample\nWHERE author_id IN (?)
+activate db
+db --> ListCtrl : data
+deactivate db
+ListCtrl --> UI : 200 OK\nbody: listOfListingDetailsDTOs
+deactivate ListCtrl
+UI --> User : Shows the items on direct \nsale for the chosen author
+deactivate UI
+
+@enduml

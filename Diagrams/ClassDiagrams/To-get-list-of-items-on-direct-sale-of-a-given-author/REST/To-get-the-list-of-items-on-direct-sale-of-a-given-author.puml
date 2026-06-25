@@ -1,0 +1,279 @@
+@startuml
+title To get the list of items on direct sale of a given author (REST)
+
+skinparam linetype ortho
+
+package "infrastructure/ persistence" {
+    package "author" {
+        interface IAuthorRepositoryJPA {
+            + findAll(): List<AuthorDM>
+        }
+        class AuthorDM {
+            - id: AuthorId
+            - name: String
+            - countryId: CountryId
+            - dateOfBirth: LocalDate
+            - biography: String
+        }
+    }
+    package "publicationsample" {
+        interface IPublicationSampleRepositoryJPA {
+            + findAllByBdIdIn(List<BibliographicalDataId> bdIds): List<PublicationSampleDM>
+        }
+        class PublicationSampleDM {
+            - pubSampleId: PublicationSampleId
+            - bdId: BibliographicalDataId
+            - ownerId: UserId
+            - editionId: EditionId
+            - libraryId: LibraryId
+            - collectionOfPublicationsId: CollectionOfPublicationsId
+            - publicationStatus: PublicationStatus
+            - condition: Condition
+        }
+    }
+    package "listing" {
+        interface IListingRepositoryJPA {
+            + findAll(): List<ListingDM>
+        }
+        class ListingDM {
+            - listingId: ListingId
+            - itemsId: List<PublicationSampleId>
+            - sellerId: UserId
+            - buyerId: UserId
+            - saleType: SaleType
+            - listingTitle: String
+            - pictures: List<String>
+            - price: String
+            - shortDescription: String
+            - publicationDate: LocalDate
+            - listingStatus: ListingStatus
+        }
+    }
+    package "user" {
+        interface IUserRepositoryJPA {
+            + findById(String userId): Optional<UserDM>
+        }
+        class UserDM {
+            - userId: String
+            - name: String
+            - email: String
+            - role: String
+        }
+    }
+}
+
+package "adapters" {
+    class AuthorRESTController {
+        + getAllAuthors(): ResponseEntity<CollectionModel<ResponseAuthorDTO>>
+    }
+    class ListingRESTController {
+        + findAll(String genreId, String authorId, String publisherId,\nString saleType, String bibliographicalDataId): ResponseEntity<List<ListingDetailsDTO>>
+    }
+    class AuthorMapper <<static>> {
+        + toDTO(Author author): ResponseAuthorDTO
+        + toDTOs(List<Author> list): List<ResponseAuthorDTO>
+    }
+    record ResponseAuthorDTO {
+        - id: String
+        - name: String
+        - countryName: String
+        - dateOfBirth: String
+        - biography: String
+    }
+    class ListingMapper <<static>> {
+        + toListingDetailsDTO(Listing listing, pubSamples, bds, editions,\nauthors, genres, publishers, buyer): ListingDetailsDTO
+    }
+    record ListingDetailsDTO {
+        - id: String
+        - title: String
+        - authorNames: List<String>
+        - genreTypes: List<String>
+        - price: String
+        - saleType: String
+        - sellerId: String
+        - publisherName: String
+        - bibliographicalDataIds: List<String>
+        - buyerName: String
+        - listingStatus: String
+    }
+    class AuthorLinkProvider {
+        + getPublicLinksForAuthor(): List<Link>
+    }
+    class ListingLinkProvider {
+        + getPublicLinks(): List<Link>
+    }
+
+    package "bibliographicaldata" {
+        class BibliographicalDataRepositoryJPAImpl {
+            + findAll(): List<BibliographicalData>
+        }
+        class BibliographicalDataAssembler {
+            + toDomain(BibliographicalDataDM bdDM): BibliographicalData
+            + toDM(BibliographicalData bd): BibliographicalDataDM
+        }
+    }
+    package "publicationsample" {
+        class PublicationSampleRepositoryJPAImpl {
+            + findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds): List<PublicationSampleId>
+        }
+        class PublicationSampleAssembler {
+            + toDomain(PublicationSampleDM pbSampleDM): PublicationSample
+            + toDM(PublicationSample pbSample): PublicationSampleDM
+        }
+    }
+    package "listing" {
+        class ListingRepositoryJPAImpl {
+            + findAll(): List<Listing>
+        }
+        class ListingAssembler {
+            + toDomain(ListingDM listingDM): Listing
+            + toDM(Listing listing): ListingDM
+        }
+    }
+    package "user" {
+        class UserRepositoryJPAImpl {
+            + findByID(UserId userId): Optional<User>
+        }
+        class UserAssembler {
+            + toDomain(UserDM userDM): User
+        }
+    }
+}
+
+package "application" {
+    class AuthorService {
+        + findAll(): List<Author>
+        + findById(AuthorId authorId): Author
+    }
+    class ListingService {
+        + findAllFiltered(GenreId genreId, AuthorId authorId, PublisherID publisherId,\nSaleType saleType, BibliographicalDataId bdId): List<Listing>
+    }
+    class PublicationSampleService {
+        + findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds): List<PublicationSampleId>
+    }
+    class AuthorAuthorizationPolicy {
+        + canCreateAuthor(User user): boolean
+    }
+    class ListingAuthorizationPolicy {
+        + canCreateListing(User user): boolean
+        + canBuyListing(User user): boolean
+    }
+}
+
+package "domain" {
+    package "author" {
+        interface IAuthorRepository {
+            + findAll(): List<Author>
+        }
+        class AuthorFactory {
+            + create(AuthorId id, String name, CountryId countryId, LocalDate dateOfBirth, String biography): Author
+        }
+        class Author {
+            - id: AuthorId
+            - name: String
+            - countryId: CountryId
+            - dateOfBirth: LocalDate
+            - biography: String
+        }
+    }
+    package "publicationsample" {
+        interface IPublicationSampleRepository {
+            + findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds): List<PublicationSampleId>
+        }
+        class PublicationSample {
+            - publicationSampleId: PublicationSampleId
+            - bibliographicalDataId: BibliographicalDataId
+            - ownerId: UserId
+            - publicationStatus: PublicationStatus
+            - editionId: EditionId
+            - condition: Condition
+            - libraryId: LibraryId
+        }
+    }
+    package "listing" {
+        interface IListingRepository {
+            + findAll(): List<Listing>
+        }
+        class ListingFactory {
+            + create(ListingId listingId, String listingTitle, List<PublicationSampleId> itemsId,\nSaleType saleType, Price price, String shortDescription, UserId sellerId,\nUserId buyerId, List<Picture> pictures, LocalDate publicationDate,\nListingStatus listingStatus): Listing
+        }
+        class Listing {
+            - listingId: ListingId
+            - listingTitle: String
+            - itemsId: List<PublicationSampleId>
+            - saleType: SaleType
+            - price: Price
+            - shortDescription: String
+            - sellerId: UserId
+            - buyerId: UserId
+            - pictures: List<Picture>
+        }
+    }
+    package "user" {
+        interface IUserRepository {
+            + findByID(UserId userId): Optional<User>
+        }
+        class UserFactory {
+            + create(UserId userId, String name, String email, String role): User
+        }
+        class User {
+            - userId: UserId
+            - name: String
+            - email: String
+            - role: String
+        }
+    }
+}
+
+' --- Adapters ---
+AuthorRESTController --> AuthorService : "uses"
+AuthorRESTController --> AuthorMapper : "uses"
+AuthorRESTController --> AuthorLinkProvider : "uses"
+AuthorMapper ..> ResponseAuthorDTO : "creates"
+ListingRESTController --> ListingService : "uses"
+ListingRESTController --> PublicationSampleService : "uses"
+ListingRESTController --> ListingMapper : "uses"
+ListingRESTController --> ListingLinkProvider : "uses"
+ListingMapper ..> ListingDetailsDTO : "creates"
+AuthorLinkProvider --> AuthorAuthorizationPolicy : "uses"
+AuthorLinkProvider --> IUserRepository : "uses"
+ListingLinkProvider --> ListingAuthorizationPolicy : "uses"
+ListingLinkProvider --> IUserRepository : "uses"
+
+' --- Application ---
+AuthorService --> IAuthorRepository : "uses"
+AuthorService --> AuthorAuthorizationPolicy : "uses"
+ListingService --> IListingRepository : "uses"
+ListingService --> IPublicationSampleRepository : "uses"
+ListingService --> ListingAuthorizationPolicy : "uses"
+PublicationSampleService --> IPublicationSampleRepository : "uses"
+
+' --- BibliographicalData persistence ---
+BibliographicalDataRepositoryJPAImpl ..|> IBibliographicalDataRepository : "implements"
+BibliographicalDataRepositoryJPAImpl ..> IBibliographicalDataRepositoryJPA : "uses"
+BibliographicalDataRepositoryJPAImpl ..> BibliographicalDataAssembler : "uses"
+BibliographicalDataAssembler --> BibliographicalDataFactory : "uses"
+BibliographicalDataAssembler ..> BibliographicalDataDM : "receives"
+BibliographicalDataFactory ..> BibliographicalData : "creates"
+
+' --- PublicationSample persistence ---
+PublicationSampleRepositoryJPAImpl ..|> IPublicationSampleRepository : "implements"
+PublicationSampleRepositoryJPAImpl ..> IPublicationSampleRepositoryJPA : "uses"
+PublicationSampleRepositoryJPAImpl ..> PublicationSampleAssembler : "uses"
+PublicationSampleAssembler ..> PublicationSampleDM : "receives"
+
+' --- Listing persistence ---
+ListingRepositoryJPAImpl ..|> IListingRepository : "implements"
+ListingRepositoryJPAImpl ..> IListingRepositoryJPA : "uses"
+ListingRepositoryJPAImpl ..> ListingAssembler : "uses"
+ListingAssembler --> ListingFactory : "uses"
+ListingAssembler ..> ListingDM : "receives"
+ListingFactory ..> Listing : "creates"
+
+' --- User persistence ---
+UserRepositoryJPAImpl ..|> IUserRepository : "implements"
+UserRepositoryJPAImpl ..> IUserRepositoryJPA : "uses"
+UserRepositoryJPAImpl ..> UserAssembler : "uses"
+UserAssembler ..> UserDM : "receives"
+UserFactory ..> User : "creates"
+@enduml
