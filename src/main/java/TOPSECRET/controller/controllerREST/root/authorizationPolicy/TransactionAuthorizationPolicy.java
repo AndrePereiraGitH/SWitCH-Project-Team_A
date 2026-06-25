@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST.root.authorizationPolicy;
 
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.Transaction.Transaction;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,6 +30,16 @@ public class TransactionAuthorizationPolicy {
     public boolean canViewTransaction(User user) {
         return user.getUserRoles().contains(UserRole.NORMAL_USER)
                 || user.getUserRoles().contains(UserRole.ADMIN);
+    }
+
+    /**
+     * A user can view a specific transaction if they are an admin
+     * or if they are the buyer of that transaction.
+     */
+    public boolean canViewTransaction(User user, Transaction transaction) {
+        boolean isAdmin = user.getUserRoles().contains(UserRole.ADMIN);
+        boolean isBuyer = transaction.getBuyerId().equals(user.id());
+        return isAdmin || isBuyer;
     }
 
     /**

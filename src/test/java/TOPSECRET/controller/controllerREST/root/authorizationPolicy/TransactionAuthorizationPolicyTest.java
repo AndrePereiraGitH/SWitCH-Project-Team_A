@@ -2,6 +2,7 @@ package TOPSECRET.controller.controllerREST.root.authorizationPolicy;
 
 import TOPSECRET.domain.Enum.UserRole;
 import TOPSECRET.domain.User.User;
+import TOPSECRET.domain.ValueObjects.UserId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -157,6 +158,66 @@ class TransactionAuthorizationPolicyTest {
 
         // ACT
         boolean result = sut.canViewAllTransactions(user);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    // =========================================================================
+    // canViewTransaction(User, Transaction)
+    // =========================================================================
+
+    @Test
+    void canViewTransaction_withTransaction_shouldReturnTrue_whenUserIsAdmin() {
+
+        // ARRANGE
+        User user = mock(User.class);
+        TOPSECRET.domain.Transaction.Transaction transaction = mock(TOPSECRET.domain.Transaction.Transaction.class);
+        UserId userId = new TOPSECRET.domain.ValueObjects.UserId("admin-1");
+        UserId buyerId = new TOPSECRET.domain.ValueObjects.UserId("buyer-1");
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.ADMIN));
+        when(user.id()).thenReturn(userId);
+        when(transaction.getBuyerId()).thenReturn(buyerId);
+
+        // ACT
+        boolean result = sut.canViewTransaction(user, transaction);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewTransaction_withTransaction_shouldReturnTrue_whenUserIsBuyer() {
+
+        // ARRANGE
+        User user = mock(User.class);
+        TOPSECRET.domain.Transaction.Transaction transaction = mock(TOPSECRET.domain.Transaction.Transaction.class);
+        UserId buyerId = new TOPSECRET.domain.ValueObjects.UserId("buyer-1");
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+        when(user.id()).thenReturn(buyerId);
+        when(transaction.getBuyerId()).thenReturn(buyerId);
+
+        // ACT
+        boolean result = sut.canViewTransaction(user, transaction);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canViewTransaction_withTransaction_shouldReturnFalse_whenUserIsNeitherAdminNorBuyer() {
+
+        // ARRANGE
+        User user = mock(User.class);
+        TOPSECRET.domain.Transaction.Transaction transaction = mock(TOPSECRET.domain.Transaction.Transaction.class);
+        UserId userId = new TOPSECRET.domain.ValueObjects.UserId("other-user");
+        UserId buyerId = new TOPSECRET.domain.ValueObjects.UserId("buyer-1");
+        when(user.getUserRoles()).thenReturn(Set.of(UserRole.NORMAL_USER));
+        when(user.id()).thenReturn(userId);
+        when(transaction.getBuyerId()).thenReturn(buyerId);
+
+        // ACT
+        boolean result = sut.canViewTransaction(user, transaction);
 
         // ASSERT
         assertFalse(result);
