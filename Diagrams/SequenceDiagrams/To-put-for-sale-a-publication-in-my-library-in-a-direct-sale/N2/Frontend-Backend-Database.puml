@@ -3,79 +3,70 @@ autonumber
 hide footbox
 title To put for sale a publication in my library in a direct sale
 
-box "Frontend" #whitesmoke
 actor User
-participant ":UI" as UI
-end box
-
-box "Backend" #aliceblue
-participant ":PublicationSample\nRESTController" as PSCtrl
-participant ":Listing\nRESTController" as ListCtrl
-end box
-
-box "Database" #honeydew
-database "db" as db
-end box
+participant "Frontend" as FE
+participant "Backend" as BE
+database "Database" as db
 
 ' ==========================================
 ' 1 — Find available publications for sale
 ' ==========================================
 
-User -> UI : I want to put for sale\na publication in a direct sale
-activate UI
+User -> FE : I want to put for sale\na publication in a direct sale
+activate FE
 
-UI -> PSCtrl : OPTIONS /publicationSamples/available-for-sale
-activate PSCtrl
-PSCtrl --> UI : 200 OK\nAllow: GET, OPTIONS
-deactivate PSCtrl
+FE -> BE : OPTIONS /publicationSamples/available-for-sale
+activate BE
+BE --> FE : 200 OK\nAllow: GET, OPTIONS
+deactivate BE
 
-UI -> PSCtrl : GET /publicationSamples/available-for-sale?userId={userId}
-activate PSCtrl
-PSCtrl -> db : SELECT * FROM users WHERE id = ?
+FE -> BE : GET /publicationSamples/available-for-sale?userId={userId}
+activate BE
+BE -> db : SELECT * FROM users WHERE id = ?
 activate db
-db --> PSCtrl : data
+db --> BE : data
 deactivate db
-PSCtrl -> db : SELECT * FROM publication_sample\nWHERE owner_id = ? AND status NOT IN ('FOR_SALE', 'SOLD')
+BE -> db : SELECT * FROM publication_sample\nWHERE owner_id = ? AND status NOT IN ('FOR_SALE', 'SOLD')
 activate db
-db --> PSCtrl : data
+db --> BE : data
 deactivate db
-PSCtrl --> UI : 200 OK\nbody: publicationDTOS
-deactivate PSCtrl
+BE --> FE : 200 OK\nbody: publicationDTOS
+deactivate BE
 
-UI --> User : Which publication(s)?\nChoose from the list!
-deactivate UI
+FE --> User : Which publication(s)?\nChoose from the list!
+deactivate FE
 
 ' ==========================================
 ' 2 — Create direct sale listing
 ' ==========================================
 
-User -> UI : Selected publication(s)
-activate UI
-UI --> User : Specify title, price,\nshort description and pictures
-deactivate UI
+User -> FE : Selected publication(s)
+activate FE
+FE --> User : Specify title, price,\nshort description and pictures
+deactivate FE
 
-User -> UI : title, price, short description, pictures
-activate UI
+User -> FE : title, price, short description, pictures
+activate FE
 
-UI -> ListCtrl : OPTIONS /listings
-activate ListCtrl
-ListCtrl --> UI : 200 OK\nAllow: POST, GET, OPTIONS
-deactivate ListCtrl
+FE -> BE : OPTIONS /listings
+activate BE
+BE --> FE : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate BE
 
-UI -> ListCtrl : POST /listings\nbody: {title, selectedPublicationIds,\nsaleType, price, shortDescription, userId, pictures}
-activate ListCtrl
-ListCtrl -> db : SELECT * FROM users WHERE id = ?
+FE -> BE : POST /listings\nbody: {title, selectedPublicationIds,\nsaleType, price, shortDescription, userId, pictures}
+activate BE
+BE -> db : SELECT * FROM users WHERE id = ?
 activate db
-db --> ListCtrl : data
+db --> BE : data
 deactivate db
-ListCtrl -> db : INSERT INTO listings ...
+BE -> db : INSERT INTO listings ...
 activate db
-db --> ListCtrl : data
+db --> BE : data
 deactivate db
-ListCtrl --> UI : 201 Created\nbody: listingDTO
-deactivate ListCtrl
+BE --> FE : 201 Created\nbody: listingDTO
+deactivate BE
 
-UI --> User : Publication(s) put for direct\nsale with success
-deactivate UI
+FE --> User : Publication(s) put for direct\nsale with success
+deactivate FE
 
 @enduml

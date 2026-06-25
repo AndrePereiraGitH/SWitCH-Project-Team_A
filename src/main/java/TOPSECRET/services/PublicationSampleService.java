@@ -28,7 +28,7 @@ import java.util.Objects;
  * <p>Acts as the primary entry point for all business logic related to publication samples,
  * coordinating between the repository, factory, and authorization policy.</p>
  *
- * <p>Operations are grouped into four categories:</p>
+ * <p>Operations are grouped into the following categories:</p>
  * <ul>
  *   <li><b>Persistence</b> — creation and storage of publication samples.</li>
  *   <li><b>Lookup — by identity</b> — queries by unique identifier.</li>
@@ -36,6 +36,11 @@ import java.util.Objects;
  *   <li><b>Lookup — by owner</b> — queries scoped to a specific user.</li>
  *   <li><b>Domain Operations</b> — higher-level operations involving domain-specific logic.</li>
  * </ul>
+ *
+ * <p>Each operation that mutates state or requires authorization is paired with a corresponding
+ * {@code can*} method that exposes the authorization decision for use by the REST layer
+ * (e.g. to populate {@code Allow} headers on OPTIONS responses) without coupling the
+ * transport layer to HTTP concepts.</p>
  */
 @Service
 public class PublicationSampleService {
@@ -50,11 +55,12 @@ public class PublicationSampleService {
     /**
      * Constructs a {@code PublicationSampleService} with its required dependencies.
      *
-     * @param publicationSampleRepository the repository for publication sample persistence; must not be {@code null}
-     * @param factory                     the factory used to create new publication samples; must not be {@code null}
-     * @param policy                      the authorization policy governing access; must not be {@code null}
-     * @param userRepository              the repository for user lookups; must not be {@code null}
-     * @param libraryRepository           the repository for library lookups; must not be {@code null}
+     * @param publicationSampleRepository        the repository for publication sample persistence; must not be {@code null}
+     * @param collectionOfPublicationsRepository the repository for collection lookups; must not be {@code null}
+     * @param factory                            the factory used to create new publication samples; must not be {@code null}
+     * @param policy                             the authorization policy governing access; must not be {@code null}
+     * @param userRepository                     the repository for user lookups; must not be {@code null}
+     * @param libraryRepository                  the repository for library lookups; must not be {@code null}
      * @throws NullPointerException if any argument is {@code null}
      */
     public PublicationSampleService(IPublicationSampleRepository publicationSampleRepository,
@@ -106,13 +112,33 @@ public class PublicationSampleService {
 
         PublicationSample created = factory.create(bibliographicalDataId, userId, editionId, condition);
 
-        if (publicationSampleRepository.existsById(created.id())) {
+        boolean alreadyExists = publicationSampleRepository.existsById(created.id());
+
+        if (alreadyExists) {
             throw new InstanceAlreadyExistsException("PublicationSample already exists");
         }
 
-        PublicationSample saved = publicationSampleRepository.save(created);
+        return publicationSampleRepository.save(created);
+    }
 
-        return saved;
+    /**
+     * Returns whether the given user is authorized to create a publication sample.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user may create a publication sample, {@code false} otherwise
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     */
+    public boolean canCreatePublicationSample(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canCreatePublicationSample(user);
+
+        return isAuthorized;
     }
 
     // =========================================================================
@@ -141,9 +167,9 @@ public class PublicationSampleService {
      */
     public List<PublicationSample> findAll() {
 
-        List<PublicationSample> allPublications = publicationSampleRepository.findAll();
+        List<PublicationSample> allPublicationSamples = publicationSampleRepository.findAll();
 
-        return allPublications;
+        return allPublicationSamples;
     }
 
     // =========================================================================
@@ -160,10 +186,9 @@ public class PublicationSampleService {
     public List<PublicationSample> findByBibliographicalDataId(BibliographicalDataId bdId) {
         Objects.requireNonNull(bdId, "BibliographicalDataId cannot be null");
 
-        List<PublicationSample> allPublicationsWithSpecificBDId =
-                publicationSampleRepository.findByBibliographicalDataId(bdId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByBibliographicalDataId(bdId);
 
-        return allPublicationsWithSpecificBDId;
+        return publicationSamples;
     }
 
     /**
@@ -176,10 +201,9 @@ public class PublicationSampleService {
     public List<PublicationSample> findByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
         Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
 
-        List<PublicationSample> allPublicationsWithSpecificBDIds =
-                publicationSampleRepository.findByBibliographicalDataIdIn(bdIds);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByBibliographicalDataIdIn(bdIds);
 
-        return allPublicationsWithSpecificBDIds;
+        return publicationSamples;
     }
 
     /**
@@ -197,10 +221,9 @@ public class PublicationSampleService {
     public List<PublicationSampleId> findIdsByBibliographicalDataIdIn(List<BibliographicalDataId> bdIds) {
         Objects.requireNonNull(bdIds, "BibliographicalDataIds cannot be null");
 
-        List<PublicationSampleId> allPublicationsIdsWithSpecificBDIds =
-                publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
+        List<PublicationSampleId> publicationSampleIds = publicationSampleRepository.findIdsByBibliographicalDataIdIn(bdIds);
 
-        return allPublicationsIdsWithSpecificBDIds;
+        return publicationSampleIds;
     }
 
     /**
@@ -213,10 +236,9 @@ public class PublicationSampleService {
     public List<PublicationSample> findByEditionIdIn(List<EditionId> listOfEditionIds) {
         Objects.requireNonNull(listOfEditionIds, "Edition Ids cannot be null");
 
-        List<PublicationSample> allPublicationsWithSpecificEditionIds =
-                publicationSampleRepository.findByEditionIdIn(listOfEditionIds);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByEditionIdIn(listOfEditionIds);
 
-        return allPublicationsWithSpecificEditionIds;
+        return publicationSamples;
     }
 
     /**
@@ -234,10 +256,9 @@ public class PublicationSampleService {
     public List<PublicationSampleId> findIdsByEditionIdIn(List<EditionId> listOfEditionIds) {
         Objects.requireNonNull(listOfEditionIds, "Edition Ids cannot be null");
 
-        List<PublicationSampleId> allPublicationsIdsWithSpecificEditionIds =
-                publicationSampleRepository.findIdsByEditionIdIn(listOfEditionIds);
+        List<PublicationSampleId> publicationSampleIds = publicationSampleRepository.findIdsByEditionIdIn(listOfEditionIds);
 
-        return allPublicationsIdsWithSpecificEditionIds;
+        return publicationSampleIds;
     }
 
     /**
@@ -246,9 +267,10 @@ public class PublicationSampleService {
      * @param collectionId the collection identifier; must not be {@code null}
      * @param userId       the identifier of the requesting user; must not be {@code null}
      * @return a list of matching {@link PublicationSample}; never {@code null}, may be empty
-     * @throws EntityNotFoundException if no user is found for the given {@code userId}
-     * @throws AccessDeniedException   if the user is not authorized
-     * @throws NullPointerException    if {@code collectionId} is {@code null}
+     * @throws EntityNotFoundException   if no user is found for the given {@code userId}
+     * @throws AccessDeniedException     if the user is not authorized or does not own the collection
+     * @throws InstanceNotFoundException if no collection is found for the given {@code collectionId}
+     * @throws NullPointerException      if {@code collectionId} is {@code null}
      */
     public List<PublicationSample> findByCollectionOfPublicationsId(CollectionOfPublicationsId collectionId, UserId userId) throws InstanceNotFoundException {
         Objects.requireNonNull(collectionId, "CollectionId cannot be null");
@@ -263,14 +285,43 @@ public class PublicationSampleService {
         CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
-        if(!collectionOfPublications.getOwnerId().equals(userId)) {
+        boolean isOwner = collectionOfPublications.getOwnerId().equals(userId);
+
+        if (!isOwner) {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> publicationSamplesFromCollection =
-                publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
 
-        return publicationSamplesFromCollection;
+        return publicationSamples;
+    }
+
+    /**
+     * Returns whether the given user is authorized to query publications by the specified collection.
+     *
+     * <p>Requires the user to have the appropriate role and to own the collection.</p>
+     *
+     * @param collectionId the unique identifier of the collection; must not be {@code null}
+     * @param userId       the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user may query publications by the collection, {@code false} otherwise
+     * @throws NullPointerException    if {@code collectionId} or {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user or collection is found for the given identifiers
+     */
+    public boolean canQueryByCollection(CollectionOfPublicationsId collectionId, UserId userId) {
+
+        Objects.requireNonNull(collectionId, "CollectionId cannot be null");
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Collection not found"));
+
+        boolean isAuthorized = policy.canFindByCollectionOfPublicationsId(user);
+        boolean isOwner = collection.getOwnerId().equals(userId);
+
+        return isAuthorized && isOwner;
     }
 
     // =========================================================================
@@ -296,10 +347,29 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> allPublicationsOwnedByUser =
-                publicationSampleRepository.findAllByOwnerId(userId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findAllByOwnerId(userId);
 
-        return allPublicationsOwnedByUser;
+        return publicationSamples;
+    }
+
+    /**
+     * Returns whether the given user is authorized to retrieve their own publication samples.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user may retrieve their own publications, {@code false} otherwise
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public boolean canFindOwnPublications(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canFindPublicationsOwnedByUserId(user);
+
+        return isAuthorized;
     }
 
     /**
@@ -321,10 +391,31 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> publicationSamplesOwnedByUserInLibrary =
-                publicationSampleRepository.findPublicationsInLibrary(userId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findPublicationsInLibrary(userId);
 
-        return publicationSamplesOwnedByUserInLibrary;
+        return publicationSamples;
+    }
+
+    /**
+     * Returns whether the given user is authorized to retrieve their publication samples
+     * assigned to a library.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user is authorized and has a library, {@code false} otherwise
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public boolean canFindPublicationsInLibrary(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canFindPublicationsInLibrary(user);
+        boolean hasLibrary = libraryRepository.findByUserId(userId).isPresent();
+
+        return isAuthorized && hasLibrary;
     }
 
     /**
@@ -346,10 +437,30 @@ public class PublicationSampleService {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> publicationSamplesOwnedByUserNotInLibrary =
-                publicationSampleRepository.findPublicationsNotInLibrary(userId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findPublicationsNotInLibrary(userId);
 
-        return publicationSamplesOwnedByUserNotInLibrary;
+        return publicationSamples;
+    }
+
+    /**
+     * Returns whether the given user is authorized to retrieve their publication samples
+     * not assigned to any library.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user may retrieve their not-in-library publications, {@code false} otherwise
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public boolean canFindPublicationsNotInLibrary(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canFindPublicationsNotInLibrary(user);
+
+        return isAuthorized;
     }
 
     /**
@@ -380,10 +491,31 @@ public class PublicationSampleService {
 
         List<PublicationStatus> excluded = List.of(PublicationStatus.SOLD, PublicationStatus.FOR_SALE);
 
-        List<PublicationSample> publicationSamplesAvailable =
-                publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByLibraryIdAndPublicationStatusNotIn(libraryId, excluded);
 
-        return publicationSamplesAvailable;
+        return publicationSamples;
+    }
+
+    /**
+     * Returns whether the given user is authorized to retrieve their available publication
+     * samples — those in their library that are neither sold nor listed for sale.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user is authorized and has a library, {@code false} otherwise
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public boolean canFindAvailableInLibrary(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canFindByLibraryIdAndPublicationStatusNotIn(user);
+        boolean hasLibrary = libraryRepository.findByUserId(userId).isPresent();
+
+        return isAuthorized && hasLibrary;
     }
 
     // =========================================================================
@@ -400,9 +532,10 @@ public class PublicationSampleService {
      * @param collectionId the identifier of the target collection; must not be {@code null}
      * @return a list of {@link PublicationSample} eligible for addition to the collection;
      *         never {@code null}, may be empty
-     * @throws EntityNotFoundException if no user is found for the given {@code userId}
-     * @throws AccessDeniedException   if the user is not authorized
-     * @throws NullPointerException    if {@code userId} or {@code collectionId} is {@code null}
+     * @throws EntityNotFoundException   if no user is found for the given {@code userId}
+     * @throws AccessDeniedException     if the user is not authorized or does not own the collection
+     * @throws InstanceNotFoundException if no collection is found for the given {@code collectionId}
+     * @throws NullPointerException      if {@code userId} or {@code collectionId} is {@code null}
      */
     public List<PublicationSample> findAvailableForCollection(UserId userId, CollectionOfPublicationsId collectionId) throws InstanceNotFoundException {
         Objects.requireNonNull(userId, "UserId cannot be null");
@@ -418,22 +551,51 @@ public class PublicationSampleService {
         CollectionOfPublications collectionOfPublications = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
-        if(!collectionOfPublications.getOwnerId().equals(userId)) {
+        boolean isOwner = collectionOfPublications.getOwnerId().equals(userId);
+
+        if (!isOwner) {
             throw new AccessDeniedException("Access denied");
         }
 
-        List<PublicationSample> allUserPublications =
-                publicationSampleRepository.findPublicationsInLibrary(userId);
+        List<PublicationSample> allUserPublications = publicationSampleRepository.findPublicationsInLibrary(userId);
 
-        List<PublicationSample> publicationsInCollection =
-                publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+        List<PublicationSample> publicationsInCollection = publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
 
-        List<PublicationSample> publicationsAvailableForCollection =
-                allUserPublications.stream()
-                        .filter(p -> !publicationsInCollection.contains(p))
-                        .toList();
+        List<PublicationSample> availablePublications = allUserPublications.stream()
+                .filter(p -> !publicationsInCollection.contains(p))
+                .toList();
 
-        return publicationsAvailableForCollection;
+        return availablePublications;
+    }
+
+    /**
+     * Returns whether the given user is authorized to retrieve publication samples
+     * eligible for addition to a collection they own.
+     *
+     * @param userId       the identifier of the requesting user; must not be {@code null}
+     * @param collectionId the identifier of the target collection; must not be {@code null}
+     * @return {@code true} if the user may query available publications for the collection,
+     *         {@code false} otherwise
+     * @throws NullPointerException      if {@code userId} or {@code collectionId} is {@code null}
+     * @throws EntityNotFoundException   if no user is found for the given {@code userId}
+     * @throws InstanceNotFoundException if no collection is found for the given {@code collectionId}
+     */
+    public boolean canFindAvailableForCollection(UserId userId, CollectionOfPublicationsId collectionId)
+            throws InstanceNotFoundException {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+        Objects.requireNonNull(collectionId, "CollectionId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
+
+        boolean isAuthorized = policy.canFindAvailableForCollection(user);
+        boolean isOwner = collection.getOwnerId().equals(userId);
+
+        return isAuthorized && isOwner;
     }
 
     /**
@@ -468,28 +630,51 @@ public class PublicationSampleService {
         PublicationSample publicationSample = publicationSampleRepository.findById(publicationSampleId)
                 .orElseThrow(() -> new EntityNotFoundException("PublicationSample not found"));
 
-        if (!publicationSample.isOwnedByUser(userId)) {
+        boolean isOwner = publicationSample.isOwnedByUser(userId);
+
+        if (!isOwner) {
             throw new AccessDeniedException("User does not own this publication sample");
         }
 
         publicationSample.addPublicationToLibrary(libraryId);
 
-        PublicationSample publicationAssignedToLibrary = publicationSampleRepository.save(publicationSample);
+        return publicationSampleRepository.save(publicationSample);
+    }
 
-        return publicationAssignedToLibrary;
+    /**
+     * Returns whether the given user is authorized to add a publication sample to their library.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user is authorized and has a library, {@code false} otherwise
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public boolean canAddPublicationToLibrary(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canAddPublicationToLibrary(user);
+        boolean hasLibrary = libraryRepository.findByUserId(userId).isPresent();
+
+        return isAuthorized && hasLibrary;
     }
 
     /**
      * Assigns a {@link PublicationSample} to the specified collection and persists the change.
      *
-     * <p>Requires the requesting user to be authorized and to own the publication sample.</p>
+     * <p>Requires the requesting user to be authorized, to own the publication sample,
+     * and to own the target collection.</p>
      *
      * @param collectionId the identifier of the target collection; must not be {@code null}
      * @param pubSampleId  the identifier of the publication sample to assign; must not be {@code null}
      * @param userId       the identifier of the requesting user; must not be {@code null}
      * @return the updated {@link PublicationSample} with the collection assignment applied
-     * @throws EntityNotFoundException if no user or publication sample is found
-     * @throws AccessDeniedException   if the user is not authorized or does not own the publication sample
+     * @throws EntityNotFoundException if no user, publication sample, or collection is found
+     * @throws AccessDeniedException   if the user is not authorized, does not own the publication sample,
+     *                                 or does not own the target collection
      * @throws NullPointerException    if {@code collectionId} or {@code pubSampleId} is {@code null}
      */
     @Transactional
@@ -507,15 +692,46 @@ public class PublicationSampleService {
         PublicationSample publicationSample = publicationSampleRepository.findById(pubSampleId)
                 .orElseThrow(() -> new EntityNotFoundException("PublicationSample not found"));
 
-        if (!publicationSample.isOwnedByUser(userId)) {
+        boolean ownsSample = publicationSample.isOwnedByUser(userId);
+
+        if (!ownsSample) {
             throw new AccessDeniedException("User does not own this publication sample");
+        }
+
+        CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
+                .orElseThrow(() -> new EntityNotFoundException("Collection not found"));
+
+        boolean ownsCollection = collection.getOwnerId().equals(userId);
+
+        if (!ownsCollection) {
+            throw new AccessDeniedException("User does not own this collection");
         }
 
         publicationSample.addPublicationToCollection(collectionId);
 
-        PublicationSample publicationAssignedToCollection = publicationSampleRepository.save(publicationSample);
+        return publicationSampleRepository.save(publicationSample);
+    }
 
-        return publicationAssignedToCollection;
+    /**
+     * Returns whether the given user is authorized to assign a publication sample to a collection.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user is authorized and owns at least one collection,
+     *         {@code false} otherwise
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public boolean canAssignPublicationToCollection(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canAssignPublicationToCollection(user);
+        boolean hasCollections = !collectionOfPublicationsRepository.findAllByOwnerId(userId).isEmpty();
+
+        return isAuthorized && hasCollections;
     }
 
     /**
@@ -530,9 +746,9 @@ public class PublicationSampleService {
      * @param userId       the identifier of the requesting user; must not be {@code null}
      * @return a list of {@link PublicationSample} instances belonging to the collection;
      *         may be empty
-     * @throws InstanceNotFoundException if the collection or user cannot be found
-     * @throws AccessDeniedException     if the user lacks the required role, or if the
-     *                                   collection is not currently public
+     * @throws EntityNotFoundException   if no user is found for the given {@code userId}
+     * @throws AccessDeniedException     if the user lacks the required role or the collection is not public
+     * @throws InstanceNotFoundException if no collection is found for the given {@code collectionId}
      */
     public List<PublicationSample> findPublicationsInPublicCollection(CollectionOfPublicationsId collectionId, UserId userId)
             throws InstanceNotFoundException {
@@ -542,17 +758,41 @@ public class PublicationSampleService {
         User user = userRepository.findByID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        if (!policy.canFindByCollectionOfPublicationsId(user)) {
+        if (!policy.canFindPublicationsInPublicCollection(user)) {
             throw new AccessDeniedException("Access denied");
         }
 
         CollectionOfPublications collection = collectionOfPublicationsRepository.findById(collectionId)
                 .orElseThrow(() -> new InstanceNotFoundException("Collection not found: " + collectionId));
 
-        if (!collection.isCurrentlyPublic()) {
+        boolean isPublic = collection.isCurrentlyPublic();
+
+        if (!isPublic) {
             throw new AccessDeniedException("Collection is not public");
         }
 
-        return publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+        List<PublicationSample> publicationSamples = publicationSampleRepository.findByCollectionOfPublicationsId(collectionId);
+
+        return publicationSamples;
+    }
+
+    /**
+     * Returns whether the given user is authorized to retrieve publications from a public collection.
+     *
+     * @param userId the ID of the requesting user; must not be {@code null}
+     * @return {@code true} if the user may view shared collection publications, {@code false} otherwise
+     * @throws NullPointerException    if {@code userId} is {@code null}
+     * @throws EntityNotFoundException if no user is found for the given {@code userId}
+     */
+    public boolean canFindPublicationsInPublicCollection(UserId userId) {
+
+        Objects.requireNonNull(userId, "UserId cannot be null");
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        boolean isAuthorized = policy.canFindByCollectionOfPublicationsId(user);
+
+        return isAuthorized;
     }
 }
