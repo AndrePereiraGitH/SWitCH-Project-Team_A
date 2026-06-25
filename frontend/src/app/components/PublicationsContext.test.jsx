@@ -37,7 +37,8 @@ const mockBookB = { ...mockBookA, title: "Book B" };
 
 /**
  * Simulated root HATEOAS response containing all links required by
- * {@link PublicationsProvider}. Mirrors the structure returned by the real backend.
+ * {@link PublicationsProvider}. Mirrors the structure returned by the real backend,
+ * including RFC 6570 URI templates for both path and query parameters.
  */
 const rootResponse = {
     _links: {
@@ -186,8 +187,8 @@ describe("PublicationsContext", () => {
         /**
          * Default fetch mock dispatching responses by URL pattern and HTTP method.
          * Each branch corresponds to one backend endpoint used by {@link PublicationsProvider}.
-         * Note: `/publicationSamples` POST is matched after `/in-library` GET to avoid
-         * the broader pattern swallowing the initial fetch.
+         * URLs are fully expanded by `expandTemplate` before being passed to fetch —
+         * no literal `{param}` placeholders should appear in intercepted URLs.
          */
         global.fetch = vi.fn(async (url, options) => {
             // Root HATEOAS entry-point
@@ -236,6 +237,37 @@ describe("PublicationsContext", () => {
         });
     });
 
+    // ── URI Template Expansion ────────────────────────────────────────
+
+    describe("URI Template Expansion", () => {
+        test("fetch calls contain no unexpanded URI template placeholders", async () => {
+            renderPublications();
+            await waitForLinks();
+            fireEvent.click(screen.getByText("Add Book A"));
+            await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
+
+            const allUrls = global.fetch.mock.calls.map(([url]) => url);
+            allUrls.forEach(url => {
+                expect(url).not.toContain("{");
+                expect(url).not.toContain("}");
+            });
+        });
+
+        test("create-bibliographical-data call includes userId query param", async () => {
+            renderPublications();
+            await waitForLinks();
+            fireEvent.click(screen.getByText("Add Book A"));
+            await waitFor(() => expect(screen.getByTestId("count").textContent).toBe("1"));
+
+            const bdCall = global.fetch.mock.calls
+                .map(([url]) => url)
+                .find(url => url.includes("/bibliographicalDatas"));
+
+            expect(bdCall).toBeDefined();
+            expect(bdCall).toContain("userId=user-001");
+        });
+    });
+
     // ── Add Publication ───────────────────────────────────────────────
 
     describe("Add Publication", () => {
@@ -257,7 +289,6 @@ describe("PublicationsContext", () => {
             renderPublications();
             await waitForLinks();
             fireEvent.click(screen.getByText("Add Book A"));
-            // The enriched sample is created with forSale: false.
             const pub = await screen.findAllByText("not-for-sale");
             expect(pub.length).toBeGreaterThan(0);
         });
@@ -287,7 +318,6 @@ describe("PublicationsContext", () => {
             await waitForLinks();
             fireEvent.click(screen.getByText("Add Book A"));
 
-            // Wait for the publication to appear before clicking Sell.
             const sellButton = await screen.findByText("Sell First");
             fireEvent.click(sellButton);
 
@@ -297,7 +327,6 @@ describe("PublicationsContext", () => {
         test("getPublicationsForSale count increases after setting for sale", async () => {
             renderPublications();
             await waitForLinks();
-            // Baseline: no publications for sale on an empty list.
             await waitFor(() => expect(screen.getByTestId("sale-count").textContent).toBe("0"));
         });
     });
@@ -306,7 +335,6 @@ describe("PublicationsContext", () => {
 
     describe("Error Handling", () => {
         test("usePublications throws when used outside PublicationsProvider", () => {
-            // Suppress the React error boundary console output during this intentional throw.
             const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
             function ComponentWithoutProvider() {

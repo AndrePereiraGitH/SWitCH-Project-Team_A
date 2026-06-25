@@ -31,13 +31,14 @@ function TestLibrary() {
 
 /**
  * Minimal root response containing only the link needed by {@link LibraryProvider}.
- * The href is non-templated here — the provider appends `?requestingUserId` as a
- * plain query parameter rather than via URI template expansion.
+ * The href uses a URI template for `requestingUserId`, which is expanded by
+ * `expandTemplate` from {@link LinksContext} before the fetch is made.
  */
 const rootResponse = {
     _links: {
         "get-library-by-user": {
-            href: "http://localhost:8081/libraries/by-user/user-001"
+            href: "http://localhost:8081/libraries/by-user/user-001{?requestingUserId}",
+            templated: true
         }
     }
 };
@@ -63,7 +64,7 @@ describe("LibraryContext", () => {
                     json: async () => rootResponse
                 };
             }
-            // GET /libraries/by-user/{userId} — happy-path library fetch
+            // GET /libraries/by-user/{userId}?requestingUserId=... — happy-path library fetch
             if (url.includes("/libraries/by-user/")) {
                 return {
                     ok: true,
@@ -82,6 +83,22 @@ describe("LibraryContext", () => {
 
         await waitFor(() => expect(screen.getByTestId("exists").textContent).toBe("exists"));
         expect(screen.getByTestId("name").textContent).toBe("My Personal Library");
+    });
+
+    test("expands URI template before fetching library", async () => {
+        renderWithProviders(<TestLibrary />);
+
+        await waitFor(() => expect(screen.getByTestId("exists").textContent).toBe("exists"));
+
+        const libraryCalls = global.fetch.mock.calls
+            .map(([url]) => url)
+            .filter(url => url.includes("/libraries/by-user/"));
+
+        expect(libraryCalls).toHaveLength(1);
+        // Template must be fully expanded — no literal braces in the final URL
+        expect(libraryCalls[0]).not.toContain("{");
+        expect(libraryCalls[0]).not.toContain("}");
+        expect(libraryCalls[0]).toContain("requestingUserId=user-001");
     });
 
     test("handles 404 correctly when user has no library", async () => {
