@@ -167,6 +167,18 @@ public class EditionService {
         return editionRepository.findByPublisherId(publisherID);
     }
 
+    /**
+     * Determines whether the specified user is authorized to create
+     * {@link Edition} resources.
+     *
+     * <p>The user is resolved from the repository and evaluated against
+     * the edition authorization policy.</p>
+     *
+     * @param userId the identifier of the user to validate; must not be {@code null}
+     * @return {@code true} if the user is allowed to create editions;
+     *         {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists for the given identifier
+     */
     public boolean canCreateEdition(UserId userId)
             throws InstanceNotFoundException {
 

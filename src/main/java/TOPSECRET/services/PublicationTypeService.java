@@ -130,6 +130,18 @@ public class PublicationTypeService {
                 new IllegalArgumentException("PublicationType not found"));
     }
 
+    /**
+     * Determines whether the specified user is authorized to create
+     * {@link PublicationType} resources.
+     *
+     * <p>The user is resolved from the repository and evaluated against
+     * the publication type authorization policy.</p>
+     *
+     * @param userId the identifier of the user to validate; must not be {@code null}
+     * @return {@code true} if the user is allowed to create publication types;
+     *         {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists for the given identifier
+     */
     public boolean canCreatePublicationType(UserId userId)
             throws InstanceNotFoundException {
 
