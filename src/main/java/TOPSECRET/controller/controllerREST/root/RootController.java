@@ -71,7 +71,7 @@ public class RootController {
      *         with all links available to the requesting user
      */
     @GetMapping
-    public ResponseEntity<RepresentationModel<?>> getRoot(@RequestParam String userId) {
+    public ResponseEntity<RepresentationModel<?>> getRoot(@RequestParam(required = false) String userId) {
 
         try {
             UserId id = UserMapper.toUserId(userId);
