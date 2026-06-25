@@ -15,15 +15,18 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceNotFoundException;
 import java.nio.file.AccessDeniedException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -51,6 +54,48 @@ public class BibliographicalDataRESTController {
             BibliographicalDataLinkProvider provider) {
         this.service = service;
         this.provider = provider;
+    }
+
+    /**
+     * Returns the HTTP methods available to the requester for the
+     * {@code /bibliographicalDatas} collection endpoint.
+     *
+     * <p>{@code GET} and {@code OPTIONS} are always advertised because they are
+     * publicly available. {@code POST} is included only when the supplied requester
+     * exists and is authorized to create bibliographical data. When no requester is
+     * supplied, only the public methods are returned.</p>
+     *
+     * @param requesterId the optional identifier of the user whose creation
+     *                    permission is evaluated
+     * @return {@code 200 OK} with the permitted methods in the {@code Allow} header,
+     *         {@code 400 BAD REQUEST} if the requester identifier is invalid, or
+     *         {@code 404 NOT FOUND} if the requester does not exist
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> optionsBibliographicalData(
+            @RequestParam(required = false) String requesterId) {
+
+        try {
+            Set<HttpMethod> allowed =
+                    new HashSet<>(Set.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+            if (requesterId != null) {
+                UserId userId = BibliographicalDataMapper.toUserId(requesterId);
+
+                if (service.canCreate(userId)) {
+                    allowed.add(HttpMethod.POST);
+                }
+            }
+
+            return ResponseEntity.ok()
+                    .allow(allowed.toArray(new HttpMethod[0]))
+                    .build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**
@@ -168,7 +213,6 @@ public class BibliographicalDataRESTController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
     /**
      * Retrieves bibliographical data by its identifier.

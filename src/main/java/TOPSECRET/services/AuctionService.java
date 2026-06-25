@@ -334,4 +334,32 @@ public class AuctionService {
                 ? auctionRepo.findByListingIdInOrderByAuctionDeadlineAsc(listingIds)
                 : auctionRepo.findByListingIdIn(listingIds);
     }
+
+    /**
+     * Determines whether the given user is allowed to create an auction.
+     *
+     * @param userId the identifier of the user to check; must correspond to an existing user
+     * @return {@code true} if the user is authorized to create an auction, {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists with the given {@code userId}
+     */
+    public boolean canCreateAuction(UserId userId) throws InstanceNotFoundException {
+        User user = userRepo.findByID(userId)
+                .orElseThrow(() -> new InstanceNotFoundException("User id " + userId + " not found."));
+
+        return policy.canCreateAuction(user);
+    }
+
+    /**
+     * Determines whether the given user is allowed to place a bid on an auction.
+     *
+     * @param userId the identifier of the user to check; must correspond to an existing user
+     * @return {@code true} if the user is authorized to place a bid, {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists with the given {@code userId}
+     */
+    public boolean canPlaceBid(UserId userId) throws InstanceNotFoundException {
+        User user = userRepo.findByID(userId)
+                .orElseThrow(() -> new InstanceNotFoundException("User id " + userId + " not found."));
+
+        return policy.canPlaceBid(user);
+    }
 }
