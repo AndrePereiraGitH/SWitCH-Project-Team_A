@@ -101,4 +101,22 @@ public class CityService {
         }
         return cityRepository.findById(cityId)
                 .orElseThrow(() -> new IllegalArgumentException("City not found"));    }
+
+    /**
+     * Determines whether the given user is authorized to create a city.
+     *
+     * <p>Resolves the user from the repository and delegates the permission
+     * check to {@link CityAuthorizationPolicy}.</p>
+     *
+     * @param userId the identifier of the user to check; must not be {@code null}
+     * @return {@code true} if the user has permission to create a city;
+     *         {@code false} otherwise
+     * @throws IllegalArgumentException if no user is found for the given {@code userId}
+     */
+    public boolean canCreateCity(UserId userId) {
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        return cityAuthorizationPolicy.canCreateCity(user);
+    }
 }

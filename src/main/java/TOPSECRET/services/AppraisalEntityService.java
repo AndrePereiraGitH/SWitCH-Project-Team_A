@@ -148,6 +148,18 @@ public class AppraisalEntityService {
         return repository.existsById(id);
     }
 
+    /**
+     * Checks whether the given user is authorized to register a new AppraisalEntity.
+     *
+     * @param userId the ID of the user to check
+     * @return {@code true} if the user is authorized to register an AppraisalEntity, {@code false} otherwise
+     * @throws NoSuchElementException if no user exists with the given ID
+     */
+    public boolean canCreateAppraisalEntity(UserId userId) {
+        User user = getUser(userId);
+        return policy.canRegisterAppraisalEntity(user);
+    }
+
     // HELPER
     /**
      * Retrieves a {@link User} by their identifier.
