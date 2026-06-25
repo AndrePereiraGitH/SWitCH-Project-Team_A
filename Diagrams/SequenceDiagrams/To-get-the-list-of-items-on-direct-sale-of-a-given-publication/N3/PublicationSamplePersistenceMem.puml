@@ -1,0 +1,43 @@
+@startuml
+autonumber
+hide footbox
+title PublicationSample Persistence In-Memory
+
+participant ":IPublicationSample\nRepository" as PSRepo
+participant ":PublicationSample\nRepositoryMem" as PSRepoMem
+participant "allPublicationsInSystem:\nList<PublicationSample>" as allPubs
+participant "listOfPubSampleIds:\nList<PublicationSampleIds" as PSIds
+
+ref over PSRepo
+    [[REST/1.MainDiagram.puml Back to main diagram REST]]
+    [[CLI/1.MainDiagram.puml Back to main diagram CLI]]
+end ref
+
+PSRepo -> PSRepoMem : findIdsByBibliographicalDataIdIn(bdIds)
+activate PSRepo
+activate PSRepoMem
+
+PSRepoMem -->> PSIds ** : «create»
+loop for each pbSample in allPublicationsInSystem
+     PSRepoMem -> allPubs : getBibliographicalDataID()
+     activate allPubs
+     allPubs --> PSRepoMem : bdId
+     deactivate allPubs
+
+     loop for each bdId2 in bdIds
+        alt bdId.equals(bdId2)
+            PSRepoMem -> allPubs : id()
+            activate allPubs
+            allPubs --> PSRepoMem : pubSampleId
+            deactivate allPubs
+            PSRepoMem -> PSIds : add(pubSampleId)
+        end
+     end
+end
+
+PSRepoMem --> PSRepo : listOfPubSampleIds
+
+deactivate PSRepoMem
+deactivate PSRepo
+
+@enduml

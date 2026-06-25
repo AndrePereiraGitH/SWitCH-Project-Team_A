@@ -1,0 +1,67 @@
+@startuml
+autonumber
+hide footbox
+title User Persistence JPA
+
+participant ":IUser\nRepository" as UserRepo
+participant ":UserRepository\nJPAImpl" as UserRepoImpl
+participant ":User\nAssembler" as UAss
+participant ":IUser\nRepositoryJpa" as UserRepoJpa
+participant "userDM:\nUserDM" as UDM
+participant ":User\nFactory" as UFactory
+participant "user:\nUser" as user
+
+database "Database" as db
+
+
+ref over UserRepo
+    [[REST/1.MainDiagram.puml Back to main diagram REST]]
+    [[CLI/1.MainDiagram.puml Back to main diagram CLI]]
+end ref
+
+
+UserRepo -> UserRepoImpl : findByID(userId)
+activate UserRepo
+activate UserRepoImpl
+
+UserRepoImpl -> UserRepoJpa : findById(userId)
+activate UserRepoJpa
+UserRepoJpa -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> UserRepoJpa : data
+deactivate db
+UserRepoJpa -->> UDM ** : <<create>>
+UserRepoJpa --> UserRepoImpl : userDM
+deactivate UserRepoJpa
+
+UserRepoImpl -> UAss : toDomain(userDM)
+activate UAss
+UAss -> UDM : getId()
+activate UDM
+UDM --> UAss : userId
+deactivate UDM
+UAss -> UDM : getUserName()
+activate UDM
+UDM --> UAss : name
+deactivate UDM
+UAss -> UDM : getProfile()
+activate UDM
+UDM --> UAss : profile
+deactivate UDM
+UAss -> UDM : getUserRole()
+activate UDM
+UDM --> UAss : role
+deactivate UDM
+UAss -> UFactory : create(userId, name, profile, role)
+activate UFactory
+UFactory -->> user ** : <<create>>
+UFactory --> UAss : user
+deactivate UFactory
+UAss --> UserRepoImpl : user
+deactivate UAss
+
+UserRepoImpl --> UserRepo : user
+deactivate UserRepoImpl
+deactivate UserRepo
+
+@enduml

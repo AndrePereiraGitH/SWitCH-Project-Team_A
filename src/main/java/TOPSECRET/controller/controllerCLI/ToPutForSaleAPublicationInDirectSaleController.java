@@ -1,8 +1,6 @@
 package TOPSECRET.controller.controllerCLI;
 
 import TOPSECRET.domain.Enum.SaleType;
-import TOPSECRET.domain.Library.ILibraryRepository;
-import TOPSECRET.domain.Library.Library;
 import TOPSECRET.domain.Listing.Listing;
 import TOPSECRET.domain.PublicationSample.PublicationSample;
 import TOPSECRET.domain.ValueObjects.Picture;
@@ -14,9 +12,7 @@ import TOPSECRET.dto.US015PublicationSampleMapper;
 import TOPSECRET.services.ListingService;
 import TOPSECRET.services.PublicationSampleService;
 
-import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 /**
@@ -29,7 +25,6 @@ import java.util.List;
  */
 public class ToPutForSaleAPublicationInDirectSaleController {
 
-    private final ILibraryRepository _libraryRepo;
     private final PublicationSampleService _pubSampleService;
     private final ListingService _listingService;
     private final US015PublicationSampleMapper _pubSampleMapper;
@@ -42,28 +37,24 @@ public class ToPutForSaleAPublicationInDirectSaleController {
      * Creates a controller for feature "To-put-for-sale-a-publication-in-my-library-in-a-direct-sale"
      * with the required domain dependencies.
      * <p>
-     * All repositories are injected to allow the controller to retrieve the user's library, its publication samples,
+     * All repositories are injected to allow the controller to retrieve the user's publication samples,
      * and to create new direct sale listings.
      * </p>
      *
-     * @param libraryRepo   the repository used to retrieve the user's library; must not be {@code null}
-     * @param pubSampleService the repository used to retrieve publication samples; must not be {@code null}
-     * @param listingService the service used for creating and saving new listings; must not be {@code null}
-     * @param pubSampleMapper the mapper used for creating publication sample DTOs; must not be {@code null}
+     * @param pubSampleService the service used to retrieve publication samples; must not be {@code null}
+     * @param listingService   the service used for creating and saving new listings; must not be {@code null}
+     * @param pubSampleMapper  the mapper used for creating publication sample DTOs; must not be {@code null}
      *
      * @throws IllegalArgumentException if any of the provided dependencies are {@code null}
      */
-    public ToPutForSaleAPublicationInDirectSaleController(ILibraryRepository libraryRepo,
-                                                          PublicationSampleService pubSampleService,
+    public ToPutForSaleAPublicationInDirectSaleController(PublicationSampleService pubSampleService,
                                                           ListingService listingService,
                                                           US015PublicationSampleMapper pubSampleMapper) {
 
-        if (libraryRepo == null) throw new IllegalArgumentException("LibraryRepository cannot be null");
         if (pubSampleService == null) throw new IllegalArgumentException("PublicationSampleRepository cannot be null");
         if (listingService == null) throw new IllegalArgumentException("ListingService cannot be null");
         if (pubSampleMapper == null) throw new IllegalArgumentException("US015PublicationSampleMapper cannot be null");
 
-        this._libraryRepo = libraryRepo;
         this._pubSampleService = pubSampleService;
         this._listingService = listingService;
         this._pubSampleMapper = pubSampleMapper;
@@ -90,11 +81,6 @@ public class ToPutForSaleAPublicationInDirectSaleController {
             throw new IllegalArgumentException("UserId cannot be null");
         }
 
-        Library library = _libraryRepo.findByUserId(userId)
-                .orElseThrow(() ->
-                        new InstanceNotFoundException("No library found for userId: " + userId)
-                );
-
         List<PublicationSample> availablePubSamples =
                 _pubSampleService.findByLibraryIdAndPublicationStatusNotIn(userId);
 
@@ -117,12 +103,12 @@ public class ToPutForSaleAPublicationInDirectSaleController {
      * @param sellerId         the identifier of the seller creating the listing; must not be {@code null}
      * @param pictures         the pictures associated with the listing; must not be {@code null}
      *
-     * @return the newly created {@link Listing}
+     * @return {@code true} if the listing is successfully created
      *
      * @throws IllegalArgumentException if any of the required parameters are {@code null} or invalid
      */
-    public Listing createDirectSaleListing(String listingTitle, List<PublicationSampleId> pubSampleIds,
-                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures){
+    public boolean createDirectSaleListing(String listingTitle, List<PublicationSampleId> pubSampleIds,
+                                         Price price, String shortDescription, UserId sellerId, List<Picture> pictures) throws InstanceNotFoundException {
 
         if (listingTitle == null || listingTitle.isBlank())
             throw new IllegalArgumentException("Listing title cannot be null or blank.");
@@ -142,6 +128,9 @@ public class ToPutForSaleAPublicationInDirectSaleController {
         if (pictures == null)
             throw new IllegalArgumentException("Pictures cannot be null.");
 
-        return _listingService.createAndSave(listingTitle, pubSampleIds, SaleType.DIRECT_SALE, price, shortDescription, sellerId, pictures);
+        Listing listing = _listingService.createAndSave(listingTitle, pubSampleIds, SaleType.DIRECT_SALE, price,
+                shortDescription, sellerId, pictures);
+
+        return true;
     }
 }
