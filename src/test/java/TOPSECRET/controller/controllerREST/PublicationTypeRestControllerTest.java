@@ -19,11 +19,13 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -721,5 +723,57 @@ class PublicationTypeRestControllerTest {
         assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
     }
 
+    @Test
+    void shouldReturnAllowedMethodsForPublicationTypesCollection() throws InstanceNotFoundException {
+
+        String userIdStr = "user-1";
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<PublicationTypeMapper> mapper =
+                     mockStatic(PublicationTypeMapper.class)) {
+
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr))
+                    .thenReturn(userId);
+
+            when(service.canCreatePublicationType(userId))
+                    .thenReturn(true);
+
+            ResponseEntity<Void> response =
+                    controller.optionsPublicationTypes(userIdStr);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.POST));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+        }
+    }
+
+    @Test
+    void shouldNotExposePostWhenUserCannotCreatePublicationType() throws InstanceNotFoundException {
+
+        String userIdStr = "user-1";
+        UserId userId = mock(UserId.class);
+
+        try (MockedStatic<PublicationTypeMapper> mapper =
+                     mockStatic(PublicationTypeMapper.class)) {
+
+            mapper.when(() -> PublicationTypeMapper.toUserId(userIdStr))
+                    .thenReturn(userId);
+
+            when(service.canCreatePublicationType(userId))
+                    .thenReturn(false);
+
+            ResponseEntity<Void> response =
+                    controller.optionsPublicationTypes(userIdStr);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
+            assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
+
+            assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
+        }
+    }
 
 }

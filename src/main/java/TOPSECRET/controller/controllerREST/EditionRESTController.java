@@ -11,6 +11,7 @@ import TOPSECRET.services.EditionService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -55,6 +58,52 @@ public class EditionRESTController {
         this.service = service;
         this.provider = provider;
     }
+
+    /**
+     * Returns the HTTP methods supported by the editions collection resource.
+     *
+     * <p>This endpoint enables clients to discover which operations are available
+     * for the collection of editions. It supports HATEOAS-driven navigation by
+     * exposing the allowed HTTP methods through the {@code Allow} header.</p>
+     *
+     * <p>The following methods are currently supported:</p>
+     * <ul>
+     *     <li>{@code GET} — retrieve all editions</li>
+     *     <li>{@code POST} — create a new edition</li>
+     *     <li>{@code OPTIONS} — discover supported operations</li>
+     * </ul>
+     *
+     * @return a {@link ResponseEntity} with HTTP {@code 200 OK} and an
+     * {@code Allow} header containing the supported methods for the
+     * editions collection resource
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsEditions(
+            @RequestParam String userId) {
+
+        try {
+
+            UserId id = EditionMapper.toUserId(userId);
+
+            Set<HttpMethod> allowed = new HashSet<>();
+            allowed.add(HttpMethod.GET);
+            allowed.add(HttpMethod.OPTIONS);
+
+            if (service.canCreateEdition(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok()
+                    .allow(allowed.toArray(HttpMethod[]::new))
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
 
     // =========================================================================
     // POST — private

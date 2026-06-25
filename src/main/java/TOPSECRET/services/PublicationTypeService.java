@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -127,5 +128,26 @@ public class PublicationTypeService {
 
         return repository.findByMediaFormat(mediaFormat).orElseThrow(() ->
                 new IllegalArgumentException("PublicationType not found"));
+    }
+
+    /**
+     * Determines whether the specified user is authorized to create
+     * {@link PublicationType} resources.
+     *
+     * <p>The user is resolved from the repository and evaluated against
+     * the publication type authorization policy.</p>
+     *
+     * @param userId the identifier of the user to validate; must not be {@code null}
+     * @return {@code true} if the user is allowed to create publication types;
+     *         {@code false} otherwise
+     * @throws InstanceNotFoundException if no user exists for the given identifier
+     */
+    public boolean canCreatePublicationType(UserId userId)
+            throws InstanceNotFoundException {
+
+        User user = userRepository.findByID(userId)
+                .orElseThrow(() -> new InstanceNotFoundException("User not found"));
+
+        return policy.canCreatePublicationType(user);
     }
 }
