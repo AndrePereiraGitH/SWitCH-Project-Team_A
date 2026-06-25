@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.hateoas.Link;
 
+import javax.management.InstanceNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,6 +78,74 @@ class BibliographicalDataLinkProviderTest {
         assertTrue(result.stream()
                 .anyMatch(link -> link.getRel().value()
                         .equals("create-bibliographical-data")));
+    }
+
+    @Test
+    void getLinks_shouldReturnPublicAndCreateLinks_whenUserCanCreate()
+            throws InstanceNotFoundException {
+        // Arrange
+        UserId userId = new UserId("user-1");
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(authorizationPolicy.canCreateBibliographicalData(user)).thenReturn(true);
+
+        // Act
+        List<Link> result = provider.getLinks(userId);
+
+        // Assert
+        assertEquals(3, result.size());
+        assertEquals(1, countLinksWithRel(result, "get-bibliographical-data"));
+        assertEquals(1, countLinksWithRel(result, "get-bibliographical-data-by-id"));
+        assertEquals(1, countLinksWithRel(result, "create-bibliographical-data"));
+    }
+
+    @Test
+    void getLinks_shouldReturnOnlyPublicLinks_whenUserCannotCreate()
+            throws InstanceNotFoundException {
+        // Arrange
+        UserId userId = new UserId("user-1");
+        User user = mock(User.class);
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(authorizationPolicy.canCreateBibliographicalData(user)).thenReturn(false);
+
+        // Act
+        List<Link> result = provider.getLinks(userId);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals(1, countLinksWithRel(result, "get-bibliographical-data"));
+        assertEquals(1, countLinksWithRel(result, "get-bibliographical-data-by-id"));
+        assertFalse(hasLinkWithRel(result, "create-bibliographical-data"));
+    }
+
+    @Test
+    void getLinks_shouldReturnOnlyPublicLinks_whenUserDoesNotExist()
+            throws InstanceNotFoundException {
+        // Arrange
+        UserId userId = new UserId("missing-user");
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // Act
+        List<Link> result = provider.getLinks(userId);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertTrue(hasLinkWithRel(result, "get-bibliographical-data"));
+        assertTrue(hasLinkWithRel(result, "get-bibliographical-data-by-id"));
+        assertFalse(hasLinkWithRel(result, "create-bibliographical-data"));
+    }
+
+    private long countLinksWithRel(List<Link> links, String relation) {
+        return links.stream()
+                .filter(link -> link.getRel().value().equals(relation))
+                .count();
+    }
+
+    private boolean hasLinkWithRel(List<Link> links, String relation) {
+        return countLinksWithRel(links, relation) > 0;
     }
 
 }
