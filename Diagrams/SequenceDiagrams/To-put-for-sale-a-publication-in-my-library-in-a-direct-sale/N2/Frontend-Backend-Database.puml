@@ -1,0 +1,81 @@
+@startuml
+autonumber
+hide footbox
+title To put for sale a publication in my library in a direct sale
+
+box "Frontend" #whitesmoke
+actor User
+participant ":UI" as UI
+end box
+
+box "Backend" #aliceblue
+participant ":PublicationSample\nRESTController" as PSCtrl
+participant ":Listing\nRESTController" as ListCtrl
+end box
+
+box "Database" #honeydew
+database "db" as db
+end box
+
+' ==========================================
+' 1 — Find available publications for sale
+' ==========================================
+
+User -> UI : I want to put for sale\na publication in a direct sale
+activate UI
+
+UI -> PSCtrl : OPTIONS /publicationSamples/available-for-sale
+activate PSCtrl
+PSCtrl --> UI : 200 OK\nAllow: GET, OPTIONS
+deactivate PSCtrl
+
+UI -> PSCtrl : GET /publicationSamples/available-for-sale?userId={userId}
+activate PSCtrl
+PSCtrl -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> PSCtrl : data
+deactivate db
+PSCtrl -> db : SELECT * FROM publication_sample\nWHERE owner_id = ? AND status NOT IN ('FOR_SALE', 'SOLD')
+activate db
+db --> PSCtrl : data
+deactivate db
+PSCtrl --> UI : 200 OK\nbody: publicationDTOS
+deactivate PSCtrl
+
+UI --> User : Which publication(s)?\nChoose from the list!
+deactivate UI
+
+' ==========================================
+' 2 — Create direct sale listing
+' ==========================================
+
+User -> UI : Selected publication(s)
+activate UI
+UI --> User : Specify title, price,\nshort description and pictures
+deactivate UI
+
+User -> UI : title, price, short description, pictures
+activate UI
+
+UI -> ListCtrl : OPTIONS /listings
+activate ListCtrl
+ListCtrl --> UI : 200 OK\nAllow: POST, GET, OPTIONS
+deactivate ListCtrl
+
+UI -> ListCtrl : POST /listings\nbody: {title, selectedPublicationIds,\nsaleType, price, shortDescription, userId, pictures}
+activate ListCtrl
+ListCtrl -> db : SELECT * FROM users WHERE id = ?
+activate db
+db --> ListCtrl : data
+deactivate db
+ListCtrl -> db : INSERT INTO listings ...
+activate db
+db --> ListCtrl : data
+deactivate db
+ListCtrl --> UI : 201 Created\nbody: listingDTO
+deactivate ListCtrl
+
+UI --> User : Publication(s) put for direct\nsale with success
+deactivate UI
+
+@enduml
