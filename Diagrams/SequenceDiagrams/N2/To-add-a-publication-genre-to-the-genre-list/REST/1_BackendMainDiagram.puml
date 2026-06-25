@@ -1,0 +1,45 @@
+@startuml
+hide footbox
+autonumber
+title To add a publication genre (Main - REST)
+
+actor Administrator
+participant ":UI" as UI
+participant ":GenreRESTController" as Ctrl
+participant ":GenreService" as Service
+
+Administrator -> UI : I want to add a new genre
+activate UI
+UI --> Administrator : What is the genre name?
+deactivate UI
+Administrator -> UI : genreName("Drama")
+activate UI
+
+UI -> Ctrl : POST /genres?userId={userId}\n body: { genreName }
+activate Ctrl
+
+Ctrl -> Service : createAndSave(dto.genreName(), userId)
+activate Service
+
+ref over Service
+[[2_BackendCanCreateGenre.puml Can Create Genre]]
+end ref
+
+ref over Service
+[[3_BackendCreateGenre.puml Create and Save Genre]]
+end ref
+
+Service --> Ctrl : genre
+deactivate Service
+
+ref over Ctrl
+[[4_BackendBuildResponse.puml Build Response]]
+end ref
+
+Ctrl --> UI : 201 Created\n body: GenreResponseDTO
+deactivate Ctrl
+
+UI --> Administrator : Genre successfully added!
+deactivate UI
+
+@enduml

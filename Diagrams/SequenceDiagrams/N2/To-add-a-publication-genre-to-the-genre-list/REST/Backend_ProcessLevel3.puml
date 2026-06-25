@@ -1,0 +1,137 @@
+@startuml
+hide footbox
+autonumber
+title To add a publication genre (Process Level 3 - Full)
+
+actor Administrator
+participant ":UI" as UI
+participant ":GenreRESTController" as Ctrl
+participant ":GenreMapper" as Mapper
+participant "response:GenreResponseDTO" as Response
+participant ":GenreLinkProvider" as LinkProvider
+participant ":GenreService" as Service
+participant ":IUserRepository" as UserRepo
+participant ":IUserRepositoryJPA" as UserJPA
+participant ":GenreAuthorizationPolicy" as Policy
+participant ":IGenreRepository" as Repo
+participant ":IGenreRepositoryJPA" as JpaRepo
+participant ":GenreAssembler" as Assembler
+participant ":GenreFactory" as Factory
+database "DB" as DB
+
+Administrator -> UI : I want to add a new genre
+activate UI
+UI --> Administrator : What is the genre name?
+deactivate UI
+Administrator -> UI : genreName("Drama")
+activate UI
+
+UI -> Ctrl : POST /genres?userId={userId}\n body: { genreName }
+activate Ctrl
+
+Ctrl -> Service : createAndSave(dto.genreName(), userId)
+activate Service
+
+Service -> UserRepo : findByID(userId)
+activate UserRepo
+UserRepo -> UserJPA : findById(userId)
+activate UserJPA
+UserJPA -> DB : SELECT * FROM users WHERE id = ?
+activate DB
+DB --> UserJPA : data
+deactivate DB
+UserJPA --> UserRepo : Optional<UserDM>
+deactivate UserJPA
+UserRepo --> Service : Optional<User>
+deactivate UserRepo
+
+alt user not found
+    Service --> Ctrl : IllegalArgumentException
+    Ctrl --> UI : 400 Bad Request
+end
+
+Service -> Policy : canCreateGenre(user)
+activate Policy
+Policy --> Service : boolean
+deactivate Policy
+
+alt not allowed
+    Service --> Ctrl : AccessDeniedException
+    Ctrl --> UI : 403 Forbidden
+end
+
+Service -> Repo : findByTitle(genreType)
+activate Repo
+Repo -> JpaRepo : findByGenreType(genreType)
+activate JpaRepo
+JpaRepo -> DB : SELECT * FROM genres WHERE genre_type = ?
+activate DB
+DB --> JpaRepo : result
+deactivate DB
+JpaRepo --> Repo : Optional<GenreDM>
+deactivate JpaRepo
+Repo --> Service : Optional<Genre>
+deactivate Repo
+
+alt genre already exists
+    Service --> Ctrl : IllegalArgumentException
+    Ctrl --> UI : 400 Bad Request
+end
+
+Service -> Factory : create(genreType)
+activate Factory
+create "genre:Genre" as Genre
+Factory -->> Genre : <<create>>
+Factory --> Service : genre
+deactivate Factory
+
+Service -> Repo : save(genre)
+activate Repo
+Repo -> Assembler : toDM(genre)
+activate Assembler
+create "genreDM:GenreDM" as GenreDM
+Assembler -->> GenreDM : <<create>>
+Assembler --> Repo : genreDM
+deactivate Assembler
+Repo -> JpaRepo : save(genreDM)
+activate JpaRepo
+JpaRepo -> DB : INSERT INTO genres ...
+activate DB
+DB --> JpaRepo : data
+deactivate DB
+create "savedDM:GenreDM" as SavedDM
+JpaRepo -->> SavedDM : <<create>>
+JpaRepo --> Repo : savedDM
+deactivate JpaRepo
+Repo -> Assembler : toDomain(savedDM)
+activate Assembler
+create "savedGenre:Genre" as SavedGenre
+Assembler -->> SavedGenre : <<create>>
+Assembler --> Repo : savedGenre
+deactivate Assembler
+Repo --> Service : savedGenre
+deactivate Repo
+
+Service --> Ctrl : savedGenre
+deactivate Service
+
+Ctrl -> Mapper : toDTO(genre)
+activate Mapper
+Mapper -->> Response ** : <<create>>
+Mapper --> Ctrl : response
+deactivate Mapper
+
+Ctrl -> LinkProvider : getLinks(userId)
+activate LinkProvider
+LinkProvider --> Ctrl : links
+deactivate LinkProvider
+
+Ctrl -> Ctrl : links.forEach(response::add)
+
+Ctrl --> UI : 201 Created\n body: GenreResponseDTO
+deactivate Ctrl
+
+UI --> Administrator : Genre successfully added!
+deactivate UI
+
+@enduml

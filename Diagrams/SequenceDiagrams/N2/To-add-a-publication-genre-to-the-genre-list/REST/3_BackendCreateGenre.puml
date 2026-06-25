@@ -1,0 +1,74 @@
+@startuml
+hide footbox
+autonumber
+title Create and Save Genre
+
+participant ":GenreService" as Service
+participant ":IGenreRepository" as Repo
+participant ":IGenreRepositoryJPA" as JpaRepo
+database "DB" as DB
+participant ":GenreAssembler" as Assembler
+participant ":GenreFactory" as Factory
+
+note over Service #E3F2FD
+<b>Navigation</b>
+---
+[[1_BackendMainDiagram.puml Return to Main Diagram]]
+end note
+
+Service -> Repo : findByTitle(genreType)
+activate Repo
+Repo -> JpaRepo : findByGenreType(genreType)
+activate JpaRepo
+JpaRepo -> DB : SELECT * FROM genres WHERE genre_type = ?
+activate DB
+DB --> JpaRepo : result
+deactivate DB
+JpaRepo --> Repo : Optional<GenreDM>
+deactivate JpaRepo
+Repo --> Service : Optional<Genre>
+deactivate Repo
+
+alt genre already exists
+    Service --> Service : throw IllegalArgumentException
+end
+
+Service -> Factory : create(genreType)
+activate Factory
+create "genre:Genre" as Genre
+Factory -->> Genre : <<create>>
+Factory --> Service : genre
+deactivate Factory
+
+Service -> Repo : save(genre)
+activate Repo
+
+Repo -> Assembler : toDM(genre)
+activate Assembler
+create "genreDM:GenreDM" as GenreDM
+Assembler -->> GenreDM : <<create>>
+Assembler --> Repo : genreDM
+deactivate Assembler
+
+Repo -> JpaRepo : save(genreDM)
+activate JpaRepo
+JpaRepo -> DB : INSERT INTO genres ...
+activate DB
+DB --> JpaRepo : data
+deactivate DB
+create "savedDM:GenreDM" as SavedDM
+JpaRepo -->> SavedDM : <<create>>
+JpaRepo --> Repo : savedDM
+deactivate JpaRepo
+
+Repo -> Assembler : toDomain(savedDM)
+activate Assembler
+create "savedGenre:Genre" as SavedGenre
+Assembler -->> SavedGenre : <<create>>
+Assembler --> Repo : savedGenre
+deactivate Assembler
+
+Repo --> Service : savedGenre
+deactivate Repo
+
+@enduml
