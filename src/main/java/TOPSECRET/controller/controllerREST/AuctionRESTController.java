@@ -14,13 +14,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.hateoas.Link;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.AccessDeniedException;
 import javax.management.InstanceNotFoundException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -262,6 +262,96 @@ public class AuctionRESTController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (InstanceNotFoundException | EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    /**
+     * Handles OPTIONS requests for the auctions root endpoint ({@code /auctions}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response
+     * header, enabling CORS preflight requests and API discoverability. {@code GET} and
+     * {@code OPTIONS} are always allowed; {@code POST} is included only when the requesting
+     * user (if identified) has permission to create an auction. If no {@code userId} is
+     * provided, the request is treated as anonymous and {@code POST} is omitted.</p>
+     *
+     * @param userId the identifier of the requesting user; may be {@code null} for
+     *               anonymous/unregistered users
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code GET, OPTIONS},
+     *         plus {@code POST} if the user is authorized to create an auction;
+     *         {@code 404 Not Found} if the given {@code userId} does not match an existing user;
+     *         {@code 400 Bad Request} if the given {@code userId} is invalid
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsRoot(@RequestParam(required = false) String userId) {
+
+        Set<HttpMethod> allowedMethods = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+        try {
+            if (userId != null) {
+                UserId userIdVO = AuctionMapper.toUserId(userId);
+
+                if (auctionService.canCreateAuction(userIdVO)) {
+                    allowedMethods.add(HttpMethod.POST);
+                }
+            }
+
+            return ResponseEntity.ok()
+                    .allow(allowedMethods.toArray(new HttpMethod[0]))
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    /**
+     * Handles OPTIONS requests for the bid placement endpoint ({@code /auctions/{auctionId}/bids}).
+     *
+     * <p>Returns the HTTP methods allowed for this endpoint in the {@code Allow} response
+     * header, enabling CORS preflight requests and API discoverability. {@code OPTIONS} is
+     * always allowed; {@code POST} is included only when the requesting user (if identified)
+     * has permission to place a bid. If no {@code userId} is provided, the request is treated
+     * as anonymous and {@code POST} is omitted. This endpoint does not support {@code GET}.</p>
+     *
+     * @param userId    the identifier of the requesting user; may be {@code null} for
+     *                  anonymous/unregistered users
+     * @param auctionId the unique identifier of the auction; used for URL matching
+     * @return {@code 200 OK} with the {@code Allow} header set to {@code OPTIONS},
+     *         plus {@code POST} if the user is authorized to place a bid;
+     *         {@code 404 Not Found} if the given {@code userId} does not match an existing user;
+     *         {@code 400 Bad Request} if the given {@code userId} is invalid
+     */
+    @RequestMapping(value = "/{auctionId}/bids", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsBids(@RequestParam(required = false) String userId,
+                                            @PathVariable String auctionId) {
+
+        Set<HttpMethod> allowedMethods = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+        try {
+            if (userId != null) {
+                UserId userIdVO = AuctionMapper.toUserId(userId);
+
+                if (auctionService.canPlaceBid(userIdVO)) {
+                    allowedMethods.add(HttpMethod.POST);
+                }
+            }
+
+            return ResponseEntity.ok()
+                    .allow(allowedMethods.toArray(new HttpMethod[0]))
+                    .build();
+
+        } catch (InstanceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }

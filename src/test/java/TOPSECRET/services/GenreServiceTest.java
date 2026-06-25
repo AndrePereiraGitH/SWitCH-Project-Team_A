@@ -284,4 +284,48 @@ class GenreServiceTest {
         assertThrows(IllegalArgumentException.class,
                 () -> genreService.findById(genreId));
     }
+
+    // =========================================================================
+    // canCreateGenre
+    // =========================================================================
+
+    @Test
+    void canCreateGenre_shouldReturnTrue_whenUserIsAuthorized() {
+        // ARRANGE
+        User user = user();
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateGenre(user)).thenReturn(true);
+
+        // ACT
+        boolean result = genreService.canCreateGenre(userId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreateGenre_shouldReturnFalse_whenUserIsNotAuthorized() {
+        // ARRANGE
+        User user = user();
+
+        when(userRepository.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canCreateGenre(user)).thenReturn(false);
+
+        // ACT
+        boolean result = genreService.canCreateGenre(userId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreateGenre_shouldThrowIllegalArgument_whenUserNotFound() {
+        // ARRANGE
+        when(userRepository.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(IllegalArgumentException.class,
+                () -> genreService.canCreateGenre(userId));
+    }
 }

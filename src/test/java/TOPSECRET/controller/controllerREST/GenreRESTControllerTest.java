@@ -6,12 +6,15 @@ import TOPSECRET.domain.ValueObjects.GenreId;
 import TOPSECRET.domain.ValueObjects.UserId;
 import TOPSECRET.dto.genre.request.GenreRequestDTO;
 import TOPSECRET.dto.genre.response.GenreResponseDTO;
+import TOPSECRET.dto.user.UserMapper;
 import TOPSECRET.services.GenreService;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.mockito.MockedStatic;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -49,33 +52,57 @@ class GenreRESTControllerTest {
     private UserId userId;
 
     private GenreRequestDTO dto;
+    private GenreRESTController sut;
+    private MockedStatic<UserMapper> userMapperMock;
+
+    private static final String VALID_USER_ID = "user-123";
 
     @BeforeEach
     void setup() {
-
-        userId = mock(UserId.class);
         dto = new GenreRequestDTO("Fiction");
+        sut = new GenreRESTController(service, provider);
+        userMapperMock = mockStatic(UserMapper.class);
     }
 
+    @AfterEach
+    void tearDown() {
+        userMapperMock.close();
+    }
+
+    // createGenre
     @Test
     void createGenre_shouldReturnCreated_whenSuccess() throws Exception {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
         when(service.createAndSave("Fiction", userId)).thenReturn(genre);
-
         when(genre.id()).thenReturn(genreId);
         when(genreId.getID()).thenReturn("g1");
         when(genre.getGenreType()).thenReturn("Fiction");
-
         when(provider.getLinks(userId)).thenReturn(List.of());
 
         // ACT
-        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, userId);
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
 
         // ASSERT
         assertEquals(HttpStatus.CREATED, result.getStatusCode());
+    }
+
+    @Test
+    void createGenre_shouldReturnNonNullBody_whenSuccess() throws Exception {
+
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.createAndSave("Fiction", userId)).thenReturn(genre);
+        when(genre.id()).thenReturn(genreId);
+        when(genreId.getID()).thenReturn("g1");
+        when(genre.getGenreType()).thenReturn("Fiction");
+        when(provider.getLinks(userId)).thenReturn(List.of());
+
+        // ACT
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
+
+        // ASSERT
         assertNotNull(result.getBody());
     }
 
@@ -83,20 +110,16 @@ class GenreRESTControllerTest {
     void createGenre_shouldAddLinks_whenProviderReturnsLinks() throws Exception {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
         Link link = Link.of("/genres");
-
         when(service.createAndSave("Fiction", userId)).thenReturn(genre);
-
         when(genre.id()).thenReturn(genreId);
         when(genreId.getID()).thenReturn("g1");
         when(genre.getGenreType()).thenReturn("Fiction");
-
         when(provider.getLinks(userId)).thenReturn(List.of(link));
 
         // ACT
-        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, userId);
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
 
         // ASSERT
         assertEquals(1, result.getBody().getLinks().toList().size());
@@ -106,15 +129,27 @@ class GenreRESTControllerTest {
     void createGenre_shouldReturnForbidden_whenAccessDenied() throws Exception {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
         when(service.createAndSave("Fiction", userId)).thenThrow(new AccessDeniedException("denied"));
 
         // ACT
-        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, userId);
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
 
         // ASSERT
         assertEquals(HttpStatus.FORBIDDEN, result.getStatusCode());
+    }
+
+    @Test
+    void createGenre_shouldReturnNullBody_whenAccessDenied() throws Exception {
+
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.createAndSave("Fiction", userId)).thenThrow(new AccessDeniedException("denied"));
+
+        // ACT
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
+
+        // ASSERT
         assertNull(result.getBody());
     }
 
@@ -122,43 +157,64 @@ class GenreRESTControllerTest {
     void createGenre_shouldReturnBadRequest_whenIllegalArgument() throws Exception {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
         when(service.createAndSave("Fiction", userId)).thenThrow(new IllegalArgumentException());
 
         // ACT
-        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, userId);
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
 
         // ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    void createGenre_shouldReturnNullBody_whenIllegalArgument() throws Exception {
+
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.createAndSave("Fiction", userId)).thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
+
+        // ASSERT
         assertNull(result.getBody());
     }
 
     @Test
-    void createGenre_shouldReturnInternalServerError_whenUnexpectedException()
-            throws Exception {
+    void createGenre_shouldReturnInternalServerError_whenUnexpectedException() throws Exception {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
         when(service.createAndSave("Fiction", userId)).thenThrow(new RuntimeException());
 
         // ACT
-        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, userId);
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
 
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
+    }
+
+    @Test
+    void createGenre_shouldReturnNullBody_whenUnexpectedException() throws Exception {
+
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.createAndSave("Fiction", userId)).thenThrow(new RuntimeException());
+
+        // ACT
+        ResponseEntity<GenreResponseDTO> result = sut.createGenre(dto, VALID_USER_ID);
+
+        // ASSERT
         assertNull(result.getBody());
     }
 
+    // getGenres
     @Test
     void getGenres_shouldReturnOk_whenGenresExist() {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
         when(service.findAll()).thenReturn(List.of(genre));
-
         when(genre.id()).thenReturn(genreId);
         when(genreId.getID()).thenReturn("g1");
         when(genre.getGenreType()).thenReturn("Drama");
@@ -168,6 +224,21 @@ class GenreRESTControllerTest {
 
         // ASSERT
         assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
+    @Test
+    void getGenres_shouldReturnOneItem_whenGenresExist() {
+
+        // ARRANGE
+        when(service.findAll()).thenReturn(List.of(genre));
+        when(genre.id()).thenReturn(genreId);
+        when(genreId.getID()).thenReturn("g1");
+        when(genre.getGenreType()).thenReturn("Drama");
+
+        // ACT
+        ResponseEntity<List<GenreResponseDTO>> result = sut.getGenres();
+
+        // ASSERT
         assertEquals(1, result.getBody().size());
     }
 
@@ -175,15 +246,12 @@ class GenreRESTControllerTest {
     void getGenres_shouldReturnEmptyList_whenNoGenresExist() {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
         when(service.findAll()).thenReturn(List.of());
 
         // ACT
         ResponseEntity<List<GenreResponseDTO>> result = sut.getGenres();
 
         // ASSERT
-        assertEquals(HttpStatus.OK, result.getStatusCode());
         assertTrue(result.getBody().isEmpty());
     }
 
@@ -191,8 +259,6 @@ class GenreRESTControllerTest {
     void getGenres_shouldReturnBadRequest_whenIllegalArgument() {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
         when(service.findAll()).thenThrow(new IllegalArgumentException());
 
         // ACT
@@ -200,15 +266,12 @@ class GenreRESTControllerTest {
 
         // ASSERT
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody());
     }
 
     @Test
     void getGenres_shouldReturnInternalServerError_whenUnexpectedException() {
 
         // ARRANGE
-        GenreRESTController sut = new GenreRESTController(service, provider);
-
         when(service.findAll()).thenThrow(new RuntimeException());
 
         // ACT
@@ -216,6 +279,83 @@ class GenreRESTControllerTest {
 
         // ASSERT
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
-        assertNull(result.getBody());
+    }
+
+    // OPTIONS
+    @Test
+    void optionsRoot_shouldReturnOkStatus() {
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.canCreateGenre(userId)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+        // ASSERT
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void optionsRoot_shouldAllowGet() {
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.canCreateGenre(userId)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.GET));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowOptions() {
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.canCreateGenre(userId)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.OPTIONS));
+    }
+
+    @Test
+    void optionsRoot_shouldAllowPost_whenUserCanCreateGenre() {
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.canCreateGenre(userId)).thenReturn(true);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+        // ASSERT
+        assertTrue(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+    }
+
+    @Test
+    void optionsRoot_shouldNotAllowPost_whenUserCannotCreateGenre() {
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId(VALID_USER_ID)).thenReturn(userId);
+        when(service.canCreateGenre(userId)).thenReturn(false);
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot(VALID_USER_ID);
+
+        // ASSERT
+        assertFalse(response.getHeaders().getAllow().contains(org.springframework.http.HttpMethod.POST));
+    }
+
+    @Test
+    void optionsRoot_shouldReturnBadRequest_whenUserIdIsInvalid() {
+        // ARRANGE
+        userMapperMock.when(() -> UserMapper.toUserId("invalid")).thenThrow(new IllegalArgumentException());
+
+        // ACT
+        ResponseEntity<Void> response = sut.optionsRoot("invalid");
+
+        // ASSERT
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }

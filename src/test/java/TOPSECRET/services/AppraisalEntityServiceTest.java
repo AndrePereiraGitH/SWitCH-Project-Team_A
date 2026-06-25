@@ -276,4 +276,44 @@ class AppraisalEntityServiceTest {
                 new AppraisalEntityService(repository, factory, policy, null)
         );
     }
+
+    // canCreateAppraisalEntity
+    @Test
+    void canCreateAppraisalEntity_shouldReturnTrue_whenUserIsAuthorized() {
+        // ARRANGE
+        User user = user();
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(true);
+
+        // ACT
+        boolean result = sut.canCreateAppraisalEntity(userId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canCreateAppraisalEntity_shouldReturnFalse_whenUserIsNotAuthorized() {
+        // ARRANGE
+        User user = user();
+        when(userRepo.findByID(userId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterAppraisalEntity(user)).thenReturn(false);
+
+        // ACT
+        boolean result = sut.canCreateAppraisalEntity(userId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canCreateAppraisalEntity_shouldThrowNoSuchElement_whenUserNotFound() {
+        // ARRANGE
+        when(userRepo.findByID(userId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(NoSuchElementException.class, () ->
+                sut.canCreateAppraisalEntity(userId)
+        );
+    }
 }
