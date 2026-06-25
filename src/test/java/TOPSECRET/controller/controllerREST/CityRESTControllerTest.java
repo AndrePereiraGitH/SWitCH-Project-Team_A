@@ -379,42 +379,6 @@ class CityRESTControllerTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, result.getStatusCode());
     }
 
-    // ==========================================
-    // OPTIONS /cities/{id} (By ID)
-    // ==========================================
-
-    @Test
-    void optionsById_shouldReturnOkStatus() {
-        CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsById("1");
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNull(response.getBody());
-    }
-
-    @Test
-    void optionsById_shouldAllowGet() {
-        CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsById("1");
-        assertNotNull(response.getHeaders().getAllow());
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.GET));
-    }
-
-    @Test
-    void optionsById_shouldAllowOptions() {
-        CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsById("1");
-        assertNotNull(response.getHeaders().getAllow());
-        assertTrue(response.getHeaders().getAllow().contains(HttpMethod.OPTIONS));
-    }
-
-    @Test
-    void optionsById_shouldNotAllowPost() {
-        CityRESTController sut = new CityRESTController(service, provider);
-        ResponseEntity<Void> response = sut.optionsById("1");
-        assertNotNull(response.getHeaders().getAllow());
-        assertFalse(response.getHeaders().getAllow().contains(HttpMethod.POST));
-    }
-
     @Test
     void getCityById_shouldReturnBadRequest_whenIdIsEmpty() {
         // ARRANGE

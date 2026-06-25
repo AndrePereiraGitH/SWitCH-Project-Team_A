@@ -14,11 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -50,6 +54,43 @@ public class CountryRESTController {
 
         this.service = service;
         this.provider = provider;
+    }
+
+    /**
+     * Returns the HTTP methods supported by the Country collection resource.
+     *
+     * <p>This endpoint allows clients to discover which operations are
+     * available on the {@code /countries} resource without invoking them.</p>
+     *
+     * <p>The response includes an {@code Allow} header indicating the
+     * supported HTTP methods:</p>
+     * <ul>
+     *     <li>{@code GET} - retrieve all countries</li>
+     *     <li>{@code POST} - create a new country</li>
+     *     <li>{@code OPTIONS} - discover supported operations</li>
+     * </ul>
+     *
+     * @return a response containing the supported HTTP methods for the
+     *         Country collection resource
+     */
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> options(@RequestParam String userId) {
+        try {
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.GET, HttpMethod.OPTIONS));
+
+            UserId user = CountryMapper.toUserId(userId);
+
+            if (service.canRegisterCountry(user)) {
+                allowed.add(HttpMethod.POST);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**

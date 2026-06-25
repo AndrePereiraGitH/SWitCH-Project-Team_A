@@ -15,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.management.InstanceAlreadyExistsException;
 import org.springframework.security.access.AccessDeniedException;
+
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
@@ -271,5 +273,324 @@ class UserServiceTest {
         // Act + Assert
         assertThrows(NullPointerException.class,
                 () -> service.findIdByUsername(null));
+    }
+
+    // =======================================================================
+    // canRegisterUser
+    // =========================================================================
+
+    @Test
+    void canRegisterUser_shouldReturnTrue_whenUserIsAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterUser(user)).thenReturn(true);
+
+        // ACT
+        boolean result = service.canRegisterUser(requesterId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canRegisterUser_shouldReturnFalse_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(user));
+        when(policy.canRegisterUser(user)).thenReturn(false);
+
+        // ACT
+        boolean result = service.canRegisterUser(requesterId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canRegisterUser_shouldThrowNoSuchElementException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(NoSuchElementException.class,
+                () -> service.canRegisterUser(requesterId));
+    }
+
+    @Test
+    void canRegisterUser_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> service.canRegisterUser(null));
+    }
+
+    // =========================================================================
+    // canFindAllUsers
+    // =========================================================================
+
+    @Test
+    void canFindAllUsers_shouldReturnTrue_whenUserIsAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(user));
+        when(policy.canFindAllUsers(user)).thenReturn(true);
+
+        // ACT
+        boolean result = service.canFindAllUsers(requesterId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindAllUsers_shouldReturnFalse_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(user));
+        when(policy.canFindAllUsers(user)).thenReturn(false);
+
+        // ACT
+        boolean result = service.canFindAllUsers(requesterId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindAllUsers_shouldThrowNoSuchElementException_whenUserDoesNotExist() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(NoSuchElementException.class,
+                () -> service.canFindAllUsers(requesterId));
+    }
+
+    @Test
+    void canFindAllUsers_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> service.canFindAllUsers(null));
+    }
+
+    // =========================================================================
+    // canFindUserById
+    // =========================================================================
+
+    @Test
+    void canFindUserById_shouldReturnTrue_whenUserIsAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        UserId targetId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(user));
+        when(policy.canFindUserById(user, targetId)).thenReturn(true);
+
+        // ACT
+        boolean result = service.canFindUserById(requesterId, targetId);
+
+        // ASSERT
+        assertTrue(result);
+    }
+
+    @Test
+    void canFindUserById_shouldReturnFalse_whenUserIsNotAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        UserId targetId = mock(UserId.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(user));
+        when(policy.canFindUserById(user, targetId)).thenReturn(false);
+
+        // ACT
+        boolean result = service.canFindUserById(requesterId, targetId);
+
+        // ASSERT
+        assertFalse(result);
+    }
+
+    @Test
+    void canFindUserById_shouldThrowNoSuchElementException_whenRequesterDoesNotExist() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        UserId targetId = mock(UserId.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(NoSuchElementException.class,
+                () -> service.canFindUserById(requesterId, targetId));
+    }
+
+    @Test
+    void canFindUserById_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> service.canFindUserById(null, mock(UserId.class)));
+    }
+
+    @Test
+    void canFindUserById_shouldThrowNullPointerException_whenTargetUserIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> service.canFindUserById(mock(UserId.class), null));
+    }
+
+    // =========================================================================
+    // findByIDNew
+    // =========================================================================
+
+    @Test
+    void findByIDNew_shouldReturnUser_whenRequesterIsAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        UserId targetId = mock(UserId.class);
+        User requester = mock(User.class);
+        User target = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(requester));
+        when(policy.canFindUserById(requester, targetId)).thenReturn(true);
+        when(userRepository.findByID(targetId)).thenReturn(Optional.of(target));
+
+        // ACT
+        User result = service.findByIDNew(targetId, requesterId);
+
+        // ASSERT
+        assertSame(target, result);
+    }
+
+    @Test
+    void findByIDNew_shouldThrowAccessDeniedException_whenNotAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        UserId targetId = mock(UserId.class);
+        User requester = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(requester));
+        when(policy.canFindUserById(requester, targetId)).thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(AccessDeniedException.class,
+                () -> service.findByIDNew(targetId, requesterId));
+    }
+
+    @Test
+    void findByIDNew_shouldThrowNoSuchElementException_whenRequesterDoesNotExist() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        UserId targetId = mock(UserId.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(NoSuchElementException.class,
+                () -> service.findByIDNew(targetId, requesterId));
+    }
+
+    @Test
+    void findByIDNew_shouldThrowNoSuchElementException_whenTargetDoesNotExist() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        UserId targetId = mock(UserId.class);
+        User requester = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(requester));
+        when(policy.canFindUserById(requester, targetId)).thenReturn(true);
+        when(userRepository.findByID(targetId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(NoSuchElementException.class,
+                () -> service.findByIDNew(targetId, requesterId));
+    }
+
+    @Test
+    void findByIDNew_shouldThrowNullPointerException_whenTargetUserIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> service.findByIDNew(null, mock(UserId.class)));
+    }
+
+    @Test
+    void findByIDNew_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> service.findByIDNew(mock(UserId.class), null));
+    }
+
+    // =========================================================================
+    // findAll
+    // =========================================================================
+
+    @Test
+    void findAll_shouldReturnUsers_whenRequesterIsAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        User requester = mock(User.class);
+        User user = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(requester));
+        when(policy.canFindAllUsers(requester)).thenReturn(true);
+        when(userRepository.findAll()).thenReturn(List.of(user));
+
+        // ACT
+        List<User> result = service.findAll(requesterId);
+
+        // ASSERT
+        assertEquals(1, result.size());
+        assertSame(user, result.get(0));
+    }
+
+    @Test
+    void findAll_shouldThrowAccessDeniedException_whenNotAuthorized() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        User requester = mock(User.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.of(requester));
+        when(policy.canFindAllUsers(requester)).thenReturn(false);
+
+        // ACT + ASSERT
+        assertThrows(AccessDeniedException.class,
+                () -> service.findAll(requesterId));
+    }
+
+    @Test
+    void findAll_shouldThrowNoSuchElementException_whenRequesterDoesNotExist() {
+
+        // ARRANGE
+        UserId requesterId = mock(UserId.class);
+        when(userRepository.findByID(requesterId)).thenReturn(Optional.empty());
+
+        // ACT + ASSERT
+        assertThrows(NoSuchElementException.class,
+                () -> service.findAll(requesterId));
+    }
+
+    @Test
+    void findAll_shouldThrowNullPointerException_whenRequesterIdIsNull() {
+
+        // ACT + ASSERT
+        assertThrows(NullPointerException.class,
+                () -> service.findAll(null));
     }
 }

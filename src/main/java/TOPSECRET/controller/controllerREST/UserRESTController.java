@@ -12,16 +12,15 @@ import TOPSECRET.dto.user.response.ResponseUserDTO;
 import TOPSECRET.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.management.InstanceAlreadyExistsException;
 import org.springframework.security.access.AccessDeniedException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+
+import java.util.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -191,6 +190,78 @@ public class UserRESTController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (NoSuchElementException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+    /**
+     * Returns the allowed HTTP methods for the /users collection endpoint.
+     *
+     * <p>POST is included only if the requesting user has permission to register users.
+     * GET is included only if the requesting user has permission to list all users.
+     * OPTIONS is always included.</p>
+     *
+     * @param requesterId the identifier of the requesting user
+     * @return {@code 200 OK} with the Allow header,
+     *         {@code 404 NOT FOUND} if the user does not exist,
+     *         {@code 400 BAD REQUEST} if the identifier is invalid,
+     *         {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     */
+    @RequestMapping(value = "", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsUsers(@RequestParam String requesterId) {
+        try {
+            UserId id = UserMapper.toUserId(requesterId);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (userService.canRegisterUser(id)) {
+                allowed.add(HttpMethod.POST);
+            }
+            if (userService.canFindAllUsers(id)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Returns the allowed HTTP methods for the /users/{id} endpoint.
+     *
+     * <p>GET is included if the requesting user has permission to view the target user.
+     * OPTIONS is always included.</p>
+     *
+     * @param id          the identifier of the target user
+     * @param requesterId the identifier of the requesting user
+     * @return {@code 200 OK} with the Allow header,
+     *         {@code 404 NOT FOUND} if the requester does not exist,
+     *         {@code 400 BAD REQUEST} if any identifier is invalid,
+     *         {@code 500 INTERNAL SERVER ERROR} for unexpected errors
+     */
+    @RequestMapping(value = "/{id}", method = RequestMethod.OPTIONS)
+    public ResponseEntity<Void> optionsUserById(@PathVariable String id,
+                                                @RequestParam String requesterId) {
+        try {
+            UserId requestingId = UserMapper.toUserId(requesterId);
+            UserId targetId = UserMapper.toUserId(id);
+            Set<HttpMethod> allowed = new HashSet<>(List.of(HttpMethod.OPTIONS));
+
+            if (userService.canFindUserById(requestingId, targetId)) {
+                allowed.add(HttpMethod.GET);
+            }
+
+            return ResponseEntity.ok().allow(allowed.toArray(HttpMethod[]::new)).build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
