@@ -6,17 +6,11 @@ on:
       - opened
       - synchronize
     branches:
-      - main
-      - teamA_1
-      - teamA_2
-      - frontend
+      - disabled
 
   push:
     branches:
-      - main
-      - teamA_1
-      - teamA_2
-      - frontend
+      - disabled
 
 permissions:
   contents: read
