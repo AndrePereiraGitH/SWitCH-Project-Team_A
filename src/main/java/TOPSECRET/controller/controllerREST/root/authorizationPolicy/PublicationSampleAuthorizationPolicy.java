@@ -137,4 +137,17 @@ public class PublicationSampleAuthorizationPolicy {
         boolean result = user.getUserRoles().contains(UserRole.NORMAL_USER);
         return result;
     }
+
+    /**
+     * Checks if the user is authorized to retrieve publications from a public collection.
+     *
+     * <p>Both normal users and administrators are permitted to view shared public collections.</p>
+     *
+     * @param user the user attempting the operation; must not be {@code null}
+     * @return {@code true} if the user has the {@code NORMAL_USER} or {@code ADMIN} role, {@code false} otherwise
+     */
+    public boolean canFindPublicationsInPublicCollection(User user) {
+        return user.getUserRoles().contains(UserRole.NORMAL_USER)
+                || user.getUserRoles().contains(UserRole.ADMIN);
+    }
 }
